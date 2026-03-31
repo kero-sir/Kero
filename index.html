@@ -146,7 +146,7 @@
                 <div class="nav-item active" onclick="mostrarSelecaoModulos()"><i class="fas fa-th-large"></i> Módulos</div>
             </div>
 
-            <div id="moduleSelectionSection"><h2 style="margin: 30px 0 20px;">Selecione um módulo</h2><div class="module-selection-grid"><div class="module-card" onclick="selecionarModulo('recrutamento')"><div class="module-icon"><i class="fas fa-user-plus"></i></div><div class="module-title">Recrutamento</div><div class="module-description">Gestão de requisições de vagas</div></div></div></div>
+            <div id="moduleSelectionSection"><h2 style="margin: 30px 0 20px;">Selecione um módulo</h2><div class="module-selection-grid"><div class="module-card" onclick="selecionarModulo('recrutamento')"><div class="module-icon"><i class="fas fa-user-plus"></i></div><div class="module-title">Recrutamento</div><div class="module-description">Gestão de requisições de vagas</div></div><div class="module-card" onclick="selecionarModulo('manutencao')"><div class="module-icon"><i class="fas fa-tools"></i></div><div class="module-title">Manutenção</div><div class="module-description">Requisições de manutenção</div></div></div></div>
 
             <div id="recrutamentoSection" style="display: none;">
                 <div class="kpi-grid">
@@ -165,21 +165,34 @@
                             <div class="filter-section"><h3>Filtros</h3><div class="filter-group"><label>Status</label><select id="filterStatus"><option value="all">Todos</option><option value="em_validacao_rh">RH</option><option value="em_validacao_financas">Controlo Gestão</option><option value="em_validacao_director">Director</option><option value="aprovada">Aprovada</option><option value="rejeitada">Rejeitada</option></select></div><div class="filter-actions"><button class="btn-filter btn-filter-clear" onclick="limparFiltros()">Limpar</button><button class="btn-filter btn-filter-apply" onclick="filtrarRequisicoes()">Aplicar</button></div></div>
                         </div>
                         <div class="content-area">
-                            <div class="card"><div class="card-header"><div class="card-title">Requisições</div></div><div class="table-container"><table id="tabelaRequisicoes"><thead><tr><th>Código</th><th>Função</th><th>Direção</th><th>Status</th><th>Tipo</th><th>Ações</th></tr></thead><tbody id="corpoTabela"></tbody></table></div><div class="paginacao"><button id="paginaAnterior" class="pagina-btn" disabled>Anterior</button><span id="infoPagina">Página 1</span><button id="paginaProxima" class="pagina-btn" disabled>Próxima</button></div></div></div>
+                            <div class="card"><div class="card-header"><div class="card-title">Requisições</div></div><div class="table-container"><table id="tabelaRequisicoes"><thead>汽<th>Código</th><th>Função</th><th>Direção</th><th>Status</th><th>Tipo</th><th>Ações</th> </thead><tbody id="corpoTabela"></tbody> </table></div><div class="paginacao"><button id="paginaAnterior" class="pagina-btn" disabled>Anterior</button><span id="infoPagina">Página 1</span><button id="paginaProxima" class="pagina-btn" disabled>Próxima</button></div></div></div>
                         </div>
                     </div>
                 </div>
 
-                <div id="aprovacoesSection" style="display: none;"><div class="card"><div class="card-header"><div class="card-title">Aprovações Pendentes</div></div><div class="table-container"><table id="tabelaAprovacoes"><thead><tr><th>Código</th><th>Função</th><th>Direção</th><th>Status</th><th>Ações</th></tr></thead><tbody id="corpoAprovacoes"></tbody></table></div></div></div>
+                <div id="aprovacoesSection" style="display: none;"><div class="card"><div class="card-header"><div class="card-title">Aprovações Pendentes</div></div><div class="table-container"><table id="tabelaAprovacoes"><thead>汽<th>Código</th><th>Função</th><th>Direção</th><th>Status</th><th>Ações</th> </thead><tbody id="corpoAprovacoes"></tbody> </table></div></div></div>
+            </div>
+
+            <div id="manutencaoSection" style="display: none;">
+                <div class="main-layout">
+                    <div class="sidebar">
+                        <button class="btn-primary" id="btnNovaManutencao"><i class="fas fa-plus-circle"></i> Nova Manutenção</button>
+                        <div class="filter-section"><h3>Filtros</h3><div class="filter-group"><label>Status</label><select id="filterStatusManutencao"><option value="all">Todos</option><option value="pendente">Pendente</option><option value="aprovado">Aprovado</option><option value="rejeitado">Rejeitado</option></select></div></div>
+                    </div>
+                    <div class="content-area">
+                        <div class="card"><div class="card-header"><div class="card-title">Manutenção</div></div><div class="table-container"><table id="tabelaManutencao"><thead>汽<th>Nº</th><th>Título</th><th>Tipo</th><th>Área</th><th>Status</th><th>Ações</th> </thead><tbody id="corpoTabelaManutencao"></tbody> </table></div></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- MODAIS -->
     <div class="modal" id="modalTipo"><div class="modal-content"><div class="modal-header"><h2>Selecionar Tipo</h2><span class="close-modal" onclick="fecharModal('modalTipo')">&times;</span></div><div class="modal-body"><div class="tipo-opcao" onclick="selecionarTipo('novo_cargo')"><i class="fas fa-briefcase"></i><h3>Novo Cargo</h3></div><div class="tipo-opcao" onclick="selecionarTipo('substituicao')"><i class="fas fa-exchange-alt"></i><h3>Substituição</h3></div><div class="tipo-opcao" onclick="selecionarTipo('reforco_quadro')"><i class="fas fa-users"></i><h3>Reforço</h3></div></div></div></div>
-    <div class="modal" id="modalNovaRequisicao"><div class="modal-content"><div class="modal-header"><h2>Nova Requisição</h2><span class="close-modal" onclick="fecharModal('modalNovaRequisicao')">&times;</span></div><div class="modal-body"><form id="formNovaRequisicao"><input type="hidden" id="tipoRequisicao"><div id="campoSubstituicao" style="display:none;"><div style="background:var(--primary-light);padding:15px;margin-bottom:15px;border-radius:8px;"><h4>📌 Dados da Substituição</h4><div class="form-group"><label>Colaborador a Substituir</label><input type="text" id="colaboradorSubstituir" class="form-control"></div><div class="form-group"><label>Motivo da Substituição</label><select id="motivoSubstituicao" class="form-control"><option value="">Selecione</option><option value="Demissão">Demissão</option><option value="Pedido de Demissão">Pedido de Demissão</option><option value="Aposentadoria">Aposentadoria</option><option value="Transferência">Transferência</option></select></div></div></div><div id="campoReforco" style="display:none;"><div style="background:var(--primary-light);padding:15px;margin-bottom:15px;border-radius:8px;"><h4>📌 Dados do Reforço</h4><div class="form-group"><label>Justificativa do Reforço</label><textarea id="justificativaReforco" class="form-control" rows="3"></textarea></div></div></div><div class="form-group"><label>Função</label><input type="text" id="funcao" class="form-control" required></div><div class="form-group"><label>Direção</label><select id="direcao" class="form-control" required><option value="">Selecione</option><option value="Direção Geral">Direção Geral</option><option value="Capital Humano">Capital Humano</option><option value="Direção Comercial">Direção Comercial</option><option value="Direção Financeira">Direção Financeira</option><option value="Direção de Marketing">Direção de Marketing</option><option value="Direção de Sistemas">Direção de Sistemas</option><option value="Direção de Manutenção">Direção de Manutenção</option><option value="Direção de Segurança">Direção de Segurança</option><option value="Loja Talatona">Loja Talatona</option><option value="Loja Kilamba">Loja Kilamba</option><option value="Loja Morro Bento">Loja Morro Bento</option><option value="Armazém ZEE">Armazém ZEE</option><option value="Armazém SONIT">Armazém SONIT</option></select></div><div class="form-group"><label>Área / Categoria</label><select id="area" class="form-control" required><option value="">Selecione</option><option value="Director">Director</option><option value="Gerente">Gerente</option><option value="Coordenador">Coordenador</option><option value="Analista">Analista</option><option value="Técnico">Técnico</option><option value="Administrativo">Administrativo</option><option value="Operador">Operador</option></select></div><div class="form-group"><label>Quantidade</label><input type="number" id="quantidade" class="form-control" min="1" value="1" required></div><div class="form-group"><label>Data Início</label><input type="date" id="dataInicio" class="form-control" required></div><div class="form-group"><label>Observações</label><textarea id="observacoes" class="form-control" rows="3"></textarea></div><div class="form-actions"><button type="button" class="btn-small" onclick="fecharModal('modalNovaRequisicao')">Cancelar</button><button type="submit" class="btn-small btn-approve">Enviar</button></div></form></div></div></div>
+    <div class="modal" id="modalNovaRequisicao"><div class="modal-content"><div class="modal-header"><h2>Nova Requisição</h2><span class="close-modal" onclick="fecharModal('modalNovaRequisicao')">&times;</span></div><div class="modal-body"><form id="formNovaRequisicao"><input type="hidden" id="tipoRequisicao"><div id="campoSubstituicao" style="display:none;"><div style="background:var(--primary-light);padding:15px;margin-bottom:15px;border-radius:8px;"><h4>📌 Dados da Substituição</h4><div class="form-group"><label>Colaborador a Substituir</label><input type="text" id="colaboradorSubstituir" class="form-control"></div><div class="form-group"><label>Motivo da Substituição</label><select id="motivoSubstituicao" class="form-control"><option value="">Selecione</option><option value="Demissão">Demissão</option><option value="Pedido de Demissão">Pedido de Demissão</option><option value="Aposentadoria">Aposentadoria</option><option value="Transferência">Transferência</option></select></div></div></div><div id="campoReforco" style="display:none;"><div style="background:var(--primary-light);padding:15px;margin-bottom:15px;border-radius:8px;"><h4>📌 Dados do Reforço</h4><div class="form-group"><label>Justificativa do Reforço</label><textarea id="justificativaReforco" class="form-control" rows="3"></textarea></div></div></div><div class="form-group"><label>Função</label><input type="text" id="funcao" class="form-control" required></div><div class="form-group"><label>Direção</label><select id="direcao" class="form-control" required><option value="">Selecione</option><option value="Direção Geral">Direção Geral</option><option value="Capital Humano">Capital Humano</option><option value="Direção Comercial">Direção Comercial</option><option value="Direção Financeira">Direção Financeira</option><option value="Direção de Marketing">Direção de Marketing</option><option value="Direção de Sistemas de Informação">Direção de Sistemas de Informação</option><option value="Direção de Manutenção">Direção de Manutenção</option><option value="Direção de Segurança">Direção de Segurança</option><option value="Direção de HSA/HST">Direção de HSA/HST</option><option value="Direção de Visual Merchandising">Direção de Visual Merchandising</option><option value="Direção de Projetos Restauração">Direção de Projetos Restauração</option><option value="Direção de Operações">Direção de Operações</option><option value="Direção de Controlo de Gestão">Direção de Controlo de Gestão</option><option value="Vendas Corporativas">Vendas Corporativas</option><option value="Loja Talatona">Loja Talatona</option><option value="Loja Kilamba">Loja Kilamba</option><option value="Loja Morro Bento">Loja Morro Bento</option><option value="Loja Nova Vida">Loja Nova Vida</option><option value="Loja Lubango">Loja Lubango</option><option value="Loja Cacuaco">Loja Cacuaco</option><option value="Loja Huambo">Loja Huambo</option><option value="Loja Lobito">Loja Lobito</option><option value="Loja Mártires">Loja Mártires</option><option value="Loja Combatentes">Loja Combatentes</option><option value="Loja Benguela">Loja Benguela</option><option value="Loja Viana">Loja Viana</option><option value="Loja Saurimo">Loja Saurimo</option><option value="Loja Gika">Loja Gika</option><option value="Armazém ZEE">Armazém ZEE</option><option value="Armazém SONIT">Armazém SONIT</option></select></div><div class="form-group"><label>Área / Categoria</label><select id="area" class="form-control" required><option value="">Selecione</option><option value="Director Geral">Director Geral</option><option value="Director Executivo">Director Executivo</option><option value="Director">Director</option><option value="Gerente de Loja">Gerente de Loja</option><option value="Gestor Sénior">Gestor Sénior</option><option value="Gestor">Gestor</option><option value="Técnico Sénior">Técnico Sénior</option><option value="Técnico">Técnico</option><option value="Chefe de Departamento">Chefe de Departamento</option><option value="Chefe de Secção">Chefe de Secção</option><option value="Coordenador">Coordenador</option><option value="Analista">Analista</option><option value="Administrativo">Administrativo</option><option value="Operador">Operador</option></select></div><div class="form-group"><label>Quantidade</label><input type="number" id="quantidade" class="form-control" min="1" value="1" required></div><div class="form-group"><label>Data Início</label><input type="date" id="dataInicio" class="form-control" required></div><div class="form-group"><label>Observações</label><textarea id="observacoes" class="form-control" rows="3"></textarea></div><div class="form-actions"><button type="button" class="btn-small" onclick="fecharModal('modalNovaRequisicao')">Cancelar</button><button type="submit" class="btn-small btn-approve">Enviar</button></div></form></div></div></div>
     <div class="modal" id="modalComentario"><div class="modal-content"><div class="modal-header"><h2>Comentário</h2><span class="close-modal" onclick="fecharModal('modalComentario')">&times;</span></div><div class="modal-body"><form id="formComentario"><input type="hidden" id="comentarioRequisicaoId"><input type="hidden" id="comentarioAcao"><div class="form-group"><label>Comentário</label><textarea id="comentario" class="form-control" rows="4" required></textarea></div><div class="form-actions"><button type="button" class="btn-small" onclick="fecharModal('modalComentario')">Cancelar</button><button type="submit" class="btn-small btn-approve">Confirmar</button></div></form></div></div></div>
     <div class="modal" id="modalVisualizar"><div class="modal-content"><div class="modal-header"><h2>Visualizar Requisição</h2><span class="close-modal" onclick="fecharModal('modalVisualizar')">&times;</span></div><div class="modal-body"><div id="conteudoModal"></div></div></div></div>
+    <div class="modal" id="modalNovaManutencao"><div class="modal-content"><div class="modal-header"><h2>Nova Manutenção</h2><span class="close-modal" onclick="fecharModal('modalNovaManutencao')">&times;</span></div><div class="modal-body"><form id="formNovaManutencao"><div class="form-group"><label>Título</label><input type="text" id="tituloManutencao" class="form-control" required></div><div class="form-group"><label>Tipo</label><select id="tipoManutencao" class="form-control" required><option value="">Selecione</option><option value="preventiva">Preventiva</option><option value="correctiva">Correctiva</option></select></div><div class="form-group"><label>Área</label><select id="areaManutencao" class="form-control" required><option value="">Selecione</option><option value="Direção Geral">Direção Geral</option><option value="Capital Humano">Capital Humano</option><option value="Direção Comercial">Direção Comercial</option><option value="Direção Financeira">Direção Financeira</option><option value="Loja Talatona">Loja Talatona</option><option value="Loja Kilamba">Loja Kilamba</option><option value="Armazém ZEE">Armazém ZEE</option></select></div><div class="form-group"><label>Descrição</label><textarea id="descricaoManutencao" class="form-control" rows="4" required></textarea></div><div class="form-actions"><button type="button" class="btn-small" onclick="fecharModal('modalNovaManutencao')">Cancelar</button><button type="submit" class="btn-small btn-approve">Enviar</button></div></form></div></div></div>
     <div class="modal" id="modalConfiguracaoInicial"><div class="modal-content"><div class="modal-header"><h2>Configuração Microsoft 365</h2><span class="close-modal" onclick="fecharModal('modalConfiguracaoInicial')">&times;</span></div><div class="modal-body"><p>Digite o Client ID da aplicação registada no Azure:</p><div class="form-group"><label>Client ID:</label><input type="text" id="configClientId" class="form-control" placeholder="Cole o Client ID aqui" value="3df93492-9d7b-4fa0-bbb3-cbe17aa86096"></div><div class="form-actions"><button class="btn-primary" onclick="salvarConfiguracaoMicrosoft()">Salvar e Continuar</button></div></div></div></div>
 
     <script>
@@ -206,6 +219,25 @@
             'aleixo.francisco@accordgrouplda.com': 'Gerente de Loja'
         };
 
+        // TODAS AS DIREÇÕES, LOJAS E ARMAZÉNS
+        const todasDirecoes = [
+            "Direção Geral", "Capital Humano", "Direção Comercial", "Direção Financeira",
+            "Direção de Marketing", "Direção de Sistemas de Informação", "Direção de Manutenção",
+            "Direção de Segurança", "Direção de HSA/HST", "Direção de Visual Merchandising",
+            "Direção de Projetos Restauração", "Direção de Operações", "Direção de Controlo de Gestão",
+            "Vendas Corporativas", "Loja Talatona", "Loja Kilamba", "Loja Morro Bento",
+            "Loja Nova Vida", "Loja Lubango", "Loja Cacuaco", "Loja Huambo", "Loja Lobito",
+            "Loja Mártires", "Loja Combatentes", "Loja Benguela", "Loja Viana", "Loja Saurimo",
+            "Loja Gika", "Armazém ZEE", "Armazém SONIT"
+        ];
+
+        const todasCategorias = [
+            "Director Geral", "Director Executivo", "Director", "Gerente de Loja",
+            "Gestor Sénior", "Gestor", "Técnico Sénior", "Técnico",
+            "Chefe de Departamento", "Chefe de Secção", "Coordenador",
+            "Analista", "Administrativo", "Operador"
+        ];
+
         // CONFIGURAÇÃO DO SHAREPOINT
         const SHAREPOINT_CONFIG = {
             siteUrl: "https://accordgroupslda.sharepoint.com/sites/SIR",
@@ -217,6 +249,7 @@
         let account = null;
         let usuarioAtual = null;
         let requisicoes = [];
+        let requisicoesManutencao = [];
         let historicoEmails = [];
         let estado = { paginaAtual: 1, itensPorPagina: 10, filtrosAtivos: { status: null } };
         let requisicoesFiltradas = [];
@@ -261,8 +294,6 @@
             showLoading();
             try {
                 const token = await getAccessTokenForSharePoint();
-                
-                // Obter o ID do site
                 const siteUrlEncoded = encodeURIComponent(SHAREPOINT_CONFIG.siteUrl);
                 const siteResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteUrlEncoded}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -270,7 +301,6 @@
                 const siteData = await siteResponse.json();
                 SHAREPOINT_CONFIG.siteId = siteData.id;
                 
-                // Obter items da lista
                 const listResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${SHAREPOINT_CONFIG.siteId}/lists/${SHAREPOINT_CONFIG.listName}/items?expand=fields`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -299,15 +329,13 @@
                             historico: []
                         };
                     });
-                    console.log(`📂 Carregadas ${requisicoes.length} requisições do SharePoint`);
                     mostrarNotificacao(`Carregadas ${requisicoes.length} requisições do SharePoint`, 'success');
                 } else {
-                    console.log('📂 Nenhuma requisição encontrada no SharePoint');
                     requisicoes = [];
                 }
             } catch (error) {
                 console.error('Erro ao carregar do SharePoint:', error);
-                mostrarNotificacao('Erro ao carregar dados do SharePoint. Verifique as permissões.', 'error');
+                mostrarNotificacao('Erro ao carregar dados do SharePoint', 'error');
                 requisicoes = [];
             } finally {
                 hideLoading();
@@ -320,7 +348,6 @@
         async function salvarRequisicaoNoSharePoint(req) {
             try {
                 const token = await getAccessTokenForSharePoint();
-                
                 const siteUrlEncoded = encodeURIComponent(SHAREPOINT_CONFIG.siteUrl);
                 const siteResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteUrlEncoded}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -328,13 +355,9 @@
                 const siteData = await siteResponse.json();
                 const siteId = siteData.id;
                 
-                // Criar item na lista do SharePoint
                 const createResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         fields: {
                             "Codigo": req.codigo,
@@ -359,18 +382,12 @@
                 if (createResponse.ok) {
                     const newItem = await createResponse.json();
                     req.id = newItem.id;
-                    console.log('✅ Requisição salva no SharePoint:', req.codigo);
                     mostrarNotificacao(`Requisição ${req.codigo} salva no SharePoint!`, 'success');
                     return true;
-                } else {
-                    const error = await createResponse.text();
-                    console.error('Erro ao salvar no SharePoint:', error);
-                    mostrarNotificacao('Erro ao salvar no SharePoint', 'error');
-                    return false;
                 }
+                return false;
             } catch (error) {
                 console.error('Erro ao salvar no SharePoint:', error);
-                mostrarNotificacao('Erro ao salvar no SharePoint', 'error');
                 return false;
             }
         }
@@ -378,7 +395,6 @@
         async function atualizarRequisicaoNoSharePoint(req) {
             try {
                 const token = await getAccessTokenForSharePoint();
-                
                 const siteUrlEncoded = encodeURIComponent(SHAREPOINT_CONFIG.siteUrl);
                 const siteResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteUrlEncoded}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -386,24 +402,12 @@
                 const siteData = await siteResponse.json();
                 const siteId = siteData.id;
                 
-                const updateResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${req.id}/fields`, {
+                await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${req.id}/fields`, {
                     method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        "Status": req.status
-                    })
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ "Status": req.status })
                 });
-                
-                if (updateResponse.ok) {
-                    console.log('✅ Requisição atualizada no SharePoint:', req.codigo, '- Novo status:', req.status);
-                    return true;
-                } else {
-                    console.error('Erro ao atualizar no SharePoint');
-                    return false;
-                }
+                return true;
             } catch (error) {
                 console.error('Erro ao atualizar no SharePoint:', error);
                 return false;
@@ -435,11 +439,8 @@
                     if (response.ok) {
                         this.logEmail(to, subject, 'enviado');
                         return { success: true };
-                    } else {
-                        const error = await response.text();
-                        this.logEmail(to, subject, 'erro', error);
-                        return { success: false, error };
                     }
+                    return { success: false };
                 } catch (error) {
                     this.logEmail(to, subject, 'erro', error.message);
                     return { success: false, error: error.message };
@@ -452,8 +453,7 @@
                     destinatario: to,
                     assunto: subject,
                     data: new Date().toISOString(),
-                    status: status,
-                    erro: error
+                    status: status
                 };
                 historicoEmails.unshift(emailLog);
                 if (historicoEmails.length > 50) historicoEmails.pop();
@@ -462,48 +462,23 @@
 
             templateEmailFinal(req, aprovador, comentario) {
                 return `<div style="font-family: Arial; max-width: 600px; margin: 0 auto;">
-                    <div style="background: #4CAF50; padding: 20px; text-align: center; color: white;">
-                        <h2>✅ REQUISIÇÃO APROVADA</h2>
-                    </div>
+                    <div style="background: #4CAF50; padding: 20px; text-align: center; color: white;"><h2>✅ REQUISIÇÃO APROVADA</h2></div>
                     <div style="padding: 20px; border: 1px solid #ddd;">
-                        <p><strong>Código:</strong> ${req.codigo}</p>
-                        <p><strong>Função:</strong> ${req.funcao}</p>
-                        <p><strong>Direção:</strong> ${req.direcao}</p>
-                        <p><strong>Quantidade:</strong> ${req.quantidade} vaga(s)</p>
+                        <p><strong>Código:</strong> ${req.codigo}</p><p><strong>Função:</strong> ${req.funcao}</p>
+                        <p><strong>Direção:</strong> ${req.direcao}</p><p><strong>Quantidade:</strong> ${req.quantidade} vaga(s)</p>
                         <p><strong>Aprovado por:</strong> ${aprovador}</p>
-                        ${comentario ? `<div style="background: #e8f5e9; padding: 15px; margin-top: 15px;"><strong>Comentário:</strong><br>${comentario}</div>` : ''}
-                        <hr style="margin: 20px 0;">
-                        <p style="font-size: 12px; color: #666;">Este é um e-mail automático do Sistema Kero SIR.</p>
+                        ${comentario ? `<div style="background: #e8f5e9; padding: 15px;"><strong>Comentário:</strong><br>${comentario}</div>` : ''}
                     </div>
                 </div>`;
             }
 
-            templateNotificacao(req, fase, responsavel, comentario) {
+            templateNotificacao(req, fase, responsavel) {
                 const faseNome = { 'em_validacao_financas': 'Controlo de Gestão', 'em_validacao_director': 'Direção Geral' };
                 return `<div style="font-family: Arial; max-width: 600px;">
-                    <div style="background: #2196F3; padding: 20px; text-align: center; color: white;">
-                        <h2>📋 Atualização de Validação</h2>
-                    </div>
+                    <div style="background: #2196F3; padding: 20px; text-align: center; color: white;"><h2>📋 Atualização de Validação</h2></div>
                     <div style="padding: 20px; border: 1px solid #ddd;">
-                        <p><strong>Código:</strong> ${req.codigo}</p>
-                        <p><strong>Função:</strong> ${req.funcao}</p>
-                        <p><strong>Nova Fase:</strong> ${faseNome[fase] || fase}</p>
-                        <p><strong>Aprovado por:</strong> ${responsavel}</p>
-                        ${comentario ? `<div style="background: #e3f2fd; padding: 15px; margin-top: 15px;"><strong>Comentário:</strong><br>${comentario}</div>` : ''}
-                    </div>
-                </div>`;
-            }
-
-            templateRejeicao(req, rejeitadoPor, comentario) {
-                return `<div style="font-family: Arial; max-width: 600px;">
-                    <div style="background: #f44336; padding: 20px; text-align: center; color: white;">
-                        <h2>❌ REQUISIÇÃO REJEITADA</h2>
-                    </div>
-                    <div style="padding: 20px; border: 1px solid #ddd;">
-                        <p><strong>Código:</strong> ${req.codigo}</p>
-                        <p><strong>Função:</strong> ${req.funcao}</p>
-                        <p><strong>Rejeitado por:</strong> ${rejeitadoPor}</p>
-                        ${comentario ? `<div style="background: #ffebee; padding: 15px; margin-top: 15px;"><strong>Motivo:</strong><br>${comentario}</div>` : ''}
+                        <p><strong>Código:</strong> ${req.codigo}</p><p><strong>Função:</strong> ${req.funcao}</p>
+                        <p><strong>Nova Fase:</strong> ${faseNome[fase] || fase}</p><p><strong>Aprovado por:</strong> ${responsavel}</p>
                     </div>
                 </div>`;
             }
@@ -575,7 +550,6 @@
                 
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('mainSystem').style.display = 'block';
-                controlarMenusPorPerfil();
                 mostrarSelecaoModulos();
                 mostrarNotificacao(`Bem-vindo(a), ${usuarioAtual.nome}!`, 'success');
             } catch (error) {
@@ -611,7 +585,6 @@
                             document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
                             document.getElementById('loginScreen').style.display = 'none';
                             document.getElementById('mainSystem').style.display = 'block';
-                            controlarMenusPorPerfil();
                             mostrarSelecaoModulos();
                             return;
                         }
@@ -643,52 +616,25 @@
             mostrarNotificacao('Sessão encerrada!', 'success');
         }
 
-        function controlarMenusPorPerfil() {}
-
         // ============================================
         // FUNÇÃO DE ENVIO DE EMAIL DO WORKFLOW
         // ============================================
         async function enviarEmailWorkflow(tipo, dados) {
             if (!emailService) return;
-            
             const emailsNotificacao = ['marcio.carlos@accordgrouplda.com', 'paulo.silva@accordgrouplda.com'];
             const req = dados.req;
             
             if (tipo === 'aprovacao_final') {
                 const emailSolicitante = req.criadoPorEmail;
                 const emailMario = 'mario.arao@accordgrouplda.com';
-                const destinatarios = [...emailsNotificacao, emailMario, emailSolicitante];
-                const destinatariosUnicos = [...new Set(destinatarios)];
-                
+                const destinatarios = [...new Set([...emailsNotificacao, emailMario, emailSolicitante])];
                 const assunto = `✅ REQUISIÇÃO APROVADA: ${req.codigo} - ${req.funcao}`;
                 const conteudo = emailService.templateEmailFinal(req, dados.aprovador, dados.comentario);
-                
-                for (const email of destinatariosUnicos) {
-                    if (email) await emailService.sendEmail(email, assunto, conteudo);
-                }
-                mostrarNotificacao(`Email final enviado para ${destinatariosUnicos.length} destinatários`, 'success');
-            } 
-            else if (tipo === 'andamento') {
+                for (const email of destinatarios) if (email) await emailService.sendEmail(email, assunto, conteudo);
+            } else if (tipo === 'andamento') {
                 const assunto = `📋 Atualização: ${req.codigo} - Nova fase`;
-                const conteudo = emailService.templateNotificacao(req, dados.novoStatus, dados.responsavel, dados.comentario);
-                
-                for (const email of emailsNotificacao) {
-                    await emailService.sendEmail(email, assunto, conteudo);
-                }
-            }
-            else if (tipo === 'rejeicao') {
-                const emailSolicitante = req.criadoPorEmail;
-                const emailMario = 'mario.arao@accordgrouplda.com';
-                const destinatarios = [...emailsNotificacao, emailMario, emailSolicitante];
-                const destinatariosUnicos = [...new Set(destinatarios)];
-                
-                const assunto = `❌ REQUISIÇÃO REJEITADA: ${req.codigo} - ${req.funcao}`;
-                const conteudo = emailService.templateRejeicao(req, dados.rejeitadoPor, dados.comentario);
-                
-                for (const email of destinatariosUnicos) {
-                    if (email) await emailService.sendEmail(email, assunto, conteudo);
-                }
-                mostrarNotificacao(`Email de rejeição enviado`, 'warning');
+                const conteudo = emailService.templateNotificacao(req, dados.novoStatus, dados.responsavel);
+                for (const email of emailsNotificacao) await emailService.sendEmail(email, assunto, conteudo);
             }
         }
 
@@ -699,12 +645,12 @@
                 list.innerHTML = '<div style="padding:20px;text-align:center;">Nenhum email enviado ainda</div>';
                 return;
             }
-            list.innerHTML = historicoEmails.map(e => `
+            list.innerHTML = historicoEmails.slice(0, 20).map(e => `
                 <div class="email-item">
                     <div class="email-subject"><i class="fas fa-envelope"></i> ${e.assunto}</div>
                     <div class="email-recipient"><i class="fas fa-user"></i> Para: ${e.destinatario}</div>
                     <div class="email-time"><i class="fas fa-clock"></i> ${new Date(e.data).toLocaleString('pt-PT')}</div>
-                    <div style="font-size:11px;color:${e.status === 'enviado' ? 'green' : 'red'}">Status: ${e.status === 'enviado' ? '✓ Enviado' : '✗ Erro'}</div>
+                    <div style="font-size:11px;color:${e.status === 'enviado' ? 'green' : 'red'}">${e.status === 'enviado' ? '✓ Enviado' : '✗ Erro'}</div>
                 </div>
             `).join('');
         }
@@ -715,13 +661,19 @@
         function mostrarSelecaoModulos() {
             document.getElementById('moduleSelectionSection').style.display = 'block';
             document.getElementById('recrutamentoSection').style.display = 'none';
+            document.getElementById('manutencaoSection').style.display = 'none';
         }
 
         function selecionarModulo(mod) {
             document.getElementById('moduleSelectionSection').style.display = 'none';
             if (mod === 'recrutamento') {
                 document.getElementById('recrutamentoSection').style.display = 'block';
+                document.getElementById('manutencaoSection').style.display = 'none';
                 carregarRequisicoesDoSharePoint();
+            } else if (mod === 'manutencao') {
+                document.getElementById('recrutamentoSection').style.display = 'none';
+                document.getElementById('manutencaoSection').style.display = 'block';
+                carregarRequisicoesManutencao();
             }
         }
 
@@ -749,7 +701,7 @@
             const itens = requisicoesFiltradas.slice(inicio, inicio + estado.itensPorPagina);
             
             if (itens.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhuma requisição encontrada</td></tr>';
+                tbody.innerHTML = ' encaminhar<td colspan="6" style="text-align:center;">Nenhuma requisição encontrada</td> </tr>';
                 return;
             }
             
@@ -805,13 +757,13 @@
                 if (req.status === 'em_validacao_rh') {
                     req.status = 'em_validacao_financas';
                     await atualizarRequisicaoNoSharePoint(req);
-                    await enviarEmailWorkflow('andamento', { req: req, novoStatus: 'em_validacao_financas', responsavel: usuarioAtual.nome, comentario: coment });
+                    await enviarEmailWorkflow('andamento', { req: req, novoStatus: 'em_validacao_financas', responsavel: usuarioAtual.nome });
                     mostrarNotificacao(`Requisição ${req.codigo} aprovada pelo RH! Segue para Controlo de Gestão.`, 'success');
                 }
                 else if (req.status === 'em_validacao_financas') {
                     req.status = 'em_validacao_director';
                     await atualizarRequisicaoNoSharePoint(req);
-                    await enviarEmailWorkflow('andamento', { req: req, novoStatus: 'em_validacao_director', responsavel: usuarioAtual.nome, comentario: coment });
+                    await enviarEmailWorkflow('andamento', { req: req, novoStatus: 'em_validacao_director', responsavel: usuarioAtual.nome });
                     mostrarNotificacao(`Requisição ${req.codigo} aprovada pelo CG! Segue para Direção Geral.`, 'success');
                 }
                 else if (req.status === 'em_validacao_director') {
@@ -823,11 +775,9 @@
             } else if (acao === 'rejeitar') {
                 req.status = 'rejeitada';
                 await atualizarRequisicaoNoSharePoint(req);
-                await enviarEmailWorkflow('rejeicao', { req: req, rejeitadoPor: usuarioAtual.nome, comentario: coment });
                 mostrarNotificacao(`Requisição ${req.codigo} REJEITADA!`, 'warning');
             }
             
-            req.historico.push({ fase: acao, data: new Date().toISOString(), responsavel: usuarioAtual.nome, comentario: coment });
             fecharModal('modalComentario');
             filtrarRequisicoes();
             carregarAprovacoes();
@@ -867,9 +817,7 @@
             
             tbody.innerHTML = pendentes.map(r => `
                 <tr onclick="visualizarRequisicao(${r.id})">
-                    <td>${r.codigo}</td>
-                    <td>${r.funcao}</td>
-                    <td>${r.direcao}</td>
+                    <td>${r.codigo}</td><td>${r.funcao}</td><td>${r.direcao}</td>
                     <td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td>
                     <td>${getBotoesAcao(r)}</td>
                 </tr>
@@ -891,16 +839,29 @@
         }
 
         // ============================================
+        // MANUTENÇÃO
+        // ============================================
+        function carregarRequisicoesManutencao() {
+            const tbody = document.getElementById('corpoTabelaManutencao');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhuma requisição de manutenção</td></tr>';
+        }
+
+        document.getElementById('btnNovaManutencao')?.addEventListener('click', () => abrirModal('modalNovaManutencao'));
+        document.getElementById('formNovaManutencao')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            mostrarNotificacao('Funcionalidade em desenvolvimento', 'info');
+            fecharModal('modalNovaManutencao');
+        });
+
+        // ============================================
         // CRIAÇÃO DE REQUISIÇÕES
         // ============================================
         function selecionarTipo(tipo) {
             document.getElementById('tipoRequisicao').value = tipo;
             fecharModal('modalTipo');
             abrirModal('modalNovaRequisicao');
-            const campoSubst = document.getElementById('campoSubstituicao');
-            const campoRef = document.getElementById('campoReforco');
-            if (campoSubst) campoSubst.style.display = tipo === 'substituicao' ? 'block' : 'none';
-            if (campoRef) campoRef.style.display = tipo === 'reforco_quadro' ? 'block' : 'none';
+            document.getElementById('campoSubstituicao').style.display = tipo === 'substituicao' ? 'block' : 'none';
+            document.getElementById('campoReforco').style.display = tipo === 'reforco_quadro' ? 'block' : 'none';
         }
 
         async function salvarRequisicao(e) {
@@ -949,7 +910,7 @@
                 filtrarRequisicoes();
                 carregarAprovacoes();
                 atualizarKPIs();
-                mostrarNotificacao(`Requisição ${novoCodigo} criada com sucesso! Aguardando validação do RH.`, 'success');
+                mostrarNotificacao(`Requisição ${novoCodigo} criada com sucesso!`, 'success');
             }
         }
 
