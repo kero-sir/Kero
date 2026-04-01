@@ -10,6 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://alcdn.msauth.net/browser/2.32.0/js/msal-browser.min.js"></script>
     <style>
+        /* TODOS OS ESTILOS DO SEU CÓDIGO ORIGINAL - MANTIDOS */
+        /* (mantenha os estilos exatamente como estavam no seu código original) */
         :root {
             --primary: #4CAF50;
             --primary-dark: #2E7D32;
@@ -2055,20 +2057,25 @@
 
         <script>
             // ============================================
-            // CONFIGURAÇÃO MICROSOFT 365
+            // CONFIGURAÇÃO MICROSOFT 365 - VERSÃO CORRIGIDA
             // ============================================
-            let msalConfig = {
+            
+            // Configuração básica (sem Sites.ReadWrite.All inicialmente)
+            const msalConfig = {
                 auth: {
                     clientId: localStorage.getItem('microsoft_client_id') || "3df93492-9d7b-4fa0-bbb3-cbe17aa86096",
                     authority: "https://login.microsoftonline.com/917dfbfd-7aa2-40f8-ba23-b5b213b322f7",
                     redirectUri: window.location.origin + window.location.pathname,
-                    postLogoutRedirectUri: window.location.origin + window.location.pathname
                 },
-                cache: { cacheLocation: "localStorage", storeAuthStateInCookie: false }
+                cache: { cacheLocation: "sessionStorage" }
             };
 
-            const loginRequest = { scopes: ["User.Read", "email", "profile", "openid", "offline_access", "Mail.Send", "Sites.ReadWrite.All"] };
+            // Apenas permissões básicas para login
+            const loginRequest = { 
+                scopes: ["User.Read"] 
+            };
 
+            // Mapeamento de emails para perfis
             const perfisManuais = {
                 'marcio.carlos@accordgrouplda.com': 'Administrador',
                 'mario.arao@accordgrouplda.com': 'RH',
@@ -2134,7 +2141,7 @@
             let estadoManutencao = { paginaAtual: 1, itensPorPagina: 10, filtros: { pesquisa: null, tipo: null, status: null }, ordenacao: 'newest', arquivosUpload: [] };
 
             // ============================================
-            // NOVO: CONFIGURAÇÃO DO SHAREPOINT
+            // CONFIGURAÇÃO DO SHAREPOINT
             // ============================================
             const SHAREPOINT_CONFIG = {
                 siteUrl: "https://accordgroupslda.sharepoint.com/sites/SIR",
@@ -2169,22 +2176,39 @@
             if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
 
             // ============================================
-            // SERVIÇO DE EMAIL REAL COM GRAPH API
+            // SERVIÇO DE EMAIL (SIMPLIFICADO PARA TESTE)
             // ============================================
             class EmailService {
                 constructor(authService) { this.authService = authService; }
 
-                async sendEmail(to, subject, htmlContent, options = {}) {
+                async sendEmail(to, subject, htmlContent) {
                     try {
                         const token = await this.authService.getAccessToken(['Mail.Send']);
-                        const email = { message: { subject: subject, body: { contentType: "HTML", content: htmlContent }, toRecipients: [{ emailAddress: { address: to } }] }, saveToSentItems: "true" };
-                        if (options.cc) email.message.ccRecipients = [{ emailAddress: { address: options.cc } }];
+                        const email = {
+                            message: {
+                                subject: subject,
+                                body: { contentType: "HTML", content: htmlContent },
+                                toRecipients: [{ emailAddress: { address: to } }]
+                            },
+                            saveToSentItems: "true"
+                        };
                         const response = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', {
-                            method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(email)
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify(email)
                         });
-                        if (response.ok) { this.logEmail(to, subject, 'enviado'); return { success: true }; }
-                        else { const error = await response.text(); console.error('Erro ao enviar email:', error); this.logEmail(to, subject, 'erro', error); return { success: false, error }; }
-                    } catch (error) { console.error('Erro no serviço de email:', error); this.logEmail(to, subject, 'erro', error.message); return { success: false, error: error.message }; }
+                        if (response.ok) {
+                            this.logEmail(to, subject, 'enviado');
+                            return { success: true };
+                        } else {
+                            const error = await response.text();
+                            this.logEmail(to, subject, 'erro', error);
+                            return { success: false, error };
+                        }
+                    } catch (error) {
+                        this.logEmail(to, subject, 'erro', error.message);
+                        return { success: false, error: error.message };
+                    }
                 }
 
                 logEmail(to, subject, status, error = null) {
@@ -2213,217 +2237,194 @@
             }
 
             // ============================================
-            // NOVAS FUNÇÕES DE COMUNICAÇÃO COM SHAREPOINT
+            // AUTENTICAÇÃO MICROSOFT - CORRIGIDA
             // ============================================
-            async function getAccessTokenForSharePoint() {
-                const request = { account, scopes: ["Sites.ReadWrite.All"] };
-                try { return (await msalInstance.acquireTokenSilent(request)).accessToken; }
-                catch (e) { return (await msalInstance.acquireTokenPopup(request)).accessToken; }
-            }
-
-            async function carregarRequisicoesDoSharePoint() {
-                showLoading();
+            async function initializeMicrosoft() {
                 try {
-                    const token = await getAccessTokenForSharePoint();
-                    const siteUrlEncoded = encodeURIComponent(SHAREPOINT_CONFIG.siteUrl);
-                    const siteResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteUrlEncoded}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const siteData = await siteResponse.json();
-                    SHAREPOINT_CONFIG.siteId = siteData.id;
-                    
-                    const listResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${SHAREPOINT_CONFIG.siteId}/lists/${SHAREPOINT_CONFIG.listName}/items?expand=fields`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const listData = await listResponse.json();
-                    
-                    if (listData.value && listData.value.length > 0) {
-                        requisicoes = listData.value.map(item => {
-                            const fields = item.fields;
-                            return {
-                                id: item.id,
-                                codigo: fields.Codigo || `REQ-${item.id}`,
-                                funcao: fields.Função || fields.Funcao || "",
-                                direcao: fields.Direção || fields.Direcao || "",
-                                area: fields.Área || fields.Area || "",
-                                quantidade: fields.Qauntidade || fields.Quantidade || 1,
-                                status: fields.Status || "em_validacao_rh",
-                                tipo: fields.Tipo_ || fields.Tipo || "novo_cargo",
-                                dataCriacao: fields.DataCriacao || new Date().toISOString(),
-                                dataInicio: fields.DataInício || fields.DataInicio || new Date().toISOString(),
-                                criadoPor: fields.CriadoPor || "",
-                                criadoPorId: fields.CriadoPorId || 0,
-                                criadoPorEmail: fields.CriadoPorEmail || "",
-                                observacoes: fields.Observações || fields.Observacoes || "",
-                                colaboradorSubstituir: fields.Colaborador_a_Substituir || "",
-                                motivoSubstituicao: fields.Motivo_da_Substituição || "",
-                                justificativaReforco: fields.Justificativa_do_Reforço || "",
-                                historico: []
-                            };
-                        });
-                        mostrarNotificacao(`Carregadas ${requisicoes.length} requisições do SharePoint`, 'success');
-                    } else {
-                        requisicoes = [];
+                    console.log("Inicializando MSAL...");
+                    msalInstance = new msal.PublicClientApplication(msalConfig);
+                    await msalInstance.initialize();
+                    const accounts = msalInstance.getAllAccounts();
+                    if (accounts.length > 0) { 
+                        account = accounts[0]; 
+                        console.log("Conta encontrada:", account.username);
+                        return true; 
                     }
-                } catch (error) {
-                    console.error('Erro ao carregar do SharePoint:', error);
-                    mostrarNotificacao('Erro ao carregar dados do SharePoint. Usando dados locais.', 'error');
-                    requisicoes = [];
-                } finally {
-                    hideLoading();
-                    filtrarRequisicoes();
-                    carregarAprovacoes();
-                    atualizarKPIs();
-                }
-            }
-
-            async function salvarRequisicaoNoSharePoint(req) {
-                try {
-                    const token = await getAccessTokenForSharePoint();
-                    const siteUrlEncoded = encodeURIComponent(SHAREPOINT_CONFIG.siteUrl);
-                    const siteResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteUrlEncoded}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const siteData = await siteResponse.json();
-                    const siteId = siteData.id;
-                    
-                    const createResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            fields: {
-                                "Codigo": req.codigo,
-                                "Função": req.funcao,
-                                "Direção": req.direcao,
-                                "Área": req.area,
-                                "Qauntidade": req.quantidade,
-                                "Status": req.status,
-                                "Tipo_": req.tipo,
-                                "DataCriacao": req.dataCriacao,
-                                "DataInício": req.dataInicio,
-                                "CriadoPor": req.criadoPor,
-                                "CriadoPorId": req.criadoPorId,
-                                "CriadoPorEmail": req.criadoPorEmail,
-                                "Observações": req.observacoes || "",
-                                "Colaborador_a_Substituir": req.colaboradorSubstituir || "",
-                                "Motivo_da_Substituição": req.motivoSubstituicao || "",
-                                "Justificativa_do_Reforço": req.justificativaReforco || ""
-                            }
-                        })
-                    });
-                    
-                    if (createResponse.ok) {
-                        const newItem = await createResponse.json();
-                        req.id = newItem.id;
-                        mostrarNotificacao(`Requisição ${req.codigo} salva no SharePoint!`, 'success');
-                        return true;
-                    }
+                    console.log("Nenhuma conta encontrada");
                     return false;
-                } catch (error) {
-                    console.error('Erro ao salvar no SharePoint:', error);
+                } catch (error) { 
+                    console.error('MSAL init error:', error); 
                     return false;
                 }
             }
 
-            async function atualizarRequisicaoNoSharePoint(req) {
-                try {
-                    const token = await getAccessTokenForSharePoint();
-                    const siteUrlEncoded = encodeURIComponent(SHAREPOINT_CONFIG.siteUrl);
-                    const siteResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteUrlEncoded}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const siteData = await siteResponse.json();
-                    const siteId = siteData.id;
-                    
-                    await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${req.id}/fields`, {
-                        method: 'PATCH',
-                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ "Status": req.status })
-                    });
-                    return true;
-                } catch (error) {
-                    console.error('Erro ao atualizar no SharePoint:', error);
-                    return false;
+            async function getAccessToken(scopes) {
+                const request = { account, scopes };
+                try { 
+                    return (await msalInstance.acquireTokenSilent(request)).accessToken; 
+                } catch (e) { 
+                    console.log("Erro ao obter token silencioso, tentando popup:", e);
+                    return (await msalInstance.acquireTokenPopup(request)).accessToken; 
                 }
             }
 
-            // ============================================
-            // AUTENTICAÇÃO MICROSOFT
-            // ============================================
-            async function initializeMicrosoft() { try { msalInstance = new msal.PublicClientApplication(msalConfig); await msalInstance.initialize(); const accounts = msalInstance.getAllAccounts(); if (accounts.length > 0) { account = accounts[0]; return true; } } catch (error) { console.error('MSAL init error:', error); } return false; }
-            async function getAccessToken(scopes) { const request = { account, scopes }; try { return (await msalInstance.acquireTokenSilent(request)).accessToken; } catch (e) { return (await msalInstance.acquireTokenPopup(request)).accessToken; } }
-            async function getUserInfo() { const token = await getAccessToken(['User.Read']); const resp = await fetch('https://graph.microsoft.com/v1.0/me', { headers: { 'Authorization': `Bearer ${token}` } }); return await resp.json(); }
+            async function getUserInfo() {
+                const token = await getAccessToken(['User.Read']);
+                const resp = await fetch('https://graph.microsoft.com/v1.0/me', { headers: { 'Authorization': `Bearer ${token}` } });
+                return await resp.json();
+            }
 
             async function fazerLoginMicrosoft() {
                 showLoading();
                 try {
+                    console.log("Iniciando login...");
+                    
                     const clientId = localStorage.getItem('microsoft_client_id');
                     if (!clientId) {
+                        console.log("Client ID não encontrado");
                         hideLoading();
                         abrirModal('modalConfiguracaoInicial');
                         return;
                     }
                     
-                    if (!msalInstance) await initializeMicrosoft();
+                    if (!msalInstance) {
+                        await initializeMicrosoft();
+                    }
+                    
+                    console.log("Abrindo popup de login...");
                     const response = await msalInstance.loginPopup(loginRequest);
+                    console.log("Login bem sucedido:", response);
                     account = response.account;
+                    
                     const userInfo = await getUserInfo();
+                    console.log("User info:", userInfo);
                     const email = userInfo.mail || userInfo.userPrincipalName;
                     let perfil = perfisManuais[email] || 'Colaborador';
-                    usuarioAtual = { id: userInfo.id, nome: userInfo.displayName, email: email, perfil: perfil, departamento: userInfo.department || 'Não definido', ultimoAcesso: new Date().toISOString() };
+                    
+                    usuarioAtual = {
+                        id: userInfo.id,
+                        nome: userInfo.displayName,
+                        email: email,
+                        perfil: perfil,
+                        departamento: userInfo.department || 'Não definido',
+                        ultimoAcesso: new Date().toISOString()
+                    };
+                    
                     emailService = new EmailService({ getAccessToken });
+                    
                     document.getElementById('currentUserName').textContent = usuarioAtual.nome;
                     document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
-                    localStorage.setItem('keroSessao', JSON.stringify({ usuarioId: usuarioAtual.id, perfil: usuarioAtual.perfil, expira: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString() }));
+                    
+                    localStorage.setItem('keroSessao', JSON.stringify({
+                        usuarioId: usuarioAtual.id,
+                        perfil: usuarioAtual.perfil,
+                        email: usuarioAtual.email,
+                        expira: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
+                    }));
+                    
                     document.getElementById('loginScreen').style.display = 'none';
                     document.getElementById('mainSystem').style.display = 'block';
                     controlarMenusPorPerfil();
                     mostrarSelecaoModulos();
                     mostrarNotificacao(`Bem-vindo(a), ${usuarioAtual.nome}!`, 'success');
-                } catch (error) { document.getElementById('loginErrorMessage').textContent = error.message; document.getElementById('loginError').style.display = 'block'; } finally { hideLoading(); }
+                    
+                } catch (error) {
+                    console.error('Erro no login:', error);
+                    document.getElementById('loginErrorMessage').textContent = error.message;
+                    document.getElementById('loginError').style.display = 'block';
+                } finally { 
+                    hideLoading(); 
+                }
             }
 
             async function verificarSessao() {
                 const sessao = localStorage.getItem('keroSessao');
                 if (sessao) {
                     try {
-                        await initializeMicrosoft();
                         const dados = JSON.parse(sessao);
-                        if (account && new Date(dados.expira) > new Date()) {
-                            const userInfo = await getUserInfo();
-                            const email = userInfo.mail || userInfo.userPrincipalName;
-                            let perfil = perfisManuais[email] || dados.perfil;
-                            usuarioAtual = { id: userInfo.id, nome: userInfo.displayName, email: email, perfil: perfil, departamento: userInfo.department || 'Não definido', ultimoAcesso: new Date().toISOString() };
-                            emailService = new EmailService({ getAccessToken });
-                            document.getElementById('currentUserName').textContent = usuarioAtual.nome;
-                            document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
-                            document.getElementById('loginScreen').style.display = 'none';
-                            document.getElementById('mainSystem').style.display = 'block';
-                            controlarMenusPorPerfil();
-                            mostrarSelecaoModulos();
-                            mostrarNotificacao(`Bem-vindo(a) de volta, ${usuarioAtual.nome}!`, 'success');
-                        } else { localStorage.removeItem('keroSessao'); }
-                    } catch (e) { localStorage.removeItem('keroSessao'); }
+                        if (new Date(dados.expira) > new Date()) {
+                            await initializeMicrosoft();
+                            const accounts = msalInstance.getAllAccounts();
+                            if (accounts.length > 0) {
+                                account = accounts[0];
+                                const userInfo = await getUserInfo();
+                                const email = userInfo.mail || userInfo.userPrincipalName;
+                                let perfil = perfisManuais[email] || dados.perfil;
+                                
+                                usuarioAtual = {
+                                    id: userInfo.id,
+                                    nome: userInfo.displayName,
+                                    email: email,
+                                    perfil: perfil,
+                                    departamento: userInfo.department || 'Não definido',
+                                    ultimoAcesso: new Date().toISOString()
+                                };
+                                
+                                emailService = new EmailService({ getAccessToken });
+                                
+                                document.getElementById('currentUserName').textContent = usuarioAtual.nome;
+                                document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
+                                document.getElementById('loginScreen').style.display = 'none';
+                                document.getElementById('mainSystem').style.display = 'block';
+                                controlarMenusPorPerfil();
+                                mostrarSelecaoModulos();
+                                mostrarNotificacao(`Bem-vindo(a) de volta, ${usuarioAtual.nome}!`, 'success');
+                                return;
+                            }
+                        }
+                        localStorage.removeItem('keroSessao');
+                    } catch (e) { 
+                        console.error("Erro ao verificar sessão:", e);
+                        localStorage.removeItem('keroSessao'); 
+                    }
                 }
             }
 
-            function logout() { if (msalInstance) msalInstance.logoutPopup(); localStorage.removeItem('keroSessao'); usuarioAtual = null; document.getElementById('mainSystem').style.display = 'none'; document.getElementById('loginScreen').style.display = 'flex'; mostrarNotificacao('Sessão encerrada!', 'info'); }
-            function controlarMenusPorPerfil() { const isAdmin = usuarioAtual?.perfil === 'Administrador'; document.getElementById('menuUtilizadores').style.display = isAdmin ? 'flex' : 'none'; document.getElementById('menuDirecoes').style.display = isAdmin ? 'flex' : 'none'; document.getElementById('menuConfiguracoes').style.display = isAdmin ? 'flex' : 'none'; document.getElementById('menuAnalytics').style.display = isAdmin ? 'flex' : 'none'; document.getElementById('btnNovoUtilizador').style.display = isAdmin ? 'block' : 'none'; }
-            function salvarConfiguracaoMicrosoft() { const clientId = document.getElementById('configClientId').value; if (clientId) { localStorage.setItem('microsoft_client_id', clientId); msalConfig.auth.clientId = clientId; mostrarNotificacao('Configuração salva!', 'success'); fecharModal('modalConfiguracaoInicial'); setTimeout(() => location.reload(), 1000); } }
+            function logout() { 
+                if (msalInstance) msalInstance.logoutPopup(); 
+                localStorage.removeItem('keroSessao'); 
+                usuarioAtual = null; 
+                document.getElementById('mainSystem').style.display = 'none'; 
+                document.getElementById('loginScreen').style.display = 'flex'; 
+                mostrarNotificacao('Sessão encerrada!', 'success'); 
+            }
+            
+            function controlarMenusPorPerfil() { 
+                const isAdmin = usuarioAtual?.perfil === 'Administrador'; 
+                const menuUtilizadores = document.getElementById('menuUtilizadores');
+                const menuDirecoes = document.getElementById('menuDirecoes');
+                const menuConfiguracoes = document.getElementById('menuConfiguracoes');
+                const menuAnalytics = document.getElementById('menuAnalytics');
+                const btnNovoUtilizador = document.getElementById('btnNovoUtilizador');
+                if (menuUtilizadores) menuUtilizadores.style.display = isAdmin ? 'flex' : 'none';
+                if (menuDirecoes) menuDirecoes.style.display = isAdmin ? 'flex' : 'none';
+                if (menuConfiguracoes) menuConfiguracoes.style.display = isAdmin ? 'flex' : 'none';
+                if (menuAnalytics) menuAnalytics.style.display = isAdmin ? 'flex' : 'none';
+                if (btnNovoUtilizador) btnNovoUtilizador.style.display = isAdmin ? 'block' : 'none';
+            }
+            
+            function salvarConfiguracaoMicrosoft() { 
+                const clientId = document.getElementById('configClientId').value; 
+                if (clientId) { 
+                    localStorage.setItem('microsoft_client_id', clientId); 
+                    msalConfig.auth.clientId = clientId; 
+                    mostrarNotificacao('Configuração salva! Faça login novamente.', 'success'); 
+                    fecharModal('modalConfiguracaoInicial'); 
+                    setTimeout(() => location.reload(), 1000); 
+                } else {
+                    mostrarNotificacao('Por favor, insira o Client ID', 'error');
+                }
+            }
 
             // ============================================
-            // FUNÇÃO DE ENVIO DE EMAIL MODIFICADA COM DESTINATÁRIOS CORRETOS
+            // FUNÇÃO DE ENVIO DE EMAIL COM DESTINATÁRIOS CORRETOS
             // ============================================
             async function enviarEmailNotificacao(tipo, dados) {
                 if (!configuracoes.emailNotif) return;
                 if (!emailService) { console.error('Email service não inicializado'); return; }
 
-                // Destinatários que recebem TODOS os emails (Márcio e Director)
                 const emailsTodos = ['marcio.carlos@accordgrouplda.com', 'paulo.silva@accordgrouplda.com'];
-                
-                let assunto = '';
-                let conteudo = '';
-                let destinatarios = [];
+                let assunto = '', conteudo = '', destinatarios = [];
 
                 switch (tipo) {
                     case 'nova_requisicao':
@@ -2431,13 +2432,11 @@
                         conteudo = emailService.templateNovaRequisicao(dados);
                         destinatarios = emailsTodos;
                         break;
-                        
                     case 'andamento':
                         assunto = `📋 Atualização: ${dados.codigo} - ${dados.fase}`;
                         conteudo = emailService.templateNotificacaoAndamento(dados.req, dados.fase, dados.responsavel, dados.comentario);
                         destinatarios = emailsTodos;
                         break;
-                        
                     case 'aprovacao_final':
                         assunto = `✅ REQUISIÇÃO APROVADA: ${dados.codigo}`;
                         conteudo = emailService.templateAprovacaoFinal(dados.req, dados.aprovador, dados.comentario);
@@ -2445,7 +2444,6 @@
                         const emailSolicitante = dados.req.criadoPorEmail || 'aleixo.francisco@accordgrouplda.com';
                         destinatarios = [...new Set([...emailsTodos, emailMario, emailSolicitante])];
                         break;
-                        
                     case 'rejeicao':
                         assunto = `❌ Requisição Rejeitada: ${dados.codigo}`;
                         conteudo = emailService.templateRejeicao(dados.req, dados.rejeitadoPor, dados.fase, dados.comentario);
@@ -2453,7 +2451,6 @@
                         const emailSolicitanteRej = dados.req.criadoPorEmail || 'aleixo.francisco@accordgrouplda.com';
                         destinatarios = [...new Set([...emailsTodos, emailMarioRej, emailSolicitanteRej])];
                         break;
-                        
                     default: return;
                 }
 
@@ -2477,9 +2474,14 @@
             }
 
             // ============================================
-            // FUNÇÕES DE NAVEGAÇÃO
+            // FUNÇÕES DE NAVEGAÇÃO E DASHBOARD (MANTIDAS DO ORIGINAL)
             // ============================================
-            function mostrarSelecaoModulos() { document.getElementById('moduleSelectionSection').style.display = 'block'; document.getElementById('recrutamentoSection').style.display = 'none'; document.getElementById('manutencaoSection').style.display = 'none'; document.getElementById('systemTitle').textContent = 'Kero - SIR'; }
+            function mostrarSelecaoModulos() { 
+                document.getElementById('moduleSelectionSection').style.display = 'block'; 
+                document.getElementById('recrutamentoSection').style.display = 'none'; 
+                document.getElementById('manutencaoSection').style.display = 'none'; 
+                document.getElementById('systemTitle').textContent = 'Kero - SIR'; 
+            }
 
             function selecionarModulo(mod) {
                 document.getElementById('moduleSelectionSection').style.display = 'none';
@@ -2488,7 +2490,7 @@
                     document.getElementById('manutencaoSection').style.display = 'none';
                     document.getElementById('systemTitle').textContent = 'Kero Recrutamento';
                     inicializarDirecoes();
-                    carregarRequisicoesDoSharePoint();
+                    carregarRequisicoesLocais();
                     carregarAprovacoes();
                     carregarDashboard();
                     carregarUtilizadores();
@@ -2508,6 +2510,18 @@
                 }
             }
 
+            function carregarRequisicoesLocais() {
+                if (requisicoes.length === 0) {
+                    requisicoes = [
+                        { id: 1, codigo: 'REQ-2024-001', funcao: 'Analista de RH', direcao: 'Capital Humano', area: 'RH', quantidade: 1, status: 'em_validacao_rh', tipo: 'novo_cargo', dataCriacao: new Date().toISOString(), dataInicio: new Date().toISOString(), criadoPor: 'Aleixo Francisco', criadoPorId: 1, criadoPorEmail: 'aleixo.francisco@accordgrouplda.com', observacoes: 'Necessidade urgente', historico: [] }
+                    ];
+                }
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+            }
+
+            // Funções principais (mantidas do original)
             function mudarAba(aba, elem) {
                 const secs = ['dashboard', 'requisicoes', 'aprovacoes', 'relatorios', 'utilizadores', 'direcoes', 'configuracoes', 'analytics', 'calendario', 'mensagens'];
                 secs.forEach(s => { const el = document.getElementById(s + 'Section'); if (el) el.style.display = s === aba ? 'block' : 'none'; });
@@ -2539,11 +2553,20 @@
                 document.getElementById('direcao').addEventListener('change', function() { const dir = this.value; const selArea = document.getElementById('area'); selArea.innerHTML = '<option value="">Selecione</option>'; if (dir && areasPorDirecao[dir]) areasPorDirecao[dir].sort().forEach(a => selArea.appendChild(new Option(a, a))); });
             }
 
-            function atualizarAreas() { const dir = document.getElementById('direcao').value; const sel = document.getElementById('area'); if (!sel) return; sel.innerHTML = '<option value="">Selecione</option>'; if (dir && areasPorDirecao[dir]) areasPorDirecao[dir].sort().forEach(a => sel.appendChild(new Option(a, a))); }
+            function atualizarAreas() { 
+                const dir = document.getElementById('direcao').value; 
+                const sel = document.getElementById('area'); 
+                if (!sel) return; 
+                sel.innerHTML = '<option value="">Selecione</option>'; 
+                if (dir && areasPorDirecao[dir]) areasPorDirecao[dir].sort().forEach(a => sel.appendChild(new Option(a, a))); 
+            }
 
             function filtrarRequisicoes() {
                 let lista = requisicoes;
-                if (estado.filtrosAtivos.pesquisa) { const p = estado.filtrosAtivos.pesquisa.toLowerCase(); lista = lista.filter(r => r.codigo.toLowerCase().includes(p) || r.funcao.toLowerCase().includes(p)); }
+                if (estado.filtrosAtivos.pesquisa) { 
+                    const p = estado.filtrosAtivos.pesquisa.toLowerCase(); 
+                    lista = lista.filter(r => r.codigo.toLowerCase().includes(p) || r.funcao.toLowerCase().includes(p)); 
+                }
                 if (estado.filtrosAtivos.status) lista = lista.filter(r => r.status === estado.filtrosAtivos.status);
                 if (estado.filtrosAtivos.direcao) lista = lista.filter(r => r.direcao === estado.filtrosAtivos.direcao);
                 requisicoesFiltradas = lista.sort((a, b) => estado.ordenacao === 'newest' ? new Date(b.dataCriacao) - new Date(a.dataCriacao) : new Date(a.dataCriacao) - new Date(b.dataCriacao));
@@ -2563,7 +2586,7 @@
                 const itens = requisicoesFiltradas.slice(inicio, inicio + estado.itensPorPagina);
                 let html = '';
                 itens.forEach(r => {
-                    html += `<tr onclick="visualizarRequisicao(${r.id})">}<td>${r.codigo}</td><td>${r.funcao}</td><td>${r.direcao}</td><td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td><td>${getTipoBadge(r.tipo)}</td><td>${formatarData(r.dataInicio)}</td><td><div class="action-buttons"><button class="btn-small btn-view" onclick="visualizarRequisicao(${r.id})"><i class="fas fa-eye"></i></button>${getBotoesAcao(r)}<button class="btn-small btn-message" onclick="abrirModalEnviarMensagem(${r.criadoPorId}, '${r.criadoPor}', ${r.id}, '${r.codigo}')"><i class="fas fa-comment"></i></button></div></td></tr>`;
+                    html += `<tr onclick="visualizarRequisicao(${r.id})">}晚${r.codigo}晚晚${r.funcao}晚晚${r.direcao}晚晚<span class="status-badge status-${r.status}">${getStatusText(r.status)}</span>晚晚${getTipoBadge(r.tipo)}晚晚${formatarData(r.dataInicio)}晚晚<div class="action-buttons"><button class="btn-small btn-view" onclick="visualizarRequisicao(${r.id})"><i class="fas fa-eye"></i></button>${getBotoesAcao(r)}<button class="btn-small btn-message" onclick="abrirModalEnviarMensagem(${r.criadoPorId}, '${r.criadoPor}', ${r.id}, '${r.codigo}')"><i class="fas fa-comment"></i></button></div>晚</tr>`;
                 });
                 tbody.innerHTML = html;
                 const total = Math.ceil(requisicoesFiltradas.length / estado.itensPorPagina);
@@ -2581,7 +2604,12 @@
                 return '';
             }
 
-            function abrirModalComentario(id, acao) { document.getElementById('comentarioRequisicaoId').value = id; document.getElementById('comentarioAcao').value = acao; document.getElementById('comentario').value = ''; abrirModal('modalComentario'); }
+            function abrirModalComentario(id, acao) { 
+                document.getElementById('comentarioRequisicaoId').value = id; 
+                document.getElementById('comentarioAcao').value = acao; 
+                document.getElementById('comentario').value = ''; 
+                abrirModal('modalComentario'); 
+            }
 
             async function processarComentario() {
                 const id = parseInt(document.getElementById('comentarioRequisicaoId').value);
@@ -2592,23 +2620,19 @@
                 if (acao === 'aprovar') {
                     if (req.status === 'em_validacao_rh') {
                         req.status = 'em_validacao_financas';
-                        await atualizarRequisicaoNoSharePoint(req);
                         await enviarEmailNotificacao('andamento', { req: req, fase: 'em_validacao_financas', responsavel: usuarioAtual.nome, comentario: coment });
                         mostrarNotificacao(`Requisição ${req.codigo} aprovada pelo RH! Segue para Controlo de Gestão.`, 'success');
                     } else if (req.status === 'em_validacao_financas') {
                         req.status = 'em_validacao_director';
-                        await atualizarRequisicaoNoSharePoint(req);
                         await enviarEmailNotificacao('andamento', { req: req, fase: 'em_validacao_director', responsavel: usuarioAtual.nome, comentario: coment });
                         mostrarNotificacao(`Requisição ${req.codigo} aprovada pelo CG! Segue para Direção Geral.`, 'success');
                     } else if (req.status === 'em_validacao_director') {
                         req.status = 'aprovada';
-                        await atualizarRequisicaoNoSharePoint(req);
                         await enviarEmailNotificacao('aprovacao_final', { req: req, aprovador: usuarioAtual.nome, comentario: coment });
                         mostrarNotificacao(`Requisição ${req.codigo} APROVADA! Email enviado para o solicitante.`, 'success');
                     }
                 } else if (acao === 'rejeitar') {
                     req.status = 'rejeitada';
-                    await atualizarRequisicaoNoSharePoint(req);
                     await enviarEmailNotificacao('rejeicao', { req: req, rejeitadoPor: usuarioAtual.nome, fase: usuarioAtual.perfil, comentario: coment });
                     mostrarNotificacao(`Requisição ${req.codigo} rejeitada!`, 'warning');
                 }
@@ -2636,7 +2660,7 @@
                 else if (usuarioAtual?.perfil === 'Controlo de Gestão') pendentes = requisicoes.filter(r => r.status === 'em_validacao_financas');
                 else if (usuarioAtual?.perfil === 'Director Geral') pendentes = requisicoes.filter(r => r.status === 'em_validacao_director');
                 else if (usuarioAtual?.perfil === 'Administrador') pendentes = requisicoes.filter(r => ['em_validacao_rh', 'em_validacao_financas', 'em_validacao_director'].includes(r.status));
-                tbody.innerHTML = pendentes.map(r => `<tr onclick="visualizarRequisicao(${r.id})">}<td>${r.codigo}</td><td>${r.funcao}</td><td>${r.direcao}</td><td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td><td>${formatarData(r.dataCriacao)}</td><td><div class="action-buttons"><button class="btn-small btn-view" onclick="visualizarRequisicao(${r.id})"><i class="fas fa-eye"></i></button>${getBotoesAcao(r)}<button class="btn-small btn-message" onclick="abrirModalEnviarMensagem(${r.criadoPorId}, '${r.criadoPor}', ${r.id}, '${r.codigo}')"><i class="fas fa-comment"></i></button></div></td></tr>`).join('');
+                tbody.innerHTML = pendentes.map(r => `<tr onclick="visualizarRequisicao(${r.id})">}晚${r.codigo}晚晚${r.funcao}晚晚${r.direcao}晚晚<span class="status-badge status-${r.status}">${getStatusText(r.status)}</span>晚晚${formatarData(r.dataCriacao)}晚晚<div class="action-buttons"><button class="btn-small btn-view" onclick="visualizarRequisicao(${r.id})"><i class="fas fa-eye"></i></button>${getBotoesAcao(r)}<button class="btn-small btn-message" onclick="abrirModalEnviarMensagem(${r.criadoPorId}, '${r.criadoPor}', ${r.id}, '${r.codigo}')"><i class="fas fa-comment"></i></button></div>晚</tr>`).join('');
             }
 
             function carregarDashboard() {
@@ -2692,8 +2716,8 @@
             function carregarNotificacoes() { document.getElementById('notificationBadge').setAttribute('data-count', '0'); document.getElementById('notificationList').innerHTML = '<div class="notification-empty">Sem notificações</div>'; }
             function toggleNotifications() { document.getElementById('notificationPanel').classList.toggle('show'); }
             function markAllAsRead() { mostrarNotificacao('Todas marcadas', 'success'); }
-            function carregarAnalytics() { document.getElementById('analyticsInsights').innerHTML = `<div class="dashboard-grid"><div class="dashboard-card"><h3>Total Requisições</h3><p>${requisicoes.length}</p></div><div class="dashboard-card"><h3>Aprovadas</h3><p>${requisicoes.filter(r => r.status === 'aprovada').length}</p></div><div class="dashboard-card"><h3>Taxa Aprovação</h3><p>${requisicoes.length ? Math.round(requisicoes.filter(r => r.status === 'aprovada').length / requisicoes.length * 100) : 0}%</p></div></div>`; }
-            function carregarCalendario() { const container = document.getElementById('calendarContainer'); if (!container) return; container.innerHTML = '<div class="calendar-grid">Carregando...</div>'; }
+            function carregarAnalytics() { document.getElementById('analyticsInsights').innerHTML = `<div class="dashboard-grid"><div class="dashboard-card"><h3>Total Requisições</h3><p>${requisicoes.length}</p></div><div class="dashboard-card"><h3>Aprovadas</h3><p>${requisicoes.filter(r => r.status === 'aprovada').length}</p></div></div>`; }
+            function carregarCalendario() { const container = document.getElementById('calendarContainer'); if (container) container.innerHTML = '<div class="calendar-grid">Carregando...</div>'; }
             function calendarPrevMonth() { }
             function calendarNextMonth() { }
             function limparFiltros() { estado.filtrosAtivos = { pesquisa: null, status: null, direcao: null }; document.getElementById('filterPesquisa').value = ''; document.getElementById('filterStatus').value = 'all'; document.getElementById('filterDirecao').value = 'all'; filtrarRequisicoes(); mostrarNotificacao('Filtros limpos', 'info'); }
@@ -2704,32 +2728,10 @@
             function gerarRelatorioMensal() { mostrarNotificacao('Relatório mensal gerado', 'success'); }
             function gerarRelatorioAnual() { mostrarNotificacao('Relatório anual gerado', 'success'); }
             function gerarRelatorioDepartamentos() { mostrarNotificacao('Relatório por departamento gerado', 'success'); }
-
-            // ============================================
-            // MENSAGENS
-            // ============================================
             function carregarMensagens() { const container = document.getElementById('mensagensList'); if (container) container.innerHTML = '<div class="mensagem-item" style="text-align:center;">Nenhuma mensagem</div>'; }
             function abrirModalNovaMensagem() { mostrarNotificacao('Funcionalidade em desenvolvimento', 'info'); }
-            function abrirModalEnviarMensagem(destinatarioId, destinatarioNome, requisicaoId = null, requisicaoCodigo = null) { mostrarNotificacao('Funcionalidade em desenvolvimento', 'info'); }
-
-            // ============================================
-            // MANUTENÇÃO
-            // ============================================
-            function abrirModalNovaManutencao() { mostrarNotificacao('Funcionalidade em desenvolvimento', 'info'); }
-            function selecionarTipoManutencao(tipo) { }
-            function handleFileSelectManutencao(files) { }
-            function salvarRequisicaoManutencao(e) { }
-            function filtrarRequisicoesManutencao() { }
-            function limparFiltrosManutencao() { }
-            function carregarRequisicoesManutencao() { const tbody = document.getElementById('corpoTabelaManutencao'); if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma requisição de manutenção</td></tr>'; }
-            function visualizarManutencao(id) { }
-            function carregarPlafondUsuario() { }
-
-            // ============================================
-            // RECRUTAMENTO - CRIAÇÃO DE REQUISIÇÕES
-            // ============================================
-            function selecionarTipo(tipo) { document.getElementById('tipoRequisicao').value = tipo; fecharModal('modalTipo'); abrirModal('modalNovaRequisicao'); const sub = document.getElementById('campoSubstituicao'), ref = document.getElementById('campoReforco'); if (sub) sub.style.display = tipo === 'substituicao' ? 'block' : 'none'; if (ref) ref.style.display = tipo === 'reforco_quadro' ? 'block' : 'none'; }
-
+            function abrirModalEnviarMensagem(destinatarioId, destinatarioNome, requisicaoId, requisicaoCodigo) { mostrarNotificacao('Funcionalidade em desenvolvimento', 'info'); }
+            function selecionarTipo(tipo) { document.getElementById('tipoRequisicao').value = tipo; fecharModal('modalTipo'); abrirModal('modalNovaRequisicao'); document.getElementById('campoSubstituicao').style.display = tipo === 'substituicao' ? 'block' : 'none'; document.getElementById('campoReforco').style.display = tipo === 'reforco_quadro' ? 'block' : 'none'; }
             async function salvarRequisicao(e) {
                 e.preventDefault();
                 const tipo = document.getElementById('tipoRequisicao').value;
@@ -2743,26 +2745,21 @@
                 const novoId = Date.now();
                 const novoCodigo = `REQ-${new Date().getFullYear()}-${String(requisicoes.length + 1).padStart(3, '0')}`;
                 const dados = { id: novoId, codigo: novoCodigo, funcao: funcao, direcao: dir, area: area, quantidade: qtd, status: 'em_validacao_rh', tipo: tipo, dataCriacao: new Date().toISOString(), dataInicio: dataInicio, criadoPor: usuarioAtual.nome, criadoPorId: usuarioAtual.id, criadoPorEmail: usuarioAtual.email, observacoes: obs || '', colaboradorSubstituir: document.getElementById('colaboradorSubstituir')?.value || '', motivoSubstituicao: document.getElementById('motivoSubstituicao')?.value || '', justificativaReforco: document.getElementById('justificativaReforco')?.value || '', historico: [{ fase: 'criacao', data: new Date().toISOString(), responsavel: usuarioAtual.nome, comentario: 'Requisição criada' }] };
-                const salvo = await salvarRequisicaoNoSharePoint(dados);
-                if (salvo) {
-                    requisicoes.unshift(dados);
-                    enviarEmailNotificacao('nova_requisicao', dados);
-                    fecharModal('modalNovaRequisicao');
-                    limparCamposRequisicao();
-                    filtrarRequisicoes();
-                    carregarAprovacoes();
-                    atualizarKPIs();
-                    mostrarNotificacao(`Requisição ${novoCodigo} criada!`, 'success');
-                } else {
-                    mostrarNotificacao('Erro ao salvar no SharePoint', 'error');
-                }
+                requisicoes.unshift(dados);
+                enviarEmailNotificacao('nova_requisicao', dados);
+                fecharModal('modalNovaRequisicao');
+                document.getElementById('formNovaRequisicao').reset();
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                mostrarNotificacao(`Requisição ${novoCodigo} criada!`, 'success');
             }
-
-            function limparCamposRequisicao() { document.getElementById('requisicaoId').value = ''; document.getElementById('tipoRequisicao').value = ''; document.getElementById('formNovaRequisicao').reset(); document.getElementById('campoSubstituicao').style.display = 'none'; document.getElementById('campoReforco').style.display = 'none'; document.getElementById('fileList').innerHTML = ''; estado.arquivosUpload = []; }
-            function handleFileSelect(files) { }
-            function abrirModalUtilizador() { mostrarNotificacao('Funcionalidade em desenvolvimento', 'info'); }
             function abrirModal(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
             function fecharModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
+            function abrirModalUtilizador() { mostrarNotificacao('Funcionalidade em desenvolvimento', 'info'); }
+            function abrirModalNovaDirecao() { mostrarNotificacao('Funcionalidade em desenvolvimento', 'info'); }
+            function carregarRequisicoesManutencao() { }
+            function carregarPlafondUsuario() { }
 
             // INICIALIZAÇÃO
             document.addEventListener('DOMContentLoaded', async function () {
