@@ -851,11 +851,10 @@
     <div class="modal" id="modalVisualizar"><div class="modal-content"><div class="modal-header"><h2>Visualizar Requisição</h2><span class="close-modal" onclick="fecharModal('modalVisualizar')">&times;</span></div><div class="modal-body"><div id="conteudoModal"></div></div></div></div>
     <div class="modal" id="modalConfiguracaoInicial"><div class="modal-content"><div class="modal-header"><h2>Configuração Microsoft 365</h2><span class="close-modal" onclick="fecharModal('modalConfiguracaoInicial')">&times;</span></div><div class="modal-body"><p>Digite o Client ID:</p><div class="form-group"><label>Client ID:</label><input type="text" id="configClientId" class="form-control" value="3df93492-9d7b-4fa0-bbb3-cbe17aa86096"></div><div class="form-actions"><button class="btn-primary" onclick="salvarConfiguracaoMicrosoft()">Salvar</button></div></div></div></div>
 
-    <script>
-        // ============================================
+    <script>// ============================================
         // CONFIGURAÇÃO MICROSOFT 365
         // ============================================
-        const REDIRECT_URI = "https://marciocarl.github.io/Kero/";
+        const REDIRECT_URI = "https://kero-sir.github.io/Kero/";
 
         const msalConfig = {
             auth: {
@@ -1709,7 +1708,6 @@
                     });
                 }
             });
-        });
-    </script>
+        });</script>
 </body>
 </html>
