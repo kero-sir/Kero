@@ -38,7 +38,6 @@
         body { background-color: var(--gray-100); color: var(--gray-600); }
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         
-        /* Login Screen */
         .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(145deg, #2E7D32, #4CAF50); position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; }
         .login-box { background: white; padding: 40px; border-radius: var(--border-radius); box-shadow: var(--shadow-md); width: 100%; max-width: 400px; text-align: center; }
         .kero-logo { width: 100px; height: 100px; margin: 0 auto 20px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -47,7 +46,6 @@
         .btn-login:hover { background: #1E1E1E; }
         .login-error { color: var(--danger); font-size: 14px; margin-top: 10px; padding: 10px; background: #ffebee; border-radius: 4px; display: none; }
         
-        /* Module Selection Screen */
         .module-selection-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(145deg, #2E7D32, #4CAF50); position: fixed; top: 0; left: 0; width: 100%; z-index: 9998; }
         .module-selection-container { background: white; padding: 50px; border-radius: var(--border-radius); box-shadow: var(--shadow-md); max-width: 900px; width: 90%; }
         .module-selection-title { text-align: center; margin-bottom: 40px; }
@@ -61,12 +59,9 @@
         .module-card-large .module-icon-large { font-size: 80px; color: var(--primary); margin-bottom: 20px; }
         .module-card-large h2 { font-size: 28px; color: var(--primary-dark); margin-bottom: 15px; }
         .module-card-large p { color: var(--gray-500); font-size: 14px; line-height: 1.6; }
-        .module-card-large.manutencao .module-icon-large { color: var(--secondary); }
-        .module-card-large.manutencao:hover { border-color: var(--secondary); }
         .btn-logout-module { margin-top: 30px; padding: 12px 30px; background: var(--gray-200); color: var(--gray-600); border: none; border-radius: var(--border-radius-sm); cursor: pointer; font-size: 14px; }
         .btn-logout-module:hover { background: var(--gray-500); color: white; }
         
-        /* Header */
         .app-header { background: white; padding: 15px 30px; border-radius: var(--border-radius); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
         .logo-area { display: flex; align-items: center; gap: 15px; }
         .logo-kero { width: 50px; height: 50px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -79,19 +74,14 @@
         .btn-logout { padding: 8px 20px; background: var(--secondary); color: white; border: none; border-radius: var(--border-radius-sm); cursor: pointer; }
         .btn-modules { padding: 8px 20px; background: var(--teams); color: white; border: none; border-radius: var(--border-radius-sm); cursor: pointer; margin-right: 10px; }
         
-        /* Navigation */
         .nav-menu { background: white; padding: 15px; border-radius: var(--border-radius); margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; border-bottom: 3px solid var(--primary); }
         .nav-item { padding: 10px 20px; border-radius: var(--border-radius-sm); cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--gray-500); }
         .nav-item:hover { background: var(--primary-light); color: var(--primary-dark); }
         .nav-item.active { background: var(--primary); color: white; }
         
-        /* Manutencao Bloqueio */
         .manutencao-bloqueio { text-align: center; padding: 80px 40px; background: white; border-radius: var(--border-radius); }
         .manutencao-bloqueio i { font-size: 80px; color: var(--warning); margin-bottom: 20px; }
-        .manutencao-bloqueio h2 { color: var(--gray-600); margin-bottom: 15px; }
-        .manutencao-bloqueio p { color: var(--gray-500); font-size: 16px; }
         
-        /* KPI Cards */
         .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 30px; }
         @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -100,7 +90,6 @@
         .kpi-info span { font-size: 24px; font-weight: 700; color: var(--primary-dark); }
         .kpi-icon i { font-size: 32px; color: var(--primary-light); }
         
-        /* Status Badges */
         .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; }
         .status-em_validacao_rh { background-color: #c8e6c9; color: #1b5e20; }
         .status-em_validacao_financas { background-color: #a5d6a7; color: #1b5e20; }
@@ -108,7 +97,6 @@
         .status-aprovada { background-color: #4CAF50; color: white; }
         .status-rejeitada { background-color: #ef9a9a; color: #c62828; }
         
-        /* Buttons */
         .btn-small { padding: 5px 10px; border-radius: 4px; border: none; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
         .btn-view { background-color: var(--primary-light); color: var(--primary-dark); }
         .btn-approve { background-color: #4CAF50; color: white; }
@@ -118,25 +106,21 @@
         .btn-filter-apply { background-color: var(--primary); color: white; }
         .btn-filter-clear { background-color: var(--gray-200); color: var(--gray-600); }
         
-        /* Filters */
         .filter-section { background: white; border-radius: var(--border-radius); padding: 20px; margin-bottom: 20px; }
         .filter-group { margin-bottom: 15px; }
         .filter-group label { display: block; margin-bottom: 5px; font-weight: 500; }
         .filter-group select, .filter-group input { width: 100%; padding: 8px 10px; border-radius: 4px; border: 1px solid var(--gray-200); }
         
-        /* Tables */
         table { width: 100%; border-collapse: collapse; }
         th { background-color: var(--primary-light); padding: 12px 15px; text-align: left; }
         td { padding: 12px 15px; border-bottom: 1px solid #e0f2e0; }
         tr:hover { background-color: #f1f8e9; cursor: pointer; }
         
-        /* Cards */
         .card { background: white; border-radius: var(--border-radius); padding: 25px; border-top: 4px solid var(--primary); margin-bottom: 20px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e0f2e0; }
         .card-title { font-size: 20px; font-weight: 600; color: var(--primary-dark); }
         .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; background: var(--primary-light); color: var(--primary-dark); }
         
-        /* Dashboard */
         .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
         @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
         .dashboard-card { background: white; padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm); }
@@ -144,24 +128,12 @@
         .activity-item { padding: 12px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 12px; }
         .chart-container { position: relative; height: 300px; width: 100%; }
         
-        /* Email & Teams Panels */
         .email-panel, .teams-panel { background: white; border-radius: var(--border-radius); padding: 20px; margin-top: 20px; }
         .email-panel { border-left: 4px solid var(--info); }
         .teams-panel { border-left: 4px solid var(--teams); }
         .panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
         .panel-header i { font-size: 24px; }
-        .email-panel .panel-header i { color: var(--info); }
-        .teams-panel .panel-header i { color: var(--teams); }
-        .email-list, .teams-list { max-height: 300px; overflow-y: auto; border: 1px solid var(--gray-200); border-radius: var(--border-radius-sm); }
-        .email-item, .teams-item { padding: 12px; border-bottom: 1px solid var(--gray-200); }
-        .email-subject, .teams-message { font-weight: 600; margin-bottom: 5px; }
-        .email-recipient, .teams-channel { font-size: 12px; color: var(--gray-500); margin-bottom: 3px; }
-        .email-time, .teams-time { font-size: 11px; color: var(--gray-500); }
-        .email-status, .teams-status { font-size: 11px; margin-top: 5px; }
-        .email-status-success, .teams-status-success { color: var(--primary); }
-        .email-status-error, .teams-status-error { color: var(--danger); }
         
-        /* Direcoes */
         .direcoes-list { margin-top: 20px; }
         .direcao-item { background: #f8f9fa; border: 1px solid #e0f2e0; border-radius: 8px; margin-bottom: 15px; padding: 15px; }
         .direcao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #c8e6c9; }
@@ -169,13 +141,11 @@
         .direcao-categorias { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .categoria-tag { background: white; border: 1px solid var(--primary); color: var(--primary-dark); padding: 4px 12px; border-radius: 20px; font-size: 12px; }
         
-        /* Main Layout */
         .main-layout { display: grid; grid-template-columns: 280px 1fr; gap: 25px; }
         @media (max-width: 1024px) { .main-layout { grid-template-columns: 1fr; } }
         .sidebar { background: white; border-radius: var(--border-radius); padding: 20px; }
         .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
         
-        /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center; }
         .modal-content { background: white; width: 100%; max-width: 700px; border-radius: var(--border-radius); max-height: 90vh; overflow-y: auto; }
         .modal-header { padding: 20px; border-bottom: 1px solid #e0f2e0; display: flex; justify-content: space-between; align-items: center; }
@@ -186,18 +156,15 @@
         .form-control { width: 100%; padding: 10px; border-radius: var(--border-radius-sm); border: 1px solid var(--gray-200); }
         .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
         
-        /* Tipo Options */
         .tipo-opcao { display: flex; flex-direction: column; align-items: center; padding: 30px; margin: 20px 0; border: 2px solid #e0f2e0; border-radius: var(--border-radius); cursor: pointer; }
         .tipo-opcao:hover { border-color: var(--primary); background: #f1f8e9; }
         .tipo-opcao i { font-size: 48px; margin-bottom: 15px; color: var(--primary); }
         
-        /* Loading */
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 20000; display: none; align-items: center; justify-content: center; }
         .loading-overlay.show { display: flex; }
         .loading-spinner { width: 50px; height: 50px; border: 5px solid white; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* Notifications */
         .notificacao { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white; z-index: 100000; animation: slideIn 0.3s ease; }
         .notificacao-success { background: #4CAF50; }
         .notificacao-error { background: #f44336; }
@@ -205,12 +172,10 @@
         .notificacao-info { background: #2196F3; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
-        /* Pagination */
         .paginacao { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
         .pagina-btn { padding: 8px 15px; border: 1px solid var(--gray-200); background: white; border-radius: 4px; cursor: pointer; }
         .pagina-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        /* Dropzone */
         .dropzone { border: 2px dashed var(--gray-200); border-radius: var(--border-radius-sm); padding: 20px; text-align: center; cursor: pointer; margin-top: 10px; }
         .dropzone:hover { border-color: var(--primary); background: var(--primary-light); }
         .file-list { margin-top: 10px; }
@@ -219,14 +184,12 @@
         .file-item .file-size { font-size: 11px; color: var(--gray-500); }
         .file-remove { color: var(--danger); cursor: pointer; }
         
-        /* Report Buttons */
         .report-actions { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .btn-report { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .btn-report-excel { background-color: #217346; }
         .btn-report-pdf { background-color: #f40f02; }
         .btn-report-csv { background-color: #666; }
         
-        /* Notification Bell */
         .notification-bell { position: relative; cursor: pointer; margin-right: 15px; }
         .notification-bell i { font-size: 24px; color: var(--gray-500); }
         .notification-bell .badge-count { position: absolute; top: -8px; right: -8px; background: var(--danger); color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; }
@@ -238,57 +201,18 @@
         .notification-title { font-weight: 600; margin-bottom: 5px; }
         .notification-time { font-size: 11px; color: var(--gray-500); }
         
-        /* Anexos styles */
-        .anexo-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: var(--primary-light);
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: all 0.2s;
-        }
-        .anexo-item:hover {
-            background: #c8e6c9;
-            transform: translateX(5px);
-        }
-        .anexo-item i {
-            font-size: 24px;
-            color: var(--primary);
-        }
-        .anexo-info {
-            flex: 1;
-        }
-        .anexo-nome {
-            font-weight: 600;
-            margin-bottom: 3px;
-            color: var(--primary-dark);
-        }
-        .anexo-tamanho {
-            font-size: 11px;
-            color: var(--gray-500);
-        }
-        .btn-download {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-        .btn-download:hover {
-            background: var(--primary-dark);
-            transform: scale(1.02);
-        }
+        .anexo-item { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--primary-light); border-radius: 8px; margin-bottom: 10px; }
+        .anexo-item i { font-size: 24px; color: var(--primary); }
+        .anexo-info { flex: 1; }
+        .anexo-nome { font-weight: 600; margin-bottom: 3px; color: var(--primary-dark); }
+        .anexo-tamanho { font-size: 11px; color: var(--gray-500); }
+        .btn-download { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .btn-download:hover { background: var(--primary-dark); }
     </style>
 </head>
 <body>
     <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div></div>
 
-    <!-- Login Screen -->
     <div id="loginScreen" class="login-container">
         <div class="login-box">
             <div class="kero-logo"><span>K</span></div>
@@ -300,7 +224,6 @@
         </div>
     </div>
 
-    <!-- Module Selection Screen -->
     <div id="moduleSelectionScreen" class="module-selection-screen" style="display: none;">
         <div class="module-selection-container">
             <div class="module-selection-title">
@@ -329,10 +252,8 @@
         </div>
     </div>
 
-    <!-- Main System -->
     <div id="mainSystem" style="display: none;">
         <div class="container">
-            <!-- Header -->
             <div class="app-header">
                 <div class="logo-area">
                     <div class="logo-kero"><span>K</span></div>
@@ -356,7 +277,6 @@
                 </div>
             </div>
 
-            <!-- Navigation -->
             <div class="nav-menu">
                 <div class="nav-item active" onclick="mudarAba('dashboard', this)"><i class="fas fa-chart-pie"></i> Dashboard</div>
                 <div class="nav-item" onclick="mudarAba('requisicoes', this)"><i class="fas fa-file-alt"></i> Requisições</div>
@@ -367,9 +287,7 @@
                 <div class="nav-item" onclick="mudarAba('configuracoes', this)"><i class="fas fa-cog"></i> Configurações</div>
             </div>
 
-            <!-- Recrutamento Section -->
             <div id="recrutamentoSection">
-                <!-- KPI Cards -->
                 <div class="kpi-grid">
                     <div class="kpi-card" onclick="filtrarPorStatus('all')"><div class="kpi-info"><h4>Requisições</h4><span id="totalRequisicoes">0</span></div><div class="kpi-icon"><i class="fas fa-file-alt"></i></div></div>
                     <div class="kpi-card" onclick="filtrarPorStatus('em_validacao_rh')"><div class="kpi-info"><h4>Em Aprovação RH</h4><span id="totalPendentesRH">0</span></div><div class="kpi-icon"><i class="fas fa-clock"></i></div></div>
@@ -379,7 +297,6 @@
                     <div class="kpi-card" onclick="filtrarPorStatus('rejeitada')"><div class="kpi-info"><h4>Rejeitadas</h4><span id="totalRejeitadas">0</span></div><div class="kpi-icon"><i class="fas fa-times-circle"></i></div></div>
                 </div>
 
-                <!-- Email & Teams Panels -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                     <div class="email-panel">
                         <div class="panel-header"><i class="fas fa-envelope"></i> <h3>Histórico de Emails</h3></div>
@@ -391,7 +308,6 @@
                     </div>
                 </div>
 
-                <!-- Dashboard -->
                 <div id="dashboardSection">
                     <div class="dashboard-grid">
                         <div class="dashboard-card"><h3><i class="fas fa-history"></i> Atividades Recentes</h3><div class="activity-list" id="atividadesRecentes"></div></div>
@@ -399,7 +315,6 @@
                     </div>
                 </div>
 
-                <!-- Requisicoes -->
                 <div id="requisicoesSection" style="display: none;">
                     <div class="main-layout">
                         <div class="sidebar">
@@ -434,7 +349,6 @@
                     </div>
                 </div>
 
-                <!-- Aprovacoes -->
                 <div id="aprovacoesSection" style="display: none;">
                     <div class="card">
                         <div class="card-header"><div class="card-title">Aprovações Pendentes</div></div>
@@ -447,7 +361,6 @@
                     </div>
                 </div>
 
-                <!-- Relatorios -->
                 <div id="relatoriosSection" style="display: none;">
                     <div class="card">
                         <div class="card-header"><div class="card-title">Relatórios</div></div>
@@ -459,44 +372,21 @@
                         <div style="margin-top: 20px;">
                             <h4 style="margin-bottom: 15px;">Filtros do Relatório</h4>
                             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-                                <div class="form-group">
-                                    <label>Data Início</label>
-                                    <input type="date" id="relatorioDataInicio" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>Data Fim</label>
-                                    <input type="date" id="relatorioDataFim" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>Status</label>
-                                    <select id="relatorioStatus" class="form-control">
-                                        <option value="all">Todos</option>
-                                        <option value="aprovada">Aprovadas</option>
-                                        <option value="rejeitada">Rejeitadas</option>
-                                        <option value="em_validacao_rh">Pendentes RH</option>
-                                        <option value="em_validacao_financas">Pendentes CG</option>
-                                        <option value="em_validacao_director">Pendentes Director</option>
-                                    </select>
-                                </div>
+                                <div class="form-group"><label>Data Início</label><input type="date" id="relatorioDataInicio" class="form-control"></div>
+                                <div class="form-group"><label>Data Fim</label><input type="date" id="relatorioDataFim" class="form-control"></div>
+                                <div class="form-group"><label>Status</label><select id="relatorioStatus" class="form-control"><option value="all">Todos</option><option value="aprovada">Aprovadas</option><option value="rejeitada">Rejeitadas</option><option value="em_validacao_rh">Pendentes RH</option><option value="em_validacao_financas">Pendentes CG</option><option value="em_validacao_director">Pendentes Director</option></select></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Utilizadores -->
                 <div id="utilizadoresSection" style="display: none;">
                     <div class="card">
                         <div class="card-header"><div class="card-title">Utilizadores</div></div>
-                        <div class="table-container">
-                            <table class="users-table">
-                                <thead><tr><th>Nome</th><th>Email</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead>
-                                <tbody id="tabelaUtilizadores"></tbody>
-                            </table>
-                        </div>
+                        <div class="table-container"><table class="users-table"><thead><tr><th>Nome</th><th>Email</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead><tbody id="tabelaUtilizadores"></tbody></table></div>
                     </div>
                 </div>
 
-                <!-- Direcoes -->
                 <div id="direcoesSection" style="display: none;">
                     <div class="card">
                         <div class="card-header"><div class="card-title">Direções</div></div>
@@ -504,7 +394,6 @@
                     </div>
                 </div>
 
-                <!-- Configuracoes -->
                 <div id="configuracoesSection" style="display: none;">
                     <div class="card">
                         <div class="card-header"><div class="card-title">Configurações</div></div>
@@ -519,7 +408,6 @@
                 </div>
             </div>
 
-            <!-- Manutencao Section -->
             <div id="manutencaoSection" style="display: none;">
                 <div class="card">
                     <div class="manutencao-bloqueio">
@@ -533,7 +421,6 @@
         </div>
     </div>
 
-    <!-- MODAIS -->
     <div class="modal" id="modalTipo">
         <div class="modal-content">
             <div class="modal-header"><h2>Selecionar Tipo</h2><span class="close-modal" onclick="fecharModal('modalTipo')">&times;</span></div>
@@ -624,7 +511,6 @@
 
         const loginRequest = { scopes: ["User.Read", "email", "profile", "openid", "offline_access", "Mail.Send", "Sites.ReadWrite.All"] };
 
-        // Perfis dos usuários
         const perfisManuais = {
             'marcio.carlos@accordgrouplda.com': 'Administrador',
             'mario.arao@accordgrouplda.com': 'RH',
@@ -633,7 +519,6 @@
             'aleixo.francisco@accordgrouplda.com': 'Gerente de Loja'
         };
 
-        // Emails dos aprovadores
         const emailsAprovadores = {
             'RH': 'mario.arao@accordgrouplda.com',
             'Controlo de Gestão': 'erikson.madureira@accordgrouplda.com',
@@ -641,7 +526,6 @@
             'Administrador': 'marcio.carlos@accordgrouplda.com'
         };
 
-        // Direções
         const todasDirecoes = [
             "Direção Geral", "Capital Humano", "Direção Comercial", "Direção Financeira",
             "Direção de Marketing", "Direção de Sistemas de Informação", "Direção de Manutenção",
@@ -653,7 +537,6 @@
             "Loja Gika", "Armazém ZEE", "Armazém SONIT"
         ];
 
-        // Categorias
         const todasCategorias = [
             "Director Geral", "Director Executivo", "Director", "Gerente de Loja",
             "Gestor Sénior", "Gestor", "Técnico Sénior", "Técnico",
@@ -661,13 +544,11 @@
             "Analista", "Administrativo", "Operador"
         ];
 
-        // Configuração SharePoint
         const SHAREPOINT_CONFIG = {
             siteUrl: "https://accordgroupslda.sharepoint.com/sites/SIR",
             listName: "RequisicoesRH"
         };
 
-        // Variáveis globais
         let msalInstance = null;
         let account = null;
         let usuarioAtual = null;
@@ -679,17 +560,10 @@
         let estado = { paginaAtual: 1, itensPorPagina: 10, filtrosAtivos: { pesquisa: null, status: null, direcao: null }, ordenacao: 'newest' };
         let requisicoesFiltradas = [];
         let graficos = {};
-        let configuracoes = { 
-            emailAdmin: 'marcio.carlos@accordgrouplda.com', 
-            emailNotif: true,
-            teamsNotif: true,
-            teamsWebhook: ''
-        };
+        let configuracoes = { emailAdmin: 'marcio.carlos@accordgrouplda.com', emailNotif: true, teamsNotif: true, teamsWebhook: '' };
         let moduloAtual = null;
+        let requisicoesCache = new Map(); // Para evitar duplicação
 
-        // ============================================
-        // FUNÇÕES UTILITÁRIAS
-        // ============================================
         function showLoading() { document.getElementById('loadingOverlay').classList.add('show'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
         
@@ -720,19 +594,8 @@
             return m[t] || t;
         }
 
-        // ============================================
-        // NOTIFICAÇÕES INTERNAS
-        // ============================================
         function adicionarNotificacao(titulo, mensagem, tipo, requisicaoId) {
-            const notificacao = {
-                id: Date.now(),
-                titulo: titulo,
-                mensagem: mensagem,
-                tipo: tipo,
-                requisicaoId: requisicaoId,
-                data: new Date().toISOString(),
-                lida: false
-            };
+            const notificacao = { id: Date.now(), titulo: titulo, mensagem: mensagem, tipo: tipo, requisicaoId: requisicaoId, data: new Date().toISOString(), lida: false };
             notificacoes.unshift(notificacao);
             if (notificacoes.length > 50) notificacoes.pop();
             atualizarPainelNotificacoes();
@@ -742,130 +605,89 @@
             const list = document.getElementById('notificationList');
             const count = document.getElementById('notificationCount');
             const naoLidas = notificacoes.filter(n => !n.lida).length;
-            
             if (count) count.textContent = naoLidas;
             if (!list) return;
-            
-            if (notificacoes.length === 0) {
-                list.innerHTML = '<div style="padding:20px;text-align:center;">Sem notificações</div>';
-                return;
-            }
-            
-            list.innerHTML = notificacoes.slice(0, 20).map(n => `
-                <div class="notification-item ${!n.lida ? 'unread' : ''}" onclick="marcarNotificacaoLida(${n.id})">
-                    <div class="notification-title">${n.titulo}</div>
-                    <div class="notification-message" style="font-size: 12px; color: #666;">${n.mensagem}</div>
-                    <div class="notification-time">${formatarDataHora(n.data)}</div>
-                </div>
-            `).join('');
+            if (notificacoes.length === 0) { list.innerHTML = '<div style="padding:20px;text-align:center;">Sem notificações</div>'; return; }
+            list.innerHTML = notificacoes.slice(0, 20).map(n => `<div class="notification-item ${!n.lida ? 'unread' : ''}" onclick="marcarNotificacaoLida(${n.id})"><div class="notification-title">${n.titulo}</div><div class="notification-message" style="font-size: 12px; color: #666;">${n.mensagem}</div><div class="notification-time">${formatarDataHora(n.data)}</div></div>`).join('');
         }
 
-        function marcarNotificacaoLida(id) {
-            const notif = notificacoes.find(n => n.id === id);
-            if (notif) notif.lida = true;
-            atualizarPainelNotificacoes();
-        }
-
-        function toggleNotifications() {
-            const panel = document.getElementById('notificationPanel');
-            if (panel) panel.classList.toggle('show');
-        }
+        function marcarNotificacaoLida(id) { const notif = notificacoes.find(n => n.id === id); if (notif) notif.lida = true; atualizarPainelNotificacoes(); }
+        function toggleNotifications() { const panel = document.getElementById('notificationPanel'); if (panel) panel.classList.toggle('show'); }
 
         document.addEventListener('click', function(e) {
             const panel = document.getElementById('notificationPanel');
             const bell = document.querySelector('.notification-bell');
-            if (panel && bell && !bell.contains(e.target)) {
-                panel.classList.remove('show');
-            }
+            if (panel && bell && !bell.contains(e.target)) panel.classList.remove('show');
         });
 
         // ============================================
-        // FUNÇÃO PARA UPLOAD DE ANEXOS (USANDO ATTACHMENT COLLECTION)
+        // ANEXOS - FUNÇÕES CORRIGIDAS
         // ============================================
         async function fazerUploadAnexos(itemId, files) {
+            if (!files || files.length === 0) return [];
+            console.log(`📤 Iniciando upload de ${files.length} anexo(s)`);
+            const uploadResults = [];
+            
             try {
                 const token = await getSharePointToken();
                 const siteId = await getSiteId();
-                const uploadResults = [];
                 
-                for (const file of files) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    console.log(`📄 Processando: ${file.name} (${formatarTamanho(file.size)})`);
+                    
+                    if (file.size > 100 * 1024 * 1024) {
+                        mostrarNotificacao(`❌ ${file.name} excede 100MB`, 'error');
+                        continue;
+                    }
+                    
                     try {
-                        // Converter arquivo para base64
                         const base64Content = await new Promise((resolve, reject) => {
                             const reader = new FileReader();
-                            reader.onload = () => {
-                                const base64 = reader.result.split(',')[1];
-                                resolve(base64);
-                            };
+                            reader.onload = () => resolve(reader.result.split(',')[1]);
                             reader.onerror = reject;
                             reader.readAsDataURL(file);
                         });
                         
-                        // Adicionar anexo usando a API de attachments da lista
+                        const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
                         const attachmentUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${itemId}/attachments`;
-                        
-                        const attachmentData = {
-                            "@odata.type": "#microsoft.graph.attachment",
-                            "name": file.name,
-                            "contentBytes": base64Content,
-                            "contentType": file.type || 'application/octet-stream'
-                        };
                         
                         const response = await fetch(attachmentUrl, {
                             method: 'POST',
-                            headers: { 
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(attachmentData)
+                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ "@odata.type": "#microsoft.graph.fileAttachment", "name": safeFileName, "contentBytes": base64Content, "contentType": file.type || 'application/octet-stream' })
                         });
                         
                         if (response.ok) {
                             const result = await response.json();
-                            uploadResults.push({
-                                id: result.id,
-                                name: file.name,
-                                size: file.size
-                            });
-                            console.log(`✅ Anexo ${file.name} enviado com sucesso`);
+                            uploadResults.push({ id: result.id, name: file.name, size: file.size });
+                            console.log(`✅ Anexo ${file.name} enviado!`);
                         } else {
-                            const error = await response.text();
-                            console.error(`❌ Erro ao enviar ${file.name}:`, error);
-                            mostrarNotificacao(`Erro ao enviar anexo ${file.name}`, 'warning');
+                            console.error(`❌ Erro ao enviar ${file.name}: ${response.status}`);
+                            mostrarNotificacao(`Erro ao enviar ${file.name}`, 'error');
                         }
-                    } catch (fileError) {
-                        console.error(`❌ Erro no arquivo ${file.name}:`, fileError);
+                    } catch (err) {
+                        console.error(`Erro no arquivo ${file.name}:`, err);
                     }
+                    await new Promise(r => setTimeout(r, 300));
                 }
-                
                 return uploadResults;
             } catch (error) {
-                console.error('❌ Erro ao fazer upload de anexos:', error);
-                return [];
+                console.error('Erro fatal:', error);
+                return uploadResults;
             }
         }
 
-        // ============================================
-        // FUNÇÃO PARA BUSCAR ANEXOS (USANDO ATTACHMENT COLLECTION)
-        // ============================================
         async function buscarAnexosDoItem(itemId) {
             try {
                 const token = await getSharePointToken();
                 const siteId = await getSiteId();
-                
-                const attachmentsUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${itemId}/attachments`;
-                const response = await fetch(attachmentsUrl, {
+                const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${itemId}/attachments`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
                 if (response.ok) {
                     const data = await response.json();
-                    return data.value.map(att => ({
-                        id: att.id,
-                        name: att.name,
-                        size: att.size,
-                        contentType: att.contentType
-                    }));
+                    return data.value || [];
                 }
                 return [];
             } catch (error) {
@@ -874,25 +696,18 @@
             }
         }
 
-        // ============================================
-        // FUNÇÃO PARA BAIXAR ANEXO
-        // ============================================
         async function baixarAnexo(itemId, attachmentId, fileName) {
             showLoading();
             try {
                 const token = await getSharePointToken();
                 const siteId = await getSiteId();
-                
-                const downloadUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${itemId}/attachments/${attachmentId}/$value`;
-                
-                const response = await fetch(downloadUrl, {
+                const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${itemId}/attachments/${attachmentId}/$value`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
                 if (response.ok) {
                     const blob = await response.blob();
-                    const link = document.createElement('a');
                     const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
                     link.href = url;
                     link.download = fileName;
                     document.body.appendChild(link);
@@ -912,216 +727,68 @@
         }
 
         // ============================================
-        // SERVIÇO DE EMAIL
+        // EMAIL E TEAMS
         // ============================================
         async function enviarEmail(destinatario, assunto, corpoHtml) {
-            if (!configuracoes.emailNotif) {
-                console.log('Notificações email desativadas');
-                return false;
-            }
-            
+            if (!configuracoes.emailNotif) return false;
             try {
                 const token = await getAccessToken(["Mail.Send"]);
-                
-                const email = {
-                    message: {
-                        subject: assunto,
-                        body: { contentType: "HTML", content: corpoHtml },
-                        toRecipients: [{ emailAddress: { address: destinatario } }]
-                    },
-                    saveToSentItems: "true"
-                };
-                
                 const response = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(email)
+                    body: JSON.stringify({ message: { subject: assunto, body: { contentType: "HTML", content: corpoHtml }, toRecipients: [{ emailAddress: { address: destinatario } }] }, saveToSentItems: "true" })
                 });
-                
                 const sucesso = response.ok;
-                
-                historicoEmails.unshift({
-                    id: Date.now(),
-                    destinatario: destinatario,
-                    assunto: assunto,
-                    data: new Date().toISOString(),
-                    status: sucesso ? 'enviado' : 'erro'
-                });
-                
+                historicoEmails.unshift({ id: Date.now(), destinatario, assunto, data: new Date().toISOString(), status: sucesso ? 'enviado' : 'erro' });
                 if (historicoEmails.length > 50) historicoEmails.pop();
                 atualizarPainelEmails();
-                
                 return sucesso;
-            } catch (error) {
-                console.error('Erro ao enviar email:', error);
-                historicoEmails.unshift({
-                    id: Date.now(),
-                    destinatario: destinatario,
-                    assunto: assunto,
-                    data: new Date().toISOString(),
-                    status: 'erro'
-                });
-                atualizarPainelEmails();
-                return false;
-            }
+            } catch (error) { return false; }
         }
 
         function atualizarPainelEmails() {
             const list = document.getElementById('emailList');
             if (!list) return;
-            
-            if (historicoEmails.length === 0) {
-                list.innerHTML = '<div style="padding:20px;text-align:center;">Nenhum email enviado</div>';
-                return;
-            }
-            
-            list.innerHTML = historicoEmails.slice(0, 20).map(e => `
-                <div class="email-item">
-                    <div class="email-subject"><i class="fas fa-envelope"></i> ${e.assunto}</div>
-                    <div class="email-recipient"><i class="fas fa-user"></i> Para: ${e.destinatario}</div>
-                    <div class="email-time"><i class="fas fa-clock"></i> ${formatarDataHora(e.data)}</div>
-                    <div class="email-status ${e.status === 'enviado' ? 'email-status-success' : 'email-status-error'}">
-                        <i class="fas ${e.status === 'enviado' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
-                        ${e.status === 'enviado' ? 'Enviado' : 'Erro'}
-                    </div>
-                </div>
-            `).join('');
+            if (historicoEmails.length === 0) { list.innerHTML = '<div style="padding:20px;text-align:center;">Nenhum email enviado</div>'; return; }
+            list.innerHTML = historicoEmails.slice(0, 20).map(e => `<div class="email-item"><div class="email-subject"><i class="fas fa-envelope"></i> ${e.assunto}</div><div class="email-recipient"><i class="fas fa-user"></i> Para: ${e.destinatario}</div><div class="email-time"><i class="fas fa-clock"></i> ${formatarDataHora(e.data)}</div><div class="email-status ${e.status === 'enviado' ? 'email-status-success' : 'email-status-error'}"><i class="fas ${e.status === 'enviado' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${e.status === 'enviado' ? 'Enviado' : 'Erro'}</div></div>`).join('');
         }
 
-        // ============================================
-        // SERVIÇO DE NOTIFICAÇÃO TEAMS
-        // ============================================
         async function enviarNotificacaoTeams(titulo, mensagem, cor = '4CAF50') {
-            if (!configuracoes.teamsNotif || !configuracoes.teamsWebhook) {
-                console.log('Notificações Teams desativadas');
-                return false;
-            }
-            
+            if (!configuracoes.teamsNotif || !configuracoes.teamsWebhook) return false;
             try {
-                const payload = {
-                    "@type": "MessageCard",
-                    "@context": "http://schema.org/extensions",
-                    "themeColor": cor,
-                    "summary": titulo,
-                    "sections": [{
-                        "activityTitle": titulo,
-                        "activitySubtitle": `Kero SIR - ${new Date().toLocaleString('pt-PT')}`,
-                        "facts": [
-                            { "name": "Sistema", "value": "Kero SIR" },
-                            { "name": "Utilizador", "value": usuarioAtual?.nome || 'Sistema' }
-                        ],
-                        "text": mensagem
-                    }]
-                };
-                
                 const response = await fetch(configuracoes.teamsWebhook, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ "@type": "MessageCard", "@context": "http://schema.org/extensions", "themeColor": cor, "summary": titulo, "sections": [{ "activityTitle": titulo, "activitySubtitle": `Kero SIR - ${new Date().toLocaleString('pt-PT')}`, "facts": [{ "name": "Sistema", "value": "Kero SIR" }, { "name": "Utilizador", "value": usuarioAtual?.nome || 'Sistema' }], "text": mensagem }] })
                 });
-                
                 const sucesso = response.ok;
-                
-                historicoTeams.unshift({
-                    id: Date.now(),
-                    titulo: titulo,
-                    mensagem: mensagem,
-                    data: new Date().toISOString(),
-                    status: sucesso ? 'enviado' : 'erro'
-                });
-                
+                historicoTeams.unshift({ id: Date.now(), titulo, mensagem, data: new Date().toISOString(), status: sucesso ? 'enviado' : 'erro' });
                 if (historicoTeams.length > 50) historicoTeams.pop();
                 atualizarPainelTeams();
-                
                 return sucesso;
-            } catch (error) {
-                console.error('Erro ao enviar Teams:', error);
-                return false;
-            }
+            } catch (error) { return false; }
         }
 
         function atualizarPainelTeams() {
             const list = document.getElementById('teamsList');
             if (!list) return;
-            
-            if (historicoTeams.length === 0) {
-                list.innerHTML = '<div style="padding:20px;text-align:center;">Nenhuma notificação Teams</div>';
-                return;
-            }
-            
-            list.innerHTML = historicoTeams.slice(0, 20).map(t => `
-                <div class="teams-item">
-                    <div class="teams-message"><i class="fab fa-microsoft"></i> ${t.titulo}</div>
-                    <div class="teams-time"><i class="fas fa-clock"></i> ${formatarDataHora(t.data)}</div>
-                    <div class="teams-status ${t.status === 'enviado' ? 'teams-status-success' : 'teams-status-error'}">
-                        <i class="fas ${t.status === 'enviado' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> 
-                        ${t.status === 'enviado' ? 'Enviado' : 'Erro'}
-                    </div>
-                </div>
-            `).join('');
+            if (historicoTeams.length === 0) { list.innerHTML = '<div style="padding:20px;text-align:center;">Nenhuma notificação Teams</div>'; return; }
+            list.innerHTML = historicoTeams.slice(0, 20).map(t => `<div class="teams-item"><div class="teams-message"><i class="fab fa-microsoft"></i> ${t.titulo}</div><div class="teams-time"><i class="fas fa-clock"></i> ${formatarDataHora(t.data)}</div><div class="teams-status ${t.status === 'enviado' ? 'teams-status-success' : 'teams-status-error'}"><i class="fas ${t.status === 'enviado' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${t.status === 'enviado' ? 'Enviado' : 'Erro'}</div></div>`).join('');
         }
 
-        // Templates de email
         function templateNovaRequisicao(req) {
-            return `
-                <div style="font-family: Arial, sans-serif; max-width: 600px;">
-                    <h2 style="color: #4CAF50;">Nova Requisição de Vaga</h2>
-                    <p><strong>Código:</strong> ${req.codigo}</p>
-                    <p><strong>Função:</strong> ${req.funcao}</p>
-                    <p><strong>Direção:</strong> ${req.direcao}</p>
-                    <p><strong>Categoria:</strong> ${req.area}</p>
-                    <p><strong>Quantidade:</strong> ${req.quantidade}</p>
-                    <p><strong>Data Início:</strong> ${formatarData(req.dataInicio)}</p>
-                    <p><strong>Solicitante:</strong> ${req.criadoPor}</p>
-                    <p><strong>Observações:</strong> ${req.observacoes || 'N/A'}</p>
-                    <hr>
-                    <p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p>
-                </div>
-            `;
+            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #4CAF50;">Nova Requisição de Vaga</h2><p><strong>Código:</strong> ${req.codigo}</p><p><strong>Função:</strong> ${req.funcao}</p><p><strong>Direção:</strong> ${req.direcao}</p><p><strong>Categoria:</strong> ${req.area}</p><p><strong>Quantidade:</strong> ${req.quantidade}</p><p><strong>Data Início:</strong> ${formatarData(req.dataInicio)}</p><p><strong>Solicitante:</strong> ${req.criadoPor}</p><p><strong>Observações:</strong> ${req.observacoes || 'N/A'}</p><hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
         }
 
         function templateAprovacao(req, aprovador, comentario, proximoAprovador) {
-            return `
-                <div style="font-family: Arial, sans-serif; max-width: 600px;">
-                    <h2 style="color: #4CAF50;">Requisição Aprovada</h2>
-                    <p><strong>Código:</strong> ${req.codigo}</p>
-                    <p><strong>Função:</strong> ${req.funcao}</p>
-                    <p><strong>Aprovado por:</strong> ${aprovador}</p>
-                    <p><strong>Comentário:</strong> ${comentario}</p>
-                    ${proximoAprovador ? `<p><strong>Próximo Aprovador:</strong> ${proximoAprovador}</p>` : ''}
-                    <hr>
-                    <p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p>
-                </div>
-            `;
+            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #4CAF50;">Requisição Aprovada</h2><p><strong>Código:</strong> ${req.codigo}</p><p><strong>Função:</strong> ${req.funcao}</p><p><strong>Aprovado por:</strong> ${aprovador}</p><p><strong>Comentário:</strong> ${comentario}</p>${proximoAprovador ? `<p><strong>Próximo Aprovador:</strong> ${proximoAprovador}</p>` : ''}<hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
         }
 
         function templateRejeicao(req, rejeitadoPor, comentario) {
-            return `
-                <div style="font-family: Arial, sans-serif; max-width: 600px;">
-                    <h2 style="color: #f44336;">Requisição Rejeitada</h2>
-                    <p><strong>Código:</strong> ${req.codigo}</p>
-                    <p><strong>Função:</strong> ${req.funcao}</p>
-                    <p><strong>Rejeitado por:</strong> ${rejeitadoPor}</p>
-                    <p><strong>Motivo:</strong> ${comentario}</p>
-                    <hr>
-                    <p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p>
-                </div>
-            `;
+            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #f44336;">Requisição Rejeitada</h2><p><strong>Código:</strong> ${req.codigo}</p><p><strong>Função:</strong> ${req.funcao}</p><p><strong>Rejeitado por:</strong> ${rejeitadoPor}</p><p><strong>Motivo:</strong> ${comentario}</p><hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
         }
 
         function templateAprovacaoFinal(req, aprovador, comentario) {
-            return `
-                <div style="font-family: Arial, sans-serif; max-width: 600px;">
-                    <h2 style="color: #4CAF50;">Requisição Aprovada com Sucesso!</h2>
-                    <p><strong>Código:</strong> ${req.codigo}</p>
-                    <p><strong>Função:</strong> ${req.funcao}</p>
-                    <p><strong>Direção:</strong> ${req.direcao}</p>
-                    <p><strong>Aprovado por:</strong> ${aprovador}</p>
-                    <p><strong>Comentário:</strong> ${comentario}</p>
-                    <hr>
-                    <p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p>
-                </div>
-            `;
+            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #4CAF50;">Requisição Aprovada com Sucesso!</h2><p><strong>Código:</strong> ${req.codigo}</p><p><strong>Função:</strong> ${req.funcao}</p><p><strong>Direção:</strong> ${req.direcao}</p><p><strong>Aprovado por:</strong> ${aprovador}</p><p><strong>Comentário:</strong> ${comentario}</p><hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
         }
 
         // ============================================
@@ -1140,11 +807,8 @@
         async function getAccessToken(scopes) {
             if (!account) throw new Error('Usuário não autenticado');
             const request = { account, scopes };
-            try { 
-                return (await msalInstance.acquireTokenSilent(request)).accessToken;
-            } catch (e) { 
-                return (await msalInstance.acquireTokenPopup(request)).accessToken;
-            }
+            try { return (await msalInstance.acquireTokenSilent(request)).accessToken; } 
+            catch (e) { return (await msalInstance.acquireTokenPopup(request)).accessToken; }
         }
 
         async function getUserInfo() {
@@ -1156,30 +820,18 @@
         async function getUserPhoto() {
             try {
                 const token = await getAccessToken(['User.Read']);
-                const resp = await fetch('https://graph.microsoft.com/v1.0/me/photo/$value', { 
-                    headers: { 'Authorization': `Bearer ${token}` } 
-                });
-                if (resp.ok) {
-                    const blob = await resp.blob();
-                    return URL.createObjectURL(blob);
-                }
-            } catch (error) {
-                console.log('Foto não disponível');
-            }
+                const resp = await fetch('https://graph.microsoft.com/v1.0/me/photo/$value', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (resp.ok) { const blob = await resp.blob(); return URL.createObjectURL(blob); }
+            } catch (error) { console.log('Foto não disponível'); }
             return null;
         }
 
         function atualizarAvatar(userInfo, containerId = 'userAvatar') {
             const avatarContainer = document.getElementById(containerId);
             if (!avatarContainer) return;
-            
             getUserPhoto().then(photoUrl => {
-                if (photoUrl) {
-                    avatarContainer.innerHTML = `<img src="${photoUrl}" class="user-avatar" alt="Avatar">`;
-                } else {
-                    const inicial = userInfo.displayName ? userInfo.displayName.charAt(0).toUpperCase() : 'U';
-                    avatarContainer.innerHTML = `<div class="user-avatar-placeholder">${inicial}</div>`;
-                }
+                if (photoUrl) { avatarContainer.innerHTML = `<img src="${photoUrl}" class="user-avatar" alt="Avatar">`; } 
+                else { const inicial = userInfo.displayName ? userInfo.displayName.charAt(0).toUpperCase() : 'U'; avatarContainer.innerHTML = `<div class="user-avatar-placeholder">${inicial}</div>`; }
             });
         }
 
@@ -1192,21 +844,8 @@
                 const userInfo = await getUserInfo();
                 const email = userInfo.mail || userInfo.userPrincipalName;
                 let perfil = perfisManuais[email] || 'Colaborador';
-                usuarioAtual = { 
-                    id: userInfo.id, 
-                    nome: userInfo.displayName, 
-                    email: email, 
-                    perfil: perfil 
-                };
-                
-                localStorage.setItem('keroSessao', JSON.stringify({ 
-                    usuarioId: usuarioAtual.id, 
-                    perfil: usuarioAtual.perfil, 
-                    email: usuarioAtual.email,
-                    nome: usuarioAtual.nome,
-                    expira: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString() 
-                }));
-                
+                usuarioAtual = { id: userInfo.id, nome: userInfo.displayName, email: email, perfil: perfil };
+                localStorage.setItem('keroSessao', JSON.stringify({ usuarioId: usuarioAtual.id, perfil: usuarioAtual.perfil, email: usuarioAtual.email, nome: usuarioAtual.nome, expira: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString() }));
                 document.getElementById('loginScreen').style.display = 'none';
                 mostrarTelaSelecaoModulos();
                 mostrarNotificacao(`Bem-vindo(a), ${usuarioAtual.nome}!`, 'success');
@@ -1239,12 +878,7 @@
                         const accounts = msalInstance.getAllAccounts();
                         if (accounts.length > 0) {
                             account = accounts[0];
-                            usuarioAtual = { 
-                                id: dados.usuarioId, 
-                                nome: dados.nome, 
-                                email: dados.email, 
-                                perfil: dados.perfil 
-                            };
+                            usuarioAtual = { id: dados.usuarioId, nome: dados.nome, email: dados.email, perfil: dados.perfil };
                             document.getElementById('loginScreen').style.display = 'none';
                             mostrarTelaSelecaoModulos();
                             mostrarNotificacao(`Bem-vindo(a) de volta, ${usuarioAtual.nome}!`, 'success');
@@ -1267,9 +901,6 @@
             mostrarNotificacao('Sessão encerrada!', 'success');
         }
 
-        // ============================================
-        // CONTROLE DE ACESSO
-        // ============================================
         function isAprovador() {
             if (!usuarioAtual) return false;
             return ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'].includes(usuarioAtual.perfil);
@@ -1287,11 +918,9 @@
         }
 
         // ============================================
-        // SHAREPOINT - INTEGRAÇÃO
+        // SHAREPOINT - INTEGRAÇÃO CORRIGIDA (SEM DUPLICAÇÃO)
         // ============================================
-        async function getSharePointToken() {
-            return await getAccessToken(["Sites.ReadWrite.All"]);
-        }
+        async function getSharePointToken() { return await getAccessToken(["Sites.ReadWrite.All"]); }
 
         async function getSiteId() {
             const token = await getSharePointToken();
@@ -1299,28 +928,18 @@
             let hostname = siteUrl.replace('https://', '').split('/')[0];
             let sitePath = siteUrl.replace('https://', '').split('/').slice(1).join('/');
             const encodedUrl = `${hostname}:/${sitePath}`;
-            
             try {
-                const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${encodedUrl}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
+                const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${encodedUrl}`, { headers: { 'Authorization': `Bearer ${token}` } });
                 if (!response.ok) {
-                    const searchResponse = await fetch(`https://graph.microsoft.com/v1.0/sites?search=*`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    const searchResponse = await fetch(`https://graph.microsoft.com/v1.0/sites?search=*`, { headers: { 'Authorization': `Bearer ${token}` } });
                     const searchData = await searchResponse.json();
                     const site = searchData.value.find(s => s.webUrl.includes('SIR') || s.displayName === 'SIR');
                     if (site) return site.id;
                     throw new Error('Site não encontrado');
                 }
-                
                 const siteData = await response.json();
                 return siteData.id;
-            } catch (error) {
-                console.error('Erro ao obter site ID:', error);
-                throw error;
-            }
+            } catch (error) { throw error; }
         }
 
         async function carregarRequisicoesDoSharePoint() {
@@ -1328,34 +947,25 @@
             try {
                 const token = await getSharePointToken();
                 let siteId;
-                try {
-                    siteId = await getSiteId();
-                } catch (error) {
-                    console.error('Erro ao obter site ID:', error);
-                    mostrarNotificacao('Não foi possível conectar ao SharePoint.', 'error');
-                    requisicoes = [];
-                    hideLoading();
-                    return;
-                }
+                try { siteId = await getSiteId(); } catch (error) { requisicoes = []; hideLoading(); return; }
                 
                 const listUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items?expand=fields`;
-                
-                const listResponse = await fetch(listUrl, { 
-                    headers: { 'Authorization': `Bearer ${token}` } 
-                });
+                const listResponse = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}` } });
                 
                 if (listResponse.ok) {
                     const listData = await listResponse.json();
                     if (listData.value && listData.value.length > 0) {
-                        requisicoes = [];
+                        const novasRequisicoes = [];
+                        const idsExistentes = new Set(requisicoes.map(r => r.id));
                         
                         for (const item of listData.value) {
-                            const f = item.fields;
+                            // Evitar duplicação verificando se o ID já existe
+                            if (idsExistentes.has(item.id)) continue;
                             
-                            // Buscar anexos do item usando Attachment Collection
+                            const f = item.fields;
                             const anexos = await buscarAnexosDoItem(item.id);
                             
-                            requisicoes.push({
+                            novasRequisicoes.push({
                                 id: item.id,
                                 codigo: f.Title || `REQ-${item.id}`,
                                 funcao: f.Funcao || "",
@@ -1376,18 +986,14 @@
                             });
                         }
                         
+                        if (novasRequisicoes.length > 0) {
+                            requisicoes = [...novasRequisicoes, ...requisicoes];
+                        }
                         mostrarNotificacao(`Carregadas ${requisicoes.length} requisições`, 'success');
-                    } else {
-                        requisicoes = [];
-                        mostrarNotificacao('Nenhuma requisição encontrada', 'info');
                     }
-                } else {
-                    console.error('Erro ao carregar lista:', listResponse.status);
-                    requisicoes = [];
                 }
             } catch (error) {
                 console.error('Erro ao carregar:', error);
-                requisicoes = [];
             } finally {
                 hideLoading();
                 filtrarRequisicoes();
@@ -1402,8 +1008,13 @@
                 const token = await getSharePointToken();
                 const siteId = await getSiteId();
                 
+                // Gerar código único baseado em timestamp para evitar duplicação
+                const timestamp = Date.now();
+                const codigoUnico = `REQ-${new Date().getFullYear()}-${timestamp}`;
+                req.codigo = codigoUnico;
+                
                 const fields = {
-                    "Title": req.codigo,
+                    "Title": codigoUnico,
                     "Funcao": req.funcao,
                     "Direcao": req.direcao,
                     "Area": req.area,
@@ -1425,24 +1036,26 @@
                     body: JSON.stringify({ fields: fields })
                 });
                 
-                if (createResponse.ok) { 
-                    const newItem = await createResponse.json();
-                    req.id = newItem.id;
-                    
-                    // Fazer upload dos anexos usando Attachment Collection
-                    if (arquivos.length > 0) {
-                        const anexosUpload = await fazerUploadAnexos(newItem.id, arquivos);
-                        req.anexos = anexosUpload;
-                    }
-                    
-                    return { success: true, id: newItem.id };
-                } else {
+                if (!createResponse.ok) {
                     const error = await createResponse.text();
-                    console.error('Erro ao salvar:', error);
-                    return { success: false, error: error };
+                    return { success: false, error: `Erro ao criar item: ${createResponse.status}` };
                 }
-            } catch (error) { 
-                console.error('Erro ao salvar:', error); 
+                
+                const newItem = await createResponse.json();
+                const itemId = newItem.id;
+                req.id = itemId;
+                
+                if (arquivos && arquivos.length > 0) {
+                    const anexosUpload = await fazerUploadAnexos(itemId, arquivos);
+                    req.anexos = anexosUpload;
+                } else {
+                    req.anexos = [];
+                }
+                
+                return { success: true, id: itemId };
+                
+            } catch (error) {
+                console.error('Erro ao salvar:', error);
                 return { success: false, error: error.message };
             }
         }
@@ -1451,32 +1064,22 @@
             try {
                 const token = await getSharePointToken();
                 const siteId = await getSiteId();
-                
                 const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${req.id}/fields`, {
                     method: 'PATCH',
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ "Status": req.status })
                 });
-                
-                if (!response.ok) {
-                    console.error('Erro ao atualizar status:', response.status);
-                    return false;
-                }
-                return true;
-            } catch (error) { 
-                console.error('Erro ao atualizar:', error); 
-                return false; 
-            }
+                return response.ok;
+            } catch (error) { return false; }
         }
 
         // ============================================
-        // NAVEGAÇÃO
+        // NAVEGAÇÃO E REQUISIÇÕES
         // ============================================
         function selecionarModulo(mod) {
             moduloAtual = mod;
             document.getElementById('moduleSelectionScreen').style.display = 'none';
             document.getElementById('mainSystem').style.display = 'block';
-            
             if (mod === 'recrutamento') {
                 document.getElementById('recrutamentoSection').style.display = 'block';
                 document.getElementById('manutencaoSection').style.display = 'none';
@@ -1488,7 +1091,6 @@
                 carregarConfiguracoes();
                 inicializarGraficos();
                 atualizarKPIs();
-                
                 document.getElementById('currentUserName').textContent = usuarioAtual.nome;
                 document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
                 atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
@@ -1504,15 +1106,10 @@
 
         function mudarAba(aba, elem) {
             const secs = ['dashboardSection', 'requisicoesSection', 'aprovacoesSection', 'relatoriosSection', 'utilizadoresSection', 'direcoesSection', 'configuracoesSection'];
-            secs.forEach(s => { 
-                const el = document.getElementById(s); 
-                if (el) el.style.display = 'none'; 
-            });
+            secs.forEach(s => { const el = document.getElementById(s); if (el) el.style.display = 'none'; });
             document.getElementById(aba + 'Section').style.display = 'block';
-            
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             if (elem) elem.classList.add('active');
-            
             if (aba === 'dashboard') { carregarDashboard(); atualizarKPIs(); atualizarGraficos(); }
             if (aba === 'aprovacoes') carregarAprovacoes();
         }
@@ -1520,40 +1117,18 @@
         function inicializarDirecoes() {
             const sel = document.getElementById('direcao');
             const filtro = document.getElementById('filterDirecao');
-            if (sel) {
-                sel.innerHTML = '<option value="">Selecione</option>';
-                todasDirecoes.forEach(d => sel.appendChild(new Option(d, d)));
-            }
-            if (filtro) {
-                filtro.innerHTML = '<option value="all">Todas</option>';
-                todasDirecoes.forEach(d => filtro.appendChild(new Option(d, d)));
-            }
+            if (sel) { sel.innerHTML = '<option value="">Selecione</option>'; todasDirecoes.forEach(d => sel.appendChild(new Option(d, d))); }
+            if (filtro) { filtro.innerHTML = '<option value="all">Todas</option>'; todasDirecoes.forEach(d => filtro.appendChild(new Option(d, d))); }
             const areaSel = document.getElementById('area');
-            if (areaSel) {
-                areaSel.innerHTML = '<option value="">Selecione</option>';
-                todasCategorias.forEach(c => areaSel.appendChild(new Option(c, c)));
-            }
+            if (areaSel) { areaSel.innerHTML = '<option value="">Selecione</option>'; todasCategorias.forEach(c => areaSel.appendChild(new Option(c, c))); }
         }
 
-        // ============================================
-        // UPLOAD DE ARQUIVOS
-        // ============================================
         function handleFileSelect(files) {
             const maxSize = 100 * 1024 * 1024;
-            
             for (let f of files) {
-                if (f.size > maxSize) {
-                    mostrarNotificacao(`${f.name} excede 100MB`, 'error');
-                } else if (arquivosUpload.length >= 5) {
-                    mostrarNotificacao('Máximo 5 arquivos', 'warning');
-                } else {
-                    arquivosUpload.push({
-                        file: f,
-                        name: f.name,
-                        size: f.size,
-                        type: f.type
-                    });
-                }
+                if (f.size > maxSize) { mostrarNotificacao(`${f.name} excede 100MB`, 'error'); } 
+                else if (arquivosUpload.length >= 5) { mostrarNotificacao('Máximo 5 arquivos', 'warning'); } 
+                else { arquivosUpload.push({ file: f, name: f.name, size: f.size, type: f.type }); }
             }
             atualizarListaArquivos();
         }
@@ -1561,34 +1136,12 @@
         function atualizarListaArquivos() {
             const list = document.getElementById('fileList');
             if (!list) return;
-            
-            if (arquivosUpload.length === 0) {
-                list.innerHTML = '';
-                return;
-            }
-            
-            list.innerHTML = arquivosUpload.map((f, i) => `
-                <div class="file-item">
-                    <div class="file-info">
-                        <i class="fas fa-file"></i>
-                        <div>
-                            <div>${f.name}</div>
-                            <div class="file-size">${formatarTamanho(f.size)}</div>
-                        </div>
-                    </div>
-                    <i class="fas fa-times file-remove" onclick="removerArquivo(${i})"></i>
-                </div>
-            `).join('');
+            if (arquivosUpload.length === 0) { list.innerHTML = ''; return; }
+            list.innerHTML = arquivosUpload.map((f, i) => `<div class="file-item"><div class="file-info"><i class="fas fa-file"></i><div><div>${f.name}</div><div class="file-size">${formatarTamanho(f.size)}</div></div></div><i class="fas fa-times file-remove" onclick="removerArquivo(${i})"></i></div>`).join('');
         }
 
-        function removerArquivo(i) { 
-            arquivosUpload.splice(i, 1); 
-            atualizarListaArquivos();
-        }
+        function removerArquivo(i) { arquivosUpload.splice(i, 1); atualizarListaArquivos(); }
 
-        // ============================================
-        // REQUISIÇÕES
-        // ============================================
         function filtrarPorStatus(status) {
             estado.filtrosAtivos.status = status === 'all' ? null : status;
             const filterStatus = document.getElementById('filterStatus');
@@ -1600,17 +1153,10 @@
         function filtrarRequisicoes() {
             let lista = [...requisicoes];
             lista = filtrarRequisicoesVisiveis(lista);
-            
-            if (estado.filtrosAtivos.pesquisa) {
-                const p = estado.filtrosAtivos.pesquisa.toLowerCase();
-                lista = lista.filter(r => r.codigo.toLowerCase().includes(p) || r.funcao.toLowerCase().includes(p));
-            }
+            if (estado.filtrosAtivos.pesquisa) { const p = estado.filtrosAtivos.pesquisa.toLowerCase(); lista = lista.filter(r => r.codigo.toLowerCase().includes(p) || r.funcao.toLowerCase().includes(p)); }
             if (estado.filtrosAtivos.status) lista = lista.filter(r => r.status === estado.filtrosAtivos.status);
             if (estado.filtrosAtivos.direcao) lista = lista.filter(r => r.direcao === estado.filtrosAtivos.direcao);
-            
-            requisicoesFiltradas = lista.sort((a, b) => 
-                estado.ordenacao === 'newest' ? new Date(b.dataCriacao) - new Date(a.dataCriacao) : new Date(a.dataCriacao) - new Date(b.dataCriacao)
-            );
+            requisicoesFiltradas = lista.sort((a, b) => estado.ordenacao === 'newest' ? new Date(b.dataCriacao) - new Date(a.dataCriacao) : new Date(a.dataCriacao) - new Date(b.dataCriacao));
             estado.paginaAtual = 1;
             carregarRequisicoes();
         }
@@ -1618,27 +1164,10 @@
         function carregarRequisicoes() {
             const tbody = document.getElementById('corpoTabela');
             if (!tbody) return;
-            
-            if (requisicoesFiltradas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma requisição encontrada</td></tr>';
-                return;
-            }
-            
+            if (requisicoesFiltradas.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma requisição encontrada</td></tr>'; return; }
             const inicio = (estado.paginaAtual - 1) * estado.itensPorPagina;
             const itens = requisicoesFiltradas.slice(inicio, inicio + estado.itensPorPagina);
-            
-            tbody.innerHTML = itens.map(r => `
-                <tr onclick="visualizarRequisicao('${r.id}')">
-                    <td>${r.codigo}</td>
-                    <td>${r.funcao}</td>
-                    <td>${r.direcao}</td>
-                    <td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td>
-                    <td>${getTipoBadge(r.tipo)}</td>
-                    <td>${formatarData(r.dataInicio)}</td>
-                    <td><div class="action-buttons"><button class="btn-small btn-view" onclick="event.stopPropagation();visualizarRequisicao('${r.id}')"><i class="fas fa-eye"></i> Ver</button>${getBotoesAcao(r)}</div></td>
-                </tr>
-            `).join('');
-            
+            tbody.innerHTML = itens.map(r => `<tr onclick="visualizarRequisicao('${r.id}')"><td>${r.codigo}</td><td>${r.funcao}</td><td>${r.direcao}</td><td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td><td>${getTipoBadge(r.tipo)}</td><td>${formatarData(r.dataInicio)}</td><td><div class="action-buttons"><button class="btn-small btn-view" onclick="event.stopPropagation();visualizarRequisicao('${r.id}')"><i class="fas fa-eye"></i> Ver</button>${getBotoesAcao(r)}</div></td></tr>`).join('');
             const total = Math.ceil(requisicoesFiltradas.length / estado.itensPorPagina);
             document.getElementById('paginaAnterior').disabled = estado.paginaAtual === 1;
             document.getElementById('paginaProxima').disabled = estado.paginaAtual === total;
@@ -1676,47 +1205,30 @@
                 if (req.status === 'em_validacao_rh') {
                     req.status = 'em_validacao_financas';
                     await atualizarRequisicaoNoSharePoint(req);
-                    
-                    await enviarEmail(emailsAprovadores['Controlo de Gestão'], 
-                        `Requisição para Aprovação - ${req.codigo}`, 
-                        templateAprovacao(req, usuarioAtual.nome, coment, 'Controlo de Gestão'));
-                    
+                    await enviarEmail(emailsAprovadores['Controlo de Gestão'], `Requisição para Aprovação - ${req.codigo}`, templateAprovacao(req, usuarioAtual.nome, coment, 'Controlo de Gestão'));
                     adicionarNotificacao('Requisição Aprovada', `Requisição ${req.codigo} foi aprovada pelo RH.`, 'success', req.id);
                     mostrarNotificacao(`Requisição ${req.codigo} aprovada pelo RH!`, 'success');
-                    
                 } else if (req.status === 'em_validacao_financas') {
                     req.status = 'em_validacao_director';
                     await atualizarRequisicaoNoSharePoint(req);
-                    
-                    await enviarEmail(emailsAprovadores['Director Geral'], 
-                        `Requisição para Aprovação - ${req.codigo}`, 
-                        templateAprovacao(req, usuarioAtual.nome, coment, 'Director Geral'));
-                    
+                    await enviarEmail(emailsAprovadores['Director Geral'], `Requisição para Aprovação - ${req.codigo}`, templateAprovacao(req, usuarioAtual.nome, coment, 'Director Geral'));
                     adicionarNotificacao('Requisição Aprovada', `Requisição ${req.codigo} foi aprovada pelo CG.`, 'success', req.id);
                     mostrarNotificacao(`Requisição ${req.codigo} aprovada pelo CG!`, 'success');
-                    
                 } else if (req.status === 'em_validacao_director') {
                     req.status = 'aprovada';
                     await atualizarRequisicaoNoSharePoint(req);
-                    
                     const emailsDestinatarios = [req.criadoPorEmail, emailsAprovadores['RH'], 'aleixo.francisco@accordgrouplda.com'];
-                    for (const email of emailsDestinatarios) {
-                        await enviarEmail(email, `Requisição Aprovada - ${req.codigo}`, templateAprovacaoFinal(req, usuarioAtual.nome, coment));
-                    }
-                    
+                    for (const email of emailsDestinatarios) { await enviarEmail(email, `Requisição Aprovada - ${req.codigo}`, templateAprovacaoFinal(req, usuarioAtual.nome, coment)); }
                     adicionarNotificacao('Requisição Aprovada', `Requisição ${req.codigo} foi totalmente aprovada!`, 'success', req.id);
                     mostrarNotificacao(`Requisição ${req.codigo} APROVADA!`, 'success');
                 }
             } else if (acao === 'rejeitar') {
                 req.status = 'rejeitada';
                 await atualizarRequisicaoNoSharePoint(req);
-                
                 await enviarEmail(req.criadoPorEmail, `Requisição Rejeitada - ${req.codigo}`, templateRejeicao(req, usuarioAtual.nome, coment));
-                
                 adicionarNotificacao('Requisição Rejeitada', `Requisição ${req.codigo} foi rejeitada.`, 'error', req.id);
                 mostrarNotificacao(`Requisição ${req.codigo} REJEITADA!`, 'warning');
             }
-            
             fecharModal('modalComentario');
             filtrarRequisicoes();
             carregarAprovacoes();
@@ -1725,75 +1237,18 @@
 
         function visualizarRequisicao(id) {
             const req = requisicoes.find(r => r.id == id);
-            if (!req) {
-                mostrarNotificacao('Requisição não encontrada', 'error');
-                return;
-            }
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (!podeVerRequisicao(req)) { mostrarNotificacao('Você não tem permissão', 'error'); return; }
             
-            if (!podeVerRequisicao(req)) {
-                mostrarNotificacao('Você não tem permissão para visualizar esta requisição', 'error');
-                return;
-            }
+            let html = `<div style="margin-bottom: 15px;"><strong>Código:</strong> ${req.codigo}</div><div style="margin-bottom: 15px;"><strong>Função:</strong> ${req.funcao}</div><div style="margin-bottom: 15px;"><strong>Direção:</strong> ${req.direcao}</div><div style="margin-bottom: 15px;"><strong>Categoria:</strong> ${req.area}</div><div style="margin-bottom: 15px;"><strong>Quantidade:</strong> ${req.quantidade}</div><div style="margin-bottom: 15px;"><strong>Status:</strong> <span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></div><div style="margin-bottom: 15px;"><strong>Data Início:</strong> ${formatarData(req.dataInicio)}</div><div style="margin-bottom: 15px;"><strong>Solicitante:</strong> ${req.criadoPor || 'N/A'}</div><div style="margin-bottom: 15px;"><strong>Data Criação:</strong> ${formatarDataHora(req.dataCriacao)}</div><div style="margin-bottom: 15px;"><strong>Observações:</strong> ${req.observacoes || 'N/A'}</div>`;
+            if (req.tipo === 'substituicao') { html += `<div style="margin-bottom: 15px;"><strong>Colaborador a Substituir:</strong> ${req.colaboradorSubstituir || 'N/A'}</div><div style="margin-bottom: 15px;"><strong>Motivo da Substituição:</strong> ${req.motivoSubstituicao || 'N/A'}</div>`; }
+            if (req.tipo === 'reforco_quadro') { html += `<div style="margin-bottom: 15px;"><strong>Justificativa do Reforço:</strong> ${req.justificativaReforco || 'N/A'}</div>`; }
             
-            let html = `
-                <div style="margin-bottom: 15px;"><strong>Código:</strong> ${req.codigo}</div>
-                <div style="margin-bottom: 15px;"><strong>Função:</strong> ${req.funcao}</div>
-                <div style="margin-bottom: 15px;"><strong>Direção:</strong> ${req.direcao}</div>
-                <div style="margin-bottom: 15px;"><strong>Categoria:</strong> ${req.area}</div>
-                <div style="margin-bottom: 15px;"><strong>Quantidade:</strong> ${req.quantidade}</div>
-                <div style="margin-bottom: 15px;"><strong>Status:</strong> <span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></div>
-                <div style="margin-bottom: 15px;"><strong>Data Início:</strong> ${formatarData(req.dataInicio)}</div>
-                <div style="margin-bottom: 15px;"><strong>Solicitante:</strong> ${req.criadoPor || 'N/A'}</div>
-                <div style="margin-bottom: 15px;"><strong>Data Criação:</strong> ${formatarDataHora(req.dataCriacao)}</div>
-                <div style="margin-bottom: 15px;"><strong>Observações:</strong> ${req.observacoes || 'N/A'}</div>`;
-            
-            if (req.tipo === 'substituicao') {
-                html += `<div style="margin-bottom: 15px;"><strong>Colaborador a Substituir:</strong> ${req.colaboradorSubstituir || 'N/A'}</div>
-                        <div style="margin-bottom: 15px;"><strong>Motivo da Substituição:</strong> ${req.motivoSubstituicao || 'N/A'}</div>`;
-            }
-            if (req.tipo === 'reforco_quadro') {
-                html += `<div style="margin-bottom: 15px;"><strong>Justificativa do Reforço:</strong> ${req.justificativaReforco || 'N/A'}</div>`;
-            }
-            
-            // Adicionar seção de anexos
             if (req.anexos && req.anexos.length > 0) {
-                html += `<div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid var(--primary-light);">
-                            <strong><i class="fas fa-paperclip"></i> Anexos (${req.anexos.length}):</strong>
-                            <div style="margin-top: 10px;">`;
-                
-                req.anexos.forEach(anexo => {
-                    let iconClass = 'fa-file';
-                    if (anexo.name) {
-                        if (anexo.name.match(/\.(pdf)$/i)) iconClass = 'fa-file-pdf';
-                        else if (anexo.name.match(/\.(jpg|jpeg|png|gif|bmp)$/i)) iconClass = 'fa-file-image';
-                        else if (anexo.name.match(/\.(doc|docx)$/i)) iconClass = 'fa-file-word';
-                        else if (anexo.name.match(/\.(xls|xlsx)$/i)) iconClass = 'fa-file-excel';
-                        else if (anexo.name.match(/\.(txt)$/i)) iconClass = 'fa-file-alt';
-                        else if (anexo.name.match(/\.(zip|rar|7z)$/i)) iconClass = 'fa-file-archive';
-                    }
-                    
-                    html += `<div class="anexo-item">
-                                <i class="fas ${iconClass}"></i>
-                                <div class="anexo-info">
-                                    <div class="anexo-nome">${anexo.name}</div>
-                                    <div class="anexo-tamanho">${formatarTamanho(anexo.size)}</div>
-                                </div>
-                                <button class="btn-download" onclick="baixarAnexo('${req.id}', '${anexo.id}', '${anexo.name}')">
-                                    <i class="fas fa-download"></i> Baixar
-                                </button>
-                            </div>`;
-                });
-                
+                html += `<div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid var(--primary-light);"><strong><i class="fas fa-paperclip"></i> Anexos (${req.anexos.length}):</strong><div style="margin-top: 10px;">`;
+                req.anexos.forEach(anexo => { html += `<div class="anexo-item"><i class="fas fa-file"></i><div class="anexo-info"><div class="anexo-nome">${anexo.name}</div><div class="anexo-tamanho">${formatarTamanho(anexo.size)}</div></div><button class="btn-download" onclick="baixarAnexo('${req.id}', '${anexo.id}', '${anexo.name}')"><i class="fas fa-download"></i> Baixar</button></div>`; });
                 html += `</div></div>`;
-            } else {
-                html += `<div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid var(--primary-light);">
-                            <strong><i class="fas fa-paperclip"></i> Anexos:</strong>
-                            <p style="color: #999; margin-top: 10px; padding: 20px; text-align: center; background: #f5f5f5; border-radius: 8px;">
-                                <i class="fas fa-info-circle"></i> Nenhum anexo nesta requisição
-                            </p>
-                        </div>`;
-            }
-            
+            } else { html += `<div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid var(--primary-light);"><strong><i class="fas fa-paperclip"></i> Anexos:</strong><p style="color: #999; margin-top: 10px; padding: 20px; text-align: center; background: #f5f5f5; border-radius: 8px;"><i class="fas fa-info-circle"></i> Nenhum anexo nesta requisição</p></div>`; }
             document.getElementById('conteudoModal').innerHTML = html;
             abrirModal('modalVisualizar');
         }
@@ -1801,57 +1256,26 @@
         function carregarAprovacoes() {
             const tbody = document.getElementById('corpoAprovacoes');
             if (!tbody) return;
-            
-            if (!isAprovador()) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Acesso restrito a aprovadores</td></tr>';
-                return;
-            }
-            
+            if (!isAprovador()) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Acesso restrito a aprovadores</td></tr>'; return; }
             let pendentes = [];
             if (usuarioAtual?.perfil === 'RH') pendentes = requisicoes.filter(r => r.status === 'em_validacao_rh');
             else if (usuarioAtual?.perfil === 'Controlo de Gestão') pendentes = requisicoes.filter(r => r.status === 'em_validacao_financas');
             else if (usuarioAtual?.perfil === 'Director Geral') pendentes = requisicoes.filter(r => r.status === 'em_validacao_director');
             else if (usuarioAtual?.perfil === 'Administrador') pendentes = requisicoes.filter(r => ['em_validacao_rh', 'em_validacao_financas', 'em_validacao_director'].includes(r.status));
-            
-            if (pendentes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhuma aprovação pendente</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = pendentes.map(r => `
-                <tr onclick="visualizarRequisicao('${r.id}')">
-                    <td>${r.codigo}</td>
-                    <td>${r.funcao}</td>
-                    <td>${r.direcao}</td>
-                    <td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td>
-                    <td>${formatarData(r.dataCriacao)}</td>
-                    <td><div class="action-buttons">${getBotoesAcao(r)}</div></td>
-                </tr>
-            `).join('');
+            if (pendentes.length === 0) { tbody.innerHTML = '<td><td colspan="6" style="text-align:center;">Nenhuma aprovação pendente</td></tr>'; return; }
+            tbody.innerHTML = pendentes.map(r => `<tr onclick="visualizarRequisicao('${r.id}')"><td>${r.codigo}</td><td>${r.funcao}</td><td>${r.direcao}</td><td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td><td>${formatarData(r.dataCriacao)}</td><td><div class="action-buttons">${getBotoesAcao(r)}</div></td></tr>`).join('');
         }
 
         function carregarDashboard() {
             const cont = document.getElementById('atividadesRecentes');
             if (!cont) return;
-            
             const requisicoesVisiveis = filtrarRequisicoesVisiveis(requisicoes);
-            
-            if (requisicoesVisiveis.length === 0) {
-                cont.innerHTML = '<div style="padding:20px;text-align:center;">Nenhuma atividade recente</div>';
-                return;
-            }
-            
-            cont.innerHTML = requisicoesVisiveis.slice(0, 5).map(r => `
-                <div class="activity-item">
-                    <i class="fas fa-plus-circle" style="color: var(--primary);"></i>
-                    <div><strong>${r.codigo}</strong> - ${r.funcao}<br><small>Criada por ${r.criadoPor || 'Desconhecido'} em ${formatarData(r.dataCriacao)}</small></div>
-                </div>
-            `).join('');
+            if (requisicoesVisiveis.length === 0) { cont.innerHTML = '<div style="padding:20px;text-align:center;">Nenhuma atividade recente</div>'; return; }
+            cont.innerHTML = requisicoesVisiveis.slice(0, 5).map(r => `<div class="activity-item"><i class="fas fa-plus-circle" style="color: var(--primary);"></i><div><strong>${r.codigo}</strong> - ${r.funcao}<br><small>Criada por ${r.criadoPor || 'Desconhecido'} em ${formatarData(r.dataCriacao)}</small></div></div>`).join('');
         }
 
         function atualizarKPIs() {
             const requisicoesVisiveis = filtrarRequisicoesVisiveis(requisicoes);
-            
             document.getElementById('totalRequisicoes').textContent = requisicoesVisiveis.length;
             document.getElementById('totalPendentesRH').textContent = requisicoesVisiveis.filter(r => r.status === 'em_validacao_rh').length;
             document.getElementById('totalPendentesCG').textContent = requisicoesVisiveis.filter(r => r.status === 'em_validacao_financas').length;
@@ -1862,33 +1286,18 @@
 
         function inicializarGraficos() {
             const ctx = document.getElementById('statusChart')?.getContext('2d');
-            if (ctx) {
-                graficos.status = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: { 
-                        labels: ['Aprovadas', 'Pendentes RH', 'Pendentes CG', 'Pendentes Director'], 
-                        datasets: [{ 
-                            data: [0, 0, 0, 0], 
-                            backgroundColor: ['#4CAF50', '#FF9800', '#FFC107', '#FF5722'] 
-                        }] 
-                    }
-                });
-            }
+            if (ctx) { graficos.status = new Chart(ctx, { type: 'doughnut', data: { labels: ['Aprovadas', 'Pendentes RH', 'Pendentes CG', 'Pendentes Director'], datasets: [{ data: [0, 0, 0, 0], backgroundColor: ['#4CAF50', '#FF9800', '#FFC107', '#FF5722'] }] } }); }
         }
 
         function atualizarGraficos() {
             if (!graficos.status) return;
             const requisicoesVisiveis = filtrarRequisicoesVisiveis(requisicoes);
-            const aprov = requisicoesVisiveis.filter(r => r.status === 'aprovada').length;
-            const pendRH = requisicoesVisiveis.filter(r => r.status === 'em_validacao_rh').length;
-            const pendCG = requisicoesVisiveis.filter(r => r.status === 'em_validacao_financas').length;
-            const pendDir = requisicoesVisiveis.filter(r => r.status === 'em_validacao_director').length;
-            graficos.status.data.datasets[0].data = [aprov, pendRH, pendCG, pendDir];
+            graficos.status.data.datasets[0].data = [requisicoesVisiveis.filter(r => r.status === 'aprovada').length, requisicoesVisiveis.filter(r => r.status === 'em_validacao_rh').length, requisicoesVisiveis.filter(r => r.status === 'em_validacao_financas').length, requisicoesVisiveis.filter(r => r.status === 'em_validacao_director').length];
             graficos.status.update();
         }
 
         // ============================================
-        // FUNÇÃO PRINCIPAL DE SALVAR REQUISIÇÃO
+        // FUNÇÃO PRINCIPAL DE SALVAR REQUISIÇÃO (CORRIGIDA)
         // ============================================
         async function salvarRequisicao(e) {
             e.preventDefault();
@@ -1907,54 +1316,52 @@
             
             showLoading();
             
-            const novoCodigo = `REQ-${new Date().getFullYear()}-${String(requisicoes.length + 1).padStart(3, '0')}`;
-            
-            const novaRequisicao = {
-                codigo: novoCodigo, 
-                funcao: funcao, 
-                direcao: dir, 
-                area: area, 
-                quantidade: qtd,
-                status: 'em_validacao_rh', 
-                tipo: tipo, 
-                dataCriacao: new Date().toISOString(), 
-                dataInicio: dataInicio,
-                criadoPor: usuarioAtual.nome, 
-                criadoPorEmail: usuarioAtual.email, 
-                observacoes: obs || '',
-                colaboradorSubstituir: document.getElementById('colaboradorSubstituir')?.value || '',
-                motivoSubstituicao: document.getElementById('motivoSubstituicao')?.value || '',
-                justificativaReforco: document.getElementById('justificativaReforco')?.value || ''
-            };
-            
-            // Preparar arquivos para upload
-            const arquivosParaUpload = arquivosUpload.map(f => f.file);
-            
-            const resultado = await salvarRequisicaoNoSharePoint(novaRequisicao, arquivosParaUpload);
-            
-            if (resultado.success) {
-                requisicoes.unshift(novaRequisicao);
+            try {
+                const novaRequisicao = {
+                    codigo: '', // Será gerado no SharePoint
+                    funcao: funcao, 
+                    direcao: dir, 
+                    area: area, 
+                    quantidade: qtd,
+                    status: 'em_validacao_rh', 
+                    tipo: tipo, 
+                    dataCriacao: new Date().toISOString(), 
+                    dataInicio: dataInicio,
+                    criadoPor: usuarioAtual.nome, 
+                    criadoPorEmail: usuarioAtual.email, 
+                    observacoes: obs || '',
+                    anexos: [],
+                    colaboradorSubstituir: document.getElementById('colaboradorSubstituir')?.value || '',
+                    motivoSubstituicao: document.getElementById('motivoSubstituicao')?.value || '',
+                    justificativaReforco: document.getElementById('justificativaReforco')?.value || ''
+                };
                 
-                await enviarEmail(emailsAprovadores['RH'], 
-                    `Nova Requisição para Aprovação - ${novoCodigo}`, 
-                    templateNovaRequisicao(novaRequisicao));
+                const arquivosParaUpload = arquivosUpload.map(f => f.file);
+                const resultado = await salvarRequisicaoNoSharePoint(novaRequisicao, arquivosParaUpload);
                 
-                adicionarNotificacao('Nova Requisição', `Requisição ${novoCodigo} criada com sucesso!`, 'info', novaRequisicao.id);
-                
-                fecharModal('modalNovaRequisicao');
-                document.getElementById('formNovaRequisicao').reset();
-                arquivosUpload = [];
-                document.getElementById('fileList').innerHTML = '';
-                filtrarRequisicoes();
-                carregarAprovacoes();
-                atualizarKPIs();
-                atualizarGraficos();
-                mostrarNotificacao(`Requisição ${novoCodigo} criada com sucesso!`, 'success');
-            } else {
-                mostrarNotificacao(`Erro ao salvar: ${resultado.error}`, 'error');
+                if (resultado.success) {
+                    requisicoes.unshift(novaRequisicao);
+                    await enviarEmail(emailsAprovadores['RH'], `Nova Requisição para Aprovação - ${novaRequisicao.codigo}`, templateNovaRequisicao(novaRequisicao));
+                    adicionarNotificacao('Nova Requisição', `Requisição ${novaRequisicao.codigo} criada com sucesso!`, 'info', novaRequisicao.id);
+                    fecharModal('modalNovaRequisicao');
+                    document.getElementById('formNovaRequisicao').reset();
+                    arquivosUpload = [];
+                    document.getElementById('fileList').innerHTML = '';
+                    filtrarRequisicoes();
+                    carregarAprovacoes();
+                    atualizarKPIs();
+                    atualizarGraficos();
+                    const msgAnexos = novaRequisicao.anexos && novaRequisicao.anexos.length > 0 ? ` com ${novaRequisicao.anexos.length} anexo(s)` : '';
+                    mostrarNotificacao(`Requisição ${novaRequisicao.codigo} criada${msgAnexos}!`, 'success');
+                } else {
+                    mostrarNotificacao(`Erro ao salvar: ${resultado.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                mostrarNotificacao(`Erro: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
             }
-            
-            hideLoading();
         }
 
         // ============================================
@@ -1964,52 +1371,21 @@
             const dataInicio = document.getElementById('relatorioDataInicio').value;
             const dataFim = document.getElementById('relatorioDataFim').value;
             const status = document.getElementById('relatorioStatus').value;
-            
             let dados = filtrarRequisicoesVisiveis(requisicoes);
-            
-            if (dataInicio) {
-                dados = dados.filter(r => new Date(r.dataCriacao) >= new Date(dataInicio));
-            }
-            if (dataFim) {
-                dados = dados.filter(r => new Date(r.dataCriacao) <= new Date(dataFim + 'T23:59:59'));
-            }
-            if (status !== 'all') {
-                dados = dados.filter(r => r.status === status);
-            }
-            
+            if (dataInicio) dados = dados.filter(r => new Date(r.dataCriacao) >= new Date(dataInicio));
+            if (dataFim) dados = dados.filter(r => new Date(r.dataCriacao) <= new Date(dataFim + 'T23:59:59'));
+            if (status !== 'all') dados = dados.filter(r => r.status === status);
             return dados;
         }
 
         function exportarRelatorioPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
             const dados = obterDadosRelatorio();
             const dataRelatorio = new Date().toLocaleDateString('pt-PT');
-            
-            doc.setFontSize(18);
-            doc.setTextColor(46, 125, 50);
-            doc.text('Kero SIR - Relatório de Requisições', 14, 20);
-            
-            doc.setFontSize(11);
-            doc.setTextColor(100, 100, 100);
-            doc.text(`Gerado em: ${dataRelatorio}`, 14, 30);
-            doc.text(`Total de requisições: ${dados.length}`, 14, 38);
-            
-            doc.autoTable({
-                startY: 45,
-                head: [['Código', 'Função', 'Direção', 'Status', 'Data Criação']],
-                body: dados.map(r => [
-                    r.codigo,
-                    r.funcao,
-                    r.direcao,
-                    getStatusText(r.status),
-                    formatarData(r.dataCriacao)
-                ]),
-                headStyles: { fillColor: [76, 175, 80] },
-                alternateRowStyles: { fillColor: [240, 248, 233] }
-            });
-            
+            doc.setFontSize(18); doc.setTextColor(46, 125, 50); doc.text('Kero SIR - Relatório de Requisições', 14, 20);
+            doc.setFontSize(11); doc.setTextColor(100, 100, 100); doc.text(`Gerado em: ${dataRelatorio}`, 14, 30); doc.text(`Total de requisições: ${dados.length}`, 14, 38);
+            doc.autoTable({ startY: 45, head: [['Código', 'Função', 'Direção', 'Status', 'Data Criação']], body: dados.map(r => [r.codigo, r.funcao, r.direcao, getStatusText(r.status), formatarData(r.dataCriacao)]), headStyles: { fillColor: [76, 175, 80] }, alternateRowStyles: { fillColor: [240, 248, 233] } });
             doc.save(`relatorio_requisicoes_${dataRelatorio.replace(/\//g, '-')}.pdf`);
             mostrarNotificacao('Relatório PDF gerado com sucesso!', 'success');
         }
@@ -2017,55 +1393,18 @@
         function exportarRelatorioExcel() {
             const dados = obterDadosRelatorio();
             const dataRelatorio = new Date().toLocaleDateString('pt-PT');
-            
-            const wsData = [
-                ['Kero SIR - Relatório de Requisições'],
-                [`Gerado em: ${dataRelatorio}`],
-                [`Total de requisições: ${dados.length}`],
-                [],
-                ['Código', 'Função', 'Direção', 'Categoria', 'Status', 'Tipo', 'Data Criação', 'Data Início', 'Solicitante']
-            ];
-            
-            dados.forEach(r => {
-                wsData.push([
-                    r.codigo,
-                    r.funcao,
-                    r.direcao,
-                    r.area,
-                    getStatusText(r.status),
-                    r.tipo === 'novo_cargo' ? 'Novo Cargo' : r.tipo === 'substituicao' ? 'Substituição' : 'Reforço',
-                    formatarData(r.dataCriacao),
-                    formatarData(r.dataInicio),
-                    r.criadoPor
-                ]);
-            });
-            
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(wsData);
-            XLSX.utils.book_append_sheet(wb, ws, 'Requisições');
-            XLSX.writeFile(wb, `relatorio_requisicoes_${dataRelatorio.replace(/\//g, '-')}.xlsx`);
-            
+            const wsData = [['Kero SIR - Relatório de Requisições'], [`Gerado em: ${dataRelatorio}`], [`Total de requisições: ${dados.length}`], [], ['Código', 'Função', 'Direção', 'Categoria', 'Status', 'Tipo', 'Data Criação', 'Data Início', 'Solicitante']];
+            dados.forEach(r => { wsData.push([r.codigo, r.funcao, r.direcao, r.area, getStatusText(r.status), r.tipo === 'novo_cargo' ? 'Novo Cargo' : r.tipo === 'substituicao' ? 'Substituição' : 'Reforço', formatarData(r.dataCriacao), formatarData(r.dataInicio), r.criadoPor]); });
+            const wb = XLSX.utils.book_new(); const ws = XLSX.utils.aoa_to_sheet(wsData); XLSX.utils.book_append_sheet(wb, ws, 'Requisições'); XLSX.writeFile(wb, `relatorio_requisicoes_${dataRelatorio.replace(/\//g, '-')}.xlsx`);
             mostrarNotificacao('Relatório Excel gerado com sucesso!', 'success');
         }
 
         function exportarRelatorioCSV() {
             const dados = obterDadosRelatorio();
             const dataRelatorio = new Date().toLocaleDateString('pt-PT');
-            
             let csv = 'Código;Função;Direção;Categoria;Status;Tipo;Data Criação;Data Início;Solicitante\n';
-            
-            dados.forEach(r => {
-                csv += `"${r.codigo}";"${r.funcao}";"${r.direcao}";"${r.area}";"${getStatusText(r.status)}";`;
-                csv += `"${r.tipo === 'novo_cargo' ? 'Novo Cargo' : r.tipo === 'substituicao' ? 'Substituição' : 'Reforço'}";`;
-                csv += `"${formatarData(r.dataCriacao)}";"${formatarData(r.dataInicio)}";"${r.criadoPor}"\n`;
-            });
-            
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `relatorio_requisicoes_${dataRelatorio.replace(/\//g, '-')}.csv`;
-            link.click();
-            
+            dados.forEach(r => { csv += `"${r.codigo}";"${r.funcao}";"${r.direcao}";"${r.area}";"${getStatusText(r.status)}";"${r.tipo === 'novo_cargo' ? 'Novo Cargo' : r.tipo === 'substituicao' ? 'Substituição' : 'Reforço'}";"${formatarData(r.dataCriacao)}";"${formatarData(r.dataInicio)}";"${r.criadoPor}"\n`; });
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `relatorio_requisicoes_${dataRelatorio.replace(/\//g, '-')}.csv`; link.click();
             mostrarNotificacao('Relatório CSV gerado com sucesso!', 'success');
         }
 
@@ -2075,146 +1414,44 @@
         function carregarDirecoes() {
             const cont = document.getElementById('direcoesList');
             if (!cont) return;
-            cont.innerHTML = todasDirecoes.map(d => `
-                <div class="direcao-item">
-                    <div class="direcao-header"><span class="direcao-nome"><i class="fas fa-building"></i> ${d}</span></div>
-                    <div class="direcao-categorias">${todasCategorias.map(c => `<span class="categoria-tag">${c}</span>`).join('')}</div>
-                </div>
-            `).join('');
+            cont.innerHTML = todasDirecoes.map(d => `<div class="direcao-item"><div class="direcao-header"><span class="direcao-nome"><i class="fas fa-building"></i> ${d}</span></div><div class="direcao-categorias">${todasCategorias.map(c => `<span class="categoria-tag">${c}</span>`).join('')}</div></div>`).join('');
         }
         
-        function carregarConfiguracoes() { 
-            document.getElementById('configEmailAdmin').value = configuracoes.emailAdmin;
-            document.getElementById('configEmailNotif').checked = configuracoes.emailNotif;
-            document.getElementById('configTeamsNotif').checked = configuracoes.teamsNotif;
-            document.getElementById('configTeamsWebhook').value = configuracoes.teamsWebhook || '';
-        }
-        
-        function salvarConfiguracoes() { 
-            configuracoes.emailAdmin = document.getElementById('configEmailAdmin').value; 
-            configuracoes.emailNotif = document.getElementById('configEmailNotif').checked;
-            configuracoes.teamsNotif = document.getElementById('configTeamsNotif').checked;
-            configuracoes.teamsWebhook = document.getElementById('configTeamsWebhook').value;
-            localStorage.setItem('configuracoes', JSON.stringify(configuracoes));
-            mostrarNotificacao('Configurações salvas', 'success'); 
-        }
-        
-        function limparFiltros() { 
-            estado.filtrosAtivos = { pesquisa: null, status: null, direcao: null }; 
-            document.getElementById('filterPesquisa').value = ''; 
-            document.getElementById('filterStatus').value = 'all'; 
-            document.getElementById('filterDirecao').value = 'all'; 
-            filtrarRequisicoes(); 
-            mostrarNotificacao('Filtros limpos', 'info'); 
-        }
-
-        function selecionarTipo(tipo) { 
-            document.getElementById('tipoRequisicao').value = tipo; 
-            fecharModal('modalTipo'); 
-            abrirModal('modalNovaRequisicao'); 
-            document.getElementById('campoSubstituicao').style.display = tipo === 'substituicao' ? 'block' : 'none'; 
-            document.getElementById('campoReforco').style.display = tipo === 'reforco_quadro' ? 'block' : 'none'; 
-        }
-
-        // ============================================
-        // MODAIS
-        // ============================================
-        function abrirModal(id) { 
-            document.getElementById(id).style.display = 'flex'; 
-            document.body.style.overflow = 'hidden'; 
-        }
-        
-        function fecharModal(id) { 
-            document.getElementById(id).style.display = 'none'; 
-            document.body.style.overflow = 'auto'; 
-        }
+        function carregarConfiguracoes() { document.getElementById('configEmailAdmin').value = configuracoes.emailAdmin; document.getElementById('configEmailNotif').checked = configuracoes.emailNotif; document.getElementById('configTeamsNotif').checked = configuracoes.teamsNotif; document.getElementById('configTeamsWebhook').value = configuracoes.teamsWebhook || ''; }
+        function salvarConfiguracoes() { configuracoes.emailAdmin = document.getElementById('configEmailAdmin').value; configuracoes.emailNotif = document.getElementById('configEmailNotif').checked; configuracoes.teamsNotif = document.getElementById('configTeamsNotif').checked; configuracoes.teamsWebhook = document.getElementById('configTeamsWebhook').value; localStorage.setItem('configuracoes', JSON.stringify(configuracoes)); mostrarNotificacao('Configurações salvas', 'success'); }
+        function limparFiltros() { estado.filtrosAtivos = { pesquisa: null, status: null, direcao: null }; document.getElementById('filterPesquisa').value = ''; document.getElementById('filterStatus').value = 'all'; document.getElementById('filterDirecao').value = 'all'; filtrarRequisicoes(); mostrarNotificacao('Filtros limpos', 'info'); }
+        function selecionarTipo(tipo) { document.getElementById('tipoRequisicao').value = tipo; fecharModal('modalTipo'); abrirModal('modalNovaRequisicao'); document.getElementById('campoSubstituicao').style.display = tipo === 'substituicao' ? 'block' : 'none'; document.getElementById('campoReforco').style.display = tipo === 'reforco_quadro' ? 'block' : 'none'; }
+        function abrirModal(id) { document.getElementById(id).style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        function fecharModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
 
         // ============================================
         // INICIALIZAÇÃO
         // ============================================
         document.addEventListener('DOMContentLoaded', async function () {
             const savedConfig = localStorage.getItem('configuracoes');
-            if (savedConfig) {
-                try { configuracoes = JSON.parse(savedConfig); } catch(e) {}
-            }
-            
+            if (savedConfig) { try { configuracoes = JSON.parse(savedConfig); } catch(e) {} }
             const savedNotificacoes = localStorage.getItem('keroNotificacoes');
-            if (savedNotificacoes) {
-                try { notificacoes = JSON.parse(savedNotificacoes); } catch(e) {}
-                atualizarPainelNotificacoes();
-            }
-            
-            await initializeMicrosoft();
-            await verificarSessao();
-            inicializarDirecoes();
-            carregarDirecoes();
-            carregarConfiguracoes();
-
+            if (savedNotificacoes) { try { notificacoes = JSON.parse(savedNotificacoes); } catch(e) {} atualizarPainelNotificacoes(); }
+            await initializeMicrosoft(); await verificarSessao();
+            inicializarDirecoes(); carregarDirecoes(); carregarConfiguracoes();
             document.getElementById('formNovaRequisicao')?.addEventListener('submit', salvarRequisicao);
             document.getElementById('formComentario')?.addEventListener('submit', processarComentario);
             document.getElementById('btnNovaRequisicao')?.addEventListener('click', () => abrirModal('modalTipo'));
-            
-            document.getElementById('filterPesquisa')?.addEventListener('input', function(e) { 
-                estado.filtrosAtivos.pesquisa = e.target.value || null; 
-                filtrarRequisicoes(); 
-            });
-            document.getElementById('filterStatus')?.addEventListener('change', function(e) { 
-                estado.filtrosAtivos.status = e.target.value === 'all' ? null : e.target.value; 
-                filtrarRequisicoes(); 
-            });
-            document.getElementById('filterDirecao')?.addEventListener('change', function(e) { 
-                estado.filtrosAtivos.direcao = e.target.value === 'all' ? null : e.target.value; 
-                filtrarRequisicoes(); 
-            });
-            document.getElementById('sortRequisicoes')?.addEventListener('change', function(e) { 
-                estado.ordenacao = e.target.value; 
-                filtrarRequisicoes(); 
-            });
-            
-            document.getElementById('paginaAnterior')?.addEventListener('click', () => { 
-                if (estado.paginaAtual > 1) { estado.paginaAtual--; carregarRequisicoes(); } 
-            });
-            document.getElementById('paginaProxima')?.addEventListener('click', () => { 
-                const total = Math.ceil(requisicoesFiltradas.length / estado.itensPorPagina); 
-                if (estado.paginaAtual < total) { estado.paginaAtual++; carregarRequisicoes(); } 
-            });
-            
-            document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', function(e) { 
-                if (e.target === this) fecharModal(this.id); 
-            }));
-            
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    document.querySelectorAll('.modal').forEach(m => {
-                        if (m.style.display === 'flex') fecharModal(m.id);
-                    });
-                }
-            });
-            
+            document.getElementById('filterPesquisa')?.addEventListener('input', function(e) { estado.filtrosAtivos.pesquisa = e.target.value || null; filtrarRequisicoes(); });
+            document.getElementById('filterStatus')?.addEventListener('change', function(e) { estado.filtrosAtivos.status = e.target.value === 'all' ? null : e.target.value; filtrarRequisicoes(); });
+            document.getElementById('filterDirecao')?.addEventListener('change', function(e) { estado.filtrosAtivos.direcao = e.target.value === 'all' ? null : e.target.value; filtrarRequisicoes(); });
+            document.getElementById('sortRequisicoes')?.addEventListener('change', function(e) { estado.ordenacao = e.target.value; filtrarRequisicoes(); });
+            document.getElementById('paginaAnterior')?.addEventListener('click', () => { if (estado.paginaAtual > 1) { estado.paginaAtual--; carregarRequisicoes(); } });
+            document.getElementById('paginaProxima')?.addEventListener('click', () => { const total = Math.ceil(requisicoesFiltradas.length / estado.itensPorPagina); if (estado.paginaAtual < total) { estado.paginaAtual++; carregarRequisicoes(); } });
+            document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', function(e) { if (e.target === this) fecharModal(this.id); }));
+            document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { document.querySelectorAll('.modal').forEach(m => { if (m.style.display === 'flex') fecharModal(m.id); }); } });
             const dropzone = document.querySelector('.dropzone');
             if (dropzone) {
-                dropzone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    dropzone.style.borderColor = 'var(--primary)';
-                    dropzone.style.background = 'var(--primary-light)';
-                });
-                
-                dropzone.addEventListener('dragleave', () => {
-                    dropzone.style.borderColor = 'var(--gray-200)';
-                    dropzone.style.background = 'transparent';
-                });
-                
-                dropzone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    dropzone.style.borderColor = 'var(--gray-200)';
-                    dropzone.style.background = 'transparent';
-                    handleFileSelect(e.dataTransfer.files);
-                });
+                dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.borderColor = 'var(--primary)'; dropzone.style.background = 'var(--primary-light)'; });
+                dropzone.addEventListener('dragleave', () => { dropzone.style.borderColor = 'var(--gray-200)'; dropzone.style.background = 'transparent'; });
+                dropzone.addEventListener('drop', (e) => { e.preventDefault(); dropzone.style.borderColor = 'var(--gray-200)'; dropzone.style.background = 'transparent'; handleFileSelect(e.dataTransfer.files); });
             }
-            
-            setInterval(() => {
-                localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes));
-            }, 5000);
+            setInterval(() => { localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes)); }, 5000);
         });
     </script>
 </body>
