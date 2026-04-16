@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
+        /* ... (mantenha todos os estilos CSS anteriores) ... */
         * {
             margin: 0;
             padding: 0;
@@ -606,7 +607,7 @@
 
         const loginRequest = { scopes: ["User.Read", "email", "profile", "openid", "offline_access", "Mail.Send", "Sites.ReadWrite.All"] };
 
-        // Perfis dos usuários - GARANTIDO QUE ESTES VEEM TODAS AS REQUISIÇÕES
+        // Perfis dos usuários
         const perfisManuais = {
             'marcio.carlos@accordgrouplda.com': 'Administrador',
             'mario.arao@accordgrouplda.com': 'RH',
@@ -615,10 +616,8 @@
             'aleixo.francisco@accordgrouplda.com': 'Gerente de Loja'
         };
 
-        // Lista EXPLÍCITA de perfis que podem ver TODAS as requisições
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
 
-        // Emails dos aprovadores
         const emailsAprovadores = {
             'RH': 'mario.arao@accordgrouplda.com',
             'Controlo de Gestão': 'erikson.madureira@accordgrouplda.com',
@@ -626,7 +625,6 @@
             'Administrador': 'marcio.carlos@accordgrouplda.com'
         };
 
-        // Direções
         const todasDirecoes = [
             "Direção Geral", "Capital Humano", "Direção Comercial", "Direção Financeira",
             "Direção de Marketing", "Direção de Sistemas de Informação", "Direção de Manutenção",
@@ -638,7 +636,6 @@
             "Loja Gika", "Armazém ZEE", "Armazém SONIT"
         ];
 
-        // Categorias
         const todasCategorias = [
             "Director Geral", "Director Executivo", "Director", "Gerente de Loja",
             "Gestor Sénior", "Gestor", "Técnico Sénior", "Técnico",
@@ -646,13 +643,11 @@
             "Analista", "Administrativo", "Operador"
         ];
 
-        // Configuração SharePoint
         const SHAREPOINT_CONFIG = {
             siteUrl: "https://accordgroupslda.sharepoint.com/sites/SIR",
             listName: "RequisicoesRH"
         };
 
-        // Variáveis globais
         let msalInstance = null;
         let account = null;
         let usuarioAtual = null;
@@ -1132,7 +1127,7 @@
         }
 
         // ============================================
-        // SHAREPOINT - INTEGRAÇÃO COM FICHEIROS (COLUNA "Ficheiros")
+        // SHAREPOINT - UPLOAD CORRIGIDO DE FICHEIROS
         // ============================================
         async function getSharePointToken() {
             return await getAccessToken(["Sites.ReadWrite.All"]);
@@ -1184,6 +1179,9 @@
             return driveData.id;
         }
 
+        // ============================================
+        // UPLOAD DE FICHEIROS - VERSÃO CORRIGIDA
+        // ============================================
         async function uploadFicheiroParaSharePoint(arquivo, requisicaoCodigo) {
             try {
                 const token = await getSharePointToken();
@@ -1193,33 +1191,88 @@
                 const pastaNome = `Requisicao_${requisicaoCodigo}`;
                 const nomeArquivo = `${Date.now()}_${arquivo.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
                 
-                const reader = new FileReader();
-                const base64Promise = new Promise((resolve, reject) => {
-                    reader.onload = () => {
-                        const base64 = reader.result.split(',')[1];
-                        resolve(base64);
-                    };
-                    reader.onerror = reject;
-                });
-                reader.readAsDataURL(arquivo.file);
-                const base64Content = await base64Promise;
+                console.log(`📤 Iniciando upload: ${arquivo.name} (${formatarTamanho(arquivo.size)})`);
                 
-                const uploadUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${pastaNome}/${nomeArquivo}:/content`;
+                // Método correto: Upload em duas etapas para arquivos grandes
+                let uploadUrl;
+                let fileData;
                 
-                const response = await fetch(uploadUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/octet-stream'
-                    },
-                    body: base64Content
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Erro no upload: ${response.status}`);
+                if (arquivo.size < 4 * 1024 * 1024) {
+                    // Upload simples para arquivos < 4MB
+                    const reader = new FileReader();
+                    const arrayBufferPromise = new Promise((resolve, reject) => {
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                    });
+                    reader.readAsArrayBuffer(arquivo.file);
+                    const arrayBuffer = await arrayBufferPromise;
+                    
+                    uploadUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${pastaNome}/${nomeArquivo}:/content`;
+                    
+                    const response = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': arquivo.type || 'application/octet-stream'
+                        },
+                        body: arrayBuffer
+                    });
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Erro no upload:', response.status, errorText);
+                        throw new Error(`Erro no upload: ${response.status}`);
+                    }
+                    
+                    fileData = await response.json();
+                } else {
+                    // Upload em sessão para arquivos grandes
+                    uploadUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${pastaNome}/${nomeArquivo}:/createUploadSession`;
+                    
+                    const sessionResponse = await fetch(uploadUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            "@microsoft.graph.conflictBehavior": "rename"
+                        })
+                    });
+                    
+                    if (!sessionResponse.ok) {
+                        throw new Error(`Erro ao criar sessão de upload: ${sessionResponse.status}`);
+                    }
+                    
+                    const sessionData = await sessionResponse.json();
+                    const uploadSessionUrl = sessionData.uploadUrl;
+                    
+                    // Upload do arquivo em chunks
+                    const reader = new FileReader();
+                    const arrayBufferPromise = new Promise((resolve, reject) => {
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                    });
+                    reader.readAsArrayBuffer(arquivo.file);
+                    const arrayBuffer = await arrayBufferPromise;
+                    
+                    const uploadResponse = await fetch(uploadSessionUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Length': arrayBuffer.byteLength,
+                            'Content-Range': `bytes 0-${arrayBuffer.byteLength - 1}/${arrayBuffer.byteLength}`
+                        },
+                        body: arrayBuffer
+                    });
+                    
+                    if (!uploadResponse.ok) {
+                        throw new Error(`Erro no upload: ${uploadResponse.status}`);
+                    }
+                    
+                    fileData = await uploadResponse.json();
                 }
                 
-                const fileData = await response.json();
+                console.log('✅ Upload concluído:', fileData);
                 
                 // Criar link de compartilhamento
                 const shareResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/items/${fileData.id}/createLink`, {
@@ -1235,10 +1288,14 @@
                 });
                 
                 let link = fileData.webUrl;
+                let downloadUrl = fileData['@microsoft.graph.downloadUrl'] || fileData.webUrl;
+                
                 if (shareResponse.ok) {
                     const shareData = await shareResponse.json();
                     link = shareData.link.webUrl;
                 }
+                
+                console.log('🔗 Link gerado:', link);
                 
                 return {
                     id: fileData.id,
@@ -1246,12 +1303,13 @@
                     tamanho: arquivo.size,
                     tipo: arquivo.type,
                     url: link,
+                    downloadUrl: downloadUrl,
                     webUrl: fileData.webUrl,
                     dataUpload: new Date().toISOString()
                 };
                 
             } catch (error) {
-                console.error('Erro ao fazer upload do arquivo:', error);
+                console.error('❌ Erro ao fazer upload do arquivo:', error);
                 throw error;
             }
         }
@@ -1260,16 +1318,7 @@
             showLoading();
             try {
                 const token = await getSharePointToken();
-                let siteId;
-                try {
-                    siteId = await getSiteId();
-                } catch (error) {
-                    console.error('Erro ao obter site ID:', error);
-                    mostrarNotificacao('Não foi possível conectar ao SharePoint. Verifique a URL do site.', 'error');
-                    requisicoes = [];
-                    hideLoading();
-                    return;
-                }
+                const siteId = await getSiteId();
                 
                 const listUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items?expand=fields`;
                 
@@ -1279,17 +1328,20 @@
                 
                 if (listResponse.ok) {
                     const listData = await listResponse.json();
+                    console.log('📋 Dados carregados do SharePoint:', listData);
+                    
                     if (listData.value && listData.value.length > 0) {
                         requisicoes = listData.value.map(item => {
                             const f = item.fields;
                             
                             let ficheiros = [];
-                            // Usar coluna "Ficheiros" em vez de "Anexos"
+                            // Verificar coluna Ficheiros
                             if (f.Ficheiros) {
                                 try {
                                     ficheiros = JSON.parse(f.Ficheiros);
+                                    console.log(`📎 Ficheiros carregados para ${f.Title}:`, ficheiros);
                                 } catch (e) {
-                                    console.warn('Erro ao parsear Ficheiros:', e);
+                                    console.warn('⚠️ Erro ao parsear Ficheiros:', e, f.Ficheiros);
                                 }
                             }
                             
@@ -1318,6 +1370,8 @@
                         requisicoes = [];
                     }
                 } else {
+                    const errorText = await listResponse.text();
+                    console.error('Erro ao carregar lista:', listResponse.status, errorText);
                     requisicoes = [];
                 }
             } catch (error) {
@@ -1351,12 +1405,16 @@
                     "MotivoSubstituicao": req.motivoSubstituicao || "",
                     "JustificativaReforco": req.justificativaReforco || "",
                     "CriadoPor": req.criadoPor,
-                    "CriadoPorEmail": req.criadoPorEmail,
-                    // Usar coluna "Ficheiros" em vez de "Anexos"
-                    "Ficheiros": req.ficheiros && req.ficheiros.length > 0 ? JSON.stringify(req.ficheiros) : ""
+                    "CriadoPorEmail": req.criadoPorEmail
                 };
                 
-                console.log('Salvando no SharePoint com campos:', fields);
+                // Adicionar ficheiros se existirem
+                if (req.ficheiros && req.ficheiros.length > 0) {
+                    fields["Ficheiros"] = JSON.stringify(req.ficheiros);
+                    console.log('📎 Salvando ficheiros no SharePoint:', req.ficheiros);
+                }
+                
+                console.log('💾 Salvando no SharePoint:', fields);
                 
                 const createResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items`, {
                     method: 'POST',
@@ -1367,15 +1425,15 @@
                 if (createResponse.ok) { 
                     const newItem = await createResponse.json(); 
                     req.id = newItem.id;
-                    console.log('Requisição salva com sucesso! ID:', newItem.id);
+                    console.log('✅ Requisição salva com sucesso! ID:', newItem.id);
                     return true;
                 } else {
                     const errorText = await createResponse.text();
-                    console.error('Erro detalhado do SharePoint:', createResponse.status, errorText);
+                    console.error('❌ Erro ao salvar no SharePoint:', createResponse.status, errorText);
                     
-                    // Tentar sem a coluna Ficheiros se falhar
+                    // Tentar sem Ficheiros se falhar
                     if (fields.Ficheiros) {
-                        console.log('Tentando salvar sem a coluna Ficheiros...');
+                        console.log('🔄 Tentando salvar sem a coluna Ficheiros...');
                         delete fields.Ficheiros;
                         
                         const retryResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items`, {
@@ -1387,19 +1445,16 @@
                         if (retryResponse.ok) {
                             const newItem = await retryResponse.json(); 
                             req.id = newItem.id;
-                            console.log('Requisição salva sem ficheiros');
+                            console.log('⚠️ Requisição salva sem ficheiros');
                             mostrarNotificacao('Requisição salva, mas ficheiros não foram anexados', 'warning');
                             return true;
-                        } else {
-                            const retryError = await retryResponse.text();
-                            console.error('Erro na segunda tentativa:', retryError);
                         }
                     }
                     
                     return false;
                 }
             } catch (error) { 
-                console.error('Erro ao salvar no SharePoint:', error); 
+                console.error('❌ Erro ao salvar:', error); 
                 return false; 
             }
         }
@@ -1489,7 +1544,7 @@
         }
 
         // ============================================
-        // UPLOAD DE FICHEIROS
+        // UPLOAD DE FICHEIROS - INTERFACE
         // ============================================
         function handleFileSelect(files) {
             const maxSize = 100 * 1024 * 1024;
@@ -1523,7 +1578,7 @@
             list.innerHTML = arquivosUpload.map((f, i) => `
                 <div class="file-item">
                     <div class="file-info">
-                        <i class="fas fa-file"></i>
+                        <i class="fas ${getIconePorTipo(f.type)}"></i>
                         <div>
                             <div>${f.name}</div>
                             <div class="file-size">${formatarTamanho(f.size)}</div>
@@ -1582,7 +1637,7 @@
             
             tbody.innerHTML = itens.map(r => `
                 <tr onclick="visualizarRequisicao('${r.id}')">
-                    <td>${r.codigo}</td>
+                    <td>${r.codigo} ${r.ficheiros && r.ficheiros.length > 0 ? '<i class="fas fa-paperclip" style="color: var(--primary); margin-left: 5px;"></i>' : ''}</td>
                     <td>${r.funcao}</td>
                     <td>${r.direcao}</td>
                     <td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td>
@@ -1687,23 +1742,31 @@
         }
 
         // ============================================
-        // VISUALIZADOR DE FICHEIROS EMBUTIDO
+        // VISUALIZADOR DE FICHEIROS EMBUTIDO - CORRIGIDO
         // ============================================
         function gerarVisualizadorFicheiro(ficheiro) {
             const tipo = ficheiro.tipo;
-            const url = ficheiro.url;
+            // Usar downloadUrl ou url para visualização
+            const url = ficheiro.downloadUrl || ficheiro.url || ficheiro.webUrl;
+            
+            console.log('🖼️ Gerando visualizador para:', ficheiro.nome, 'URL:', url);
             
             if (tipo.startsWith('image/')) {
                 return `
                     <div class="ficheiro-preview-image">
-                        <img src="${url}" alt="${ficheiro.nome}">
+                        <img src="${url}" alt="${ficheiro.nome}" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\'%3E%3Crect width=\\'100\\' height=\\'100\\' fill=\\'%23ddd\\'/%3E%3Ctext x=\\'50\\' y=\\'50\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\'%3E⚠️%3C/text%3E%3C/svg%3E'; this.style.maxWidth='200px';">
                     </div>
                 `;
             }
             
             if (tipo === 'application/pdf') {
                 return `
-                    <iframe src="${url}" class="ficheiro-preview-pdf"></iframe>
+                    <iframe src="${url}" class="ficheiro-preview-pdf" onerror="this.style.display='none'; document.getElementById('fallback_${ficheiro.id}').style.display='block';"></iframe>
+                    <div id="fallback_${ficheiro.id}" class="ficheiro-preview-unavailable" style="display:none;">
+                        <i class="fas fa-file-pdf"></i>
+                        <h4>PDF não pode ser visualizado</h4>
+                        <p>Use o botão Download para baixar o arquivo.</p>
+                    </div>
                 `;
             }
             
@@ -1714,7 +1777,7 @@
                 tipo === 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
                 return `
                     <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}" 
-                            class="ficheiro-preview-office"></iframe>
+                            class="ficheiro-preview-office" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
                 `;
             }
             
@@ -1739,6 +1802,7 @@
             if (!ficheiros || !ficheiros[index]) return;
             
             const ficheiro = ficheiros[index];
+            console.log('📂 Mostrando ficheiro:', ficheiro);
             
             document.getElementById(`ficheiroViewer_${reqId}`).innerHTML = gerarVisualizadorFicheiro(ficheiro);
             document.getElementById(`ficheiroNome_${reqId}`).textContent = ficheiro.nome;
@@ -1746,11 +1810,13 @@
                 `${formatarTamanho(ficheiro.tamanho)} • ${formatarData(ficheiro.dataUpload)}`;
             
             const actionsDiv = document.querySelector(`#ficheiroInfo_${reqId} .ficheiro-actions`);
+            const downloadUrl = ficheiro.downloadUrl || ficheiro.url || ficheiro.webUrl;
+            
             actionsDiv.innerHTML = `
-                <button class="btn-download" onclick="baixarFicheiro('${ficheiro.url}', '${ficheiro.nome}')">
+                <button class="btn-download" onclick="baixarFicheiro('${downloadUrl}', '${ficheiro.nome}')">
                     <i class="fas fa-download"></i> Download
                 </button>
-                <button class="btn-sharepoint" onclick="window.open('${ficheiro.url}', '_blank')">
+                <button class="btn-sharepoint" onclick="window.open('${ficheiro.webUrl || ficheiro.url}', '_blank')">
                     <i class="fas fa-external-link-alt"></i> Abrir no SharePoint
                 </button>
             `;
@@ -1761,9 +1827,11 @@
         }
 
         function baixarFicheiro(url, nome) {
+            console.log('⬇️ Baixando:', nome, 'de:', url);
             const a = document.createElement('a');
             a.href = url;
             a.download = nome;
+            a.target = '_blank';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1781,6 +1849,8 @@
                 mostrarNotificacao('Você não tem permissão para visualizar esta requisição', 'error');
                 return;
             }
+            
+            console.log('👁️ Visualizando requisição:', req.codigo, 'Ficheiros:', req.ficheiros);
             
             let html = `
                 <div style="margin-bottom: 15px;"><strong>Código:</strong> ${req.codigo}</div>
@@ -1802,7 +1872,7 @@
                 html += `<div style="margin-bottom: 15px;"><strong>Justificativa do Reforço:</strong> ${req.justificativaReforco || 'N/A'}</div>`;
             }
             
-            // Seção de ficheiros com visualizador embutido
+            // Seção de ficheiros
             const ficheiros = req.ficheiros || [];
             if (ficheiros.length > 0) {
                 window[`ficheiros_${req.id}`] = ficheiros;
@@ -1837,10 +1907,10 @@
                                 <span class="ficheiro-meta">${formatarTamanho(primeiroFicheiro.tamanho)} • ${formatarData(primeiroFicheiro.dataUpload)}</span>
                             </div>
                             <div class="ficheiro-actions">
-                                <button class="btn-download" onclick="baixarFicheiro('${primeiroFicheiro.url}', '${primeiroFicheiro.nome}')">
+                                <button class="btn-download" onclick="baixarFicheiro('${primeiroFicheiro.downloadUrl || primeiroFicheiro.url}', '${primeiroFicheiro.nome}')">
                                     <i class="fas fa-download"></i> Download
                                 </button>
-                                <button class="btn-sharepoint" onclick="window.open('${primeiroFicheiro.url}', '_blank')">
+                                <button class="btn-sharepoint" onclick="window.open('${primeiroFicheiro.webUrl || primeiroFicheiro.url}', '_blank')">
                                     <i class="fas fa-external-link-alt"></i> Abrir no SharePoint
                                 </button>
                             </div>
@@ -2111,9 +2181,10 @@
                     try {
                         const ficheiroSalvo = await uploadFicheiroParaSharePoint(arquivo, novoCodigo);
                         ficheirosSalvos.push(ficheiroSalvo);
+                        console.log('✅ Ficheiro salvo:', ficheiroSalvo);
                     } catch (error) {
-                        console.error('Erro ao enviar ficheiro:', error);
-                        mostrarNotificacao(`Erro ao enviar ${arquivo.name}`, 'error');
+                        console.error('❌ Erro ao enviar ficheiro:', error);
+                        mostrarNotificacao(`Erro ao enviar ${arquivo.name}: ${error.message}`, 'error');
                     }
                 }
                 
