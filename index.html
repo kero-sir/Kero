@@ -38,7 +38,6 @@
         body { background-color: var(--gray-100); color: var(--gray-600); }
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         
-        /* Login Screen */
         .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(145deg, #2E7D32, #4CAF50); position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; }
         .login-box { background: white; padding: 40px; border-radius: var(--border-radius); box-shadow: var(--shadow-md); width: 100%; max-width: 400px; text-align: center; }
         .kero-logo { width: 100px; height: 100px; margin: 0 auto 20px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -47,7 +46,6 @@
         .btn-login:hover { background: #1E1E1E; }
         .login-error { color: var(--danger); font-size: 14px; margin-top: 10px; padding: 10px; background: #ffebee; border-radius: 4px; display: none; }
         
-        /* Module Selection Screen */
         .module-selection-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(145deg, #2E7D32, #4CAF50); position: fixed; top: 0; left: 0; width: 100%; z-index: 9998; }
         .module-selection-container { background: white; padding: 50px; border-radius: var(--border-radius); box-shadow: var(--shadow-md); max-width: 900px; width: 90%; }
         .module-selection-title { text-align: center; margin-bottom: 40px; }
@@ -66,7 +64,6 @@
         .btn-logout-module { margin-top: 30px; padding: 12px 30px; background: var(--gray-200); color: var(--gray-600); border: none; border-radius: var(--border-radius-sm); cursor: pointer; font-size: 14px; }
         .btn-logout-module:hover { background: var(--gray-500); color: white; }
         
-        /* Header */
         .app-header { background: white; padding: 15px 30px; border-radius: var(--border-radius); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
         .logo-area { display: flex; align-items: center; gap: 15px; }
         .logo-kero { width: 50px; height: 50px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -79,19 +76,16 @@
         .btn-logout { padding: 8px 20px; background: var(--secondary); color: white; border: none; border-radius: var(--border-radius-sm); cursor: pointer; }
         .btn-modules { padding: 8px 20px; background: var(--teams); color: white; border: none; border-radius: var(--border-radius-sm); cursor: pointer; margin-right: 10px; }
         
-        /* Navigation */
         .nav-menu { background: white; padding: 15px; border-radius: var(--border-radius); margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; border-bottom: 3px solid var(--primary); }
         .nav-item { padding: 10px 20px; border-radius: var(--border-radius-sm); cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--gray-500); }
         .nav-item:hover { background: var(--primary-light); color: var(--primary-dark); }
         .nav-item.active { background: var(--primary); color: white; }
         
-        /* Manutencao Bloqueio */
         .manutencao-bloqueio { text-align: center; padding: 80px 40px; background: white; border-radius: var(--border-radius); }
         .manutencao-bloqueio i { font-size: 80px; color: var(--warning); margin-bottom: 20px; }
         .manutencao-bloqueio h2 { color: var(--gray-600); margin-bottom: 15px; }
         .manutencao-bloqueio p { color: var(--gray-500); font-size: 16px; }
         
-        /* KPI Cards */
         .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 30px; }
         @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -100,7 +94,6 @@
         .kpi-info span { font-size: 24px; font-weight: 700; color: var(--primary-dark); }
         .kpi-icon i { font-size: 32px; color: var(--primary-light); }
         
-        /* Status Badges */
         .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; }
         .status-em_validacao_rh { background-color: #c8e6c9; color: #1b5e20; }
         .status-em_validacao_financas { background-color: #a5d6a7; color: #1b5e20; }
@@ -108,7 +101,6 @@
         .status-aprovada { background-color: #4CAF50; color: white; }
         .status-rejeitada { background-color: #ef9a9a; color: #c62828; }
         
-        /* Buttons */
         .btn-small { padding: 5px 10px; border-radius: 4px; border: none; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
         .btn-view { background-color: var(--primary-light); color: var(--primary-dark); }
         .btn-approve { background-color: #4CAF50; color: white; }
@@ -118,25 +110,21 @@
         .btn-filter-apply { background-color: var(--primary); color: white; }
         .btn-filter-clear { background-color: var(--gray-200); color: var(--gray-600); }
         
-        /* Filters */
         .filter-section { background: white; border-radius: var(--border-radius); padding: 20px; margin-bottom: 20px; }
         .filter-group { margin-bottom: 15px; }
         .filter-group label { display: block; margin-bottom: 5px; font-weight: 500; }
         .filter-group select, .filter-group input { width: 100%; padding: 8px 10px; border-radius: 4px; border: 1px solid var(--gray-200); }
         
-        /* Tables */
         table { width: 100%; border-collapse: collapse; }
         th { background-color: var(--primary-light); padding: 12px 15px; text-align: left; }
         td { padding: 12px 15px; border-bottom: 1px solid #e0f2e0; }
         tr:hover { background-color: #f1f8e9; cursor: pointer; }
         
-        /* Cards */
         .card { background: white; border-radius: var(--border-radius); padding: 25px; border-top: 4px solid var(--primary); margin-bottom: 20px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e0f2e0; }
         .card-title { font-size: 20px; font-weight: 600; color: var(--primary-dark); }
         .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; background: var(--primary-light); color: var(--primary-dark); }
         
-        /* Dashboard */
         .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
         @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
         .dashboard-card { background: white; padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm); }
@@ -144,7 +132,6 @@
         .activity-item { padding: 12px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 12px; }
         .chart-container { position: relative; height: 300px; width: 100%; }
         
-        /* Email & Teams Panels */
         .email-panel, .teams-panel { background: white; border-radius: var(--border-radius); padding: 20px; margin-top: 20px; }
         .email-panel { border-left: 4px solid var(--info); }
         .teams-panel { border-left: 4px solid var(--teams); }
@@ -161,7 +148,6 @@
         .email-status-success, .teams-status-success { color: var(--primary); }
         .email-status-error, .teams-status-error { color: var(--danger); }
         
-        /* Direcoes */
         .direcoes-list { margin-top: 20px; }
         .direcao-item { background: #f8f9fa; border: 1px solid #e0f2e0; border-radius: 8px; margin-bottom: 15px; padding: 15px; }
         .direcao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #c8e6c9; }
@@ -169,13 +155,11 @@
         .direcao-categorias { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .categoria-tag { background: white; border: 1px solid var(--primary); color: var(--primary-dark); padding: 4px 12px; border-radius: 20px; font-size: 12px; }
         
-        /* Main Layout */
         .main-layout { display: grid; grid-template-columns: 280px 1fr; gap: 25px; }
         @media (max-width: 1024px) { .main-layout { grid-template-columns: 1fr; } }
         .sidebar { background: white; border-radius: var(--border-radius); padding: 20px; }
         .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
         
-        /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center; }
         .modal-content { background: white; width: 100%; max-width: 900px; border-radius: var(--border-radius); max-height: 90vh; overflow-y: auto; }
         .modal-header { padding: 20px; border-bottom: 1px solid #e0f2e0; display: flex; justify-content: space-between; align-items: center; }
@@ -186,18 +170,15 @@
         .form-control { width: 100%; padding: 10px; border-radius: var(--border-radius-sm); border: 1px solid var(--gray-200); }
         .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
         
-        /* Tipo Options */
         .tipo-opcao { display: flex; flex-direction: column; align-items: center; padding: 30px; margin: 20px 0; border: 2px solid #e0f2e0; border-radius: var(--border-radius); cursor: pointer; }
         .tipo-opcao:hover { border-color: var(--primary); background: #f1f8e9; }
         .tipo-opcao i { font-size: 48px; margin-bottom: 15px; color: var(--primary); }
         
-        /* Loading */
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 20000; display: none; align-items: center; justify-content: center; }
         .loading-overlay.show { display: flex; }
         .loading-spinner { width: 50px; height: 50px; border: 5px solid white; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* Notifications */
         .notificacao { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white; z-index: 100000; animation: slideIn 0.3s ease; }
         .notificacao-success { background: #4CAF50; }
         .notificacao-error { background: #f44336; }
@@ -205,12 +186,10 @@
         .notificacao-info { background: #2196F3; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
-        /* Pagination */
         .paginacao { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
         .pagina-btn { padding: 8px 15px; border: 1px solid var(--gray-200); background: white; border-radius: 4px; cursor: pointer; }
         .pagina-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        /* Dropzone */
         .dropzone { border: 2px dashed var(--gray-200); border-radius: var(--border-radius-sm); padding: 20px; text-align: center; cursor: pointer; margin-top: 10px; }
         .dropzone:hover { border-color: var(--primary); background: var(--primary-light); }
         .file-list { margin-top: 10px; }
@@ -219,7 +198,6 @@
         .file-item .file-size { font-size: 11px; color: var(--gray-500); }
         .file-remove { color: var(--danger); cursor: pointer; }
         
-        /* Visualizador de Ficheiros Embutido */
         .ficheiros-section { margin-top: 25px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
         .ficheiros-section h4 { margin-bottom: 15px; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
         .ficheiros-tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px; flex-wrap: wrap; }
@@ -247,14 +225,12 @@
         .btn-sharepoint { background: var(--info); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; }
         .btn-sharepoint:hover { background: #1976D2; }
         
-        /* Report Buttons */
         .report-actions { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .btn-report { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .btn-report-excel { background-color: #217346; }
         .btn-report-pdf { background-color: #f40f02; }
         .btn-report-csv { background-color: #666; }
         
-        /* Notification Bell */
         .notification-bell { position: relative; cursor: pointer; margin-right: 15px; }
         .notification-bell i { font-size: 24px; color: var(--gray-500); }
         .notification-bell .badge-count { position: absolute; top: -8px; right: -8px; background: var(--danger); color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; }
@@ -265,6 +241,35 @@
         .notification-item.unread { background: var(--primary-light); }
         .notification-title { font-weight: 600; margin-bottom: 5px; }
         .notification-time { font-size: 11px; color: var(--gray-500); }
+        
+        .historico-item {
+            border-left: 4px solid;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .historico-aprovado { border-left-color: #4CAF50; }
+        .historico-rejeitado { border-left-color: #f44336; }
+        .historico-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        .historico-comentario {
+            margin-top: 8px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+        .historico-status {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -314,7 +319,6 @@
     <!-- Main System -->
     <div id="mainSystem" style="display: none;">
         <div class="container">
-            <!-- Header -->
             <div class="app-header">
                 <div class="logo-area">
                     <div class="logo-kero"><span>K</span></div>
@@ -338,7 +342,6 @@
                 </div>
             </div>
 
-            <!-- Navigation -->
             <div class="nav-menu">
                 <div class="nav-item active" onclick="mudarAba('dashboard', this)"><i class="fas fa-chart-pie"></i> Dashboard</div>
                 <div class="nav-item" onclick="mudarAba('requisicoes', this)"><i class="fas fa-file-alt"></i> Requisições</div>
@@ -349,9 +352,7 @@
                 <div class="nav-item" onclick="mudarAba('configuracoes', this)"><i class="fas fa-cog"></i> Configurações</div>
             </div>
 
-            <!-- Recrutamento Section -->
             <div id="recrutamentoSection">
-                <!-- KPI Cards -->
                 <div class="kpi-grid">
                     <div class="kpi-card" onclick="filtrarPorStatus('all')"><div class="kpi-info"><h4>Requisições</h4><span id="totalRequisicoes">0</span></div><div class="kpi-icon"><i class="fas fa-file-alt"></i></div></div>
                     <div class="kpi-card" onclick="filtrarPorStatus('em_validacao_rh')"><div class="kpi-info"><h4>Em Aprovação RH</h4><span id="totalPendentesRH">0</span></div><div class="kpi-icon"><i class="fas fa-clock"></i></div></div>
@@ -361,7 +362,6 @@
                     <div class="kpi-card" onclick="filtrarPorStatus('rejeitada')"><div class="kpi-info"><h4>Rejeitadas</h4><span id="totalRejeitadas">0</span></div><div class="kpi-icon"><i class="fas fa-times-circle"></i></div></div>
                 </div>
 
-                <!-- Email & Teams Panels -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                     <div class="email-panel">
                         <div class="panel-header"><i class="fas fa-envelope"></i> <h3>Histórico de Emails</h3></div>
@@ -373,7 +373,6 @@
                     </div>
                 </div>
 
-                <!-- Dashboard -->
                 <div id="dashboardSection">
                     <div class="dashboard-grid">
                         <div class="dashboard-card"><h3><i class="fas fa-history"></i> Atividades Recentes</h3><div class="activity-list" id="atividadesRecentes"></div></div>
@@ -381,7 +380,6 @@
                     </div>
                 </div>
 
-                <!-- Requisicoes -->
                 <div id="requisicoesSection" style="display: none;">
                     <div class="main-layout">
                         <div class="sidebar">
@@ -418,7 +416,6 @@
                     </div>
                 </div>
 
-                <!-- Aprovacoes -->
                 <div id="aprovacoesSection" style="display: none;">
                     <div class="card">
                         <div class="card-header"><div class="card-title">Aprovações Pendentes</div></div>
@@ -433,7 +430,6 @@
                     </div>
                 </div>
 
-                <!-- Relatorios -->
                 <div id="relatoriosSection" style="display: none;">
                     <div class="card">
                         <div class="card-header"><div class="card-title">Relatórios</div></div>
@@ -469,7 +465,6 @@
                     </div>
                 </div>
 
-                <!-- Utilizadores -->
                 <div id="utilizadoresSection" style="display: none;">
                     <div class="card">
                         <div class="card-header"><div class="card-title">Utilizadores</div></div>
@@ -484,7 +479,6 @@
                     </div>
                 </div>
 
-                <!-- Direcoes -->
                 <div id="direcoesSection" style="display: none;">
                     <div class="card">
                         <div class="card-header"><div class="card-title">Direções</div></div>
@@ -492,7 +486,6 @@
                     </div>
                 </div>
 
-                <!-- Configuracoes -->
                 <div id="configuracoesSection" style="display: none;">
                     <div class="card">
                         <div class="card-header"><div class="card-title">Configurações</div></div>
@@ -507,7 +500,6 @@
                 </div>
             </div>
 
-            <!-- Manutencao Section -->
             <div id="manutencaoSection" style="display: none;">
                 <div class="card">
                     <div class="manutencao-bloqueio">
@@ -580,7 +572,7 @@
             <div class="modal-body">
                 <form id="formComentario">
                     <input type="hidden" id="comentarioRequisicaoId"><input type="hidden" id="comentarioAcao">
-                    <div class="form-group"><label>Comentário</label><textarea id="comentario" class="form-control" rows="4" required></textarea></div>
+                    <div class="form-group"><label>Comentário</label><textarea id="comentario" class="form-control" rows="4" required placeholder="Digite seu comentário sobre esta aprovação/rejeição..."></textarea></div>
                     <div class="form-actions"><button type="button" class="btn-small" onclick="fecharModal('modalComentario')">Cancelar</button><button type="submit" class="btn-small btn-approve">Confirmar</button></div>
                 </form>
             </div>
@@ -612,7 +604,7 @@
 
         const loginRequest = { scopes: ["User.Read", "email", "profile", "openid", "offline_access", "Mail.Send", "Sites.ReadWrite.All"] };
 
-        // CORREÇÃO: Perfis dos usuários - Apenas os perfis oficiais
+        // Perfis dos usuários
         const perfisManuais = {
             'marcio.carlos@accordgrouplda.com': 'Administrador',
             'mario.arao@accordgrouplda.com': 'RH',
@@ -620,13 +612,9 @@
             'paulo.silva@accordgrouplda.com': 'Director Geral'
         };
 
-        // Perfis que podem ver todas as requisições (incluindo Aleixo Francisco)
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Visualizador'];
-
-        // Perfis que podem APROVAR (RH, CG, Director, Admin)
         const PERFIS_QUE_APROVAM = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
 
-        // Emails dos aprovadores
         const emailsAprovadores = {
             'RH': 'mario.arao@accordgrouplda.com',
             'Controlo de Gestão': 'erikson.madureira@accordgrouplda.com',
@@ -718,8 +706,17 @@
             return 'fa-file';
         }
 
+        function getProximoStatus(statusAtual) {
+            const proximo = {
+                'em_validacao_rh': 'em_validacao_financas',
+                'em_validacao_financas': 'em_validacao_director',
+                'em_validacao_director': 'aprovada'
+            };
+            return proximo[statusAtual] || statusAtual;
+        }
+
         // ============================================
-        // CONTROLE DE ACESSO - CORRIGIDO
+        // CONTROLE DE ACESSO
         // ============================================
         function isAprovador() {
             if (!usuarioAtual) return false;
@@ -735,6 +732,46 @@
         function filtrarRequisicoesVisiveis(lista) {
             if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual?.perfil)) return lista;
             return lista.filter(req => req.criadoPorEmail === usuarioAtual?.email);
+        }
+
+        // ============================================
+        // HISTÓRICO DE COMENTÁRIOS
+        // ============================================
+        function adicionarAoHistorico(req, acao, comentario) {
+            if (!req.historicoComentarios) {
+                req.historicoComentarios = [];
+            }
+            
+            const novoRegistro = {
+                id: Date.now().toString(),
+                acao: acao,
+                usuario: usuarioAtual.nome,
+                perfil: usuarioAtual.perfil,
+                comentario: comentario,
+                data: new Date().toISOString(),
+                statusAnterior: req.status,
+                statusNovo: acao === 'aprovar' ? getProximoStatus(req.status) : 'rejeitada'
+            };
+            
+            req.historicoComentarios.unshift(novoRegistro);
+            return novoRegistro;
+        }
+
+        async function salvarHistoricoNoSharePoint(req) {
+            try {
+                const token = await getSharePointToken();
+                const siteId = await getSiteId();
+                
+                await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${req.id}/fields`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        "HistoricoComentarios": JSON.stringify(req.historicoComentarios || [])
+                    })
+                });
+            } catch(error) {
+                console.error('Erro ao salvar histórico:', error);
+            }
         }
 
         // ============================================
@@ -1061,10 +1098,8 @@
                 const userInfo = await getUserInfo();
                 const email = (userInfo.mail || userInfo.userPrincipalName).toLowerCase();
                 
-                // Verificar perfil do usuário
                 let perfil = perfisManuais[email] || 'Colaborador';
                 
-                // Regra especial para Aleixo Francisco - Visualizador (vê tudo mas não aprova)
                 if (email === 'aleixo.francisco@accordgrouplda.com') {
                     perfil = 'Visualizador';
                 }
@@ -1146,7 +1181,7 @@
         }
 
         // ============================================
-        // SHAREPOINT - UPLOAD DE FICHEIROS
+        // SHAREPOINT
         // ============================================
         async function getSharePointToken() {
             return await getAccessToken(["Sites.ReadWrite.All"]);
@@ -1325,7 +1360,6 @@
             }
         }
 
-        // CORREÇÃO: Função para gerar código único da requisição
         function gerarCodigoRequisicao() {
             const ano = new Date().getFullYear();
             const mes = String(new Date().getMonth() + 1).padStart(2, '0');
@@ -1350,20 +1384,28 @@
                     console.log('📋 Dados carregados do SharePoint:', listData);
                     
                     if (listData.value && listData.value.length > 0) {
-                        // Usar Map para evitar duplicatas por ID
                         const requisicoesMap = new Map();
                         
                         listData.value.forEach(item => {
                             const f = item.fields;
                             
-                            // Evitar duplicatas pelo ID
                             if (!requisicoesMap.has(item.id)) {
                                 let ficheiros = [];
+                                let historicoComentarios = [];
+                                
                                 if (f.Ficheiros) {
                                     try {
                                         ficheiros = JSON.parse(f.Ficheiros);
                                     } catch (e) {
                                         console.warn('⚠️ Erro ao parsear Ficheiros:', e);
+                                    }
+                                }
+                                
+                                if (f.HistoricoComentarios) {
+                                    try {
+                                        historicoComentarios = JSON.parse(f.HistoricoComentarios);
+                                    } catch (e) {
+                                        console.warn('⚠️ Erro ao parsear Histórico:', e);
                                     }
                                 }
                                 
@@ -1384,7 +1426,8 @@
                                     colaboradorSubstituir: f.ColaboradorSubstituir || "",
                                     motivoSubstituicao: f.MotivoSubstituicao || "",
                                     justificativaReforco: f.JustificativaReforco || "",
-                                    ficheiros: ficheiros
+                                    ficheiros: ficheiros,
+                                    historicoComentarios: historicoComentarios
                                 });
                             }
                         });
@@ -1436,7 +1479,10 @@
                 
                 if (req.ficheiros && req.ficheiros.length > 0) {
                     fields["Ficheiros"] = JSON.stringify(req.ficheiros);
-                    console.log('📎 Salvando ficheiros no SharePoint:', req.ficheiros);
+                }
+                
+                if (req.historicoComentarios && req.historicoComentarios.length > 0) {
+                    fields["HistoricoComentarios"] = JSON.stringify(req.historicoComentarios);
                 }
                 
                 console.log('💾 Salvando no SharePoint:', fields);
@@ -1455,26 +1501,6 @@
                 } else {
                     const errorText = await createResponse.text();
                     console.error('❌ Erro ao salvar no SharePoint:', createResponse.status, errorText);
-                    
-                    if (fields.Ficheiros) {
-                        console.log('🔄 Tentando salvar sem a coluna Ficheiros...');
-                        delete fields.Ficheiros;
-                        
-                        const retryResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items`, {
-                            method: 'POST',
-                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ fields: fields })
-                        });
-                        
-                        if (retryResponse.ok) {
-                            const newItem = await retryResponse.json(); 
-                            req.id = newItem.id;
-                            console.log('⚠️ Requisição salva sem ficheiros');
-                            mostrarNotificacao('Requisição salva, mas ficheiros não foram anexados', 'warning');
-                            return true;
-                        }
-                    }
-                    
                     return false;
                 }
             } catch (error) { 
@@ -1488,10 +1514,18 @@
                 const token = await getSharePointToken();
                 const siteId = await getSiteId();
                 
+                const fields = { 
+                    "Status": req.status 
+                };
+                
+                if (req.historicoComentarios && req.historicoComentarios.length > 0) {
+                    fields["HistoricoComentarios"] = JSON.stringify(req.historicoComentarios);
+                }
+                
                 const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${req.id}/fields`, {
                     method: 'PATCH',
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ "Status": req.status })
+                    body: JSON.stringify(fields)
                 });
                 
                 return response.ok;
@@ -1705,7 +1739,15 @@
             const acao = document.getElementById('comentarioAcao').value;
             const coment = document.getElementById('comentario').value;
             const req = requisicoes.find(r => r.id === id);
-            if (!req || !coment) { mostrarNotificacao('Comentário obrigatório', 'error'); return; }
+            
+            if (!req || !coment) { 
+                mostrarNotificacao('Comentário obrigatório', 'error'); 
+                return; 
+            }
+            
+            // Adicionar ao histórico
+            adicionarAoHistorico(req, acao, coment);
+            await salvarHistoricoNoSharePoint(req);
             
             if (acao === 'aprovar') {
                 if (req.status === 'em_validacao_rh') {
@@ -1716,10 +1758,10 @@
                         templateAprovacao(req, usuarioAtual.nome, coment, 'Controlo de Gestão'));
                     await enviarNotificacaoTeams(
                         `Requisição ${req.codigo} Aprovada pelo RH`,
-                        `A requisição para **${req.funcao}** foi aprovada pelo RH e enviada para Controlo de Gestão.`,
+                        `A requisição para **${req.funcao}** foi aprovada pelo RH.\n\n**Comentário:** ${coment}`,
                         'FF9800'
                     );
-                    adicionarNotificacao('Requisição Aprovada', `Requisição ${req.codigo} foi aprovada pelo RH.`, 'success', req.id);
+                    adicionarNotificacao('Requisição Aprovada', `Requisição ${req.codigo} foi aprovada pelo RH. Comentário: ${coment.substring(0, 100)}`, 'success', req.id);
                     mostrarNotificacao(`Requisição ${req.codigo} aprovada pelo RH!`, 'success');
                 } else if (req.status === 'em_validacao_financas') {
                     req.status = 'em_validacao_director';
@@ -1729,10 +1771,10 @@
                         templateAprovacao(req, usuarioAtual.nome, coment, 'Director Geral'));
                     await enviarNotificacaoTeams(
                         `Requisição ${req.codigo} Aprovada pelo CG`,
-                        `A requisição para **${req.funcao}** foi aprovada pelo Controlo de Gestão.`,
+                        `A requisição para **${req.funcao}** foi aprovada pelo Controlo de Gestão.\n\n**Comentário:** ${coment}`,
                         'FF9800'
                     );
-                    adicionarNotificacao('Requisição Aprovada', `Requisição ${req.codigo} foi aprovada pelo CG.`, 'success', req.id);
+                    adicionarNotificacao('Requisição Aprovada', `Requisição ${req.codigo} foi aprovada pelo CG. Comentário: ${coment.substring(0, 100)}`, 'success', req.id);
                     mostrarNotificacao(`Requisição ${req.codigo} aprovada pelo CG!`, 'success');
                 } else if (req.status === 'em_validacao_director') {
                     req.status = 'aprovada';
@@ -1743,10 +1785,10 @@
                     }
                     await enviarNotificacaoTeams(
                         `✅ Requisição ${req.codigo} APROVADA`,
-                        `A requisição para **${req.funcao}** foi totalmente aprovada!`,
+                        `A requisição para **${req.funcao}** foi totalmente aprovada!\n\n**Comentário final:** ${coment}`,
                         '4CAF50'
                     );
-                    adicionarNotificacao('Requisição Aprovada', `Requisição ${req.codigo} foi totalmente aprovada!`, 'success', req.id);
+                    adicionarNotificacao('Requisição Aprovada', `Requisição ${req.codigo} foi totalmente aprovada! Comentário: ${coment.substring(0, 100)}`, 'success', req.id);
                     mostrarNotificacao(`Requisição ${req.codigo} APROVADA!`, 'success');
                 }
             } else if (acao === 'rejeitar') {
@@ -1755,10 +1797,10 @@
                 await enviarEmail(req.criadoPorEmail, `Requisição Rejeitada - ${req.codigo}`, templateRejeicao(req, usuarioAtual.nome, coment));
                 await enviarNotificacaoTeams(
                     `❌ Requisição ${req.codigo} REJEITADA`,
-                    `A requisição para **${req.funcao}** foi rejeitada por ${usuarioAtual.nome}.`,
+                    `A requisição para **${req.funcao}** foi rejeitada por ${usuarioAtual.nome}.\n\n**Motivo:** ${coment}`,
                     'F44336'
                 );
-                adicionarNotificacao('Requisição Rejeitada', `Requisição ${req.codigo} foi rejeitada.`, 'error', req.id);
+                adicionarNotificacao('Requisição Rejeitada', `Requisição ${req.codigo} foi rejeitada. Motivo: ${coment.substring(0, 100)}`, 'error', req.id);
                 mostrarNotificacao(`Requisição ${req.codigo} REJEITADA!`, 'warning');
             }
             
@@ -1876,7 +1918,7 @@
                 return;
             }
             
-            console.log('👁️ Visualizando requisição:', req.codigo, 'Ficheiros:', req.ficheiros);
+            console.log('👁️ Visualizando requisição:', req.codigo, 'Histórico:', req.historicoComentarios);
             
             let html = `
                 <div style="margin-bottom: 15px;"><strong>Código:</strong> ${req.codigo}</div>
@@ -1884,7 +1926,7 @@
                 <div style="margin-bottom: 15px;"><strong>Direção:</strong> ${req.direcao}</div>
                 <div style="margin-bottom: 15px;"><strong>Categoria:</strong> ${req.area}</div>
                 <div style="margin-bottom: 15px;"><strong>Quantidade:</strong> ${req.quantidade}</div>
-                <div style="margin-bottom: 15px;"><strong>Status:</strong> <span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></div>
+                <div style="margin-bottom: 15px;"><strong>Status Atual:</strong> <span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></div>
                 <div style="margin-bottom: 15px;"><strong>Data Início:</strong> ${formatarData(req.dataInicio)}</div>
                 <div style="margin-bottom: 15px;"><strong>Solicitante:</strong> ${req.criadoPor || 'N/A'}</div>
                 <div style="margin-bottom: 15px;"><strong>Data Criação:</strong> ${formatarDataHora(req.dataCriacao)}</div>
@@ -1898,6 +1940,57 @@
                 html += `<div style="margin-bottom: 15px;"><strong>Justificativa do Reforço:</strong> ${req.justificativaReforco || 'N/A'}</div>`;
             }
             
+            // ========== HISTÓRICO DE COMENTÁRIOS ==========
+            const historico = req.historicoComentarios || [];
+            
+            if (historico.length > 0) {
+                html += `
+                    <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid var(--primary);">
+                        <h4 style="color: var(--primary-dark); margin-bottom: 15px;">
+                            <i class="fas fa-history"></i> Histórico de Aprovações/Rejeições
+                        </h4>
+                        <div style="background: #f8f9fa; border-radius: 8px; padding: 15px;">`;
+                
+                historico.forEach(reg => {
+                    const dataFormatada = formatarDataHora(reg.data);
+                    const icone = reg.acao === 'aprovar' ? '✅' : '❌';
+                    const corBorda = reg.acao === 'aprovar' ? '#4CAF50' : '#f44336';
+                    const acaoTexto = reg.acao === 'aprovar' ? 'APROVADA' : 'REJEITADA';
+                    
+                    html += `
+                        <div class="historico-item" style="border-left-color: ${corBorda};">
+                            <div class="historico-header">
+                                <div>
+                                    <strong style="color: ${corBorda};">${icone} ${acaoTexto}</strong>
+                                    <span style="margin: 0 8px">•</span>
+                                    <strong>${reg.usuario}</strong>
+                                    <span style="font-size: 12px; color: #666;">(${reg.perfil})</span>
+                                </div>
+                                <div style="font-size: 12px; color: #888;">
+                                    <i class="fas fa-clock"></i> ${dataFormatada}
+                                </div>
+                            </div>
+                            <div class="historico-comentario">
+                                <i class="fas fa-comment"></i> <strong>Comentário:</strong>
+                                <p style="margin-top: 5px; margin-left: 20px; color: #333; font-style: italic;">"${reg.comentario}"</p>
+                            </div>
+                            <div class="historico-status">
+                                Status anterior: ${getStatusText(reg.statusAnterior)} → ${getStatusText(reg.statusNovo)}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+            } else {
+                html += `
+                    <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #e0e0e0; color: #999; text-align: center;">
+                        <i class="fas fa-info-circle"></i> Nenhum comentário registrado ainda
+                    </div>
+                `;
+            }
+            
+            // Seção de ficheiros
             const ficheiros = req.ficheiros || [];
             if (ficheiros.length > 0) {
                 window[`ficheiros_${req.id}`] = ficheiros;
@@ -2198,7 +2291,6 @@
             
             showLoading();
             
-            // CORREÇÃO: Gerar código único
             const novoCodigo = gerarCodigoRequisicao();
             
             let ficheirosSalvos = [];
@@ -2238,7 +2330,8 @@
                 colaboradorSubstituir: document.getElementById('colaboradorSubstituir')?.value || '',
                 motivoSubstituicao: document.getElementById('motivoSubstituicao')?.value || '',
                 justificativaReforco: document.getElementById('justificativaReforco')?.value || '',
-                ficheiros: ficheirosSalvos
+                ficheiros: ficheirosSalvos,
+                historicoComentarios: []
             };
             
             const salvo = await salvarRequisicaoNoSharePoint(novaRequisicao);
