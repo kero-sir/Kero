@@ -735,6 +735,18 @@
         }
 
         // ============================================
+        // VERIFICAR SE UTILIZADOR JÁ APROVOU
+        // ============================================
+        function utilizadorJaAprovou(req) {
+            if (!req.historicoComentarios) return false;
+            return req.historicoComentarios.some(reg => 
+                reg.acao === 'aprovar' && 
+                reg.usuario === usuarioAtual.nome &&
+                reg.perfil === usuarioAtual.perfil
+            );
+        }
+
+        // ============================================
         // HISTÓRICO DE COMENTÁRIOS
         // ============================================
         function adicionarAoHistorico(req, acao, comentario) {
@@ -1711,13 +1723,29 @@
             document.getElementById('infoPagina').textContent = `Página ${estado.paginaAtual} de ${total || 1}`;
         }
 
+        // FUNÇÃO CORRIGIDA: getBotoesAcao
         function getBotoesAcao(req) {
             if (!usuarioAtual) return '';
             if (!isAprovador()) return '';
             
-            const podeAprovar = (req.status === 'em_validacao_rh' && (usuarioAtual.perfil === 'RH' || usuarioAtual.perfil === 'Administrador')) ||
-                (req.status === 'em_validacao_financas' && (usuarioAtual.perfil === 'Controlo de Gestão' || usuarioAtual.perfil === 'Administrador')) ||
-                (req.status === 'em_validacao_director' && (usuarioAtual.perfil === 'Director Geral' || usuarioAtual.perfil === 'Administrador'));
+            // Verificar se este utilizador já aprovou esta requisição
+            if (utilizadorJaAprovou(req)) {
+                return '';
+            }
+            
+            // Verificar se o status atual corresponde ao perfil do aprovador
+            let podeAprovar = false;
+            
+            if (usuarioAtual.perfil === 'RH' || usuarioAtual.perfil === 'Administrador') {
+                podeAprovar = (req.status === 'em_validacao_rh');
+            } 
+            else if (usuarioAtual.perfil === 'Controlo de Gestão') {
+                // Controlo de Gestão só pode aprovar se estiver em em_validacao_financas
+                podeAprovar = (req.status === 'em_validacao_financas');
+            } 
+            else if (usuarioAtual.perfil === 'Director Geral') {
+                podeAprovar = (req.status === 'em_validacao_director');
+            }
             
             if (podeAprovar) {
                 return `<button class="btn-small btn-approve" onclick="event.stopPropagation();abrirModalComentario('${req.id}', 'aprovar')"><i class="fas fa-check"></i> Aprovar</button>
@@ -1743,6 +1771,29 @@
             if (!req || !coment) { 
                 mostrarNotificacao('Comentário obrigatório', 'error'); 
                 return; 
+            }
+            
+            // VALIDAÇÃO CORRIGIDA: Verificar se este utilizador já aprovou esta requisição
+            if (utilizadorJaAprovou(req) && acao === 'aprovar') {
+                mostrarNotificacao('Você já aprovou esta requisição anteriormente!', 'warning');
+                fecharModal('modalComentario');
+                return;
+            }
+            
+            // Validar se o perfil tem permissão para este status
+            let temPermissao = false;
+            if (usuarioAtual.perfil === 'RH' || usuarioAtual.perfil === 'Administrador') {
+                temPermissao = (req.status === 'em_validacao_rh');
+            } else if (usuarioAtual.perfil === 'Controlo de Gestão') {
+                temPermissao = (req.status === 'em_validacao_financas');
+            } else if (usuarioAtual.perfil === 'Director Geral') {
+                temPermissao = (req.status === 'em_validacao_director');
+            }
+            
+            if (!temPermissao && acao === 'aprovar') {
+                mostrarNotificacao('Você não tem permissão para aprovar esta requisição no estado atual!', 'error');
+                fecharModal('modalComentario');
+                return;
             }
             
             // Adicionar ao histórico
@@ -2047,6 +2098,7 @@
             abrirModal('modalVisualizar');
         }
 
+        // FUNÇÃO CORRIGIDA: carregarAprovacoes
         function carregarAprovacoes() {
             const tbody = document.getElementById('corpoAprovacoes');
             if (!tbody) return;
@@ -2057,10 +2109,23 @@
             }
             
             let pendentes = [];
-            if (usuarioAtual?.perfil === 'RH') pendentes = requisicoes.filter(r => r.status === 'em_validacao_rh');
-            else if (usuarioAtual?.perfil === 'Controlo de Gestão') pendentes = requisicoes.filter(r => r.status === 'em_validacao_financas');
-            else if (usuarioAtual?.perfil === 'Director Geral') pendentes = requisicoes.filter(r => r.status === 'em_validacao_director');
-            else if (usuarioAtual?.perfil === 'Administrador') pendentes = requisicoes.filter(r => ['em_validacao_rh', 'em_validacao_financas', 'em_validacao_director'].includes(r.status));
+            
+            // Filtrar apenas requisições que estão no estado correto para cada perfil
+            if (usuarioAtual?.perfil === 'RH') {
+                pendentes = requisicoes.filter(r => r.status === 'em_validacao_rh');
+            }
+            else if (usuarioAtual?.perfil === 'Controlo de Gestão') {
+                pendentes = requisicoes.filter(r => r.status === 'em_validacao_financas');
+            }
+            else if (usuarioAtual?.perfil === 'Director Geral') {
+                pendentes = requisicoes.filter(r => r.status === 'em_validacao_director');
+            }
+            else if (usuarioAtual?.perfil === 'Administrador') {
+                pendentes = requisicoes.filter(r => ['em_validacao_rh', 'em_validacao_financas', 'em_validacao_director'].includes(r.status));
+            }
+            
+            // Remover requisições onde o utilizador já aprovou
+            pendentes = pendentes.filter(r => !utilizadorJaAprovou(r));
             
             console.log(`📋 Aprovações para ${usuarioAtual?.perfil}: ${pendentes.length} pendentes`);
             
