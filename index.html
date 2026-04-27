@@ -370,14 +370,14 @@
 
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(8, 1fr);
             gap: 15px;
             margin-bottom: 30px;
         }
 
         @media (max-width: 1200px) {
             .kpi-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(4, 1fr);
             }
         }
 
@@ -458,6 +458,21 @@
         .status-devolvida_solicitante {
             background-color: #ffb74d;
             color: #e65100;
+        }
+
+        .status-em_recrutamento {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .status-aguardando_confirmacao_solicitante {
+            background-color: #9c27b0;
+            color: white;
+        }
+
+        .status-concluida {
+            background-color: #607d8b;
+            color: white;
         }
 
         .btn-small {
@@ -678,41 +693,6 @@
             position: relative;
             height: 300px;
             width: 100%;
-        }
-
-        .email-panel, .teams-panel {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .email-panel {
-            border-left: 4px solid var(--info);
-        }
-
-        .teams-panel {
-            border-left: 4px solid var(--teams);
-        }
-
-        .panel-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .email-list, .teams-list {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--border-radius-sm);
-        }
-
-        .email-item, .teams-item {
-            padding: 12px;
-            border-bottom: 1px solid var(--gray-200);
         }
 
         .main-layout {
@@ -1558,11 +1538,8 @@
                     <div class="kpi-card" onclick="filtrarPorStatus('em_validacao_director')" data-tooltip="Aguardando aprovação do Director"><div class="kpi-info"><h4>Em Aprovação Director</h4><span id="totalPendentesDir">0</span></div><div class="kpi-icon"><i class="fas fa-user-tie"></i></div></div>
                     <div class="kpi-card" onclick="filtrarPorStatus('aprovada')" data-tooltip="Requisições aprovadas"><div class="kpi-info"><h4>Aprovadas</h4><span id="totalAprovadas">0</span></div><div class="kpi-icon"><i class="fas fa-check-circle"></i></div></div>
                     <div class="kpi-card" onclick="filtrarPorStatus('rejeitada')" data-tooltip="Requisições rejeitadas"><div class="kpi-info"><h4>Rejeitadas</h4><span id="totalRejeitadas">0</span></div><div class="kpi-icon"><i class="fas fa-times-circle"></i></div></div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                    <div class="email-panel"><div class="panel-header"><i class="fas fa-envelope"></i> <h3>Histórico de Emails</h3></div><div class="email-list" id="emailList"><div style="padding:20px;text-align:center;">Nenhum email enviado</div></div></div>
-                    <div class="teams-panel"><div class="panel-header"><i class="fab fa-microsoft"></i> <h3>Notificações Teams</h3></div><div class="teams-list" id="teamsList"><div style="padding:20px;text-align:center;">Nenhuma notificação Teams</div></div></div>
+                    <div class="kpi-card" onclick="filtrarPorStatus('em_recrutamento')" data-tooltip="Requisições em fase de recrutamento"><div class="kpi-info"><h4>Em recrutamento</h4><span id="totalEmRecrutamento">0</span></div><div class="kpi-icon"><i class="fas fa-user-graduate"></i></div></div>
+                    <div class="kpi-card" onclick="filtrarPorStatus('aguardando_confirmacao_solicitante')" data-tooltip="Aguardando confirmação do solicitante"><div class="kpi-info"><h4>Confirmação Solicitante</h4><span id="totalConfirmacaoSolicitante">0</span></div><div class="kpi-icon"><i class="fas fa-envelope-open-text"></i></div></div>
                 </div>
 
                 <div id="dashboardSection">
@@ -1579,7 +1556,7 @@
                             <div class="filter-section">
                                 <h3>Filtros</h3>
                                 <div class="filter-group"><label>Pesquisar</label><input type="text" id="filterPesquisa" placeholder="Código, função..."></div>
-                                <div class="filter-group"><label>Status</label><select id="filterStatus"><option value="all">Todos</option><option value="em_validacao_rh">RH</option><option value="em_validacao_financas">Controlo Gestão</option><option value="em_validacao_director">Director</option><option value="aprovada">Aprovada</option><option value="rejeitada">Rejeitada</option><option value="devolvida_solicitante">Devolvida</option></select></div>
+                                <div class="filter-group"><label>Status</label><select id="filterStatus"><option value="all">Todos</option><option value="em_validacao_rh">RH</option><option value="em_validacao_financas">Controlo Gestão</option><option value="em_validacao_director">Director</option><option value="aprovada">Aprovada</option><option value="rejeitada">Rejeitada</option><option value="devolvida_solicitante">Devolvida</option><option value="em_recrutamento">Em recrutamento</option><option value="aguardando_confirmacao_solicitante">Confirmação Solicitante</option><option value="concluida">Concluída</option></select></div>
                                 <div class="filter-group"><label>Direção</label><select id="filterDirecao"><option value="all">Todas</option></select></div>
                                 <div><button class="btn-filter btn-filter-clear" onclick="limparFiltros()">Limpar</button><button class="btn-filter btn-filter-apply" onclick="filtrarRequisicoes()">Aplicar</button></div>
                             </div>
@@ -1635,7 +1612,7 @@
                             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
                                 <div class="form-group"><label>Data Início</label><input type="date" id="relatorioDataInicio" class="form-control"></div>
                                 <div class="form-group"><label>Data Fim</label><input type="date" id="relatorioDataFim" class="form-control"></div>
-                                <div class="form-group"><label>Status</label><select id="relatorioStatus" class="form-control"><option value="all">Todos</option><option value="aprovada">Aprovadas</option><option value="rejeitada">Rejeitadas</option><option value="em_validacao_rh">Pendentes RH</option><option value="em_validacao_financas">Pendentes CG</option><option value="em_validacao_director">Pendentes Director</option><option value="devolvida_solicitante">Devolvidas</option></select></div>
+                                <div class="form-group"><label>Status</label><select id="relatorioStatus" class="form-control"><option value="all">Todos</option><option value="aprovada">Aprovadas</option><option value="rejeitada">Rejeitadas</option><option value="em_validacao_rh">Pendentes RH</option><option value="em_validacao_financas">Pendentes CG</option><option value="em_validacao_director">Pendentes Director</option><option value="devolvida_solicitante">Devolvidas</option><option value="em_recrutamento">Em recrutamento</option><option value="aguardando_confirmacao_solicitante">Confirmação Solicitante</option><option value="concluida">Concluída</option></select></div>
                             </div>
                         </div>
                     </div>
@@ -1785,7 +1762,10 @@
             <div class="modal-body">
                 <form id="formComentario">
                     <input type="hidden" id="comentarioRequisicaoId"><input type="hidden" id="comentarioAcao">
-                    <div class="form-group"><label>Comentário *</label><textarea id="comentario" class="form-control" rows="4" required placeholder="Digite seu comentário..."></textarea></div>
+                    <div class="form-group" id="comentarioGroup">
+                        <label>Comentário <span id="comentarioObrigatorio" style="color:red;">*</span></label>
+                        <textarea id="comentario" class="form-control" rows="4" placeholder="Digite seu comentário..."></textarea>
+                    </div>
                     <div class="form-actions"><button type="button" class="btn-small" onclick="fecharModal('modalComentario')">Cancelar</button><button type="submit" class="btn-small btn-approve" id="comentarioBtnSubmit">Confirmar</button></div>
                 </form>
             </div>
@@ -1836,18 +1816,19 @@
             'mario.arao@accordgrouplda.com': 'RH',
             'dircg@accordgrouplda.com': 'Controlo de Gestão',
             'paulo.silva@accordgrouplda.com': 'Director Geral',
-            'aleixo.francisco@accordgrouplda.com': 'Visualizador'
+            'aleixo.francisco@accordgrouplda.com': 'Recrutador'
         };
 
-        const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
+        const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador'];
         const PERFIS_QUE_APROVAM = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
-        const PERFIS_QUE_PODEM_CRIAR = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Colaborador', 'Visualizador'];
+        const PERFIS_QUE_PODEM_CRIAR = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Colaborador', 'Recrutador'];
 
         const emailsAprovadores = {
             'RH': 'mario.arao@accordgrouplda.com',
             'Controlo de Gestão': 'dircg@accordgrouplda.com',
             'Director Geral': 'paulo.silva@accordgrouplda.com',
-            'Administrador': 'marcio.carlos@accordgrouplda.com'
+            'Administrador': 'marcio.carlos@accordgrouplda.com',
+            'Recrutador': 'aleixo.francisco@accordgrouplda.com'
         };
 
         const todasDirecoes = [
@@ -1915,7 +1896,17 @@
         }
 
         function getStatusText(s) {
-            const m = { 'em_validacao_rh': 'Em Validação RH', 'em_validacao_financas': 'Em Validação CG', 'em_validacao_director': 'Em Validação Director', 'aprovada': 'Aprovada', 'rejeitada': 'Rejeitada', 'devolvida_solicitante': 'Devolvida para Edição' };
+            const m = { 
+                'em_validacao_rh': 'Em Validação RH', 
+                'em_validacao_financas': 'Em Validação CG', 
+                'em_validacao_director': 'Em Validação Director', 
+                'aprovada': 'Aprovada', 
+                'rejeitada': 'Rejeitada', 
+                'devolvida_solicitante': 'Devolvida para Edição',
+                'em_recrutamento': 'Em Recrutamento',
+                'aguardando_confirmacao_solicitante': 'Aguardando Confirmação',
+                'concluida': 'Concluída'
+            };
             return m[s] || s;
         }
 
@@ -1949,6 +1940,17 @@
             const fim = new Date(dataFim);
             const diffTime = Math.abs(fim - inicio);
             return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        function calcularTempoRecrutamento(req) {
+            if (!req.dataInicioRecrutamento) return null;
+            const inicio = new Date(req.dataInicioRecrutamento);
+            const fim = req.dataFimRecrutamento ? new Date(req.dataFimRecrutamento) : new Date();
+            const diffMs = Math.abs(fim - inicio);
+            const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHoras = Math.floor((diffMs % (86400000)) / 3600000);
+            if (diffDias > 0) return `${diffDias} dia(s) e ${diffHoras} hora(s)`;
+            return `${diffHoras} hora(s)`;
         }
 
         function getStatusAprovacaoPorPerfil(req, perfil) {
@@ -2045,20 +2047,35 @@
         // ============================================
         function isAprovador() {
             if (!usuarioAtual) return false;
-            if (usuarioAtual.email === 'aleixo.francisco@accordgrouplda.com') return false;
             return PERFIS_QUE_APROVAM.includes(usuarioAtual.perfil);
+        }
+
+        function podeIniciarRecrutamento(req) {
+            if (!usuarioAtual) return false;
+            if (req.status !== 'aprovada') return false;
+            return (usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Administrador');
+        }
+
+        function podeFinalizarRecrutamento(req) {
+            if (!usuarioAtual) return false;
+            if (req.status !== 'em_recrutamento') return false;
+            return (usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Administrador');
+        }
+
+        function podeConfirmarAtendimento(req) {
+            if (!usuarioAtual) return false;
+            if (req.status !== 'aguardando_confirmacao_solicitante') return false;
+            return (usuarioAtual.email === req.criadoPorEmail || usuarioAtual.perfil === 'Administrador');
         }
 
         function podeVerRequisicao(req) {
             if (!usuarioAtual) return false;
-            if (usuarioAtual.email === 'aleixo.francisco@accordgrouplda.com') return true;
             if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return true;
             return req.criadoPorEmail === usuarioAtual.email;
         }
 
         function filtrarRequisicoesVisiveis(lista) {
             if (!usuarioAtual) return [];
-            if (usuarioAtual.email === 'aleixo.francisco@accordgrouplda.com') return lista;
             if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return lista;
             return lista.filter(req => req.criadoPorEmail === usuarioAtual.email);
         }
@@ -2087,7 +2104,6 @@
 
         function podeEditarRequisicao(req) {
             if (!usuarioAtual) return false;
-            if (usuarioAtual.email === 'aleixo.francisco@accordgrouplda.com') return false;
             if (usuarioAtual.perfil === 'Administrador') return true;
             if (req.status === 'devolvida_solicitante' && usuarioAtual.email === req.criadoPorEmail) return true;
             if (usuarioAtual.perfil === 'RH' && req.status === 'em_validacao_rh') return true;
@@ -2109,12 +2125,6 @@
         function inicializarBotoesPorPerfil() {
             const btnNova = document.getElementById('btnNovaRequisicao');
             if (!btnNova) return;
-
-            if (usuarioAtual.email === 'aleixo.francisco@accordgrouplda.com') {
-                btnNova.style.display = 'block';
-                btnNova.setAttribute('data-tooltip', 'Criar nova requisição de vaga');
-                return;
-            }
 
             const podeCriar = PERFIS_QUE_PODEM_CRIAR.includes(usuarioAtual.perfil);
             btnNova.style.display = podeCriar ? 'block' : 'none';
@@ -2195,14 +2205,13 @@
         });
 
         // ============================================
-        // SERVIÇO DE EMAIL (MODIFICADO PARA INCLUIR ADMIN)
+        // SERVIÇO DE EMAIL
         // ============================================
         async function enviarEmail(destinatario, assunto, corpoHtml) {
             if (!configuracoes.emailNotif) return false;
             try {
                 const token = await getAccessToken(["Mail.Send"]);
                 
-                // Construir objeto de email com CC para o administrador (se diferente do destinatário)
                 const email = {
                     message: {
                         subject: assunto,
@@ -2212,13 +2221,9 @@
                     saveToSentItems: "true"
                 };
                 
-                // Adicionar administrador em CC se configurado e se não for o mesmo destinatário
                 const adminEmail = configuracoes.emailAdmin;
                 if (adminEmail && adminEmail.trim() !== "" && adminEmail !== destinatario) {
                     email.message.ccRecipients = [{ emailAddress: { address: adminEmail } }];
-                } else if (adminEmail && adminEmail === destinatario) {
-                    // Se o destinatário já é o admin, não adicionar duplicado
-                    console.log("Admin já é o destinatário principal, não será adicionado em CC.");
                 }
                 
                 const response = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', {
@@ -2229,26 +2234,22 @@
                 const sucesso = response.ok;
                 historicoEmails.unshift({ id: Date.now(), destinatario, assunto, data: new Date().toISOString(), status: sucesso ? 'enviado' : 'erro' });
                 if (historicoEmails.length > 50) historicoEmails.pop();
-                atualizarPainelEmails();
+                // Não atualizar painel visual pois ele foi removido
                 return sucesso;
             } catch (error) { console.error('Erro ao enviar email:', error); return false; }
         }
 
-        function atualizarPainelEmails() {
-            const list = document.getElementById('emailList');
-            if (!list) return;
-            if (historicoEmails.length === 0) { list.innerHTML = '<div style="padding:20px;text-align:center;">Nenhum email enviado</div>'; return; }
-            list.innerHTML = historicoEmails.slice(0, 20).map(e => `
-                    <div class="email-item">
-                        <div class="email-subject"><i class="fas fa-envelope"></i> ${e.assunto}</div>
-                        <div class="email-recipient"><i class="fas fa-user"></i> Para: ${e.destinatario}</div>
-                        <div class="email-time"><i class="fas fa-clock"></i> ${formatarDataHora(e.data)}</div>
-                        <div class="email-status ${e.status === 'enviado' ? 'email-status-success' : 'email-status-error'}">
-                            <i class="fas ${e.status === 'enviado' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                            ${e.status === 'enviado' ? 'Enviado' : 'Erro ao enviar'}
-                        </div>
-                    </div>
-                `).join('');
+        async function enviarEmailParaTodos(assunto, corpoHtml, idsExcluir = []) {
+            const emails = [
+                'aleixo.francisco@accordgrouplda.com',
+                'marcio.carlos@accordgrouplda.com',
+                'mario.arao@accordgrouplda.com',
+                'dircg@accordgrouplda.com',
+                'paulo.silva@accordgrouplda.com'
+            ];
+            for (const email of emails) {
+                if (!idsExcluir.includes(email)) await enviarEmail(email, assunto, corpoHtml);
+            }
         }
 
         // ============================================
@@ -2281,26 +2282,8 @@
                 const sucesso = response.ok;
                 historicoTeams.unshift({ id: Date.now(), titulo, mensagem, data: new Date().toISOString(), status: sucesso ? 'enviado' : 'erro' });
                 if (historicoTeams.length > 50) historicoTeams.pop();
-                atualizarPainelTeams();
                 return sucesso;
             } catch (error) { console.error('Erro ao enviar notificação Teams:', error); return false; }
-        }
-
-        function atualizarPainelTeams() {
-            const list = document.getElementById('teamsList');
-            if (!list) return;
-            if (historicoTeams.length === 0) { list.innerHTML = '<div style="padding:20px;text-align:center;">Nenhuma notificação Teams</div>'; return; }
-            list.innerHTML = historicoTeams.slice(0, 20).map(t => `
-                    <div class="teams-item">
-                        <div class="teams-message"><i class="fab fa-microsoft"></i> ${t.titulo}</div>
-                        <div class="teams-channel">${t.mensagem.substring(0, 50)}...</div>
-                        <div class="teams-time"><i class="fas fa-clock"></i> ${formatarDataHora(t.data)}</div>
-                        <div class="teams-status ${t.status === 'enviado' ? 'teams-status-success' : 'teams-status-error'}">
-                            <i class="fas ${t.status === 'enviado' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                            ${t.status === 'enviado' ? 'Enviado' : 'Erro'}
-                        </div>
-                    </div>
-                `).join('');
         }
 
         // Templates de email
@@ -2309,7 +2292,7 @@
         }
 
         function templateAprovacao(req, aprovador, comentario, proximoAprovador) {
-            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #4CAF50;">Requisição Aprovada</h2><p><strong>Código:</strong> ${req.codigo}</p><p><strong>Função:</strong> ${req.funcao}</p><p><strong>Aprovado por:</strong> ${aprovador}</p><p><strong>Comentário:</strong> ${comentario}</p>${proximoAprovador ? `<p><strong>Próximo Aprovador:</strong> ${proximoAprovador}</p>` : ''}<hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
+            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #4CAF50;">Requisição Aprovada</h2><p><strong>Código:</strong> ${req.codigo}</p><p><strong>Função:</strong> ${req.funcao}</p><p><strong>Aprovado por:</strong> ${aprovador}</p><p><strong>Comentário:</strong> ${comentario || 'Sem comentários'}</p>${proximoAprovador ? `<p><strong>Próximo Aprovador:</strong> ${proximoAprovador}</p>` : ''}<hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
         }
 
         function templateRejeicao(req, rejeitadoPor, comentario) {
@@ -2317,7 +2300,19 @@
         }
 
         function templateAprovacaoFinal(req, aprovador, comentario) {
-            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #4CAF50;">Requisição Aprovada com Sucesso!</h2><p><strong>Código:</strong> ${req.codigo}</p><p><strong>Função:</strong> ${req.funcao}</p><p><strong>Direção:</strong> ${req.direcao}</p><p><strong>Aprovado por:</strong> ${aprovador}</p><p><strong>Comentário:</strong> ${comentario}</p><hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
+            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #4CAF50;">Requisição Aprovada com Sucesso!</h2><p><strong>Código:</strong> ${req.codigo}</p><p><strong>Função:</strong> ${req.funcao}</p><p><strong>Direção:</strong> ${req.direcao}</p><p><strong>Aprovado por:</strong> ${aprovador}</p><p><strong>Comentário:</strong> ${comentario || 'Sem comentários'}</p><hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
+        }
+
+        function templateInicioRecrutamento(req) {
+            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #2196F3;">Recrutamento Iniciado</h2><p><strong>Requisição:</strong> ${req.codigo} - ${req.funcao}</p><p><strong>Iniciado por:</strong> ${usuarioAtual.nome}</p><p><strong>Data de início:</strong> ${formatarDataHora(new Date().toISOString())}</p><p>O processo de recrutamento para esta vaga foi iniciado.</p><hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
+        }
+
+        function templateFimRecrutamento(req) {
+            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #2196F3;">Recrutamento Concluído</h2><p><strong>Requisição:</strong> ${req.codigo} - ${req.funcao}</p><p><strong>Concluído por:</strong> ${usuarioAtual.nome}</p><p><strong>Período de recrutamento:</strong> ${calcularTempoRecrutamento(req)}</p><p>O recrutamento foi finalizado. Aguardamos a confirmação do solicitante.</p><hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
+        }
+
+        function templateConfirmacaoAtendimento(req) {
+            return `<div style="font-family: Arial, sans-serif; max-width: 600px;"><h2 style="color: #4CAF50;">Requisição Confirmada pelo Solicitante</h2><p><strong>Requisição:</strong> ${req.codigo} - ${req.funcao}</p><p><strong>Confirmado por:</strong> ${usuarioAtual.nome}</p><p><strong>Data da confirmação:</strong> ${formatarDataHora(new Date().toISOString())}</p><p>A requisição foi atendida e o processo está concluído.</p><hr><p style="color: #666; font-size: 12px;">Este é um email automático do Sistema Kero SIR.</p></div>`;
         }
 
         function templateEdicao(req, alteracoes) {
@@ -2500,6 +2495,7 @@
                 const pastaNome = `Requisicao_${requisicaoCodigo}`;
                 const nomeArquivo = `${Date.now()}_${arquivo.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
 
+                // Criar pasta se não existir (tenta fazer upload dentro da pasta)
                 let fileData;
                 if (arquivo.size < 4 * 1024 * 1024) {
                     const reader = new FileReader();
@@ -2574,7 +2570,7 @@
                             const f = item.fields;
                             if (!requisicoesMap.has(item.id)) {
                                 let ficheiros = [], historicoComentarios = [];
-                                if (f.Ficheiros) { try { ficheiros = JSON.parse(f.Ficheiros); } catch (e) { } }
+                                if (f.Ficheiros) { try { ficheiros = JSON.parse(f.Ficheiros); } catch (e) { console.warn("Erro parse Ficheiros", e); } }
                                 if (f.HistoricoComentarios) { try { historicoComentarios = JSON.parse(f.HistoricoComentarios); } catch (e) { } }
                                 requisicoesMap.set(item.id, {
                                     id: item.id, codigo: f.Title || `REQ-${item.id}`, funcao: f.Funcao || "", direcao: f.Direcao || "",
@@ -2583,7 +2579,9 @@
                                     dataInicio: f.DataInicio || new Date().toISOString(), criadoPor: f.CriadoPor || "",
                                     criadoPorEmail: f.CriadoPorEmail || "", observacoes: f.Observacoes || "",
                                     colaboradorSubstituir: f.ColaboradorSubstituir || "", motivoSubstituicao: f.MotivoSubstituicao || "",
-                                    justificativaReforco: f.JustificativaReforco || "", ficheiros: ficheiros, historicoComentarios: historicoComentarios
+                                    justificativaReforco: f.JustificativaReforco || "", ficheiros: ficheiros, historicoComentarios: historicoComentarios,
+                                    dataInicioRecrutamento: f.DataInicioRecrutamento || null,
+                                    dataFimRecrutamento: f.DataFimRecrutamento || null
                                 });
                             }
                         });
@@ -2605,7 +2603,9 @@
                     "Quantidade": req.quantidade, "Status": req.status, "Typo": req.tipo, "DataInicio": req.dataInicio,
                     "Observacoes": req.observacoes || "", "ColaboradorSubstituir": req.colaboradorSubstituir || "",
                     "MotivoSubstituicao": req.motivoSubstituicao || "", "JustificativaReforco": req.justificativaReforco || "",
-                    "CriadoPor": req.criadoPor, "CriadoPorEmail": req.criadoPorEmail
+                    "CriadoPor": req.criadoPor, "CriadoPorEmail": req.criadoPorEmail,
+                    "DataInicioRecrutamento": req.dataInicioRecrutamento || null,
+                    "DataFimRecrutamento": req.dataFimRecrutamento || null
                 };
                 if (req.ficheiros && req.ficheiros.length > 0) fields["Ficheiros"] = JSON.stringify(req.ficheiros);
                 if (req.historicoComentarios && req.historicoComentarios.length > 0) fields["HistoricoComentarios"] = JSON.stringify(req.historicoComentarios);
@@ -2627,8 +2627,11 @@
                     "Status": req.status, "Funcao": req.funcao, "Direcao": req.direcao, "Area": req.area,
                     "Quantidade": req.quantidade, "DataInicio": req.dataInicio, "Observacoes": req.observacoes || "",
                     "ColaboradorSubstituir": req.colaboradorSubstituir || "", "MotivoSubstituicao": req.motivoSubstituicao || "",
-                    "JustificativaReforco": req.justificativaReforco || ""
+                    "JustificativaReforco": req.justificativaReforco || "",
+                    "DataInicioRecrutamento": req.dataInicioRecrutamento || null,
+                    "DataFimRecrutamento": req.dataFimRecrutamento || null
                 };
+                if (req.ficheiros && req.ficheiros.length > 0) fields["Ficheiros"] = JSON.stringify(req.ficheiros);
                 if (req.historicoComentarios && req.historicoComentarios.length > 0) fields["HistoricoComentarios"] = JSON.stringify(req.historicoComentarios);
                 const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items/${req.id}/fields`, {
                     method: 'PATCH',
@@ -2638,6 +2641,84 @@
                 return response.ok;
             } catch (error) { console.error('Erro ao atualizar:', error); return false; }
         }
+
+        // ============================================
+        // NOVAS FUNÇÕES DE RECRUTAMENTO E CONFIRMAÇÃO
+        // ============================================
+        async function iniciarRecrutamento(id) {
+            const req = requisicoes.find(r => r.id === id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (!podeIniciarRecrutamento(req)) { mostrarNotificacao('Não tem permissão para iniciar o recrutamento desta requisição', 'error'); return; }
+            showLoading();
+            try {
+                req.status = 'em_recrutamento';
+                req.dataInicioRecrutamento = new Date().toISOString();
+                adicionarAoHistorico(req, 'inicio_recrutamento', `Recrutamento iniciado por ${usuarioAtual.nome}`);
+                await atualizarRequisicaoNoSharePoint(req);
+                await salvarHistoricoNoSharePoint(req);
+                await enviarEmailParaTodos(`Recrutamento Iniciado - ${req.codigo}`, templateInicioRecrutamento(req));
+                await enviarNotificacaoTeams(`🚀 Recrutamento Iniciado: ${req.codigo}`, `O recrutamento para ${req.funcao} foi iniciado por ${usuarioAtual.nome}.`, '2196F3');
+                adicionarNotificacao('Recrutamento Iniciado', `Iniciado o recrutamento para ${req.codigo} - ${req.funcao}`, 'info', req.id);
+                mostrarNotificacao(`Recrutamento da requisição ${req.codigo} iniciado!`, 'success');
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                atualizarGraficos();
+            } catch (error) {
+                console.error(error);
+                mostrarNotificacao('Erro ao iniciar recrutamento', 'error');
+            } finally { hideLoading(); }
+        }
+
+        async function finalizarRecrutamento(id) {
+            const req = requisicoes.find(r => r.id === id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (!podeFinalizarRecrutamento(req)) { mostrarNotificacao('Não tem permissão para finalizar o recrutamento desta requisição', 'error'); return; }
+            showLoading();
+            try {
+                req.status = 'aguardando_confirmacao_solicitante';
+                req.dataFimRecrutamento = new Date().toISOString();
+                adicionarAoHistorico(req, 'fim_recrutamento', `Recrutamento concluído por ${usuarioAtual.nome}. Tempo total: ${calcularTempoRecrutamento(req)}`);
+                await atualizarRequisicaoNoSharePoint(req);
+                await salvarHistoricoNoSharePoint(req);
+                await enviarEmailParaTodos(`Recrutamento Concluído - ${req.codigo}`, templateFimRecrutamento(req));
+                await enviarNotificacaoTeams(`✅ Recrutamento Concluído: ${req.codigo}`, `O recrutamento para ${req.funcao} foi finalizado. Aguardando confirmação do solicitante.`, '4CAF50');
+                adicionarNotificacao('Recrutamento Concluído', `Recrutamento finalizado para ${req.codigo} - ${req.funcao}. Aguardando confirmação do solicitante.`, 'success', req.id);
+                mostrarNotificacao(`Recrutamento da requisição ${req.codigo} concluído! Notificação enviada ao solicitante.`, 'success');
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                atualizarGraficos();
+            } catch (error) {
+                console.error(error);
+                mostrarNotificacao('Erro ao finalizar recrutamento', 'error');
+            } finally { hideLoading(); }
+        }
+
+        async function confirmarAtendimento(id) {
+            const req = requisicoes.find(r => r.id === id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (!podeConfirmarAtendimento(req)) { mostrarNotificacao('Não tem permissão para confirmar o atendimento desta requisição', 'error'); return; }
+            showLoading();
+            try {
+                req.status = 'concluida';
+                adicionarAoHistorico(req, 'confirmacao_atendimento', `Atendimento confirmado por ${usuarioAtual.nome}`);
+                await atualizarRequisicaoNoSharePoint(req);
+                await salvarHistoricoNoSharePoint(req);
+                await enviarEmailParaTodos(`Requisição Confirmada - ${req.codigo}`, templateConfirmacaoAtendimento(req));
+                await enviarNotificacaoTeams(`🎉 Requisição Confirmada: ${req.codigo}`, `O solicitante ${usuarioAtual.nome} confirmou o atendimento da requisição ${req.funcao}. Processo concluído.`, '4CAF50');
+                adicionarNotificacao('Requisição Confirmada', `A requisição ${req.codigo} foi confirmada como atendida pelo solicitante.`, 'success', req.id);
+                mostrarNotificacao(`Requisição ${req.codigo} confirmada como atendida! Processo concluído.`, 'success');
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                atualizarGraficos();
+            } catch (error) {
+                console.error(error);
+                mostrarNotificacao('Erro ao confirmar atendimento', 'error');
+            } finally { hideLoading(); }
+        }
+
         // ============================================
         // NAVEGAÇÃO
         // ============================================
@@ -2751,7 +2832,7 @@
         function carregarRequisicoes() {
             const tbody = document.getElementById('corpoTabela');
             if (!tbody) return;
-            if (requisicoesFiltradas.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma requisição encontrada</span>NonNullable</td></tr>'; return; }
+            if (requisicoesFiltradas.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma requisição encontrada</td></tr>'; return; }
             const inicio = (estado.paginaAtual - 1) * estado.itensPorPagina;
             const itens = requisicoesFiltradas.slice(inicio, inicio + estado.itensPorPagina);
             tbody.innerHTML = itens.map(r => {
@@ -2774,6 +2855,15 @@
                 if (podeDevolverRequisicao(req)) {
                     botoes += `<button class="btn-small btn-devolver" onclick="event.stopPropagation();abrirModalComentario('${req.id}', 'devolver')"><i class="fas fa-undo-alt"></i> Devolver</button>`;
                 }
+            }
+            if (podeIniciarRecrutamento(req)) {
+                botoes += `<button class="btn-small btn-approve" onclick="event.stopPropagation();iniciarRecrutamento('${req.id}')" style="background-color:#2196F3;"><i class="fas fa-play"></i> Iniciar Recrutamento</button>`;
+            }
+            if (podeFinalizarRecrutamento(req)) {
+                botoes += `<button class="btn-small btn-approve" onclick="event.stopPropagation();finalizarRecrutamento('${req.id}')" style="background-color:#ff9800;"><i class="fas fa-stop"></i> Finalizar Recrutamento</button>`;
+            }
+            if (podeConfirmarAtendimento(req)) {
+                botoes += `<button class="btn-small btn-approve" onclick="event.stopPropagation();confirmarAtendimento('${req.id}')" style="background-color:#4CAF50;"><i class="fas fa-check-double"></i> Confirmar Atendimento</button>`;
             }
             return botoes;
         }
@@ -2848,21 +2938,27 @@
             document.getElementById('comentario').value = '';
             const titulo = document.getElementById('comentarioTitulo');
             const btnSubmit = document.getElementById('comentarioBtnSubmit');
+            const obrigatorioSpan = document.getElementById('comentarioObrigatorio');
+            const comentarioGroup = document.getElementById('comentarioGroup');
+            
             if (acao === 'aprovar') {
                 titulo.textContent = 'Aprovar Requisição';
                 btnSubmit.textContent = 'Confirmar Aprovação';
                 btnSubmit.classList.remove('btn-devolver');
                 btnSubmit.classList.add('btn-approve');
+                obrigatorioSpan.style.display = 'none';
             } else if (acao === 'rejeitar') {
                 titulo.textContent = 'Rejeitar Requisição';
                 btnSubmit.textContent = 'Confirmar Rejeição';
                 btnSubmit.classList.remove('btn-devolver');
                 btnSubmit.classList.add('btn-reject');
+                obrigatorioSpan.style.display = 'inline';
             } else if (acao === 'devolver') {
                 titulo.textContent = 'Devolver para Edição';
                 btnSubmit.textContent = 'Confirmar Devolução';
                 btnSubmit.classList.remove('btn-approve', 'btn-reject');
                 btnSubmit.classList.add('btn-devolver');
+                obrigatorioSpan.style.display = 'inline';
             }
             abrirModal('modalComentario');
         }
@@ -2873,7 +2969,12 @@
             const acao = document.getElementById('comentarioAcao').value;
             const coment = document.getElementById('comentario').value;
             const req = requisicoes.find(r => r.id === id);
-            if (!req || !coment) { mostrarNotificacao('Comentário obrigatório', 'error'); return; }
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            
+            if ((acao === 'rejeitar' || acao === 'devolver') && !coment.trim()) {
+                mostrarNotificacao('Comentário obrigatório para rejeição ou devolução!', 'error');
+                return;
+            }
 
             if (acao === 'devolver') {
                 await processarDevolucao(req, coment);
@@ -2881,7 +2982,7 @@
                 if (utilizadorJaAprovou(req)) { mostrarNotificacao('Você já aprovou esta requisição anteriormente!', 'warning'); fecharModal('modalComentario'); return; }
                 if (!podeAprovarStatus(req)) { mostrarNotificacao('Você não tem permissão para aprovar esta requisição no estado atual!', 'error'); fecharModal('modalComentario'); return; }
                 if (req.criadoPorEmail === usuarioAtual.email) { mostrarNotificacao('Não pode aprovar uma requisição que você mesmo criou!', 'error'); fecharModal('modalComentario'); return; }
-                adicionarAoHistorico(req, acao, coment);
+                adicionarAoHistorico(req, acao, coment || 'Aprovado sem comentários');
                 await salvarHistoricoNoSharePoint(req);
                 if (req.status === 'em_validacao_rh') {
                     req.status = 'em_validacao_financas';
@@ -2896,7 +2997,6 @@
                 } else if (req.status === 'em_validacao_director') {
                     req.status = 'aprovada';
                     await atualizarRequisicaoNoSharePoint(req);
-                    // INCLUIR O ALEIXO NA APROVAÇÃO FINAL
                     const emailsDestinatarios = [req.criadoPorEmail, emailsAprovadores['RH'], 'aleixo.francisco@accordgrouplda.com'];
                     for (const email of emailsDestinatarios) { 
                         await enviarEmail(email, `Requisição Aprovada - ${req.codigo}`, templateAprovacaoFinal(req, usuarioAtual.nome, coment)); 
@@ -3004,6 +3104,9 @@
             doc.setFontSize(11);
             doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-PT')}`, 14, 30);
             const body = [['Código', req.codigo], ['Função', req.funcao], ['Direção', req.direcao], ['Categoria', req.area], ['Quantidade', req.quantidade.toString()], ['Status', getStatusText(req.status)], ['Data Início', formatarData(req.dataInicio)], ['Solicitante', req.criadoPor || 'N/A'], ['Data Criação', formatarDataHora(req.dataCriacao)], ['Observações', req.observacoes || 'N/A']];
+            if (req.dataInicioRecrutamento) body.push(['Início Recrutamento', formatarDataHora(req.dataInicioRecrutamento)]);
+            if (req.dataFimRecrutamento) body.push(['Fim Recrutamento', formatarDataHora(req.dataFimRecrutamento)]);
+            if (req.dataInicioRecrutamento) body.push(['Tempo em Recrutamento', calcularTempoRecrutamento(req) || 'N/A']);
             doc.autoTable({ startY: 40, body: body, styles: { fontSize: 10, cellPadding: 4 }, columnStyles: { 0: { fontStyle: 'bold', textColor: [46, 125, 50] } } });
             doc.save(`requisicao_${req.codigo}.pdf`);
             mostrarNotificacao('PDF da requisição exportado!', 'success');
@@ -3015,10 +3118,16 @@
             if (!podeVerRequisicao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
             requisicaoVisualizarAtual = req;
             const tempos = calcularTempoPorFase(req);
+            const tempoRecrutamento = calcularTempoRecrutamento(req);
 
             let html = `<div style="margin-bottom:15px;"><strong>Código:</strong> ${req.codigo}</div><div style="margin-bottom:15px;"><strong>Função:</strong> ${req.funcao}</div><div style="margin-bottom:15px;"><strong>Direção:</strong> ${req.direcao}</div><div style="margin-bottom:15px;"><strong>Categoria:</strong> ${req.area}</div><div style="margin-bottom:15px;"><strong>Quantidade:</strong> ${req.quantidade}</div><div style="margin-bottom:15px;"><strong>Status Atual:</strong> <span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></div><div style="margin-bottom:15px;"><strong>Data Início:</strong> ${formatarData(req.dataInicio)}</div><div style="margin-bottom:15px;"><strong>Solicitante:</strong> ${req.criadoPor || 'N/A'}</div><div style="margin-bottom:15px;"><strong>Data Criação:</strong> ${formatarDataHora(req.dataCriacao)}</div><div style="margin-bottom:15px;"><strong>Observações:</strong> ${req.observacoes || 'N/A'}</div>`;
             if (req.tipo === 'substituicao') html += `<div><strong>Colaborador a Substituir:</strong> ${req.colaboradorSubstituir || 'N/A'}</div><div><strong>Motivo:</strong> ${req.motivoSubstituicao || 'N/A'}</div>`;
             if (req.tipo === 'reforco_quadro') html += `<div><strong>Justificativa do Reforço:</strong> ${req.justificativaReforco || 'N/A'}</div>`;
+            if (req.dataInicioRecrutamento) {
+                html += `<div><strong>Data Início Recrutamento:</strong> ${formatarDataHora(req.dataInicioRecrutamento)}</div>`;
+                if (req.dataFimRecrutamento) html += `<div><strong>Data Fim Recrutamento:</strong> ${formatarDataHora(req.dataFimRecrutamento)}</div>`;
+                html += `<div><strong>Tempo em Recrutamento:</strong> ${tempoRecrutamento || 'N/A'}</div>`;
+            }
 
             html += `<div style="margin-top:25px; padding-top:20px; border-top:2px solid var(--primary);"><h4 style="color: var(--primary-dark); margin-bottom:15px;"><i class="fas fa-hourglass-half"></i> Tempo por Fase de Aprovação</h4><div style="background:#f8f9fa; border-radius:8px; padding:15px;"><table style="width:100%; border-collapse:collapse;"><thead><tr><th style="text-align:left; padding:8px; background:var(--primary-light);">Fase</th><th style="text-align:left; padding:8px; background:var(--primary-light);">Status</th><th style="text-align:left; padding:8px; background:var(--primary-light);">Tempo</th><th style="text-align:left; padding:8px; background:var(--primary-light);">Data/Hora</th><th style="text-align:left; padding:8px; background:var(--primary-light);">Aprovador</th></tr></thead><tbody>`;
             html += `<tr><td style="padding:8px; border-bottom:1px solid #e0e0e0;"><strong>📋 Fase RH</strong></td><td style="padding:8px; border-bottom:1px solid #e0e0e0;">${tempos.tempoRH.status === 'aprovado' ? '✅ Aprovada' : (tempos.tempoRH.status === 'pendente' ? '⏳ Pendente' : '❌ N/A')}</td><td style="padding:8px; border-bottom:1px solid #e0e0e0;">${tempos.tempoRH.dias !== null ? (tempos.tempoRH.dias + (tempos.tempoRH.dias === 1 ? ' dia' : ' dias')) : '-'}</td><td style="padding:8px; border-bottom:1px solid #e0e0e0;">${tempos.tempoRH.data ? formatarDataHora(tempos.tempoRH.data) : '-'}</td><td style="padding:8px; border-bottom:1px solid #e0e0e0;">${tempos.tempoRH.aprovador || '-'}</td></tr>`;
@@ -3035,6 +3144,9 @@
                     else if (reg.acao === 'rejeitar') { icone = '❌'; cor = '#f44336'; }
                     else if (reg.acao === 'edicao') { icone = '✏️'; cor = '#2196F3'; }
                     else if (reg.acao === 'devolver') { icone = '🔄'; cor = '#ff9800'; }
+                    else if (reg.acao === 'inicio_recrutamento') { icone = '🚀'; cor = '#2196F3'; }
+                    else if (reg.acao === 'fim_recrutamento') { icone = '🏁'; cor = '#ff9800'; }
+                    else if (reg.acao === 'confirmacao_atendimento') { icone = '✅'; cor = '#4CAF50'; }
                     html += `<div class="historico-item" style="border-left-color:${cor};"><div class="historico-header"><div><strong>${icone} ${reg.acao.toUpperCase()}</strong> - ${reg.usuario} (${reg.perfil})</div><div>${formatarDataHora(reg.data)}</div></div><div class="historico-comentario">${reg.comentario}</div></div>`;
                 });
                 html += `</div></div>`;
@@ -3055,20 +3167,15 @@
         function carregarAprovacoes() {
             const tbody = document.getElementById('corpoAprovacoes');
             if (!tbody) return;
-            if (!isAprovador()) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Acesso restrito a aprovadores (RH, CG, Director, Admin)</span>NonNullableNonNullable</td>'; return; }
+            if (!isAprovador()) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Acesso restrito a aprovadores (RH, CG, Director, Admin)</td></tr>'; return; }
             let pendentes = [];
             if (usuarioAtual?.perfil === 'Administrador') pendentes = requisicoes.filter(r => ['em_validacao_rh', 'em_validacao_financas', 'em_validacao_director'].includes(r.status));
             else if (usuarioAtual?.perfil === 'RH') pendentes = requisicoes.filter(r => r.status === 'em_validacao_rh');
             else if (usuarioAtual?.perfil === 'Controlo de Gestão') pendentes = requisicoes.filter(r => r.status === 'em_validacao_financas');
             else if (usuarioAtual?.perfil === 'Director Geral') pendentes = requisicoes.filter(r => r.status === 'em_validacao_director');
             pendentes = pendentes.filter(r => !utilizadorJaAprovou(r) && r.criadoPorEmail !== usuarioAtual.email);
-            if (pendentes.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhuma aprovação pendente</span>NonNullableNonNullable</td>'; return; }
-            tbody.innerHTML = pendentes.map(r => `<tr onclick="visualizarRequisicao('${r.id}')"><td>${r.codigo}${r.ficheiros && r.ficheiros.length > 0 ? ' 📎' : ''}${podeEditarRequisicao(r) ? '<span class="edit-badge" data-tooltip="Pode editar esta requisição"></span>' : ''}</td><td onclick="visualizarRequisicao('${r.id}')">${r.funcao}
-                                            <td onclick="visualizarRequisicao('${r.id}')">${r.direcao}</td>
-                                <td onclick="visualizarRequisicao('${r.id}')"><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td>
-                                <td onclick="visualizarRequisicao('${r.id}')">${formatarData(r.dataCriacao)}</span></td>
-                                <td><div class="action-buttons">${getBotoesAcao(r)}</div></td>
-                            </tr>`).join('');
+            if (pendentes.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhuma aprovação pendente</td></tr>'; return; }
+            tbody.innerHTML = pendentes.map(r => `<tr onclick="visualizarRequisicao('${r.id}')"><td>${r.codigo}${r.ficheiros && r.ficheiros.length > 0 ? ' 📎' : ''}${podeEditarRequisicao(r) ? '<span class="edit-badge" data-tooltip="Pode editar esta requisição"></span>' : ''}</td><td onclick="visualizarRequisicao('${r.id}')">${r.funcao}</td><td onclick="visualizarRequisicao('${r.id}')">${r.direcao}</td><td onclick="visualizarRequisicao('${r.id}')"><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td><td onclick="visualizarRequisicao('${r.id}')">${formatarData(r.dataCriacao)}</td><td><div class="action-buttons">${getBotoesAcao(r)}</div></td></tr>`).join('');
         }
 
         function carregarDashboard() {
@@ -3092,6 +3199,8 @@
             document.getElementById('totalPendentesDir').textContent = requisicoesVisiveis.filter(r => r.status === 'em_validacao_director').length;
             document.getElementById('totalAprovadas').textContent = requisicoesVisiveis.filter(r => r.status === 'aprovada').length;
             document.getElementById('totalRejeitadas').textContent = requisicoesVisiveis.filter(r => r.status === 'rejeitada').length;
+            document.getElementById('totalEmRecrutamento').textContent = requisicoesVisiveis.filter(r => r.status === 'em_recrutamento').length;
+            document.getElementById('totalConfirmacaoSolicitante').textContent = requisicoesVisiveis.filter(r => r.status === 'aguardando_confirmacao_solicitante').length;
         }
 
         function inicializarGraficos() {
@@ -3100,10 +3209,10 @@
                 graficos.status = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Aprovadas', 'Pendentes RH', 'Pendentes CG', 'Pendentes Director', 'Devolvidas'],
+                        labels: ['Aprovadas', 'Pendentes RH', 'Pendentes CG', 'Pendentes Director', 'Devolvidas', 'Em Recrutamento', 'Confirmação', 'Concluídas'],
                         datasets: [{
-                            data: [0, 0, 0, 0, 0],
-                            backgroundColor: ['#4CAF50', '#FF9800', '#FFC107', '#FF5722', '#ffb74d']
+                            data: [0, 0, 0, 0, 0, 0, 0, 0],
+                            backgroundColor: ['#4CAF50', '#FF9800', '#FFC107', '#FF5722', '#ffb74d', '#2196F3', '#9c27b0', '#607d8b']
                         }]
                     },
                     options: {
@@ -3123,7 +3232,10 @@
             const pendCG = requisicoesVisiveis.filter(r => r.status === 'em_validacao_financas').length;
             const pendDir = requisicoesVisiveis.filter(r => r.status === 'em_validacao_director').length;
             const devolvidas = requisicoesVisiveis.filter(r => r.status === 'devolvida_solicitante').length;
-            graficos.status.data.datasets[0].data = [aprov, pendRH, pendCG, pendDir, devolvidas];
+            const emRecrutamento = requisicoesVisiveis.filter(r => r.status === 'em_recrutamento').length;
+            const confirmacao = requisicoesVisiveis.filter(r => r.status === 'aguardando_confirmacao_solicitante').length;
+            const concluidas = requisicoesVisiveis.filter(r => r.status === 'concluida').length;
+            graficos.status.data.datasets[0].data = [aprov, pendRH, pendCG, pendDir, devolvidas, emRecrutamento, confirmacao, concluidas];
             graficos.status.update();
         }
 
@@ -3304,7 +3416,9 @@
                 motivoSubstituicao: document.getElementById('motivoSubstituicao')?.value || '',
                 justificativaReforco: document.getElementById('justificativaReforco')?.value || '',
                 ficheiros: ficheirosSalvos,
-                historicoComentarios: []
+                historicoComentarios: [],
+                dataInicioRecrutamento: null,
+                dataFimRecrutamento: null
             };
 
             const salvo = await salvarRequisicaoNoSharePoint(novaRequisicao);
