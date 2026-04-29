@@ -42,6 +42,30 @@
             color: var(--gray-600);
         }
 
+        body.dark-mode {
+            --gray-100: #1a1a2e;
+            --gray-200: #2d2d44;
+            --gray-500: #aaa;
+            --gray-600: #eee;
+            background-color: #1a1a2e;
+        }
+
+        body.dark-mode .card,
+        body.dark-mode .dashboard-card,
+        body.dark-mode .app-header,
+        body.dark-mode .nav-menu,
+        body.dark-mode .sidebar,
+        body.dark-mode .filter-section,
+        body.dark-mode .kpi-card {
+            background-color: #2d2d44;
+            color: #eee;
+        }
+
+        body.dark-mode .status-card,
+        body.dark-mode .fase-card {
+            background: linear-gradient(135deg, #2d2d44 0%, #38385a 100%);
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -71,6 +95,11 @@
             text-align: center;
         }
 
+        body.dark-mode .login-box {
+            background: #2d2d44;
+            color: #eee;
+        }
+
         .kero-logo {
             width: 100px;
             height: 100px;
@@ -82,11 +111,11 @@
             justify-content: center;
         }
 
-            .kero-logo span {
-                font-size: 60px;
-                font-weight: 700;
-                color: white;
-            }
+        .kero-logo span {
+            font-size: 60px;
+            font-weight: 700;
+            color: white;
+        }
 
         .btn-login {
             width: 100%;
@@ -105,10 +134,10 @@
             transition: all 0.2s;
         }
 
-            .btn-login:hover {
-                background: #1E1E1E;
-                transform: translateY(-2px);
-            }
+        .btn-login:hover {
+            background: #1E1E1E;
+            transform: translateY(-2px);
+        }
 
         .login-error {
             color: var(--danger);
@@ -142,24 +171,29 @@
             width: 90%;
         }
 
+        body.dark-mode .module-selection-container {
+            background: #2d2d44;
+            color: #eee;
+        }
+
         .module-selection-title {
             text-align: center;
             margin-bottom: 40px;
         }
 
-            .module-selection-title h1 {
-                color: var(--primary-dark);
-                font-size: 32px;
-                margin-bottom: 10px;
-            }
+        .module-selection-title h1 {
+            color: var(--primary-dark);
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
 
-            .module-selection-title .user-welcome {
-                margin-top: 15px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-            }
+        .module-selection-title .user-welcome {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
 
         .module-grid {
             display: grid;
@@ -184,23 +218,28 @@
             border: 2px solid transparent;
         }
 
-            .module-card-large:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-                border-color: var(--primary);
-            }
+        body.dark-mode .module-card-large {
+            background: #38385a;
+            color: #eee;
+        }
 
-            .module-card-large .module-icon-large {
-                font-size: 80px;
-                color: var(--primary);
-                margin-bottom: 20px;
-            }
+        .module-card-large:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border-color: var(--primary);
+        }
 
-            .module-card-large h2 {
-                font-size: 28px;
-                color: var(--primary-dark);
-                margin-bottom: 15px;
-            }
+        .module-card-large .module-icon-large {
+            font-size: 80px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .module-card-large h2 {
+            font-size: 28px;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
 
         .btn-logout-module {
             margin-top: 30px;
@@ -213,10 +252,10 @@
             transition: all 0.2s;
         }
 
-            .btn-logout-module:hover {
-                background: var(--gray-500);
-                color: white;
-            }
+        .btn-logout-module:hover {
+            background: var(--gray-500);
+            color: white;
+        }
 
         .app-header {
             background: white;
@@ -246,11 +285,11 @@
             justify-content: center;
         }
 
-            .logo-kero span {
-                font-size: 30px;
-                font-weight: 700;
-                color: white;
-            }
+        .logo-kero span {
+            font-size: 30px;
+            font-weight: 700;
+            color: white;
+        }
 
         .user-info {
             display: flex;
@@ -266,6 +305,10 @@
             padding: 8px 15px;
             background: var(--primary-light);
             border-radius: 30px;
+        }
+
+        body.dark-mode .user-badge {
+            background: #4a4a6a;
         }
 
         .user-avatar {
@@ -318,10 +361,10 @@
             color: white;
         }
 
-            .btn-logout:hover, .btn-modules:hover, .btn-darkmode:hover {
-                transform: translateY(-2px);
-                filter: brightness(1.05);
-            }
+        .btn-logout:hover, .btn-modules:hover, .btn-darkmode:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
 
         .nav-menu {
             background: white;
@@ -345,15 +388,15 @@
             transition: all 0.2s;
         }
 
-            .nav-item:hover {
-                background: var(--primary-light);
-                color: var(--primary-dark);
-            }
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
 
-            .nav-item.active {
-                background: var(--primary);
-                color: white;
-            }
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
 
         .manutencao-bloqueio {
             text-align: center;
@@ -362,11 +405,11 @@
             border-radius: var(--border-radius);
         }
 
-            .manutencao-bloqueio i {
-                font-size: 80px;
-                color: var(--warning);
-                margin-bottom: 20px;
-            }
+        .manutencao-bloqueio i {
+            font-size: 80px;
+            color: var(--warning);
+            margin-bottom: 20px;
+        }
 
         .kpi-grid {
             display: grid;
@@ -400,10 +443,10 @@
             transition: all 0.2s;
         }
 
-            .kpi-card:hover {
-                transform: translateY(-2px);
-                box-shadow: var(--shadow-md);
-            }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
         .kpi-info h4 {
             color: var(--gray-500);
@@ -492,50 +535,50 @@
             color: var(--primary-dark);
         }
 
-            .btn-view:hover {
-                background-color: var(--primary);
-                color: white;
-            }
+        .btn-view:hover {
+            background-color: var(--primary);
+            color: white;
+        }
 
         .btn-approve {
             background-color: #4CAF50;
             color: white;
         }
 
-            .btn-approve:hover {
-                background-color: #45a049;
-                transform: scale(1.02);
-            }
+        .btn-approve:hover {
+            background-color: #45a049;
+            transform: scale(1.02);
+        }
 
         .btn-reject {
             background-color: #f44336;
             color: white;
         }
 
-            .btn-reject:hover {
-                background-color: #da190b;
-                transform: scale(1.02);
-            }
+        .btn-reject:hover {
+            background-color: #da190b;
+            transform: scale(1.02);
+        }
 
         .btn-devolver {
             background-color: #ff9800;
             color: white;
         }
 
-            .btn-devolver:hover {
-                background-color: #fb8c00;
-                transform: scale(1.02);
-            }
+        .btn-devolver:hover {
+            background-color: #fb8c00;
+            transform: scale(1.02);
+        }
 
         .btn-edit {
             background-color: #2196F3;
             color: white;
         }
 
-            .btn-edit:hover {
-                background-color: #1976D2;
-                transform: scale(1.02);
-            }
+        .btn-edit:hover {
+            background-color: #1976D2;
+            transform: scale(1.02);
+        }
 
         .btn-primary {
             background-color: var(--primary);
@@ -550,10 +593,10 @@
             transition: all 0.2s;
         }
 
-            .btn-primary:hover {
-                background-color: var(--primary-dark);
-                transform: translateY(-1px);
-            }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
 
         .btn-filter {
             padding: 8px 15px;
@@ -586,25 +629,25 @@
             margin-bottom: 15px;
         }
 
-            .filter-group label {
-                display: block;
-                margin-bottom: 5px;
-                font-weight: 500;
-                font-size: 13px;
-            }
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 13px;
+        }
 
-            .filter-group select, .filter-group input {
-                width: 100%;
-                padding: 8px 10px;
-                border-radius: 4px;
-                border: 1px solid var(--gray-200);
-                transition: all 0.2s;
-            }
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s;
+        }
 
-                .filter-group select:focus, .filter-group input:focus {
-                    outline: none;
-                    border-color: var(--primary);
-                }
+        .filter-group select:focus, .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
 
         table {
             width: 100%;
@@ -628,6 +671,18 @@
         tr:hover {
             background-color: #f1f8e9;
             cursor: pointer;
+        }
+
+        body.dark-mode th {
+            background-color: #4a4a6a;
+        }
+
+        body.dark-mode td {
+            border-bottom-color: #4a4a6a;
+        }
+
+        body.dark-mode tr:hover {
+            background-color: #3a3a5a;
         }
 
         .card {
@@ -690,6 +745,10 @@
             border-left: 4px solid;
             transition: transform 0.3s ease;
             cursor: pointer;
+        }
+
+        body.dark-mode .fase-card, body.dark-mode .status-card {
+            background: linear-gradient(135deg, #2d2d44 0%, #38385a 100%);
         }
 
         .fase-card:hover, .status-card:hover {
@@ -836,6 +895,11 @@
             animation: modalSlideIn 0.3s ease;
         }
 
+        body.dark-mode .modal-content {
+            background: #2d2d44;
+            color: #eee;
+        }
+
         @keyframes modalSlideIn {
             from {
                 transform: translateY(-50px);
@@ -868,20 +932,20 @@
             transition: all 0.2s;
         }
 
-            .close-modal:hover {
-                color: var(--danger);
-            }
+        .close-modal:hover {
+            color: var(--danger);
+        }
 
         .form-group {
             margin-bottom: 15px;
         }
 
-            .form-group label {
-                display: block;
-                margin-bottom: 5px;
-                font-weight: 500;
-                font-size: 13px;
-            }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 13px;
+        }
 
         .form-control {
             width: 100%;
@@ -891,10 +955,10 @@
             transition: all 0.2s;
         }
 
-            .form-control:focus {
-                outline: none;
-                border-color: var(--primary);
-            }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
 
         .form-actions {
             display: flex;
@@ -915,17 +979,17 @@
             transition: all 0.3s;
         }
 
-            .tipo-opcao:hover {
-                border-color: var(--primary);
-                background: #f1f8e9;
-                transform: translateY(-5px);
-            }
+        .tipo-opcao:hover {
+            border-color: var(--primary);
+            background: #f1f8e9;
+            transform: translateY(-5px);
+        }
 
-            .tipo-opcao i {
-                font-size: 48px;
-                margin-bottom: 15px;
-                color: var(--primary);
-            }
+        .tipo-opcao i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
 
         .loading-overlay {
             position: fixed;
@@ -940,9 +1004,9 @@
             justify-content: center;
         }
 
-            .loading-overlay.show {
-                display: flex;
-            }
+        .loading-overlay.show {
+            display: flex;
+        }
 
         .loading-spinner {
             width: 50px;
@@ -1015,16 +1079,16 @@
             transition: all 0.2s;
         }
 
-            .pagina-btn:hover:not(:disabled) {
-                background: var(--primary);
-                color: white;
-                border-color: var(--primary);
-            }
+        .pagina-btn:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
 
-            .pagina-btn:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
+        .pagina-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
         .dropzone {
             border: 2px dashed var(--gray-200);
@@ -1036,10 +1100,10 @@
             transition: all 0.2s;
         }
 
-            .dropzone:hover {
-                border-color: var(--primary);
-                background: var(--primary-light);
-            }
+        .dropzone:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
 
         .file-list {
             margin-top: 10px;
@@ -1055,25 +1119,25 @@
             margin-bottom: 5px;
         }
 
-            .file-item .file-info {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
+        .file-item .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-            .file-item .file-size {
-                font-size: 11px;
-                color: var(--gray-500);
-            }
+        .file-item .file-size {
+            font-size: 11px;
+            color: var(--gray-500);
+        }
 
         .file-remove {
             color: var(--danger);
             cursor: pointer;
         }
 
-            .file-remove:hover {
-                transform: scale(1.1);
-            }
+        .file-remove:hover {
+            transform: scale(1.1);
+        }
 
         .ficheiros-section {
             margin-top: 25px;
@@ -1081,13 +1145,13 @@
             border-top: 1px solid #e0e0e0;
         }
 
-            .ficheiros-section h4 {
-                margin-bottom: 15px;
-                color: var(--primary-dark);
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
+        .ficheiros-section h4 {
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
         .ficheiros-tabs {
             display: flex;
@@ -1111,20 +1175,20 @@
             transition: all 0.3s;
         }
 
-            .ficheiro-tab:hover {
-                background: var(--primary-light);
-                border-color: var(--primary);
-            }
+        .ficheiro-tab:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
 
-            .ficheiro-tab.active {
-                background: var(--primary);
-                color: white;
-                border-color: var(--primary);
-            }
+        .ficheiro-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
 
-            .ficheiro-tab i {
-                font-size: 14px;
-            }
+        .ficheiro-tab i {
+            font-size: 14px;
+        }
 
         .ficheiro-viewer-container {
             background: #f9f9f9;
@@ -1147,12 +1211,12 @@
             text-align: center;
         }
 
-            .ficheiro-preview-image img {
-                max-width: 100%;
-                max-height: 500px;
-                border-radius: 4px;
-                box-shadow: var(--shadow-sm);
-            }
+        .ficheiro-preview-image img {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 4px;
+            box-shadow: var(--shadow-sm);
+        }
 
         .ficheiro-preview-pdf {
             width: 100%;
@@ -1179,11 +1243,11 @@
             color: #999;
         }
 
-            .ficheiro-preview-unavailable i {
-                font-size: 64px;
-                margin-bottom: 20px;
-                opacity: 0.5;
-            }
+        .ficheiro-preview-unavailable i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
 
         .ficheiro-info-bar {
             display: flex;
@@ -1201,16 +1265,16 @@
             flex-direction: column;
         }
 
-            .ficheiro-details .ficheiro-nome {
-                font-weight: 600;
-                color: var(--gray-600);
-            }
+        .ficheiro-details .ficheiro-nome {
+            font-weight: 600;
+            color: var(--gray-600);
+        }
 
-            .ficheiro-details .ficheiro-meta {
-                font-size: 12px;
-                color: var(--gray-500);
-                margin-top: 3px;
-            }
+        .ficheiro-details .ficheiro-meta {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 3px;
+        }
 
         .ficheiro-actions {
             display: flex;
@@ -1239,10 +1303,10 @@
             color: white;
         }
 
-            .btn-download:hover, .btn-sharepoint:hover {
-                transform: translateY(-1px);
-                filter: brightness(1.05);
-            }
+        .btn-download:hover, .btn-sharepoint:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+        }
 
         .report-actions {
             display: flex;
@@ -1264,10 +1328,10 @@
             transition: all 0.2s;
         }
 
-            .btn-report:hover {
-                transform: translateY(-1px);
-                filter: brightness(1.05);
-            }
+        .btn-report:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+        }
 
         .btn-report-excel {
             background-color: #217346;
@@ -1286,27 +1350,27 @@
             cursor: pointer;
         }
 
-            .notification-bell i {
-                font-size: 24px;
-                color: var(--gray-500);
-                transition: all 0.2s;
-            }
+        .notification-bell i {
+            font-size: 24px;
+            color: var(--gray-500);
+            transition: all 0.2s;
+        }
 
-                .notification-bell i:hover {
-                    color: var(--primary);
-                }
+        .notification-bell i:hover {
+            color: var(--primary);
+        }
 
-            .notification-bell .badge-count {
-                position: absolute;
-                top: -8px;
-                right: -8px;
-                background: var(--danger);
-                color: white;
-                border-radius: 50%;
-                padding: 2px 6px;
-                font-size: 10px;
-                font-weight: bold;
-            }
+        .notification-bell .badge-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+        }
 
         .notification-panel {
             display: none;
@@ -1322,9 +1386,13 @@
             overflow-y: auto;
         }
 
-            .notification-panel.show {
-                display: block;
-            }
+        body.dark-mode .notification-panel {
+            background: #2d2d44;
+        }
+
+        .notification-panel.show {
+            display: block;
+        }
 
         .notification-item {
             padding: 12px 15px;
@@ -1333,13 +1401,17 @@
             transition: all 0.2s;
         }
 
-            .notification-item:hover {
-                background: var(--gray-100);
-            }
+        .notification-item:hover {
+            background: var(--gray-100);
+        }
 
-            .notification-item.unread {
-                background: var(--primary-light);
-            }
+        .notification-item.unread {
+            background: var(--primary-light);
+        }
+
+        body.dark-mode .notification-item.unread {
+            background: #4a4a6a;
+        }
 
         .notification-title {
             font-weight: 600;
@@ -1362,9 +1434,13 @@
             transition: all 0.2s;
         }
 
-            .historico-item:hover {
-                transform: translateX(5px);
-            }
+        body.dark-mode .historico-item {
+            background: #38385a;
+        }
+
+        .historico-item:hover {
+            transform: translateX(5px);
+        }
 
         .historico-aprovado {
             border-left-color: #4CAF50;
@@ -1397,6 +1473,10 @@
             border-radius: 4px;
         }
 
+        body.dark-mode .historico-comentario {
+            background: #2a2a40;
+        }
+
         .historico-status {
             margin-top: 5px;
             font-size: 11px;
@@ -1416,9 +1496,14 @@
             transition: all 0.2s;
         }
 
-            .direcao-item:hover {
-                box-shadow: var(--shadow-sm);
-            }
+        body.dark-mode .direcao-item {
+            background: #38385a;
+            border-color: #4a4a6a;
+        }
+
+        .direcao-item:hover {
+            box-shadow: var(--shadow-sm);
+        }
 
         .direcao-header {
             display: flex;
@@ -1451,10 +1536,14 @@
             transition: all 0.2s;
         }
 
-            .categoria-tag:hover {
-                background: var(--primary-light);
-                transform: scale(1.02);
-            }
+        body.dark-mode .categoria-tag {
+            background: #2d2d44;
+        }
+
+        .categoria-tag:hover {
+            background: var(--primary-light);
+            transform: scale(1.02);
+        }
 
         .edit-badge {
             display: inline-block;
@@ -1520,25 +1609,35 @@
             cursor: help;
         }
 
-            [data-tooltip]:before {
-                content: attr(data-tooltip);
-                position: absolute;
-                bottom: 100%;
-                left: 50%;
-                transform: translateX(-50%);
-                padding: 5px 10px;
-                background: #333;
-                color: white;
-                font-size: 11px;
-                border-radius: 4px;
-                white-space: nowrap;
-                display: none;
-                z-index: 1000;
-            }
+        [data-tooltip]:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 10px;
+            background: #333;
+            color: white;
+            font-size: 11px;
+            border-radius: 4px;
+            white-space: nowrap;
+            display: none;
+            z-index: 1000;
+        }
 
-            [data-tooltip]:hover:before {
-                display: block;
-            }
+        [data-tooltip]:hover:before {
+            display: block;
+        }
+
+        .info-badge {
+            background: var(--info);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -1624,7 +1723,7 @@
 
             <div id="recrutamentoSection">
                 <div class="kpi-grid">
-                    <div class="kpi-card" onclick="filtrarPorStatus('all')" data-tooltip="Ver todas as requisições"><div class="kpi-info"><h4>Requisições</h4><span id="totalRequisicoes">0</span></div><div class="kpi-icon"><i class="fas fa-file-alt"></i></div></div>
+                    <div class="kpi-card" onclick="filtrarPorStatus('all')" data-tooltip="Ver todas as requisições que tem acesso"><div class="kpi-info"><h4>Requisições</h4><span id="totalRequisicoes">0</span></div><div class="kpi-icon"><i class="fas fa-file-alt"></i></div></div>
                     <div class="kpi-card" onclick="filtrarPorStatus('em_validacao_rh')" data-tooltip="Aguardando aprovação do RH"><div class="kpi-info"><h4>Em Aprovação RH</h4><span id="totalPendentesRH">0</span></div><div class="kpi-icon"><i class="fas fa-clock"></i></div></div>
                     <div class="kpi-card" onclick="filtrarPorStatus('em_validacao_financas')" data-tooltip="Aguardando aprovação do Controlo de Gestão"><div class="kpi-info"><h4>Em Aprovação CG</h4><span id="totalPendentesCG">0</span></div><div class="kpi-icon"><i class="fas fa-chart-line"></i></div></div>
                     <div class="kpi-card" onclick="filtrarPorStatus('em_validacao_director')" data-tooltip="Aguardando aprovação do Director"><div class="kpi-info"><h4>Em Aprovação Director</h4><span id="totalPendentesDir">0</span></div><div class="kpi-icon"><i class="fas fa-user-tie"></i></div></div>
@@ -1637,11 +1736,11 @@
                 <div id="dashboardSection">
                     <div class="dashboard-grid">
                         <div class="dashboard-card">
-                            <h3><i class="fas fa-clock"></i> Dashboard de Tempos das Requisições</h3>
+                            <h3><i class="fas fa-clock"></i> Dashboard de Tempos das Requisições <span class="info-badge">Dados Globais</span></h3>
                             <div id="temposDashboard"></div>
                         </div>
                         <div class="dashboard-card">
-                            <h3><i class="fas fa-chart-pie"></i> Dashboard de Status das Requisições</h3>
+                            <h3><i class="fas fa-chart-pie"></i> Dashboard de Status das Requisições <span class="info-badge">Dados Globais</span></h3>
                             <div id="statusDashboard"></div>
                         </div>
                     </div>
@@ -1918,6 +2017,7 @@
 
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador'];
         const PERFIS_QUE_APROVAM = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
+        // CORREÇÃO 1: Adicionado 'Colaborador' para que todos possam criar requisições
         const PERFIS_QUE_PODEM_CRIAR = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador', 'Colaborador'];
 
         const emailsAprovadores = {
@@ -2816,19 +2916,21 @@
             } finally { hideLoading(); }
         }
 
+        // CORREÇÃO 2: Dashboard de Tempos agora usa TODAS as requisições (globais)
         function carregarDashboardTempos() {
             const container = document.getElementById('temposDashboard');
             if (!container) return;
             
-            const requisicoesVisiveis = filtrarRequisicoesVisiveis(requisicoes);
+            // Usar TODAS as requisições para estatísticas GLOBAIS
+            const todasRequisicoes = requisicoes;
             
-            const aprovadasSemRecrutamento = requisicoesVisiveis.filter(r => r.status === 'aprovada' && !r.dataInicioRecrutamento);
+            const aprovadasSemRecrutamento = todasRequisicoes.filter(r => r.status === 'aprovada' && !r.dataInicioRecrutamento);
             
             let totalTempoRH = 0, totalTempoCG = 0, totalTempoDir = 0, totalTempoRecrutamento = 0;
             let countRH = 0, countCG = 0, countDir = 0, countRecrutamento = 0;
             let requisicoesEmAprovacaoRH = 0, requisicoesEmAprovacaoCG = 0, requisicoesEmAprovacaoDir = 0, requisicoesEmRecrutamento = 0;
             
-            requisicoesVisiveis.forEach(req => {
+            todasRequisicoes.forEach(req => {
                 const tempos = calcularTempoPorFaseDetalhado(req);
                 
                 if (tempos.tempoRH !== null) {
@@ -2988,24 +3090,26 @@
             `;
         }
 
+        // CORREÇÃO 3: Dashboard de Status agora usa TODAS as requisições (globais)
         function carregarDashboardStatus() {
             const container = document.getElementById('statusDashboard');
             if (!container) return;
             
-            const requisicoesVisiveis = filtrarRequisicoesVisiveis(requisicoes);
+            // Usar TODAS as requisições para estatísticas GLOBAIS
+            const todasRequisicoes = requisicoes;
             
-            const totalRequisicoes = requisicoesVisiveis.length;
+            const totalRequisicoes = todasRequisicoes.length;
             
             const statusCounts = {
-                'em_validacao_rh': requisicoesVisiveis.filter(r => r.status === 'em_validacao_rh').length,
-                'em_validacao_financas': requisicoesVisiveis.filter(r => r.status === 'em_validacao_financas').length,
-                'em_validacao_director': requisicoesVisiveis.filter(r => r.status === 'em_validacao_director').length,
-                'aprovada': requisicoesVisiveis.filter(r => r.status === 'aprovada').length,
-                'rejeitada': requisicoesVisiveis.filter(r => r.status === 'rejeitada').length,
-                'em_recrutamento': requisicoesVisiveis.filter(r => r.status === 'em_recrutamento').length,
-                'aguardando_confirmacao_solicitante': requisicoesVisiveis.filter(r => r.status === 'aguardando_confirmacao_solicitante').length,
-                'concluida': requisicoesVisiveis.filter(r => r.status === 'concluida').length,
-                'devolvida_solicitante': requisicoesVisiveis.filter(r => r.status === 'devolvida_solicitante').length
+                'em_validacao_rh': todasRequisicoes.filter(r => r.status === 'em_validacao_rh').length,
+                'em_validacao_financas': todasRequisicoes.filter(r => r.status === 'em_validacao_financas').length,
+                'em_validacao_director': todasRequisicoes.filter(r => r.status === 'em_validacao_director').length,
+                'aprovada': todasRequisicoes.filter(r => r.status === 'aprovada').length,
+                'rejeitada': todasRequisicoes.filter(r => r.status === 'rejeitada').length,
+                'em_recrutamento': todasRequisicoes.filter(r => r.status === 'em_recrutamento').length,
+                'aguardando_confirmacao_solicitante': todasRequisicoes.filter(r => r.status === 'aguardando_confirmacao_solicitante').length,
+                'concluida': todasRequisicoes.filter(r => r.status === 'concluida').length,
+                'devolvida_solicitante': todasRequisicoes.filter(r => r.status === 'devolvida_solicitante').length
             };
             
             const maxCount = Math.max(...Object.values(statusCounts), 1);
@@ -3318,19 +3422,19 @@
         function carregarRequisicoes() {
             const tbody = document.getElementById('corpoTabela');
             if (!tbody) return;
-            if (requisicoesFiltradas.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma requisição encontrada</td></tr>'; return; }
+            if (requisicoesFiltradas.length === 0) { tbody.innerHTML = '<td><td colspan="7" style="text-align:center;">Nenhuma requisição encontrada</td></tr>'; return; }
             const inicio = (estado.paginaAtual - 1) * estado.itensPorPagina;
             const itens = requisicoesFiltradas.slice(inicio, inicio + estado.itensPorPagina);
             tbody.innerHTML = itens.map(r => {
                 const temEdicao = r.historicoComentarios && r.historicoComentarios.some(h => h.acao === 'edicao');
                 return `<tr onclick="visualizarRequisicao('${r.id}')">
-                    <td>${r.codigo} ${r.ficheiros && r.ficheiros.length > 0 ? '<i class="fas fa-paperclip" style="color: var(--primary); margin-left: 5px;"></i>' : ''} ${temEdicao ? '<span class="edit-badge" data-tooltip="Esta requisição foi editada"></span>' : ''}</td>
-                    <td onclick="visualizarRequisicao('${r.id}')">${r.funcao}</td>
-                    <td onclick="visualizarRequisicao('${r.id}')">${r.direcao}</td>
-                    <td onclick="visualizarRequisicao('${r.id}')"><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td>
-                    <td onclick="visualizarRequisicao('${r.id}')">${getTipoBadge(r.tipo)}</td>
-                    <td onclick="visualizarRequisicao('${r.id}')">${formatarData(r.dataInicio)}</td>
-                    <td><div class="action-buttons">${getBotoesAcao(r)}</div></td>
+                    <td>${r.codigo} ${r.ficheiros && r.ficheiros.length > 0 ? '<i class="fas fa-paperclip" style="color: var(--primary); margin-left: 5px;"></i>' : ''} ${temEdicao ? '<span class="edit-badge" data-tooltip="Esta requisição foi editada"></span>' : ''}</span>
+                    <td onclick="visualizarRequisicao('${r.id}')">${r.funcao}</span>
+                    <td onclick="visualizarRequisicao('${r.id}')">${r.direcao}</span>
+                    <td onclick="visualizarRequisicao('${r.id}')"><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></span>
+                    <td onclick="visualizarRequisicao('${r.id}')">${getTipoBadge(r.tipo)}</span>
+                    <td onclick="visualizarRequisicao('${r.id}')">${formatarData(r.dataInicio)}</span>
+                    <td><div class="action-buttons">${getBotoesAcao(r)}</div></span>
                 </tr>`;
             }).join('');
             const total = Math.ceil(requisicoesFiltradas.length / estado.itensPorPagina);
@@ -3748,7 +3852,7 @@
             const tbody = document.getElementById('corpoAprovacoes');
             if (!tbody) return;
             if (!isAprovador()) { 
-                tbody.innerHTML = '</tr><td colspan="6" style="text-align:center;">Acesso restrito a aprovadores (RH, CG, Director, Admin)</span></tr>'; 
+                tbody.innerHTML = '</table><td colspan="6" style="text-align:center;">Acesso restrito a aprovadores (RH, CG, Director, Admin)</span></tr>'; 
                 return; 
             }
             let pendentes = [];
@@ -3758,7 +3862,7 @@
             else if (usuarioAtual?.perfil === 'Director Geral') pendentes = requisicoes.filter(r => r.status === 'em_validacao_director');
             pendentes = pendentes.filter(r => !utilizadorJaAprovou(r) && r.criadoPorEmail !== usuarioAtual.email);
             if (pendentes.length === 0) { 
-                tbody.innerHTML = '</tr><td colspan="6" style="text-align:center;">Nenhuma aprovação pendente.</td></tr>'; 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhuma aprovação pendente.</td></tr>'; 
                 return; 
             }
             tbody.innerHTML = pendentes.map(r => `<tr onclick="visualizarRequisicao('${r.id}')">
@@ -3768,7 +3872,7 @@
                 <td onclick="visualizarRequisicao('${r.id}')"><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></span>
                 <td onclick="visualizarRequisicao('${r.id}')">${formatarData(r.dataCriacao)}</span>
                 <td><div class="action-buttons">${getBotoesAcao(r)}</div></span>
-             </tr>`).join('');
+             </td>`).join('');
         }
 
         function atualizarKPIs() {
