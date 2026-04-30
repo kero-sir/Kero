@@ -1023,6 +1023,29 @@
             }
         }
 
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
         .notificacao {
             position: fixed;
             top: 20px;
@@ -1049,18 +1072,6 @@
 
         .notificacao-info {
             background: #2196F3;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
         }
 
         .paginacao {
@@ -2017,7 +2028,6 @@
 
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador'];
         const PERFIS_QUE_APROVAM = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
-        // CORREÇÃO 1: Adicionado 'Colaborador' para que todos possam criar requisições
         const PERFIS_QUE_PODEM_CRIAR = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador', 'Colaborador'];
 
         const emailsAprovadores = {
@@ -2077,9 +2087,13 @@
         function mostrarNotificacao(msg, tipo) {
             const div = document.createElement('div');
             div.className = `notificacao notificacao-${tipo}`;
-            div.innerHTML = `<i class="fas ${tipo === 'success' ? 'fa-check-circle' : tipo === 'warning' ? 'fa-exclamation-triangle' : tipo === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle'}"></i> ${msg}`;
+            const icone = tipo === 'success' ? 'fa-check-circle' : tipo === 'error' ? 'fa-exclamation-circle' : tipo === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+            div.innerHTML = `<i class="fas ${icone}"></i> ${msg}`;
             document.body.appendChild(div);
-            setTimeout(() => div.remove(), 4000);
+            setTimeout(() => {
+                div.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => div.remove(), 300);
+            }, 4000);
         }
 
         function formatarData(d) { if (!d) return ''; return new Date(d).toLocaleDateString('pt-PT'); }
@@ -2140,14 +2154,6 @@
                 'em_validacao_director': 'em_recrutamento'
             };
             return proximo[statusAtual] || statusAtual;
-        }
-
-        function calcularDiasEntreDatas(dataInicio, dataFim) {
-            if (!dataInicio || !dataFim) return null;
-            const inicio = new Date(dataInicio);
-            const fim = new Date(dataFim);
-            const diffTime = Math.abs(fim - inicio);
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
 
         function calcularTempoEmMilissegundos(dataInicio, dataFim) {
@@ -2726,11 +2732,53 @@
             return `REQ-${ano}${mes}-${sequencia}`;
         }
 
+        function carregarDadosExemplo() {
+            if (requisicoes.length === 0) {
+                requisicoes = [
+                    {
+                        id: '1',
+                        codigo: 'REQ-202412-0001',
+                        funcao: 'Analista de RH',
+                        direcao: 'Capital Humano',
+                        area: 'Técnico',
+                        quantidade: 1,
+                        status: 'em_validacao_rh',
+                        tipo: 'novo_cargo',
+                        dataCriacao: new Date().toISOString(),
+                        dataInicio: new Date().toISOString(),
+                        criadoPor: 'Usuário Exemplo',
+                        criadoPorEmail: 'exemplo@accordgrouplda.com',
+                        observacoes: 'Dados de exemplo - Conecte ao SharePoint para dados reais',
+                        ficheiros: [],
+                        historicoComentarios: []
+                    }
+                ];
+                mostrarNotificacao('Usando dados de exemplo (conexão com SharePoint não disponível). As requisições serão salvas localmente.', 'warning');
+            }
+        }
+
         async function carregarRequisicoesDoSharePoint() {
             showLoading();
             try {
                 const token = await getSharePointToken();
                 const siteId = await getSiteId();
+                
+                const listCheckUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}`;
+                const listCheck = await fetch(listCheckUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                
+                if (!listCheck.ok) {
+                    console.warn('Lista não encontrada, usando dados de exemplo');
+                    carregarDadosExemplo();
+                    hideLoading();
+                    filtrarRequisicoes();
+                    carregarAprovacoes();
+                    atualizarKPIs();
+                    atualizarGraficos();
+                    carregarDashboardTempos();
+                    carregarDashboardStatus();
+                    return;
+                }
+                
                 const listUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items?expand=fields`;
                 const listResponse = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}` } });
                 if (listResponse.ok) {
@@ -2759,10 +2807,22 @@
                         requisicoes = Array.from(requisicoesMap.values());
                         console.log(`📊 Carregadas ${requisicoes.length} requisições únicas`);
                         mostrarNotificacao(`Carregadas ${requisicoes.length} requisições`, 'success');
-                    } else { requisicoes = []; }
-                } else { requisicoes = []; }
-            } catch (error) { console.error('Erro ao carregar do SharePoint:', error); requisicoes = []; }
-            finally { hideLoading(); filtrarRequisicoes(); carregarAprovacoes(); atualizarKPIs(); atualizarGraficos(); carregarDashboardTempos(); carregarDashboardStatus(); }
+                    } else { requisicoes = []; carregarDadosExemplo(); }
+                } else { requisicoes = []; carregarDadosExemplo(); }
+            } catch (error) {
+                console.error('Erro ao carregar do SharePoint:', error);
+                requisicoes = [];
+                carregarDadosExemplo();
+            }
+            finally { 
+                hideLoading(); 
+                filtrarRequisicoes(); 
+                carregarAprovacoes(); 
+                atualizarKPIs(); 
+                atualizarGraficos(); 
+                carregarDashboardTempos(); 
+                carregarDashboardStatus(); 
+            }
         }
 
         async function salvarRequisicaoNoSharePoint(req) {
@@ -2814,7 +2874,7 @@
         }
 
         async function iniciarRecrutamentoManual(id) {
-            const req = requisicoes.find(r => r.id === id);
+            const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
             
             if (usuarioAtual.perfil !== 'Administrador') { 
@@ -2864,7 +2924,7 @@
         }
 
         async function finalizarRecrutamento(id) {
-            const req = requisicoes.find(r => r.id === id);
+            const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
             if (!podeFinalizarRecrutamento(req)) { mostrarNotificacao('Apenas o Recrutador pode finalizar o recrutamento', 'error'); return; }
             showLoading();
@@ -2891,7 +2951,7 @@
         }
 
         async function confirmarAtendimento(id) {
-            const req = requisicoes.find(r => r.id === id);
+            const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
             if (!podeConfirmarAtendimento(req)) { mostrarNotificacao('Não tem permissão para confirmar o atendimento desta requisição', 'error'); return; }
             showLoading();
@@ -2916,12 +2976,10 @@
             } finally { hideLoading(); }
         }
 
-        // CORREÇÃO 2: Dashboard de Tempos agora usa TODAS as requisições (globais)
         function carregarDashboardTempos() {
             const container = document.getElementById('temposDashboard');
             if (!container) return;
             
-            // Usar TODAS as requisições para estatísticas GLOBAIS
             const todasRequisicoes = requisicoes;
             
             const aprovadasSemRecrutamento = todasRequisicoes.filter(r => r.status === 'aprovada' && !r.dataInicioRecrutamento);
@@ -2964,7 +3022,7 @@
             const maxTempo = Math.max(mediaRH, mediaCG, mediaDir, mediaRecrutamento, 1);
             
             let alertaHTML = '';
-            if (aprovadasSemRecrutamento.length > 0 && usuarioAtual.perfil === 'Administrador') {
+            if (aprovadasSemRecrutamento.length > 0 && usuarioAtual && usuarioAtual.perfil === 'Administrador') {
                 alertaHTML = `
                     <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
                         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
@@ -3090,12 +3148,10 @@
             `;
         }
 
-        // CORREÇÃO 3: Dashboard de Status agora usa TODAS as requisições (globais)
         function carregarDashboardStatus() {
             const container = document.getElementById('statusDashboard');
             if (!container) return;
             
-            // Usar TODAS as requisições para estatísticas GLOBAIS
             const todasRequisicoes = requisicoes;
             
             const totalRequisicoes = todasRequisicoes.length;
@@ -3337,6 +3393,7 @@
                 document.getElementById('currentUserName').textContent = usuarioAtual.nome;
                 document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
                 atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
+                carregarUtilizadores();
             } else {
                 document.getElementById('recrutamentoSection').style.display = 'none';
                 document.getElementById('manutencaoSection').style.display = 'block';
@@ -3347,6 +3404,40 @@
             }
         }
 
+        function carregarUtilizadores() {
+            const tbody = document.getElementById('tabelaUtilizadores');
+            if (!tbody) return;
+            
+            const utilizadoresLista = Object.entries(perfisManuais).map(([email, perfil]) => ({
+                nome: email.split('@')[0].replace(/\./g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                email: email,
+                perfil: perfil
+            }));
+            
+            utilizadoresLista.push({
+                nome: usuarioAtual?.nome || 'Usuário Atual',
+                email: usuarioAtual?.email || '',
+                perfil: usuarioAtual?.perfil || 'Colaborador'
+            });
+            
+            const utilizadoresUnicos = [];
+            const emailsVistos = new Set();
+            for (const u of utilizadoresLista) {
+                if (!emailsVistos.has(u.email) && u.email) {
+                    emailsVistos.add(u.email);
+                    utilizadoresUnicos.push(u);
+                }
+            }
+            
+            tbody.innerHTML = utilizadoresUnicos.map(u => `
+                <tr>
+                    <td>${u.nome || 'N/A'}</td>
+                    <td>${u.email}</td>
+                    <td><span class="status-badge" style="background: var(--primary); color: white;">${u.perfil}</span></td>
+                </tr>
+            `).join('');
+        }
+
         function mudarAba(aba, elem) {
             const secs = ['dashboardSection', 'requisicoesSection', 'aprovacoesSection', 'relatoriosSection', 'utilizadoresSection', 'direcoesSection', 'configuracoesSection'];
             secs.forEach(s => { const el = document.getElementById(s); if (el) el.style.display = 'none'; });
@@ -3355,6 +3446,7 @@
             if (elem) elem.classList.add('active');
             if (aba === 'dashboard') { carregarDashboardTempos(); carregarDashboardStatus(); atualizarKPIs(); atualizarGraficos(); }
             if (aba === 'aprovacoes') carregarAprovacoes();
+            if (aba === 'utilizadores') carregarUtilizadores();
         }
 
         function inicializarDirecoes() {
@@ -3422,19 +3514,19 @@
         function carregarRequisicoes() {
             const tbody = document.getElementById('corpoTabela');
             if (!tbody) return;
-            if (requisicoesFiltradas.length === 0) { tbody.innerHTML = '<td><td colspan="7" style="text-align:center;">Nenhuma requisição encontrada</td></tr>'; return; }
+            if (requisicoesFiltradas.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma requisição encontrada</td></tr>'; return; }
             const inicio = (estado.paginaAtual - 1) * estado.itensPorPagina;
             const itens = requisicoesFiltradas.slice(inicio, inicio + estado.itensPorPagina);
             tbody.innerHTML = itens.map(r => {
                 const temEdicao = r.historicoComentarios && r.historicoComentarios.some(h => h.acao === 'edicao');
                 return `<tr onclick="visualizarRequisicao('${r.id}')">
-                    <td>${r.codigo} ${r.ficheiros && r.ficheiros.length > 0 ? '<i class="fas fa-paperclip" style="color: var(--primary); margin-left: 5px;"></i>' : ''} ${temEdicao ? '<span class="edit-badge" data-tooltip="Esta requisição foi editada"></span>' : ''}</span>
-                    <td onclick="visualizarRequisicao('${r.id}')">${r.funcao}</span>
-                    <td onclick="visualizarRequisicao('${r.id}')">${r.direcao}</span>
-                    <td onclick="visualizarRequisicao('${r.id}')"><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></span>
-                    <td onclick="visualizarRequisicao('${r.id}')">${getTipoBadge(r.tipo)}</span>
-                    <td onclick="visualizarRequisicao('${r.id}')">${formatarData(r.dataInicio)}</span>
-                    <td><div class="action-buttons">${getBotoesAcao(r)}</div></span>
+                    <td>${r.codigo} ${r.ficheiros && r.ficheiros.length > 0 ? '<i class="fas fa-paperclip" style="color: var(--primary); margin-left: 5px;"></i>' : ''} ${temEdicao ? '<span class="edit-badge" data-tooltip="Esta requisição foi editada"></span>' : ''}</td>
+                    <td>${r.funcao}</td>
+                    <td>${r.direcao}</td>
+                    <td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td>
+                    <td>${getTipoBadge(r.tipo)}</td>
+                    <td>${formatarData(r.dataInicio)}</td>
+                    <td><div class="action-buttons">${getBotoesAcao(r)}</div></td>
                 </tr>`;
             }).join('');
             const total = Math.ceil(requisicoesFiltradas.length / estado.itensPorPagina);
@@ -3453,7 +3545,7 @@
             
             if (usuarioAtual.perfil === 'Administrador' && req.status === 'aprovada' && !req.dataInicioRecrutamento) {
                 botoes += `<button class="btn-small btn-approve" onclick="event.stopPropagation();iniciarRecrutamentoManual('${req.id}')" style="background-color:#9c27b0;">
-                    <i class="fas fa-play-circle"></i> Iniciar Recrutamento (Manual)
+                    <i class="fas fa-play-circle"></i> Iniciar Recrutamento
                 </button>`;
             }
             
@@ -3466,18 +3558,18 @@
             }
             
             if (podeFinalizarRecrutamento(req)) {
-                botoes += `<button class="btn-small btn-approve" onclick="event.stopPropagation();finalizarRecrutamento('${req.id}')" style="background-color:#ff9800;"><i class="fas fa-stop"></i> Finalizar Recrutamento</button>`;
+                botoes += `<button class="btn-small btn-approve" onclick="event.stopPropagation();finalizarRecrutamento('${req.id}')" style="background-color:#ff9800;"><i class="fas fa-stop"></i> Finalizar</button>`;
             }
             
             if (podeConfirmarAtendimento(req)) {
-                botoes += `<button class="btn-small btn-approve" onclick="event.stopPropagation();confirmarAtendimento('${req.id}')" style="background-color:#4CAF50;"><i class="fas fa-check-double"></i> Confirmar Atendimento</button>`;
+                botoes += `<button class="btn-small btn-approve" onclick="event.stopPropagation();confirmarAtendimento('${req.id}')" style="background-color:#4CAF50;"><i class="fas fa-check-double"></i> Confirmar</button>`;
             }
             
             return botoes;
         }
 
         function editarRequisicao(id) {
-            const req = requisicoes.find(r => r.id === id);
+            const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
             if (!podeEditarRequisicao(req)) { mostrarNotificacao('Não tem permissão para editar esta requisição', 'error'); return; }
             document.getElementById('editRequisicaoId').value = req.id;
@@ -3501,7 +3593,7 @@
         async function salvarEdicaoRequisicao(e) {
             e.preventDefault();
             const id = document.getElementById('editRequisicaoId').value;
-            const req = requisicoes.find(r => r.id === id);
+            const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
             if (!podeEditarRequisicao(req)) { mostrarNotificacao('Não tem permissão para editar esta requisição', 'error'); return; }
             showLoading();
@@ -3577,7 +3669,7 @@
             const id = document.getElementById('comentarioRequisicaoId').value;
             const acao = document.getElementById('comentarioAcao').value;
             const coment = document.getElementById('comentario').value;
-            const req = requisicoes.find(r => r.id === id);
+            const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
             
             if ((acao === 'rejeitar' || acao === 'devolver') && !coment.trim()) {
@@ -3714,13 +3806,19 @@
             const ficheiros = window[`ficheiros_${reqId}`];
             if (!ficheiros || !ficheiros[index]) return;
             const ficheiro = ficheiros[index];
-            document.getElementById(`ficheiroViewer_${reqId}`).innerHTML = gerarVisualizadorFicheiro(ficheiro);
-            document.getElementById(`ficheiroNome_${reqId}`).textContent = ficheiro.nome;
-            document.querySelector(`#ficheiroInfo_${reqId} .ficheiro-meta`).innerHTML = `${formatarTamanho(ficheiro.tamanho)} • ${formatarData(ficheiro.dataUpload)}`;
+            const viewerDiv = document.getElementById(`ficheiroViewer_${reqId}`);
+            if (viewerDiv) viewerDiv.innerHTML = gerarVisualizadorFicheiro(ficheiro);
+            const nomeSpan = document.getElementById(`ficheiroNome_${reqId}`);
+            if (nomeSpan) nomeSpan.textContent = ficheiro.nome;
+            const metaSpan = document.querySelector(`#ficheiroInfo_${reqId} .ficheiro-meta`);
+            if (metaSpan) metaSpan.innerHTML = `${formatarTamanho(ficheiro.tamanho)} • ${formatarData(ficheiro.dataUpload)}`;
             const actionsDiv = document.querySelector(`#ficheiroInfo_${reqId} .ficheiro-actions`);
-            const downloadUrl = ficheiro.downloadUrl || ficheiro.url || ficheiro.webUrl;
-            actionsDiv.innerHTML = `<button class="btn-download" onclick="baixarFicheiro('${downloadUrl}', '${ficheiro.nome}')"><i class="fas fa-download"></i> Download</button><button class="btn-sharepoint" onclick="window.open('${ficheiro.webUrl || ficheiro.url}', '_blank')"><i class="fas fa-external-link-alt"></i> Abrir no SharePoint</button>`;
-            document.querySelectorAll(`#ficheiroTabs_${reqId} .ficheiro-tab`).forEach((tab, i) => { tab.classList.toggle('active', i === index); });
+            if (actionsDiv) {
+                const downloadUrl = ficheiro.downloadUrl || ficheiro.url || ficheiro.webUrl;
+                actionsDiv.innerHTML = `<button class="btn-download" onclick="baixarFicheiro('${downloadUrl}', '${ficheiro.nome}')"><i class="fas fa-download"></i> Download</button><button class="btn-sharepoint" onclick="window.open('${ficheiro.webUrl || ficheiro.url}', '_blank')"><i class="fas fa-external-link-alt"></i> Abrir no SharePoint</button>`;
+            }
+            const tabs = document.querySelectorAll(`#ficheiroTabs_${reqId} .ficheiro-tab`);
+            tabs.forEach((tab, i) => { tab.classList.toggle('active', i === index); });
         }
 
         function baixarFicheiro(url, nome) {
@@ -3754,7 +3852,7 @@
         }
 
         function visualizarRequisicao(id) {
-            const req = requisicoes.find(r => r.id === id);
+            const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
             if (!podeVerRequisicao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
             requisicaoVisualizarAtual = req;
@@ -3852,7 +3950,7 @@
             const tbody = document.getElementById('corpoAprovacoes');
             if (!tbody) return;
             if (!isAprovador()) { 
-                tbody.innerHTML = '</table><td colspan="6" style="text-align:center;">Acesso restrito a aprovadores (RH, CG, Director, Admin)</span></tr>'; 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Acesso restrito a aprovadores (RH, CG, Director, Admin)</span></tr>'; 
                 return; 
             }
             let pendentes = [];
@@ -3866,13 +3964,13 @@
                 return; 
             }
             tbody.innerHTML = pendentes.map(r => `<tr onclick="visualizarRequisicao('${r.id}')">
-                <td>${r.codigo}${r.ficheiros && r.ficheiros.length > 0 ? ' 📎' : ''}${podeEditarRequisicao(r) ? '<span class="edit-badge" data-tooltip="Pode editar esta requisição"></span>' : ''}</span>
-                <td onclick="visualizarRequisicao('${r.id}')">${r.funcao}</span>
-                <td onclick="visualizarRequisicao('${r.id}')">${r.direcao}</span>
-                <td onclick="visualizarRequisicao('${r.id}')"><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></span>
-                <td onclick="visualizarRequisicao('${r.id}')">${formatarData(r.dataCriacao)}</span>
+                <td>${r.codigo}${r.ficheiros && r.ficheiros.length > 0 ? ' 📎' : ''}${podeEditarRequisicao(r) ? '<span class="edit-badge" data-tooltip="Pode editar esta requisição"></span>' : ''}</td>
+                <td>${r.funcao}</td>
+                <td>${r.direcao}</td>
+                <td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td>
+                <td>${formatarData(r.dataCriacao)}</span>
                 <td><div class="action-buttons">${getBotoesAcao(r)}</div></span>
-             </td>`).join('');
+             </table>`).join('');
         }
 
         function atualizarKPIs() {
@@ -4124,7 +4222,7 @@
                 carregarDashboardStatus();
                 mostrarNotificacao(`Requisição ${novoCodigo} criada com sucesso!`, 'success');
             } else {
-                mostrarNotificacao(`Erro ao salvar no SharePoint. Verifique se a lista "${SHAREPOINT_CONFIG.listName}" e a coluna "Ficheiros" existem.`, 'error');
+                mostrarNotificacao(`Erro ao salvar no SharePoint. Verifique se a lista "${SHAREPOINT_CONFIG.listName}" existe.`, 'error');
             }
             hideLoading();
         }
