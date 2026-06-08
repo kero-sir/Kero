@@ -430,7 +430,7 @@
         const REDIRECT_URI = window.location.href.split('#')[0];
         const msalConfig = { auth: { clientId: "3df93492-9d7b-4fa0-bbb3-cbe17aa86096", authority: "https://login.microsoftonline.com/917dfbfd-7aa2-40f8-ba23-b5b213b322f7", redirectUri: REDIRECT_URI, postLogoutRedirectUri: REDIRECT_URI }, cache: { cacheLocation: "sessionStorage" } };
         const loginRequest = { scopes: ["User.Read", "email", "profile", "openid", "offline_access", "Mail.Send", "Sites.ReadWrite.All"] };
-        const perfisManuais = { 'marcio.carlos@accordgrouplda.com': 'Administrador', 'mario.arao@accordgrouplda.com': 'RH', 'dircg@accordgrouplda.com': 'Controlo de Gestão', 'paulo.silva@accordgrouplda.com': 'Director Geral', 'aleixo.francisco@accordgrouplda.com': 'Recrutador', 'luzia.cauica@accordgrouplda.com': 'Recrutador'};
+        const perfisManuais = { 'marcio.carlos@accordgrouplda.com': 'Administrador', 'mario.arao@accordgrouplda.com': 'RH', 'dircg@accordgrouplda.com': 'Controlo de Gestão', 'paulo.silva@accordgrouplda.com': 'Director Geral', 'aleixo.francisco@accordgrouplda.com': 'Recrutador', 'luzia.cauica@accordgrouplda.com': 'Recrutador', 'norma.melo@accordgrouplda.com': 'Recrutador'};
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador'];
         const PERFIS_QUE_APROVAM = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
         const PERFIS_QUE_PODEM_CRIAR = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador', 'Colaborador'];
