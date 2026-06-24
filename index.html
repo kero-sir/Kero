@@ -33,6 +33,14 @@
             --shadow-md: 0 5px 15px rgba(0,0,0,0.1);
             --border-radius: 10px;
             --border-radius-sm: 6px;
+            
+            /* Cores do módulo Manutenção - Tons Laranja */
+            --manutencao-primary: #FF6F00;
+            --manutencao-primary-dark: #E65100;
+            --manutencao-primary-light: #FFF3E0;
+            --manutencao-primary-bg: #FFF8E1;
+            --manutencao-gradient: linear-gradient(135deg, #E65100, #FF9800);
+            --manutencao-card-shadow: 0 4px 20px rgba(230, 81, 0, 0.15);
         }
         body { background-color: var(--gray-100); color: var(--gray-600); }
         body.dark-mode { --gray-100: #1a1a2e; --gray-200: #2d2d44; --gray-500: #aaa; --gray-600: #eee; background-color: #1a1a2e; }
@@ -145,6 +153,14 @@
         .module-card-large:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); border-color: var(--primary); }
         .module-card-large .module-icon-large { font-size: 80px; color: var(--primary); margin-bottom: 20px; }
         .module-card-large h2 { font-size: 28px; color: var(--primary-dark); margin-bottom: 15px; }
+        
+        /* Card do módulo Manutenção com tons laranja */
+        .module-card-large.manutencao-card .module-icon-large { color: var(--manutencao-primary); }
+        .module-card-large.manutencao-card h2 { color: var(--manutencao-primary-dark); }
+        .module-card-large.manutencao-card:hover { border-color: var(--manutencao-primary); box-shadow: 0 15px 30px rgba(230, 81, 0, 0.25); }
+        .module-card-large.manutencao-card { background: var(--manutencao-primary-bg); }
+        body.dark-mode .module-card-large.manutencao-card { background: #38385a; }
+        
         .btn-logout-module { margin-top: 30px; padding: 12px 30px; background: var(--gray-200); color: var(--gray-600); border: none; border-radius: var(--border-radius-sm); cursor: pointer; transition: all 0.2s; }
         .btn-logout-module:hover { background: var(--gray-500); color: white; }
 
@@ -602,13 +618,14 @@
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
         /* ============================================================
-           ESTILOS EXCLUSIVOS DO MÓDULO MANUTENÇÃO
+           ESTILOS EXCLUSIVOS DO MÓDULO MANUTENÇÃO - TODOS EM LARANJA
            ============================================================ */
         .manutencao-container {
-            background: #faf5f0;
+            background: var(--manutencao-primary-bg);
             border-radius: var(--border-radius);
             padding: 0;
             overflow: hidden;
+            border: 2px solid var(--manutencao-primary);
         }
 
         .manutencao-container .app-container {
@@ -616,10 +633,10 @@
             min-height: 80vh;
         }
 
-        /* SIDEBAR MANUTENÇÃO */
+        /* SIDEBAR MANUTENÇÃO - LARANJA */
         .manutencao-container .sidebar-manutencao {
             width: 270px;
-            background: linear-gradient(180deg, #E65100, #FF9800);
+            background: var(--manutencao-gradient);
             color: #fff;
             padding: 20px 0;
             flex-shrink: 0;
@@ -627,7 +644,7 @@
         }
         .manutencao-container .sidebar-manutencao .brand {
             padding: 0 20px 30px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.12);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
             display: flex;
             align-items: center;
             gap: 14px;
@@ -650,7 +667,7 @@
         .manutencao-container .sidebar-manutencao .brand small {
             display: block;
             font-size: 11px;
-            opacity: 0.75;
+            opacity: 0.8;
             font-weight: 400;
         }
 
@@ -666,16 +683,16 @@
             gap: 14px;
             transition: all 0.3s;
             border-left: 3px solid transparent;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.85);
             font-weight: 500;
         }
         .manutencao-container .sidebar-manutencao .menu li:hover {
-            background: rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.1);
             border-left-color: #fff;
             color: #fff;
         }
         .manutencao-container .sidebar-manutencao .menu li.active {
-            background: rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.15);
             border-left-color: #fff;
             color: #fff;
         }
@@ -686,7 +703,7 @@
         }
         .manutencao-container .sidebar-manutencao .menu li .badge {
             margin-left: auto;
-            background: #ff6f00;
+            background: rgba(255,255,255,0.2);
             color: #fff;
             padding: 2px 10px;
             border-radius: 20px;
@@ -698,10 +715,10 @@
         .manutencao-container .content-manutencao {
             flex: 1;
             padding: 24px 30px;
-            background: #faf5f0;
+            background: var(--manutencao-primary-bg);
         }
 
-        /* KPI CARDS MANUTENÇÃO */
+        /* KPI CARDS MANUTENÇÃO - LARANJA */
         .manutencao-container .kpi-grid-manutencao {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
@@ -716,17 +733,18 @@
             background: white;
             padding: 18px 20px;
             border-radius: var(--border-radius);
-            border-left: 4px solid #FF9800;
+            border-left: 4px solid var(--manutencao-primary);
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 20px rgba(230, 81, 0, 0.12);
+            box-shadow: var(--manutencao-card-shadow);
         }
         .manutencao-container .kpi-card-manutencao:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(255, 152, 0, 0.15);
+            box-shadow: 0 8px 30px rgba(255, 152, 0, 0.25);
+            border-left-color: var(--manutencao-primary-dark);
         }
         .manutencao-container .kpi-card-manutencao .kpi-info h4 {
             color: #888;
@@ -738,21 +756,22 @@
         .manutencao-container .kpi-card-manutencao .kpi-info span {
             font-size: 26px;
             font-weight: 700;
-            color: #E65100;
+            color: var(--manutencao-primary-dark);
         }
         .manutencao-container .kpi-card-manutencao .kpi-icon {
             font-size: 28px;
             opacity: 0.3;
-            color: #FF9800;
+            color: var(--manutencao-primary);
         }
 
-        /* CARDS MANUTENÇÃO */
+        /* CARDS MANUTENÇÃO - LARANJA */
         .manutencao-container .card-manutencao {
             background: white;
             border-radius: var(--border-radius);
             padding: 24px;
             margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(230, 81, 0, 0.12);
+            box-shadow: var(--manutencao-card-shadow);
+            border-top: 4px solid var(--manutencao-primary);
         }
         .manutencao-container .card-manutencao .card-header {
             display: flex;
@@ -760,25 +779,25 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 14px;
-            border-bottom: 2px solid #fff3e0;
+            border-bottom: 2px solid var(--manutencao-primary-light);
         }
         .manutencao-container .card-manutencao .card-title {
             font-size: 18px;
             font-weight: 600;
-            color: #E65100;
+            color: var(--manutencao-primary-dark);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        /* BADGES MANUTENÇÃO */
-        .manutencao-container .status-pendente { background: #fff3e0; color: #E65100; }
+        /* BADGES MANUTENÇÃO - LARANJA */
+        .manutencao-container .status-pendente { background: var(--manutencao-primary-light); color: var(--manutencao-primary-dark); }
         .manutencao-container .status-aguardando-consumiveis { background: #fce4ec; color: #c62828; }
         .manutencao-container .status-aguardando-cg { background: #fff8e1; color: #F57F17; }
         .manutencao-container .status-aguardando-diretor { background: #e3f2fd; color: #1565c0; }
         .manutencao-container .status-aguardando-financas { background: #f3e5f5; color: #7B1FA2; }
         .manutencao-container .status-em-execucao { background: #e8f5e9; color: #2E7D32; }
-        .manutencao-container .status-aguardando-material { background: #fff3e0; color: #E65100; }
+        .manutencao-container .status-aguardando-material { background: var(--manutencao-primary-light); color: var(--manutencao-primary-dark); }
         .manutencao-container .status-aguardando-execucao { background: #e8f5e9; color: #2E7D32; }
         .manutencao-container .status-concluida { background: #4CAF50; color: white; }
         .manutencao-container .status-reprovada { background: #ef9a9a; color: #c62828; }
@@ -787,17 +806,17 @@
         .manutencao-container .type-preventiva { background: #e8f5e9; color: #2E7D32; }
 
         .manutencao-container .priority-alta { background: #ffebee; color: #c62828; }
-        .manutencao-container .priority-media { background: #fff3e0; color: #E65100; }
+        .manutencao-container .priority-media { background: var(--manutencao-primary-light); color: var(--manutencao-primary-dark); }
         .manutencao-container .priority-baixa { background: #e8f5e9; color: #2E7D32; }
 
         .manutencao-container .expense-summary {
-            background: #fff3e0;
+            background: var(--manutencao-primary-light);
             padding: 16px 20px;
             border-radius: 12px;
             margin-bottom: 16px;
             font-size: 14px;
             line-height: 1.8;
-            border-left: 4px solid #FF9800;
+            border-left: 4px solid var(--manutencao-primary);
         }
 
         /* ACTIVITY LIST MANUTENÇÃO */
@@ -815,25 +834,25 @@
             border-radius: 8px;
         }
         .manutencao-container .activity-item:hover {
-            background: #fff3e0;
+            background: var(--manutencao-primary-light);
             transform: translateX(4px);
         }
         .manutencao-container .activity-item .activity-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #fff3e0;
+            background: var(--manutencao-primary-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #FF9800;
+            color: var(--manutencao-primary);
             font-size: 16px;
             flex-shrink: 0;
         }
 
-        /* BOTÕES MANUTENÇÃO */
+        /* BOTÕES MANUTENÇÃO - LARANJA */
         .manutencao-container .btn-manutencao-primary {
-            background: #FF9800;
+            background: var(--manutencao-gradient);
             color: white;
             border: none;
             padding: 12px 20px;
@@ -842,36 +861,39 @@
             cursor: pointer;
             width: 100%;
             margin-bottom: 20px;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
         }
         .manutencao-container .btn-manutencao-primary:hover {
-            background: #E65100;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 152, 0, 0.4);
         }
 
         .manutencao-container .btn-manutencao-secondary {
-            background: #fff3e0;
-            color: #E65100;
-            border: none;
+            background: var(--manutencao-primary-light);
+            color: var(--manutencao-primary-dark);
+            border: 2px solid var(--manutencao-primary);
             padding: 12px 20px;
             border-radius: var(--border-radius-sm);
             font-weight: 600;
             cursor: pointer;
             width: 100%;
             margin-bottom: 10px;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
         .manutencao-container .btn-manutencao-secondary:hover {
-            background: #ffe0b2;
+            background: var(--manutencao-primary);
+            color: white;
             transform: translateY(-1px);
         }
 
-        /* SIDEBAR FILTERS MANUTENÇÃO */
+        /* SIDEBAR FILTERS MANUTENÇÃO - LARANJA */
         .manutencao-container .sidebar-filters {
             background: white;
             border-radius: var(--border-radius);
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(230, 81, 0, 0.12);
+            box-shadow: var(--manutencao-card-shadow);
+            border-left: 4px solid var(--manutencao-primary);
         }
 
         .manutencao-container .item-row {
@@ -883,7 +905,7 @@
         }
         .manutencao-container .item-row input { flex: 1; min-width: 80px; }
 
-        /* NOTA DE DESPESA MANUTENÇÃO */
+        /* NOTA DE DESPESA MANUTENÇÃO - LARANJA */
         #notaDespesaManutencao {
             display: none;
             position: fixed;
@@ -891,7 +913,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             z-index: 20000;
             overflow-y: auto;
             padding: 30px;
@@ -902,14 +924,17 @@
             max-width: 800px;
             margin: 0 auto;
             font-family: 'Courier New', monospace;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            border-top: 6px solid var(--manutencao-primary);
         }
         .nota-header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid var(--manutencao-primary);
             padding-bottom: 20px;
         }
-        .nota-header h1 { color: #E65100; }
+        .nota-header h1 { color: var(--manutencao-primary-dark); }
         .nota-itens {
             width: 100%;
             border-collapse: collapse;
@@ -920,7 +945,7 @@
             padding: 8px 12px;
             text-align: left;
         }
-        .nota-itens th { background: #f0f0f0; }
+        .nota-itens th { background: var(--manutencao-primary-light); color: var(--manutencao-primary-dark); }
         .nota-assinaturas {
             margin-top: 40px;
             display: flex;
@@ -935,7 +960,7 @@
             margin: 30px auto 8px;
         }
         .btn-imprimir {
-            background: #FF9800;
+            background: var(--manutencao-gradient);
             color: white;
             border: none;
             padding: 10px 24px;
@@ -943,10 +968,11 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
         }
         .btn-imprimir:hover {
-            background: #E65100;
             transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 152, 0, 0.4);
         }
 
         /* RESPONSIVO MANUTENÇÃO */
@@ -1230,14 +1256,16 @@
                 </div>
             </div>
             <div class="module-grid">
+                <!-- Módulo Recrutamento - Verde -->
                 <div class="module-card-large" onclick="selecionarModulo('recrutamento')">
                     <div class="module-icon-large"><i class="fas fa-user-plus"></i></div>
                     <h2>Recrutamento</h2>
                     <p>Gestão de requisições de vagas, aprovações e acompanhamento do processo de recrutamento.</p>
                 </div>
-                <div class="module-card-large" onclick="selecionarModulo('manutencao')">
+                <!-- Módulo Manutenção - Laranja -->
+                <div class="module-card-large manutencao-card" onclick="selecionarModulo('manutencao')">
                     <div class="module-icon-large"><i class="fas fa-tools"></i></div>
-                    <h2>Manutenção</h2>
+                    <h2 style="color: var(--manutencao-primary-dark);">Manutenção</h2>
                     <p>Requisições de manutenção, gestão de equipamentos e acompanhamento de serviços.</p>
                 </div>
             </div>
@@ -1366,7 +1394,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO MANUTENÇÃO - LAYOUT ORIGINAL (SEM USER DUPLICADO E SEM BARRA SUPERIOR)
+            MÓDULO MANUTENÇÃO - LAYOUT COMPLETO COM CORES LARANJA
             ============================================================ -->
             <div id="manutencaoSection" style="display: none;">
                 <div class="manutencao-container">
@@ -1397,7 +1425,6 @@
                                     <span class="icon">📈</span> Relatórios
                                 </li>
                             </ul>
-                            <!-- USER CARD REMOVIDO - O USER JÁ APARECE NO HEADER -->
                         </div>
 
                         <!-- CONTEÚDO MANUTENÇÃO -->
@@ -1453,11 +1480,12 @@
                             <div class="section" id="section-requisicoes-manutencao">
                                 <div class="main-layout">
                                     <div class="sidebar-filters">
-                                        <button class="btn-manutencao-primary" id="btnNovaRequisicaoManutencao">
+                                        <!-- BOTÃO NOVA REQUISIÇÃO - CORRIGIDO -->
+                                        <button class="btn-manutencao-primary" id="btnNovaRequisicaoManutencao" style="display: flex !important; align-items: center; justify-content: center; gap: 10px;">
                                             <i class="fas fa-plus-circle"></i> Nova Requisição
                                         </button>
                                         <div class="filter-section">
-                                            <h4 style="color:#E65100; margin-bottom:12px;"><i class="fas fa-filter"></i> Filtros</h4>
+                                            <h4 style="color: var(--manutencao-primary-dark); margin-bottom:12px;"><i class="fas fa-filter"></i> Filtros</h4>
                                             <div class="filter-group">
                                                 <label>Estado</label>
                                                 <select id="manutencaoFilterStatus" class="form-control"></select>
@@ -1531,22 +1559,22 @@
                                         <button class="btn-report btn-report-csv" onclick="manutencaoApp.exportarDados()"><i class="fas fa-download"></i> Backup JSON</button>
                                     </div>
                                     <div style="margin-top:20px;">
-                                        <h4 style="color:#E65100; margin-bottom:12px;">Resumo Geral</h4>
+                                        <h4 style="color: var(--manutencao-primary-dark); margin-bottom:12px;">Resumo Geral</h4>
                                         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;">
-                                            <div style="background:#fff3e0; padding:16px; border-radius:12px; text-align:center;">
-                                                <div style="font-size:28px; font-weight:700; color:#E65100;" id="manutencaoRelTotal">0</div>
+                                            <div style="background: var(--manutencao-primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid var(--manutencao-primary);">
+                                                <div style="font-size:28px; font-weight:700; color: var(--manutencao-primary-dark);" id="manutencaoRelTotal">0</div>
                                                 <div style="font-size:12px; color:#666;">Total Requisições</div>
                                             </div>
-                                            <div style="background:#fff3e0; padding:16px; border-radius:12px; text-align:center;">
+                                            <div style="background: var(--manutencao-primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid #2E7D32;">
                                                 <div style="font-size:28px; font-weight:700; color:#2E7D32;" id="manutencaoRelConcluidas">0</div>
                                                 <div style="font-size:12px; color:#666;">Concluídas</div>
                                             </div>
-                                            <div style="background:#fff3e0; padding:16px; border-radius:12px; text-align:center;">
+                                            <div style="background: var(--manutencao-primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid #c62828;">
                                                 <div style="font-size:28px; font-weight:700; color:#c62828;" id="manutencaoRelPendentes">0</div>
                                                 <div style="font-size:12px; color:#666;">Pendentes</div>
                                             </div>
-                                            <div style="background:#fff3e0; padding:16px; border-radius:12px; text-align:center;">
-                                                <div style="font-size:28px; font-weight:700; color:#1565c0;" id="manutencaoRelValorTotal">0 KZ</div>
+                                            <div style="background: var(--manutencao-primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid var(--manutencao-primary);">
+                                                <div style="font-size:28px; font-weight:700; color: var(--manutencao-primary-dark);" id="manutencaoRelValorTotal">0 KZ</div>
                                                 <div style="font-size:12px; color:#666;">Valor Total</div>
                                             </div>
                                         </div>
@@ -1583,7 +1611,7 @@
     <div class="modal" id="modalNovaRequisicaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-tools"></i> Nova Requisição de Manutenção</h2>
+                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-tools" style="color: var(--manutencao-primary);"></i> Nova Requisição de Manutenção</h2>
                 <span class="close-modal" onclick="fecharModal('modalNovaRequisicaoManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1642,7 +1670,7 @@
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-small" onclick="fecharModal('modalNovaRequisicaoManutencao')">Cancelar</button>
-                        <button type="submit" class="btn-small btn-approve"><i class="fas fa-paper-plane"></i> Enviar Requisição</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);"><i class="fas fa-paper-plane"></i> Enviar Requisição</button>
                     </div>
                 </form>
             </div>
@@ -1652,7 +1680,7 @@
     <div class="modal" id="modalAvaliacaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-clipboard-check"></i> Avaliação da Manutenção</h2>
+                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-clipboard-check" style="color: var(--manutencao-primary);"></i> Avaliação da Manutenção</h2>
                 <span class="close-modal" onclick="fecharModal('modalAvaliacaoManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1674,20 +1702,20 @@
                     </div>
 
                     <div id="manutencaoDetalhesTransferencia" style="display:none;" class="expense-summary">
-                        <h4 style="color:#E65100;"><i class="fas fa-exchange-alt"></i> Detalhes da Transferência</h4>
+                        <h4 style="color: var(--manutencao-primary-dark);"><i class="fas fa-exchange-alt"></i> Detalhes da Transferência</h4>
                         <div class="form-group"><label>Origem do Recurso</label><input type="text" id="manutencaoOrigemRecurso" class="form-control" placeholder="De onde será transferido?"></div>
                         <div class="form-group"><label>Recurso a Transferir</label><textarea id="manutencaoDetalhesTransferencia" class="form-control" rows="2" placeholder="Descreva o recurso..."></textarea></div>
                         <div class="form-group"><label>Valor Estimado (KZ)</label><input type="number" id="manutencaoValorTransferencia" class="form-control" value="0"></div>
                     </div>
 
                     <div id="manutencaoDetalhesConsumo" style="display:none;" class="expense-summary">
-                        <h4 style="color:#E65100;"><i class="fas fa-boxes"></i> Detalhes do Consumo</h4>
+                        <h4 style="color: var(--manutencao-primary-dark);"><i class="fas fa-boxes"></i> Detalhes do Consumo</h4>
                         <div class="form-group"><label>Material a consumir</label><textarea id="manutencaoDetalhesConsumo" class="form-control" rows="2" placeholder="Material do stock..."></textarea></div>
                         <div class="form-group"><label>Valor Estimado (KZ)</label><input type="number" id="manutencaoValorConsumo" class="form-control" value="0"></div>
                     </div>
 
                     <div id="manutencaoDetalhesCompra" style="display:none;" class="expense-summary">
-                        <h4 style="color:#E65100;"><i class="fas fa-file-invoice"></i> Detalhes da Compra</h4>
+                        <h4 style="color: var(--manutencao-primary-dark);"><i class="fas fa-file-invoice"></i> Detalhes da Compra</h4>
                         <div class="form-group"><label>Fornecedor</label><input type="text" id="manutencaoFornecedorCompra" class="form-control" placeholder="Nome do fornecedor"></div>
                         <div class="form-group"><label>Descrição do Material/Serviço</label><textarea id="manutencaoDescricaoCompra" class="form-control" rows="2" placeholder="O que precisa ser comprado..."></textarea></div>
                         <div class="form-group"><label>Valor Estimado (KZ)</label><input type="number" id="manutencaoValorCompra" class="form-control" value="0"></div>
@@ -1705,7 +1733,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve"><i class="fas fa-check"></i> Enviar Avaliação</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);"><i class="fas fa-check"></i> Enviar Avaliação</button>
                     </div>
                 </form>
             </div>
@@ -1715,7 +1743,7 @@
     <div class="modal" id="modalConsumiveisAutorizacaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-check-circle"></i> Consumíveis - Autorização de Transferência</h2>
+                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-check-circle" style="color: var(--manutencao-primary);"></i> Consumíveis - Autorização de Transferência</h2>
                 <span class="close-modal" onclick="fecharModal('modalConsumiveisAutorizacaoManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1735,7 +1763,7 @@
                         <textarea id="consumiveisManutencaoComentario" class="form-control" rows="3" required placeholder="Justifique a sua decisão..."></textarea>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve">Confirmar</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);">Confirmar</button>
                     </div>
                 </form>
             </div>
@@ -1745,7 +1773,7 @@
     <div class="modal" id="modalConsumiveisDespesasManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-file-invoice"></i> Consumíveis - Registo de Despesas</h2>
+                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-file-invoice" style="color: var(--manutencao-primary);"></i> Consumíveis - Registo de Despesas</h2>
                 <span class="close-modal" onclick="fecharModal('modalConsumiveisDespesasManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1785,7 +1813,7 @@
                         <div id="manutencaoConsumiveisFileList"></div>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve"><i class="fas fa-paper-plane"></i> Enviar para Controlo Gestão</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);"><i class="fas fa-paper-plane"></i> Enviar para Controlo Gestão</button>
                     </div>
                 </form>
             </div>
@@ -1795,7 +1823,7 @@
     <div class="modal" id="modalCGManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-chart-line"></i> Controlo Gestão - Aprovação</h2>
+                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-chart-line" style="color: var(--manutencao-primary);"></i> Controlo Gestão - Aprovação</h2>
                 <span class="close-modal" onclick="fecharModal('modalCGManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1815,7 +1843,7 @@
                         <textarea id="cgManutencaoParecer" class="form-control" rows="3" required placeholder="Justifique a sua decisão..."></textarea>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve">Confirmar</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);">Confirmar</button>
                     </div>
                 </form>
             </div>
@@ -1825,7 +1853,7 @@
     <div class="modal" id="modalDiretorManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-user-tie"></i> Director Geral - Aprovação Final</h2>
+                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-user-tie" style="color: var(--manutencao-primary);"></i> Director Geral - Aprovação Final</h2>
                 <span class="close-modal" onclick="fecharModal('modalDiretorManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1845,7 +1873,7 @@
                         <textarea id="diretorManutencaoParecer" class="form-control" rows="3" required placeholder="Justifique a sua decisão..."></textarea>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve">Confirmar</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);">Confirmar</button>
                     </div>
                 </form>
             </div>
@@ -1855,7 +1883,7 @@
     <div class="modal" id="modalFinancasManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-coins"></i> Finanças - Pagamento</h2>
+                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-coins" style="color: var(--manutencao-primary);"></i> Finanças - Pagamento</h2>
                 <span class="close-modal" onclick="fecharModal('modalFinancasManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1886,7 +1914,7 @@
                         <textarea id="financasManutencaoObs" class="form-control" rows="2" required placeholder="Registo do pagamento..."></textarea>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve">Confirmar Pagamento</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);">Confirmar Pagamento</button>
                     </div>
                 </form>
             </div>
@@ -1896,7 +1924,7 @@
     <div class="modal" id="modalExecucaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-tools"></i> Manutenção - Execução do Serviço</h2>
+                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-tools" style="color: var(--manutencao-primary);"></i> Manutenção - Execução do Serviço</h2>
                 <span class="close-modal" onclick="fecharModal('modalExecucaoManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1921,7 +1949,7 @@
                         <textarea id="manutencaoObsExecucao" class="form-control" rows="2" placeholder="Observações adicionais..."></textarea>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve"><i class="fas fa-check"></i> Finalizar Execução</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);"><i class="fas fa-check"></i> Finalizar Execução</button>
                     </div>
                 </form>
             </div>
@@ -1931,7 +1959,7 @@
     <div class="modal" id="modalConfirmacaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-check-double"></i> Confirmação do Solicitante</h2>
+                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-check-double" style="color: var(--manutencao-primary);"></i> Confirmação do Solicitante</h2>
                 <span class="close-modal" onclick="fecharModal('modalConfirmacaoManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1956,7 +1984,7 @@
                     <label>Comentário Adicional</label>
                     <textarea id="manutencaoConfirmComentario" class="form-control" rows="2" placeholder="Observações sobre o serviço..."></textarea>
                 </div>
-                <button class="btn-small btn-approve" onclick="manutencaoApp.enviarConfirmacao()" style="width:100%;"><i class="fas fa-check-double"></i> Confirmar e Finalizar</button>
+                <button class="btn-small btn-approve" onclick="manutencaoApp.enviarConfirmacao()" style="width:100%; background: var(--manutencao-gradient);"><i class="fas fa-check-double"></i> Confirmar e Finalizar</button>
             </div>
         </div>
     </div>
@@ -1970,7 +1998,7 @@
             </div>
             <div class="nota-despesa-container">
                 <div class="nota-header">
-                    <h1><i class="fas fa-tools"></i> ACCORD GROUP</h1>
+                    <h1 style="color: var(--manutencao-primary-dark);"><i class="fas fa-tools"></i> ACCORD GROUP</h1>
                     <h2>NOTA DE DESPESA / REQUISIÇÃO DE COMPRA</h2>
                     <p>Sistema de Gestão de Manutenção - Kero SIR</p>
                 </div>
@@ -2500,7 +2528,6 @@
                 document.getElementById('manutencaoSection').style.display = 'none';
                 document.getElementById('systemTitle').textContent = 'Kero Recrutamento';
                 document.getElementById('systemSubtitle').textContent = 'Sistema de Requisição de Vagas';
-                // Mostrar navegação superior apenas para recrutamento
                 document.getElementById('navMenu').style.display = 'flex';
                 inicializarDirecoes();
                 carregarRequisicoesDoSharePoint();
@@ -2520,7 +2547,6 @@
                 document.getElementById('manutencaoSection').style.display = 'block';
                 document.getElementById('systemTitle').textContent = 'Kero Manutenção';
                 document.getElementById('systemSubtitle').textContent = 'Sistema de Gestão de Manutenção';
-                // Esconder navegação superior para manutenção (já tem sidebar)
                 document.getElementById('navMenu').style.display = 'none';
                 document.getElementById('currentUserName').textContent = usuarioAtual.nome;
                 document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
@@ -2614,7 +2640,6 @@
         }
 
         function mudarAba(aba, elem) {
-            // Esconder todas as seções do recrutamento
             const secs = ['dashboardSection', 'requisicoesSection', 'aprovacoesSection', 'relatoriosSection',
                 'utilizadoresSection', 'direcoesSection', 'configuracoesSection'
             ];
@@ -2623,9 +2648,7 @@
                 if (el) el.style.display = 'none';
             });
 
-            // Se estiver no módulo manutenção, usa a navegação da manutenção
             if (moduloAtual === 'manutencao') {
-                // Esconder todas as seções da manutenção
                 const manutencaoSecs = ['section-dashboard-manutencao', 'section-requisicoes-manutencao',
                     'section-aprovacoes-manutencao', 'section-relatorios-manutencao'
                 ];
@@ -2634,7 +2657,6 @@
                     if (el) el.classList.remove('active');
                 });
 
-                // Mostrar a seção correta
                 let targetId = '';
                 if (aba === 'dashboard') targetId = 'section-dashboard-manutencao';
                 else if (aba === 'requisicoes') targetId = 'section-requisicoes-manutencao';
@@ -2646,7 +2668,6 @@
                     if (target) target.classList.add('active');
                 }
 
-                // Atualizar menu da manutenção
                 document.querySelectorAll('.sidebar-manutencao .menu li').forEach(li => {
                     li.classList.remove('active');
                     const section = li.dataset.section;
@@ -2657,7 +2678,6 @@
                 return;
             }
 
-            // Modo recrutamento
             if (aba === 'dashboard') document.getElementById('dashboardSection').style.display = 'block';
             else if (aba === 'requisicoes') document.getElementById('requisicoesSection').style.display = 'block';
             else if (aba === 'aprovacoes') document.getElementById('aprovacoesSection').style.display = 'block';
@@ -4104,7 +4124,7 @@
         }
 
         // ============================================================
-        // MÓDULO MANUTENÇÃO - APP COMPLETA COM SHAREPOINT
+        // MÓDULO MANUTENÇÃO - APP COMPLETA COM CORES LARANJA
         // ============================================================
         const manutencaoApp = (function() {
             // ===== DADOS =====
@@ -4299,13 +4319,11 @@
                         fields["Itens"] = JSON.stringify(req.itens);
                     }
 
-                    // Verificar se a lista existe
                     const listCheckUrl =
                         `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_MANUTENCAO_CONFIG.listName}`;
                     const listCheck = await fetch(listCheckUrl, { headers: { 'Authorization': `Bearer ${token}` } });
 
                     if (!listCheck.ok) {
-                        // Criar a lista se não existir
                         console.log('Criando lista de manutenção no SharePoint...');
                         const createListUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists`;
                         const listDefinition = {
@@ -4761,7 +4779,6 @@
 
                 showLoading();
 
-                // Tentar salvar no SharePoint
                 const salvo = await salvarRequisicaoManutencaoNoSharePoint(nova);
 
                 if (salvo) {
@@ -5390,8 +5407,22 @@
                 atualizarBadgesM();
 
                 document.getElementById('formNovaRequisicaoManutencao').addEventListener('submit', novaRequisicaoM);
-                document.getElementById('btnNovaRequisicaoManutencao').addEventListener('click', () => abrirModal(
-                    'modalNovaRequisicaoManutencao'));
+                
+                // === CORREÇÃO: GARANTIR QUE O BOTÃO NOVA REQUISIÇÃO ESTÁ VISÍVEL E FUNCIONANDO ===
+                const btnNovaManutencao = document.getElementById('btnNovaRequisicaoManutencao');
+                if (btnNovaManutencao) {
+                    btnNovaManutencao.style.display = 'flex !important';
+                    btnNovaManutencao.style.alignItems = 'center';
+                    btnNovaManutencao.style.justifyContent = 'center';
+                    btnNovaManutencao.style.gap = '10px';
+                    // Remove todos os listeners antigos e adiciona um novo
+                    btnNovaManutencao.replaceWith(btnNovaManutencao.cloneNode(true));
+                    const novoBtn = document.getElementById('btnNovaRequisicaoManutencao');
+                    novoBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        abrirModal('modalNovaRequisicaoManutencao');
+                    });
+                }
 
                 document.getElementById('formAvaliacaoManutencao').addEventListener('submit', salvarAvaliacaoM);
                 document.getElementById('manutencaoOpcaoResolucao').addEventListener('change', (e) => toggleOpcaoResolucaoM(
@@ -5685,8 +5716,8 @@
 
         console.log('✅ Kero SIR - Sistema Integrado de Requisições carregado!');
         console.log('📋 Módulos disponíveis: Recrutamento e Manutenção');
+        console.log('🟠 Módulo Manutenção com cores laranja e botão Nova Requisição corrigido!');
         console.log('🔒 Emails bloqueados:', BLOCKED_EMAILS);
-        console.log('🔧 Módulo Manutenção com layout original, sidebar sem user duplicado e sem barra superior!');
     </script>
 </body>
 </html>
