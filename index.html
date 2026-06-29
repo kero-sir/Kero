@@ -33,14 +33,6 @@
             --shadow-md: 0 5px 15px rgba(0,0,0,0.1);
             --border-radius: 10px;
             --border-radius-sm: 6px;
-            
-            /* Cores do módulo Manutenção - Tons Laranja */
-            --manutencao-primary: #FF6F00;
-            --manutencao-primary-dark: #E65100;
-            --manutencao-primary-light: #FFF3E0;
-            --manutencao-primary-bg: #FFF8E1;
-            --manutencao-gradient: linear-gradient(135deg, #E65100, #FF9800);
-            --manutencao-card-shadow: 0 4px 20px rgba(230, 81, 0, 0.15);
         }
         body { background-color: var(--gray-100); color: var(--gray-600); }
         body.dark-mode { --gray-100: #1a1a2e; --gray-200: #2d2d44; --gray-500: #aaa; --gray-600: #eee; background-color: #1a1a2e; }
@@ -153,14 +145,6 @@
         .module-card-large:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); border-color: var(--primary); }
         .module-card-large .module-icon-large { font-size: 80px; color: var(--primary); margin-bottom: 20px; }
         .module-card-large h2 { font-size: 28px; color: var(--primary-dark); margin-bottom: 15px; }
-        
-        /* Card do módulo Manutenção com tons laranja */
-        .module-card-large.manutencao-card .module-icon-large { color: var(--manutencao-primary); }
-        .module-card-large.manutencao-card h2 { color: var(--manutencao-primary-dark); }
-        .module-card-large.manutencao-card:hover { border-color: var(--manutencao-primary); box-shadow: 0 15px 30px rgba(230, 81, 0, 0.25); }
-        .module-card-large.manutencao-card { background: var(--manutencao-primary-bg); }
-        body.dark-mode .module-card-large.manutencao-card { background: #38385a; }
-        
         .btn-logout-module { margin-top: 30px; padding: 12px 30px; background: var(--gray-200); color: var(--gray-600); border: none; border-radius: var(--border-radius-sm); cursor: pointer; transition: all 0.2s; }
         .btn-logout-module:hover { background: var(--gray-500); color: white; }
 
@@ -618,14 +602,13 @@
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
         /* ============================================================
-           ESTILOS EXCLUSIVOS DO MÓDULO MANUTENÇÃO - TODOS EM LARANJA
+           ESTILOS EXCLUSIVOS DO MÓDULO MANUTENÇÃO - NOVO CÓDIGO
            ============================================================ */
         .manutencao-container {
-            background: var(--manutencao-primary-bg);
+            background: #faf5f0;
             border-radius: var(--border-radius);
             padding: 0;
             overflow: hidden;
-            border: 2px solid var(--manutencao-primary);
         }
 
         .manutencao-container .app-container {
@@ -636,7 +619,7 @@
         /* SIDEBAR MANUTENÇÃO - LARANJA */
         .manutencao-container .sidebar-manutencao {
             width: 270px;
-            background: var(--manutencao-gradient);
+            background: linear-gradient(180deg, #E65100, #FF9800);
             color: #fff;
             padding: 20px 0;
             flex-shrink: 0;
@@ -644,7 +627,7 @@
         }
         .manutencao-container .sidebar-manutencao .brand {
             padding: 0 20px 30px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
+            border-bottom: 1px solid rgba(255,255,255,0.12);
             display: flex;
             align-items: center;
             gap: 14px;
@@ -667,7 +650,7 @@
         .manutencao-container .sidebar-manutencao .brand small {
             display: block;
             font-size: 11px;
-            opacity: 0.8;
+            opacity: 0.75;
             font-weight: 400;
         }
 
@@ -683,16 +666,16 @@
             gap: 14px;
             transition: all 0.3s;
             border-left: 3px solid transparent;
-            color: rgba(255,255,255,0.85);
+            color: rgba(255,255,255,0.8);
             font-weight: 500;
         }
         .manutencao-container .sidebar-manutencao .menu li:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
             border-left-color: #fff;
             color: #fff;
         }
         .manutencao-container .sidebar-manutencao .menu li.active {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.12);
             border-left-color: #fff;
             color: #fff;
         }
@@ -703,7 +686,7 @@
         }
         .manutencao-container .sidebar-manutencao .menu li .badge {
             margin-left: auto;
-            background: rgba(255,255,255,0.2);
+            background: #ff6f00;
             color: #fff;
             padding: 2px 10px;
             border-radius: 20px;
@@ -715,7 +698,7 @@
         .manutencao-container .content-manutencao {
             flex: 1;
             padding: 24px 30px;
-            background: var(--manutencao-primary-bg);
+            background: #faf5f0;
         }
 
         /* KPI CARDS MANUTENÇÃO - LARANJA */
@@ -732,19 +715,18 @@
         .manutencao-container .kpi-card-manutencao {
             background: white;
             padding: 18px 20px;
-            border-radius: var(--border-radius);
-            border-left: 4px solid var(--manutencao-primary);
+            border-radius: 16px;
+            border-left: 4px solid #FF9800;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: var(--manutencao-card-shadow);
+            box-shadow: 0 4px 20px rgba(230, 81, 0, 0.12);
         }
         .manutencao-container .kpi-card-manutencao:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(255, 152, 0, 0.25);
-            border-left-color: var(--manutencao-primary-dark);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(255, 152, 0, 0.2);
         }
         .manutencao-container .kpi-card-manutencao .kpi-info h4 {
             color: #888;
@@ -756,22 +738,25 @@
         .manutencao-container .kpi-card-manutencao .kpi-info span {
             font-size: 26px;
             font-weight: 700;
-            color: var(--manutencao-primary-dark);
+            color: #E65100;
         }
         .manutencao-container .kpi-card-manutencao .kpi-icon {
             font-size: 28px;
             opacity: 0.3;
-            color: var(--manutencao-primary);
+            color: #FF9800;
         }
 
         /* CARDS MANUTENÇÃO - LARANJA */
         .manutencao-container .card-manutencao {
             background: white;
-            border-radius: var(--border-radius);
+            border-radius: 16px;
             padding: 24px;
             margin-bottom: 24px;
-            box-shadow: var(--manutencao-card-shadow);
-            border-top: 4px solid var(--manutencao-primary);
+            box-shadow: 0 4px 20px rgba(230, 81, 0, 0.12);
+            transition: all 0.3s;
+        }
+        .manutencao-container .card-manutencao:hover {
+            box-shadow: 0 8px 30px rgba(230, 81, 0, 0.1);
         }
         .manutencao-container .card-manutencao .card-header {
             display: flex;
@@ -779,44 +764,44 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 14px;
-            border-bottom: 2px solid var(--manutencao-primary-light);
+            border-bottom: 2px solid #fff3e0;
         }
         .manutencao-container .card-manutencao .card-title {
             font-size: 18px;
             font-weight: 600;
-            color: var(--manutencao-primary-dark);
+            color: #E65100;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         /* BADGES MANUTENÇÃO - LARANJA */
-        .manutencao-container .status-pendente { background: var(--manutencao-primary-light); color: var(--manutencao-primary-dark); }
+        .manutencao-container .status-pendente { background: #fff3e0; color: #E65100; }
         .manutencao-container .status-aguardando-consumiveis { background: #fce4ec; color: #c62828; }
         .manutencao-container .status-aguardando-cg { background: #fff8e1; color: #F57F17; }
         .manutencao-container .status-aguardando-diretor { background: #e3f2fd; color: #1565c0; }
         .manutencao-container .status-aguardando-financas { background: #f3e5f5; color: #7B1FA2; }
         .manutencao-container .status-em-execucao { background: #e8f5e9; color: #2E7D32; }
-        .manutencao-container .status-aguardando-material { background: var(--manutencao-primary-light); color: var(--manutencao-primary-dark); }
+        .manutencao-container .status-aguardando-material { background: #fff3e0; color: #E65100; }
         .manutencao-container .status-aguardando-execucao { background: #e8f5e9; color: #2E7D32; }
-        .manutencao-container .status-concluida { background: #4CAF50; color: white; }
+        .manutencao-container .status-concluida { background: #FF9800; color: white; }
         .manutencao-container .status-reprovada { background: #ef9a9a; color: #c62828; }
 
         .manutencao-container .type-corretiva { background: #ffebee; color: #c62828; }
         .manutencao-container .type-preventiva { background: #e8f5e9; color: #2E7D32; }
 
         .manutencao-container .priority-alta { background: #ffebee; color: #c62828; }
-        .manutencao-container .priority-media { background: var(--manutencao-primary-light); color: var(--manutencao-primary-dark); }
+        .manutencao-container .priority-media { background: #fff3e0; color: #E65100; }
         .manutencao-container .priority-baixa { background: #e8f5e9; color: #2E7D32; }
 
         .manutencao-container .expense-summary {
-            background: var(--manutencao-primary-light);
+            background: #fff3e0;
             padding: 16px 20px;
             border-radius: 12px;
             margin-bottom: 16px;
             font-size: 14px;
             line-height: 1.8;
-            border-left: 4px solid var(--manutencao-primary);
+            border-left: 4px solid #FF9800;
         }
 
         /* ACTIVITY LIST MANUTENÇÃO */
@@ -834,29 +819,29 @@
             border-radius: 8px;
         }
         .manutencao-container .activity-item:hover {
-            background: var(--manutencao-primary-light);
+            background: #fff3e0;
             transform: translateX(4px);
         }
         .manutencao-container .activity-item .activity-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--manutencao-primary-light);
+            background: #fff3e0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--manutencao-primary);
+            color: #FF9800;
             font-size: 16px;
             flex-shrink: 0;
         }
 
         /* BOTÕES MANUTENÇÃO - LARANJA */
         .manutencao-container .btn-manutencao-primary {
-            background: var(--manutencao-gradient);
+            background: linear-gradient(180deg, #E65100, #FF9800);
             color: white;
             border: none;
             padding: 12px 20px;
-            border-radius: var(--border-radius-sm);
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
@@ -870,11 +855,11 @@
         }
 
         .manutencao-container .btn-manutencao-secondary {
-            background: var(--manutencao-primary-light);
-            color: var(--manutencao-primary-dark);
-            border: 2px solid var(--manutencao-primary);
+            background: #fff3e0;
+            color: #E65100;
+            border: 2px solid #FF9800;
             padding: 12px 20px;
-            border-radius: var(--border-radius-sm);
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
@@ -882,7 +867,7 @@
             transition: all 0.3s;
         }
         .manutencao-container .btn-manutencao-secondary:hover {
-            background: var(--manutencao-primary);
+            background: #FF9800;
             color: white;
             transform: translateY(-1px);
         }
@@ -890,10 +875,10 @@
         /* SIDEBAR FILTERS MANUTENÇÃO - LARANJA */
         .manutencao-container .sidebar-filters {
             background: white;
-            border-radius: var(--border-radius);
+            border-radius: 16px;
             padding: 20px;
-            box-shadow: var(--manutencao-card-shadow);
-            border-left: 4px solid var(--manutencao-primary);
+            box-shadow: 0 4px 20px rgba(230, 81, 0, 0.12);
+            border-left: 4px solid #FF9800;
         }
 
         .manutencao-container .item-row {
@@ -926,15 +911,15 @@
             font-family: 'Courier New', monospace;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-md);
-            border-top: 6px solid var(--manutencao-primary);
+            border-top: 6px solid #FF9800;
         }
         .nota-header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid var(--manutencao-primary);
+            border-bottom: 2px solid #FF9800;
             padding-bottom: 20px;
         }
-        .nota-header h1 { color: var(--manutencao-primary-dark); }
+        .nota-header h1 { color: #E65100; }
         .nota-itens {
             width: 100%;
             border-collapse: collapse;
@@ -945,7 +930,7 @@
             padding: 8px 12px;
             text-align: left;
         }
-        .nota-itens th { background: var(--manutencao-primary-light); color: var(--manutencao-primary-dark); }
+        .nota-itens th { background: #fff3e0; color: #E65100; }
         .nota-assinaturas {
             margin-top: 40px;
             display: flex;
@@ -960,7 +945,7 @@
             margin: 30px auto 8px;
         }
         .btn-imprimir {
-            background: var(--manutencao-gradient);
+            background: linear-gradient(180deg, #E65100, #FF9800);
             color: white;
             border: none;
             padding: 10px 24px;
@@ -1263,9 +1248,9 @@
                     <p>Gestão de requisições de vagas, aprovações e acompanhamento do processo de recrutamento.</p>
                 </div>
                 <!-- Módulo Manutenção - Laranja -->
-                <div class="module-card-large manutencao-card" onclick="selecionarModulo('manutencao')">
-                    <div class="module-icon-large"><i class="fas fa-tools"></i></div>
-                    <h2 style="color: var(--manutencao-primary-dark);">Manutenção</h2>
+                <div class="module-card-large" style="border-color: #FF9800;" onclick="selecionarModulo('manutencao')">
+                    <div class="module-icon-large" style="color: #FF9800;"><i class="fas fa-tools"></i></div>
+                    <h2 style="color: #E65100;">Manutenção</h2>
                     <p>Requisições de manutenção, gestão de equipamentos e acompanhamento de serviços.</p>
                 </div>
             </div>
@@ -1394,7 +1379,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO MANUTENÇÃO - LAYOUT COMPLETO COM CORES LARANJA
+            MÓDULO MANUTENÇÃO - NOVO CÓDIGO COMPLETO
             ============================================================ -->
             <div id="manutencaoSection" style="display: none;">
                 <div class="manutencao-container">
@@ -1480,12 +1465,11 @@
                             <div class="section" id="section-requisicoes-manutencao">
                                 <div class="main-layout">
                                     <div class="sidebar-filters">
-                                        <!-- BOTÃO NOVA REQUISIÇÃO - CORRIGIDO -->
-                                        <button class="btn-manutencao-primary" id="btnNovaRequisicaoManutencao" style="display: flex !important; align-items: center; justify-content: center; gap: 10px;">
+                                        <button class="btn-manutencao-primary" id="btnNovaRequisicaoManutencao">
                                             <i class="fas fa-plus-circle"></i> Nova Requisição
                                         </button>
                                         <div class="filter-section">
-                                            <h4 style="color: var(--manutencao-primary-dark); margin-bottom:12px;"><i class="fas fa-filter"></i> Filtros</h4>
+                                            <h4 style="color: var(--primary-dark); margin-bottom:12px;"><i class="fas fa-filter"></i> Filtros</h4>
                                             <div class="filter-group">
                                                 <label>Estado</label>
                                                 <select id="manutencaoFilterStatus" class="form-control"></select>
@@ -1495,12 +1479,14 @@
                                                 <input type="text" id="manutencaoFilterSearch" class="form-control" placeholder="Código ou equipamento...">
                                             </div>
                                             <button class="btn-manutencao-primary" onclick="manutencaoApp.filtrarRequisicoes()">Aplicar Filtros</button>
+                                            <button class="btn-manutencao-secondary" onclick="manutencaoApp.limparFiltros()">Limpar Filtros</button>
                                         </div>
                                     </div>
                                     <div>
                                         <div class="card-manutencao">
                                             <div class="card-header">
                                                 <div class="card-title"><i class="fas fa-clipboard-list"></i> Requisições de Manutenção</div>
+                                                <span id="manutencaoRequisicoesCount" style="font-size:13px; color:#888;">0 registos</span>
                                             </div>
                                             <div class="table-container">
                                                 <table>
@@ -1511,6 +1497,7 @@
                                                             <th>Tipo</th>
                                                             <th>Estado</th>
                                                             <th>Valor</th>
+                                                            <th>Anexos</th>
                                                             <th>Ações</th>
                                                         </tr>
                                                     </thead>
@@ -1528,6 +1515,7 @@
                                 <div class="card-manutencao">
                                     <div class="card-header">
                                         <div class="card-title"><i class="fas fa-check-circle"></i> Pendências para Aprovação</div>
+                                        <span id="manutencaoAprovacoesCount" style="font-size:13px; color:#888;">0 pendências</span>
                                     </div>
                                     <div class="table-container">
                                         <table>
@@ -1538,6 +1526,7 @@
                                                     <th>Solicitante</th>
                                                     <th>Tipo de Solicitação</th>
                                                     <th>Valor</th>
+                                                    <th>Anexos</th>
                                                     <th>Ações</th>
                                                 </tr>
                                             </thead>
@@ -1559,22 +1548,22 @@
                                         <button class="btn-report btn-report-csv" onclick="manutencaoApp.exportarDados()"><i class="fas fa-download"></i> Backup JSON</button>
                                     </div>
                                     <div style="margin-top:20px;">
-                                        <h4 style="color: var(--manutencao-primary-dark); margin-bottom:12px;">Resumo Geral</h4>
+                                        <h4 style="color: var(--primary-dark); margin-bottom:12px;">Resumo Geral</h4>
                                         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;">
-                                            <div style="background: var(--manutencao-primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid var(--manutencao-primary);">
-                                                <div style="font-size:28px; font-weight:700; color: var(--manutencao-primary-dark);" id="manutencaoRelTotal">0</div>
+                                            <div style="background: var(--primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid var(--primary);">
+                                                <div style="font-size:28px; font-weight:700; color: var(--primary-dark);" id="manutencaoRelTotal">0</div>
                                                 <div style="font-size:12px; color:#666;">Total Requisições</div>
                                             </div>
-                                            <div style="background: var(--manutencao-primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid #2E7D32;">
+                                            <div style="background: var(--primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid #2E7D32;">
                                                 <div style="font-size:28px; font-weight:700; color:#2E7D32;" id="manutencaoRelConcluidas">0</div>
                                                 <div style="font-size:12px; color:#666;">Concluídas</div>
                                             </div>
-                                            <div style="background: var(--manutencao-primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid #c62828;">
+                                            <div style="background: var(--primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid #c62828;">
                                                 <div style="font-size:28px; font-weight:700; color:#c62828;" id="manutencaoRelPendentes">0</div>
                                                 <div style="font-size:12px; color:#666;">Pendentes</div>
                                             </div>
-                                            <div style="background: var(--manutencao-primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid var(--manutencao-primary);">
-                                                <div style="font-size:28px; font-weight:700; color: var(--manutencao-primary-dark);" id="manutencaoRelValorTotal">0 KZ</div>
+                                            <div style="background: var(--primary-light); padding:16px; border-radius:12px; text-align:center; border-left: 4px solid var(--primary);">
+                                                <div style="font-size:28px; font-weight:700; color: var(--primary-dark);" id="manutencaoRelValorTotal">0 KZ</div>
                                                 <div style="font-size:12px; color:#666;">Valor Total</div>
                                             </div>
                                         </div>
@@ -1606,12 +1595,12 @@
     <div class="modal" id="modalConfirmacao"><div class="modal-content" style="max-width:400px;"><div class="modal-header"><h2>Confirmar Ação</h2><span class="close-modal" onclick="fecharModal('modalConfirmacao')">&times;</span></div><div class="modal-body"><p id="confirmacaoMensagem"></p><div class="form-actions"><button class="btn-small" onclick="fecharModal('modalConfirmacao')">Cancelar</button><button class="btn-small btn-approve" id="confirmacaoBtn">Confirmar</button></div></div></div></div>
 
     <!-- ============================================================
-    MODAIS - MANUTENÇÃO
+    MODAIS - MANUTENÇÃO (NOVO CÓDIGO)
     ============================================================ -->
     <div class="modal" id="modalNovaRequisicaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-tools" style="color: var(--manutencao-primary);"></i> Nova Requisição de Manutenção</h2>
+                <h2 style="color: var(--primary-dark);"><i class="fas fa-tools" style="color: var(--primary);"></i> Nova Requisição de Manutenção</h2>
                 <span class="close-modal" onclick="fecharModal('modalNovaRequisicaoManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1665,12 +1654,12 @@
                     </div>
                     <div class="form-group">
                         <label>Anexar Ficheiro</label>
-                        <div class="dropzone" id="manutencaoDropzone"><i class="fas fa-cloud-upload-alt"></i> Clique ou arraste para anexar (PDF, JPG, PNG)<input type="file" id="manutencaoFileInput" style="display:none" accept=".pdf,.jpg,.png,.jpeg"></div>
-                        <div id="manutencaoFileList"></div>
+                        <div class="dropzone" id="dropzoneRequisicaoManutencao"><i class="fas fa-cloud-upload-alt"></i> Clique ou arraste para anexar (PDF, JPG, PNG)<input type="file" id="requisicaoManutencaoFileInput" style="display:none" accept=".pdf,.jpg,.png,.jpeg"></div>
+                        <div id="requisicaoManutencaoFileList"></div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-small" onclick="fecharModal('modalNovaRequisicaoManutencao')">Cancelar</button>
-                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);"><i class="fas fa-paper-plane"></i> Enviar Requisição</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: linear-gradient(180deg, #E65100, #FF9800);"><i class="fas fa-paper-plane"></i> Enviar Requisição</button>
                     </div>
                 </form>
             </div>
@@ -1680,7 +1669,7 @@
     <div class="modal" id="modalAvaliacaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-clipboard-check" style="color: var(--manutencao-primary);"></i> Avaliação da Manutenção</h2>
+                <h2 style="color: var(--primary-dark);"><i class="fas fa-clipboard-check" style="color: var(--primary);"></i> Avaliação da Manutenção</h2>
                 <span class="close-modal" onclick="fecharModal('modalAvaliacaoManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1702,38 +1691,39 @@
                     </div>
 
                     <div id="manutencaoDetalhesTransferencia" style="display:none;" class="expense-summary">
-                        <h4 style="color: var(--manutencao-primary-dark);"><i class="fas fa-exchange-alt"></i> Detalhes da Transferência</h4>
+                        <h4 style="color: var(--primary-dark);"><i class="fas fa-exchange-alt"></i> Detalhes da Transferência</h4>
                         <div class="form-group"><label>Origem do Recurso</label><input type="text" id="manutencaoOrigemRecurso" class="form-control" placeholder="De onde será transferido?"></div>
-                        <div class="form-group"><label>Recurso a Transferir</label><textarea id="manutencaoDetalhesTransferencia" class="form-control" rows="2" placeholder="Descreva o recurso..."></textarea></div>
+                        <div class="form-group"><label>Recurso a Transferir</label><textarea id="manutencaoDetalhesTransferenciaTexto" class="form-control" rows="2" placeholder="Descreva o recurso..."></textarea></div>
                         <div class="form-group"><label>Valor Estimado (KZ)</label><input type="number" id="manutencaoValorTransferencia" class="form-control" value="0"></div>
                     </div>
 
                     <div id="manutencaoDetalhesConsumo" style="display:none;" class="expense-summary">
-                        <h4 style="color: var(--manutencao-primary-dark);"><i class="fas fa-boxes"></i> Detalhes do Consumo</h4>
-                        <div class="form-group"><label>Material a consumir</label><textarea id="manutencaoDetalhesConsumo" class="form-control" rows="2" placeholder="Material do stock..."></textarea></div>
+                        <h4 style="color: var(--primary-dark);"><i class="fas fa-boxes"></i> Detalhes do Consumo</h4>
+                        <div class="form-group"><label>Material a consumir</label><textarea id="manutencaoDetalhesConsumoTexto" class="form-control" rows="2" placeholder="Material do stock..."></textarea></div>
                         <div class="form-group"><label>Valor Estimado (KZ)</label><input type="number" id="manutencaoValorConsumo" class="form-control" value="0"></div>
                     </div>
 
                     <div id="manutencaoDetalhesCompra" style="display:none;" class="expense-summary">
-                        <h4 style="color: var(--manutencao-primary-dark);"><i class="fas fa-file-invoice"></i> Detalhes da Compra</h4>
+                        <h4 style="color: var(--primary-dark);"><i class="fas fa-file-invoice"></i> Detalhes da Compra</h4>
                         <div class="form-group"><label>Fornecedor</label><input type="text" id="manutencaoFornecedorCompra" class="form-control" placeholder="Nome do fornecedor"></div>
                         <div class="form-group"><label>Descrição do Material/Serviço</label><textarea id="manutencaoDescricaoCompra" class="form-control" rows="2" placeholder="O que precisa ser comprado..."></textarea></div>
                         <div class="form-group"><label>Valor Estimado (KZ)</label><input type="number" id="manutencaoValorCompra" class="form-control" value="0"></div>
                         <div class="form-group">
                             <label>Anexar Proforma/Orçamento</label>
-                            <div class="dropzone" id="manutencaoDropzoneProforma"><i class="fas fa-cloud-upload-alt"></i> Clique para anexar<input type="file" id="manutencaoProformaInput" style="display:none" accept=".pdf,.jpg,.png"></div>
-                            <div id="manutencaoProformaList"></div>
+                            <div class="dropzone" id="dropzoneProformaManutencao"><i class="fas fa-cloud-upload-alt"></i> Clique para anexar<input type="file" id="proformaManutencaoInput" style="display:none" accept=".pdf,.jpg,.png"></div>
+                            <div id="proformaManutencaoList"></div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Anexar Ficheiro</label>
-                        <div class="dropzone" id="manutencaoDropzoneAvaliacao"><i class="fas fa-cloud-upload-alt"></i> Clique ou arraste para anexar (PDF, JPG, PNG)<input type="file" id="manutencaoAvaliacaoFileInput" style="display:none" accept=".pdf,.jpg,.png,.jpeg"></div>
-                        <div id="manutencaoAvaliacaoFileList"></div>
+                        <div class="dropzone" id="dropzoneAvaliacaoManutencao"><i class="fas fa-cloud-upload-alt"></i> Clique ou arraste para anexar (PDF, JPG, PNG)<input type="file" id="avaliacaoManutencaoFileInput" style="display:none" accept=".pdf,.jpg,.png,.jpeg"></div>
+                        <div id="avaliacaoManutencaoFileList"></div>
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);"><i class="fas fa-check"></i> Enviar Avaliação</button>
+                        <button type="button" class="btn-small" onclick="fecharModal('modalAvaliacaoManutencao')">Cancelar</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: linear-gradient(180deg, #E65100, #FF9800);"><i class="fas fa-check"></i> Enviar Avaliação</button>
                     </div>
                 </form>
             </div>
@@ -1743,7 +1733,7 @@
     <div class="modal" id="modalConsumiveisAutorizacaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-check-circle" style="color: var(--manutencao-primary);"></i> Consumíveis - Autorização de Transferência</h2>
+                <h2 style="color: var(--primary-dark);"><i class="fas fa-check-circle" style="color: var(--primary);"></i> Consumíveis - Autorização de Transferência</h2>
                 <span class="close-modal" onclick="fecharModal('modalConsumiveisAutorizacaoManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1762,8 +1752,13 @@
                         <label>Comentário</label>
                         <textarea id="consumiveisManutencaoComentario" class="form-control" rows="3" required placeholder="Justifique a sua decisão..."></textarea>
                     </div>
+                    <div class="signature-area">
+                        <h4>Assinatura</h4>
+                        <input type="text" id="consumiveisManutencaoAssinatura" class="form-control" placeholder="Nome completo" required>
+                    </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);">Confirmar</button>
+                        <button type="button" class="btn-small" onclick="fecharModal('modalConsumiveisAutorizacaoManutencao')">Cancelar</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: linear-gradient(180deg, #E65100, #FF9800);">Confirmar</button>
                     </div>
                 </form>
             </div>
@@ -1773,7 +1768,7 @@
     <div class="modal" id="modalConsumiveisDespesasManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-file-invoice" style="color: var(--manutencao-primary);"></i> Consumíveis - Registo de Despesas</h2>
+                <h2 style="color: var(--primary-dark);"><i class="fas fa-file-invoice" style="color: var(--primary);"></i> Consumíveis - Registo de Despesas</h2>
                 <span class="close-modal" onclick="fecharModal('modalConsumiveisDespesasManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1790,8 +1785,11 @@
                             <input type="date" id="manutencaoConsumiveisData" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>Nº Documento / Factura</label>
-                            <input type="text" id="manutencaoConsumiveisDocNum" class="form-control" placeholder="Nº da factura">
+                            <label>Tipo de Pagamento</label>
+                            <select id="manutencaoConsumiveisTipoPagamento" class="form-control">
+                                <option value="proforma">📄 Proforma</option>
+                                <option value="factura">🧾 Factura</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -1808,12 +1806,17 @@
                         <textarea id="manutencaoConsumiveisMotivo" class="form-control" rows="2" required placeholder="Descreva o motivo da despesa..."></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Anexar Proforma / Orçamento</label>
-                        <div class="dropzone" id="manutencaoConsumiveisDropzone"><i class="fas fa-cloud-upload-alt"></i> Clique ou arraste o ficheiro<input type="file" id="manutencaoConsumiveisFileInput" style="display:none" accept=".pdf,.jpg,.png"></div>
-                        <div id="manutencaoConsumiveisFileList"></div>
+                        <label>Anexar Comprovativo (Factura/Proforma)</label>
+                        <div class="dropzone" id="dropzoneConsumiveisManutencao"><i class="fas fa-cloud-upload-alt"></i> Clique ou arraste o ficheiro (PDF, JPG, PNG)<input type="file" id="consumiveisManutencaoFileInput" style="display:none" accept=".pdf,.jpg,.png"></div>
+                        <div id="consumiveisManutencaoFileList"></div>
+                    </div>
+                    <div class="signature-area">
+                        <h4>Assinatura</h4>
+                        <input type="text" id="consumiveisManutencaoAssinatura" class="form-control" placeholder="Nome completo" required>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);"><i class="fas fa-paper-plane"></i> Enviar para Controlo Gestão</button>
+                        <button type="button" class="btn-small" onclick="fecharModal('modalConsumiveisDespesasManutencao')">Cancelar</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: linear-gradient(180deg, #E65100, #FF9800);"><i class="fas fa-paper-plane"></i> Enviar para Controlo Gestão</button>
                     </div>
                 </form>
             </div>
@@ -1823,7 +1826,7 @@
     <div class="modal" id="modalCGManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-chart-line" style="color: var(--manutencao-primary);"></i> Controlo Gestão - Aprovação</h2>
+                <h2 style="color: var(--primary-dark);"><i class="fas fa-chart-line" style="color: var(--primary);"></i> Controlo Gestão - Aprovação</h2>
                 <span class="close-modal" onclick="fecharModal('modalCGManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1842,8 +1845,13 @@
                         <label>Parecer</label>
                         <textarea id="cgManutencaoParecer" class="form-control" rows="3" required placeholder="Justifique a sua decisão..."></textarea>
                     </div>
+                    <div class="signature-area">
+                        <h4>Assinatura do Responsável CG</h4>
+                        <input type="text" id="cgManutencaoAssinatura" class="form-control" placeholder="Nome completo" required>
+                    </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);">Confirmar</button>
+                        <button type="button" class="btn-small" onclick="fecharModal('modalCGManutencao')">Cancelar</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: linear-gradient(180deg, #E65100, #FF9800);">Confirmar</button>
                     </div>
                 </form>
             </div>
@@ -1853,7 +1861,7 @@
     <div class="modal" id="modalDiretorManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-user-tie" style="color: var(--manutencao-primary);"></i> Director Geral - Aprovação Final</h2>
+                <h2 style="color: var(--primary-dark);"><i class="fas fa-user-tie" style="color: var(--primary);"></i> Director Geral - Aprovação Final</h2>
                 <span class="close-modal" onclick="fecharModal('modalDiretorManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1872,8 +1880,13 @@
                         <label>Parecer</label>
                         <textarea id="diretorManutencaoParecer" class="form-control" rows="3" required placeholder="Justifique a sua decisão..."></textarea>
                     </div>
+                    <div class="signature-area">
+                        <h4>Assinatura do Director</h4>
+                        <input type="text" id="diretorManutencaoAssinatura" class="form-control" placeholder="Nome completo" required>
+                    </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);">Confirmar</button>
+                        <button type="button" class="btn-small" onclick="fecharModal('modalDiretorManutencao')">Cancelar</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: linear-gradient(180deg, #E65100, #FF9800);">Confirmar</button>
                     </div>
                 </form>
             </div>
@@ -1883,7 +1896,7 @@
     <div class="modal" id="modalFinancasManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-coins" style="color: var(--manutencao-primary);"></i> Finanças - Pagamento</h2>
+                <h2 style="color: var(--primary-dark);"><i class="fas fa-coins" style="color: var(--primary);"></i> Finanças - Pagamento</h2>
                 <span class="close-modal" onclick="fecharModal('modalFinancasManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1910,11 +1923,21 @@
                         <input type="date" id="financasManutencaoDataPagamento" class="form-control">
                     </div>
                     <div class="form-group">
+                        <label>Anexar Comprovativo de Pagamento</label>
+                        <div class="dropzone" id="dropzoneFinancasManutencao"><i class="fas fa-cloud-upload-alt"></i> Clique ou arraste o comprovativo (PDF, JPG, PNG)<input type="file" id="financasManutencaoFileInput" style="display:none" accept=".pdf,.jpg,.png"></div>
+                        <div id="financasManutencaoFileList"></div>
+                    </div>
+                    <div class="form-group">
                         <label>Observação</label>
                         <textarea id="financasManutencaoObs" class="form-control" rows="2" required placeholder="Registo do pagamento..."></textarea>
                     </div>
+                    <div class="signature-area">
+                        <h4>Assinatura do Responsável Financeiro</h4>
+                        <input type="text" id="financasManutencaoAssinatura" class="form-control" placeholder="Nome completo" required>
+                    </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);">Confirmar Pagamento</button>
+                        <button type="button" class="btn-small" onclick="fecharModal('modalFinancasManutencao')">Cancelar</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: linear-gradient(180deg, #E65100, #FF9800);">Confirmar Pagamento</button>
                     </div>
                 </form>
             </div>
@@ -1924,7 +1947,7 @@
     <div class="modal" id="modalExecucaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-tools" style="color: var(--manutencao-primary);"></i> Manutenção - Execução do Serviço</h2>
+                <h2 style="color: var(--primary-dark);"><i class="fas fa-tools" style="color: var(--primary);"></i> Manutenção - Execução do Serviço</h2>
                 <span class="close-modal" onclick="fecharModal('modalExecucaoManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1949,7 +1972,8 @@
                         <textarea id="manutencaoObsExecucao" class="form-control" rows="2" placeholder="Observações adicionais..."></textarea>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn-small btn-approve" style="background: var(--manutencao-gradient);"><i class="fas fa-check"></i> Finalizar Execução</button>
+                        <button type="button" class="btn-small" onclick="fecharModal('modalExecucaoManutencao')">Cancelar</button>
+                        <button type="submit" class="btn-small btn-approve" style="background: linear-gradient(180deg, #E65100, #FF9800);"><i class="fas fa-check"></i> Finalizar Execução</button>
                     </div>
                 </form>
             </div>
@@ -1959,7 +1983,7 @@
     <div class="modal" id="modalConfirmacaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--manutencao-primary-dark);"><i class="fas fa-check-double" style="color: var(--manutencao-primary);"></i> Confirmação do Solicitante</h2>
+                <h2 style="color: var(--primary-dark);"><i class="fas fa-check-double" style="color: var(--primary);"></i> Confirmação do Solicitante</h2>
                 <span class="close-modal" onclick="fecharModal('modalConfirmacaoManutencao')">&times;</span>
             </div>
             <div class="modal-body">
@@ -1984,7 +2008,23 @@
                     <label>Comentário Adicional</label>
                     <textarea id="manutencaoConfirmComentario" class="form-control" rows="2" placeholder="Observações sobre o serviço..."></textarea>
                 </div>
-                <button class="btn-small btn-approve" onclick="manutencaoApp.enviarConfirmacao()" style="width:100%; background: var(--manutencao-gradient);"><i class="fas fa-check-double"></i> Confirmar e Finalizar</button>
+                <div class="signature-area">
+                    <h4>Assinatura do Solicitante</h4>
+                    <input type="text" id="manutencaoSolicitanteAssinatura" class="form-control" placeholder="Nome completo" required>
+                </div>
+                <button class="btn-small btn-approve" onclick="manutencaoApp.enviarConfirmacao()" style="width:100%; background: linear-gradient(180deg, #E65100, #FF9800);"><i class="fas fa-check-double"></i> Confirmar e Finalizar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modalDetalhesManutencao">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="color: var(--primary-dark);"><i class="fas fa-file-alt" style="color: var(--primary);"></i> Detalhes da Requisição</h2>
+                <span class="close-modal" onclick="fecharModal('modalDetalhesManutencao')">&times;</span>
+            </div>
+            <div class="modal-body" id="manutencaoDetalhesConteudo">
+                <!-- Preenchido dinamicamente -->
             </div>
         </div>
     </div>
@@ -1998,8 +2038,8 @@
             </div>
             <div class="nota-despesa-container">
                 <div class="nota-header">
-                    <h1 style="color: var(--manutencao-primary-dark);"><i class="fas fa-tools"></i> ACCORD GROUP</h1>
-                    <h2>NOTA DE DESPESA / REQUISIÇÃO DE COMPRA</h2>
+                    <h1 style="color: var(--primary-dark);"><i class="fas fa-tools"></i> ACCORD GROUP</h1>
+                    <h2>NOTA DE DESPESA</h2>
                     <p>Sistema de Gestão de Manutenção - Kero SIR</p>
                 </div>
                 <div id="notaConteudoManutencao"></div>
@@ -2064,14 +2104,6 @@
             siteUrl: "https://accordgroupslda.sharepoint.com/sites/SIR",
             listName: "RequisicoesRH",
             pastaAnexos: "Requisicoes_Anexos",
-            bibliotecaDocumentos: "Documentos Partilhados"
-        };
-
-        // CONFIGURAÇÃO SHAREPOINT MANUTENÇÃO
-        const SHAREPOINT_MANUTENCAO_CONFIG = {
-            siteUrl: "https://accordgroupslda.sharepoint.com/sites/SIR",
-            listName: "RequisicoesManutencao",
-            pastaAnexos: "Manutencao_Anexos",
             bibliotecaDocumentos: "Documentos Partilhados"
         };
 
@@ -2551,6 +2583,7 @@
                 document.getElementById('currentUserName').textContent = usuarioAtual.nome;
                 document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
                 atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
+                // Inicializa o módulo de manutenção
                 manutencaoApp.inicializar();
             }
         }
@@ -4124,7 +4157,7 @@
         }
 
         // ============================================================
-        // MÓDULO MANUTENÇÃO - APP COMPLETA COM CORES LARANJA
+        // MÓDULO MANUTENÇÃO - APP COMPLETA (NOVO CÓDIGO)
         // ============================================================
         const manutencaoApp = (function() {
             // ===== DADOS =====
@@ -4133,7 +4166,8 @@
             let filtroStatusM = 'all';
             let filtroSearchM = '';
             let consumiveisItensM = [];
-            let consumiveisProformaM = null;
+            let consumiveisAnexoM = null;
+            let financasAnexoM = null;
             let requisicaoAnexoM = null;
             let avaliacaoAnexoM = null;
             let nextIdM = 1;
@@ -4141,13 +4175,13 @@
 
             // ===== PERFIS MANUTENÇÃO =====
             const perfisManutencao = {
-                solicitante: { nome: "João Solicitante", role: "Solicitante", email: "solicitante@accord.com" },
-                manutencao: { nome: "Carlos Técnico", role: "Manutenção", email: "tecnico@accord.com" },
-                consumiveis: { nome: "Stephanny Alves", role: "Consumíveis", email: "gescps3@accordgrouplda.com" },
-                cg: { nome: "Ana Santos", role: "Controlo Gestão", email: "dircg@accordgrouplda.com" },
-                diretor: { nome: "Dr. Paulo Mendes", role: "Director Geral", email: "paulo.silva@accordgrouplda.com" },
-                financas: { nome: "Maria Costa", role: "Finanças", email: "financas@accord.com" },
-                admin: { nome: "Administrador", role: "Admin", email: "admin@accord.com" }
+                solicitante: { nome: "Teodoro Tavare", role: "Solicitante", email: "teodoro.tavare@accordgrouplda.com" },
+                manutencao: { nome: "Francisco Sandramo", role: "Manutenção", email: "francisco.sandramo@accordgrouplda.com" },
+                consumiveis: { nome: "Stephany Silva", role: "Consumíveis", email: "stephany.silva@accordgrouplda.com" },
+                cg: { nome: "Erikson Madureira", role: "Controlo Gestão", email: "erikson.madureira@accordgrouplda.com" },
+                diretor: { nome: "Paulo Silva", role: "Director Geral", email: "paulo.silva@accordgrouplda.com" },
+                financas: { nome: "Liliana Borges", role: "Finanças", email: "liliana.borges@accordgrouplda.com" },
+                admin: { nome: "Administrador", role: "Admin", email: "admin@accordgrouplda.com" }
             };
 
             // ===== HELPERS =====
@@ -4182,388 +4216,146 @@
             }
 
             function salvarM() {
-                localStorage.setItem('kero_manutencao_v7', JSON.stringify(reqs));
+                try {
+                    localStorage.setItem('kero_manutencao_v8', JSON.stringify(reqs));
+                } catch (e) { notificarM('Erro ao salvar dados!', 'error'); }
             }
 
             function carregarM() {
-                const data = localStorage.getItem('kero_manutencao_v7');
-                if (data) {
-                    reqs = JSON.parse(data);
-                    reqs.forEach(r => { if (parseInt(r.id) >= nextIdM) nextIdM = parseInt(r.id) + 1; });
-                } else {
-                    carregarExemploM();
-                }
+                try {
+                    const data = localStorage.getItem('kero_manutencao_v8');
+                    if (data) {
+                        reqs = JSON.parse(data);
+                        reqs.forEach(r => { if (parseInt(r.id) >= nextIdM) nextIdM = parseInt(r.id) + 1; });
+                    } else {
+                        carregarExemploM();
+                    }
+                } catch (e) { carregarExemploM(); }
             }
 
             function carregarExemploM() {
-                reqs = [{
-                    id: "1",
-                    codigo: "MAN-2026-0001",
-                    equipamento: "Ar Condicionado",
-                    local: "Direcção Geral",
-                    tipo: "corretiva",
-                    prioridade: "alta",
-                    descricao: "O equipamento não está a refrigerar adequadamente, temperatura ambiente acima de 28°C.",
-                    status: "pendente",
-                    data: new Date().toISOString(),
-                    solicitante: "João Solicitante",
-                    email: "solicitante@accord.com",
-                    anexos: [],
-                    historico: [{ data: new Date().toISOString(), usuario: "João Solicitante",
-                        acao: "Requisição criada" }]
-                }, {
-                    id: "2",
-                    codigo: "MAN-2026-0002",
-                    equipamento: "Empilhador Elétrico",
-                    local: "Armazém ZEE",
-                    tipo: "preventiva",
-                    prioridade: "media",
-                    descricao: "Revisão anual programada - troca de baterias e lubrificação geral.",
-                    status: "aguardando_consumiveis",
-                    data: new Date().toISOString(),
-                    solicitante: "Carlos Logística",
-                    email: "solicitante@accord.com",
-                    diagnostico: "Baterias com desgaste acentuado, necessita substituição.",
-                    opcaoResolucao: "precisa_comprar",
-                    descricaoCompra: "2 baterias de 48V para empilhador elétrico",
-                    valorCompra: 450000,
-                    anexos: [],
-                    historico: [{ data: new Date().toISOString(), usuario: "João Solicitante",
-                        acao: "Requisição criada" },
-                    { data: new Date().toISOString(), usuario: "Carlos Técnico",
-                        acao: "Diagnóstico realizado - necessita compra" }]
-                }, {
-                    id: "3",
-                    codigo: "MAN-2026-0003",
-                    equipamento: "Compressor de Ar",
-                    local: "Sede",
-                    tipo: "corretiva",
-                    prioridade: "alta",
-                    descricao: "Compressor fazendo ruído excessivo e perdendo pressão.",
-                    status: "concluida",
-                    data: new Date().toISOString(),
-                    solicitante: "Maria Manutenção",
-                    email: "manutencao@accord.com",
-                    diagnostico: "Válvula de descarga danificada e correia desgastada.",
-                    opcaoResolucao: "com_material",
-                    relatorioExecucao: "Substituída válvula de descarga e correia. Compressor testado e operacional.",
-                    dataExecucao: new Date().toISOString(),
-                    tecnicoResponsavel: "Carlos Técnico",
-                    valorTotal: 85000,
-                    anexos: [],
-                    historico: [{ data: new Date().toISOString(), usuario: "Maria Manutenção",
-                        acao: "Requisição criada" },
-                    { data: new Date().toISOString(), usuario: "Carlos Técnico",
-                        acao: "Diagnóstico - tem material" },
-                    { data: new Date().toISOString(), usuario: "Carlos Técnico",
-                        acao: "Execução concluída" }]
-                }];
+                reqs = [
+                    {
+                        id: "1",
+                        codigo: "MAN-2026-0001",
+                        equipamento: "Ar Condicionado",
+                        local: "Direcção Geral",
+                        tipo: "corretiva",
+                        prioridade: "alta",
+                        descricao: "O equipamento não está a refrigerar adequadamente, temperatura ambiente acima de 28°C.",
+                        status: "pendente",
+                        data: new Date().toISOString(),
+                        solicitante: "Teodoro Tavare",
+                        email: "teodoro.tavare@accordgrouplda.com",
+                        anexos: [],
+                        historico: [{ data: new Date().toISOString(), usuario: "Teodoro Tavare", acao: "Requisição criada" }],
+                        notaDespesa: null
+                    },
+                    {
+                        id: "2",
+                        codigo: "MAN-2026-0002",
+                        equipamento: "Empilhador Elétrico",
+                        local: "Armazém ZEE",
+                        tipo: "preventiva",
+                        prioridade: "media",
+                        descricao: "Revisão anual programada - troca de baterias e lubrificação geral.",
+                        status: "aguardando_consumiveis",
+                        data: new Date().toISOString(),
+                        solicitante: "Teodoro Tavare",
+                        email: "teodoro.tavare@accordgrouplda.com",
+                        diagnostico: "Baterias com desgaste acentuado, necessita substituição.",
+                        opcaoResolucao: "precisa_comprar",
+                        descricaoCompra: "2 baterias de 48V para empilhador elétrico",
+                        valorCompra: 450000,
+                        anexos: [],
+                        historico: [
+                            { data: new Date().toISOString(), usuario: "Teodoro Tavare", acao: "Requisição criada" },
+                            { data: new Date().toISOString(), usuario: "Francisco Sandramo", acao: "Diagnóstico realizado - necessita compra" }
+                        ],
+                        notaDespesa: null
+                    },
+                    {
+                        id: "3",
+                        codigo: "MAN-2026-0003",
+                        equipamento: "Compressor de Ar",
+                        local: "Sede",
+                        tipo: "corretiva",
+                        prioridade: "alta",
+                        descricao: "Compressor fazendo ruído excessivo e perdendo pressão.",
+                        status: "concluida",
+                        data: new Date().toISOString(),
+                        solicitante: "Teodoro Tavare",
+                        email: "teodoro.tavare@accordgrouplda.com",
+                        diagnostico: "Válvula de descarga danificada e correia desgastada.",
+                        opcaoResolucao: "com_material",
+                        relatorioExecucao: "Substituída válvula de descarga e correia. Compressor testado e operacional.",
+                        dataExecucao: new Date().toISOString(),
+                        tecnicoResponsavel: "Francisco Sandramo",
+                        valorTotal: 85000,
+                        anexos: [],
+                        historico: [
+                            { data: new Date().toISOString(), usuario: "Teodoro Tavare", acao: "Requisição criada" },
+                            { data: new Date().toISOString(), usuario: "Francisco Sandramo", acao: "Diagnóstico - tem material" },
+                            { data: new Date().toISOString(), usuario: "Francisco Sandramo", acao: "Execução concluída" }
+                        ],
+                        notaDespesa: null
+                    }
+                ];
                 nextIdM = 4;
-                salvarM();
-            }
-
-            function podeVerM(req) {
-                if (usuarioAtual.role === 'Solicitante') return req.email === usuarioAtual.email;
-                return true;
-            }
-
-            function adicionarHistoricoM(req, acao) {
-                if (!req.historico) req.historico = [];
-                req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: acao });
                 salvarM();
             }
 
             function notificarM(msg, tipo = 'success') { mostrarNotificacao(msg, tipo); }
 
-            // ===== FUNÇÕES SHAREPOINT MANUTENÇÃO =====
-            async function salvarRequisicaoManutencaoNoSharePoint(req) {
-                try {
-                    const token = await getSharePointToken();
-                    const siteId = await getSiteId();
-                    const fields = {
-                        "Title": req.codigo,
-                        "Equipamento": req.equipamento,
-                        "Local": req.local || "",
-                        "Tipo": req.tipo,
-                        "Prioridade": req.prioridade || "",
-                        "Descricao": req.descricao || "",
-                        "Status": req.status,
-                        "Data": req.data,
-                        "Solicitante": req.solicitante,
-                        "Email": req.email,
-                        "Diagnostico": req.diagnostico || "",
-                        "OpcaoResolucao": req.opcaoResolucao || "",
-                        "ValorTotal": req.valorTotal || 0,
-                        "Fornecedor": req.fornecedor || "",
-                        "DataDespesa": req.dataDespesa || "",
-                        "DocNumero": req.docNumero || "",
-                        "MotivoDespesa": req.motivoDespesa || "",
-                        "RelatorioExecucao": req.relatorioExecucao || "",
-                        "DataExecucao": req.dataExecucao || "",
-                        "TecnicoResponsavel": req.tecnicoResponsavel || "",
-                        "DataConclusao": req.dataConclusao || "",
-                        "ParecerCG": req.parecerCG || "",
-                        "ParecerDiretor": req.parecerDiretor || "",
-                        "DataPagamento": req.dataPagamento || "",
-                        "Comprovativo": req.comprovativo || "",
-                        "ComentarioFinal": req.comentarioFinal || ""
-                    };
-
-                    if (req.anexos && req.anexos.length > 0) {
-                        fields["Anexos"] = JSON.stringify(req.anexos);
-                    }
-                    if (req.historico && req.historico.length > 0) {
-                        fields["Historico"] = JSON.stringify(req.historico);
-                    }
-                    if (req.itens && req.itens.length > 0) {
-                        fields["Itens"] = JSON.stringify(req.itens);
-                    }
-
-                    const listCheckUrl =
-                        `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_MANUTENCAO_CONFIG.listName}`;
-                    const listCheck = await fetch(listCheckUrl, { headers: { 'Authorization': `Bearer ${token}` } });
-
-                    if (!listCheck.ok) {
-                        console.log('Criando lista de manutenção no SharePoint...');
-                        const createListUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists`;
-                        const listDefinition = {
-                            displayName: SHAREPOINT_MANUTENCAO_CONFIG.listName,
-                            description: "Requisições de Manutenção - Kero SIR",
-                            columns: [
-                                { name: "Equipamento", text: {} },
-                                { name: "Local", text: {} },
-                                { name: "Tipo", text: {} },
-                                { name: "Prioridade", text: {} },
-                                { name: "Descricao", text: {} },
-                                { name: "Status", text: {} },
-                                { name: "Data", dateTime: {} },
-                                { name: "Solicitante", text: {} },
-                                { name: "Email", text: {} },
-                                { name: "Diagnostico", text: {} },
-                                { name: "OpcaoResolucao", text: {} },
-                                { name: "ValorTotal", number: {} },
-                                { name: "Fornecedor", text: {} },
-                                { name: "DataDespesa", dateTime: {} },
-                                { name: "DocNumero", text: {} },
-                                { name: "MotivoDespesa", text: {} },
-                                { name: "RelatorioExecucao", text: {} },
-                                { name: "DataExecucao", dateTime: {} },
-                                { name: "TecnicoResponsavel", text: {} },
-                                { name: "DataConclusao", dateTime: {} },
-                                { name: "ParecerCG", text: {} },
-                                { name: "ParecerDiretor", text: {} },
-                                { name: "DataPagamento", dateTime: {} },
-                                { name: "Comprovativo", text: {} },
-                                { name: "ComentarioFinal", text: {} },
-                                { name: "Anexos", text: {} },
-                                { name: "Historico", text: {} },
-                                { name: "Itens", text: {} }
-                            ],
-                            list: { template: "genericList" }
-                        };
-
-                        const createResponse = await fetch(createListUrl, {
-                            method: 'POST',
-                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify(listDefinition)
-                        });
-
-                        if (!createResponse.ok) {
-                            console.log('Erro ao criar lista, usando localStorage como fallback');
-                            return false;
-                        }
-                    }
-
-                    const createResponse = await fetch(
-                        `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_MANUTENCAO_CONFIG.listName}/items`, {
-                            method: 'POST',
-                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ fields: fields })
-                        }
-                    );
-
-                    if (createResponse.ok) {
-                        const newItem = await createResponse.json();
-                        req.id = newItem.id;
-                        return true;
-                    } else {
-                        console.error('Erro ao salvar manutenção:', await createResponse.text());
-                        return false;
-                    }
-                } catch (error) {
-                    console.error('❌ Erro ao salvar manutenção no SharePoint:', error);
-                    return false;
-                }
-            }
-
-            async function carregarRequisicoesManutencaoDoSharePoint() {
-                try {
-                    const token = await getSharePointToken();
-                    const siteId = await getSiteId();
-
-                    const listCheckUrl =
-                        `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_MANUTENCAO_CONFIG.listName}`;
-                    const listCheck = await fetch(listCheckUrl, { headers: { 'Authorization': `Bearer ${token}` } });
-
-                    if (!listCheck.ok) {
-                        console.log('Lista de manutenção não encontrada');
-                        return false;
-                    }
-
-                    const listUrl =
-                        `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_MANUTENCAO_CONFIG.listName}/items?expand=fields`;
-                    const listResponse = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}` } });
-
-                    if (listResponse.ok) {
-                        const listData = await listResponse.json();
-                        if (listData.value && listData.value.length > 0) {
-                            const requisicoesMap = new Map();
-                            for (const item of listData.value) {
-                                const f = item.fields;
-                                if (!requisicoesMap.has(item.id)) {
-                                    let anexos = [],
-                                        historico = [],
-                                        itens = [];
-                                    if (f.Anexos) { try { anexos = JSON.parse(f.Anexos); } catch (e) {} }
-                                    if (f.Historico) { try { historico = JSON.parse(f.Historico); } catch (e) {} }
-                                    if (f.Itens) { try { itens = JSON.parse(f.Itens); } catch (e) {} }
-
-                                    requisicoesMap.set(item.id, {
-                                        id: item.id,
-                                        codigo: f.Title || `MAN-${item.id}`,
-                                        equipamento: f.Equipamento || "",
-                                        local: f.Local || "",
-                                        tipo: f.Tipo || "corretiva",
-                                        prioridade: f.Prioridade || "media",
-                                        descricao: f.Descricao || "",
-                                        status: f.Status || "pendente",
-                                        data: f.Data || new Date().toISOString(),
-                                        solicitante: f.Solicitante || "",
-                                        email: f.Email || "",
-                                        diagnostico: f.Diagnostico || "",
-                                        opcaoResolucao: f.OpcaoResolucao || "",
-                                        valorTotal: f.ValorTotal || 0,
-                                        fornecedor: f.Fornecedor || "",
-                                        dataDespesa: f.DataDespesa || "",
-                                        docNumero: f.DocNumero || "",
-                                        motivoDespesa: f.MotivoDespesa || "",
-                                        itens: itens,
-                                        relatorioExecucao: f.RelatorioExecucao || "",
-                                        dataExecucao: f.DataExecucao || "",
-                                        tecnicoResponsavel: f.TecnicoResponsavel || "",
-                                        dataConclusao: f.DataConclusao || "",
-                                        parecerCG: f.ParecerCG || "",
-                                        parecerDiretor: f.ParecerDiretor || "",
-                                        dataPagamento: f.DataPagamento || "",
-                                        comprovativo: f.Comprovativo || "",
-                                        comentarioFinal: f.ComentarioFinal || "",
-                                        anexos: anexos,
-                                        historico: historico
-                                    });
-                                }
-                            }
-                            reqs = Array.from(requisicoesMap.values());
-                            return true;
-                        }
-                    }
-                    return false;
-                } catch (error) {
-                    console.error('Erro ao carregar manutenção do SharePoint:', error);
-                    return false;
-                }
-            }
-
-            async function atualizarRequisicaoManutencaoNoSharePoint(req) {
-                try {
-                    const token = await getSharePointToken();
-                    const siteId = await getSiteId();
-                    const fields = {
-                        "Status": req.status,
-                        "Diagnostico": req.diagnostico || "",
-                        "OpcaoResolucao": req.opcaoResolucao || "",
-                        "ValorTotal": req.valorTotal || 0,
-                        "Fornecedor": req.fornecedor || "",
-                        "DataDespesa": req.dataDespesa || "",
-                        "DocNumero": req.docNumero || "",
-                        "MotivoDespesa": req.motivoDespesa || "",
-                        "RelatorioExecucao": req.relatorioExecucao || "",
-                        "DataExecucao": req.dataExecucao || "",
-                        "TecnicoResponsavel": req.tecnicoResponsavel || "",
-                        "DataConclusao": req.dataConclusao || "",
-                        "ParecerCG": req.parecerCG || "",
-                        "ParecerDiretor": req.parecerDiretor || "",
-                        "DataPagamento": req.dataPagamento || "",
-                        "Comprovativo": req.comprovativo || "",
-                        "ComentarioFinal": req.comentarioFinal || ""
-                    };
-
-                    if (req.anexos && req.anexos.length > 0) {
-                        fields["Anexos"] = JSON.stringify(req.anexos);
-                    }
-                    if (req.historico && req.historico.length > 0) {
-                        fields["Historico"] = JSON.stringify(req.historico);
-                    }
-                    if (req.itens && req.itens.length > 0) {
-                        fields["Itens"] = JSON.stringify(req.itens);
-                    }
-
-                    const response = await fetch(
-                        `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_MANUTENCAO_CONFIG.listName}/items/${req.id}/fields`, {
-                            method: 'PATCH',
-                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify(fields)
-                        }
-                    );
-                    return response.ok;
-                } catch (error) {
-                    console.error('Erro ao atualizar manutenção:', error);
-                    return false;
-                }
-            }
-
             // ===== RENDERIZAR REQUISIÇÕES MANUTENÇÃO =====
             function renderizarRequisicoesM() {
-                let filtradas = reqs.filter(podeVerM);
+                let filtradas = reqs;
                 if (filtroStatusM !== 'all') filtradas = filtradas.filter(r => r.status === filtroStatusM);
                 if (filtroSearchM) {
                     const search = filtroSearchM.toLowerCase();
                     filtradas = filtradas.filter(r => r.codigo.toLowerCase().includes(search) || r.equipamento
                         .toLowerCase().includes(search));
                 }
+                filtradas.sort((a, b) => new Date(b.data) - new Date(a.data));
+
                 const start = (paginaM - 1) * 10;
                 const itens = filtradas.slice(start, start + 10);
                 const totalPag = Math.ceil(filtradas.length / 10);
+
+                document.getElementById('manutencaoRequisicoesCount').textContent = `${filtradas.length} registos`;
 
                 const tbody = document.getElementById('manutencaoCorpoTabela');
                 tbody.innerHTML = '';
                 if (itens.length === 0) {
                     tbody.innerHTML =
-                        `<tr><td colspan="6" style="text-align:center; color:#999; padding:30px;">Nenhuma requisição encontrada.</td></tr>`;
+                        `<tr><td colspan="7" style="text-align:center; color:#999; padding:30px;">Nenhuma requisição encontrada.</td></tr>`;
                 } else {
                     itens.forEach(req => {
                         const row = tbody.insertRow();
-                        row.onclick = () => verDetalhesM(req);
-                        row.insertCell(0).innerHTML = req.codigo;
+                        row.insertCell(0).innerHTML = `<strong>${req.codigo}</strong>`;
                         row.insertCell(1).innerHTML = req.equipamento;
                         row.insertCell(2).innerHTML =
                             `<span class="type-badge type-${req.tipo}">${req.tipo === 'corretiva' ? 'Correctiva' : 'Preventiva'}</span>`;
                         row.insertCell(3).innerHTML =
                             `<span class="status-badge status-${getStatusClassM(req.status)}">${getStatusTextM(req.status)}</span>`;
                         row.insertCell(4).innerHTML = formatarMoedaM(req.valorTotal);
-                        row.insertCell(5).innerHTML = getAcoesM(req);
+                        row.insertCell(5).innerHTML = renderAnexosM(req);
+                        row.insertCell(6).innerHTML = getAcoesM(req);
                     });
                 }
 
                 const pagDiv = document.getElementById('manutencaoPaginacao');
                 pagDiv.innerHTML = '';
-                for (let i = 1; i <= totalPag; i++) {
-                    const btn = document.createElement('button');
-                    btn.className = 'pagina-btn';
-                    btn.innerText = i;
-                    if (i === paginaM) btn.classList.add('active');
-                    btn.onclick = () => { paginaM = i;
-                        renderizarRequisicoesM(); };
-                    pagDiv.appendChild(btn);
+                if (totalPag > 1) {
+                    for (let i = 1; i <= totalPag; i++) {
+                        const btn = document.createElement('button');
+                        btn.className = 'pagina-btn';
+                        btn.innerText = i;
+                        if (i === paginaM) btn.classList.add('active');
+                        btn.onclick = () => { paginaM = i;
+                            renderizarRequisicoesM(); };
+                        pagDiv.appendChild(btn);
+                    }
                 }
                 atualizarKPIsM();
             }
@@ -4572,26 +4364,25 @@
             function renderizarAprovacoesM() {
                 let pendentes = [];
                 if (usuarioAtual.role === 'Consumíveis') pendentes = reqs.filter(r => r.status === 'aguardando_consumiveis');
-                else if (usuarioAtual.role === 'Controlo Gestão') pendentes = reqs.filter(r => r.status ===
-                'aguardando_cg');
-                else if (usuarioAtual.role === 'Director Geral') pendentes = reqs.filter(r => r.status ===
-                    'aguardando_diretor');
-                else if (usuarioAtual.role === 'Finanças') pendentes = reqs.filter(r => r.status ===
-                'aguardando_financas');
-                else if (usuarioAtual.role === 'Manutenção') pendentes = reqs.filter(r => r.status === 'em_execucao');
-                else if (usuarioAtual.role === 'Solicitante') pendentes = reqs.filter(r => r.status ===
-                    'aguardando_material' || r.status === 'aguardando_execucao');
+                else if (usuarioAtual.role === 'Controlo Gestão') pendentes = reqs.filter(r => r.status === 'aguardando_cg');
+                else if (usuarioAtual.role === 'Director Geral') pendentes = reqs.filter(r => r.status === 'aguardando_diretor');
+                else if (usuarioAtual.role === 'Finanças') pendentes = reqs.filter(r => r.status === 'aguardando_financas');
+                else if (usuarioAtual.role === 'Manutenção') pendentes = reqs.filter(r => r.status === 'em_execucao' || r.status === 'pendente');
+                else if (usuarioAtual.role === 'Solicitante') pendentes = reqs.filter(r => r.status === 'aguardando_material' || r.status === 'aguardando_execucao');
+                else if (usuarioAtual.role === 'Admin') pendentes = reqs.filter(r => r.status !== 'concluida' && r.status !== 'reprovada');
+
+                document.getElementById('manutencaoAprovacoesCount').textContent = `${pendentes.length} pendências`;
 
                 const tbody = document.getElementById('manutencaoCorpoAprovacoes');
                 tbody.innerHTML = '';
                 if (pendentes.length === 0) {
                     tbody.innerHTML =
-                        `<tr><td colspan="6" style="text-align:center; color:#999; padding:30px;">Nenhuma pendência para aprovação.</td></tr>`;
+                        `<tr><td colspan="7" style="text-align:center; color:#999; padding:30px;">Nenhuma pendência para aprovação.</td></tr>`;
                     return;
                 }
                 pendentes.forEach(req => {
                     const row = tbody.insertRow();
-                    row.insertCell(0).innerHTML = req.codigo;
+                    row.insertCell(0).innerHTML = `<strong>${req.codigo}</strong>`;
                     row.insertCell(1).innerHTML = req.equipamento;
                     row.insertCell(2).innerHTML = req.solicitante;
                     let tipoSol = 'Serviço Interno';
@@ -4601,25 +4392,46 @@
                     row.insertCell(3).innerHTML = tipoSol;
                     row.insertCell(4).innerHTML = formatarMoedaM(req.valorTransferencia || req.valorConsumo || req
                         .valorTotal || 0);
-                    row.insertCell(5).innerHTML = getAcoesM(req);
+                    row.insertCell(5).innerHTML = renderAnexosM(req);
+                    row.insertCell(6).innerHTML = getAcoesM(req);
                 });
                 atualizarBadgesM();
             }
 
-            // ===== AÇÕES DOS BOTÕES MANUTENÇÃO =====
+            // ===== RENDER ANEXOS =====
+            function renderAnexosM(req) {
+                let html = '';
+                if (req.anexos && req.anexos.length > 0) {
+                    html += `<div class="anexos-list">`;
+                    req.anexos.forEach((a, idx) => {
+                        html +=
+                            `<span class="anexo-tag" onclick="manutencaoApp.visualizarAnexo('${req.id}', ${idx})"><i class="fas fa-paperclip"></i> ${a.nome}</span>`;
+                    });
+                    html += `</div>`;
+                }
+                if (req.notaDespesa) {
+                    html +=
+                        `<span class="anexo-tag" style="background:#e8f5e9;border-color:#a5d6a7;" onclick="manutencaoApp.visualizarNotaDespesa('${req.id}')"><i class="fas fa-file-invoice"></i> Nota Despesa</span>`;
+                }
+                return html || '<span style="color:#ccc;font-size:12px;">-</span>';
+            }
+
+            // ===== AÇÕES DOS BOTÕES =====
             function getAcoesM(req) {
-                let btns = '';
+                let btns =
+                    `<button class="btn-small btn-view" onclick="event.stopPropagation();manutencaoApp.abrirDetalhes('${req.id}')"><i class="fas fa-eye"></i></button>`;
+
                 if (usuarioAtual.role === 'Manutenção' && req.status === 'pendente') {
                     btns +=
-                        `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirAvaliacao('${req.id}')"><i class="fas fa-clipboard-check"></i> Avaliar</button>`;
+                        `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirAvaliacao('${req.id}')" style="background:var(--success);"><i class="fas fa-clipboard-check"></i> Avaliar</button>`;
                 }
                 if (usuarioAtual.role === 'Consumíveis' && req.status === 'aguardando_consumiveis') {
                     if (req.opcaoResolucao === 'transferencia') {
                         btns +=
-                            `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirConsumiveisAutorizacao('${req.id}')"><i class="fas fa-check-circle"></i> Autorizar Transferência</button>`;
+                            `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirConsumiveisAutorizacao('${req.id}')"><i class="fas fa-check-circle"></i> Autorizar</button>`;
                     } else if (req.opcaoResolucao === 'precisa_comprar') {
                         btns +=
-                            `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirConsumiveisDespesas('${req.id}')"><i class="fas fa-file-invoice"></i> Registo Despesas</button>`;
+                            `<button class="btn-small btn-warning" onclick="event.stopPropagation();manutencaoApp.abrirConsumiveisDespesas('${req.id}')"><i class="fas fa-file-invoice"></i> Despesas</button>`;
                     }
                 }
                 if (usuarioAtual.role === 'Controlo Gestão' && req.status === 'aguardando_cg') {
@@ -4632,50 +4444,30 @@
                 }
                 if (usuarioAtual.role === 'Finanças' && req.status === 'aguardando_financas') {
                     btns +=
-                        `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirFinancas('${req.id}')"><i class="fas fa-coins"></i> Pagar</button>`;
+                        `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirFinancas('${req.id}')" style="background:var(--success);"><i class="fas fa-coins"></i> Pagar</button>`;
                 }
                 if (usuarioAtual.role === 'Manutenção' && req.status === 'em_execucao') {
                     btns +=
-                        `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirExecucao('${req.id}')"><i class="fas fa-tools"></i> Executar</button>`;
+                        `<button class="btn-small btn-warning" onclick="event.stopPropagation();manutencaoApp.abrirExecucao('${req.id}')"><i class="fas fa-tools"></i> Executar</button>`;
                 }
                 if (usuarioAtual.role === 'Solicitante' && (req.status === 'aguardando_material' || req.status ===
                         'aguardando_execucao')) {
                     btns +=
                         `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirConfirmacao('${req.id}')"><i class="fas fa-check-double"></i> Confirmar</button>`;
                 }
-                return btns || '<span style="color:#999;font-size:12px;">-</span>';
+                if (usuarioAtual.role === 'Admin') {
+                    btns +=
+                        `<button class="btn-small btn-reject" onclick="event.stopPropagation();manutencaoApp.excluirRequisicao('${req.id}')"><i class="fas fa-trash"></i></button>`;
+                }
+                return btns;
             }
 
-            // ===== VER DETALHES MANUTENÇÃO =====
-            function verDetalhesM(req) {
-                let msg = `📋 REQUISIÇÃO: ${req.codigo}\n`;
-                msg += `Equipamento: ${req.equipamento}\n`;
-                msg += `Local: ${req.local || 'N/A'}\n`;
-                msg += `Estado: ${getStatusTextM(req.status)}\n`;
-                msg += `Tipo: ${req.tipo === 'corretiva' ? 'Correctiva' : 'Preventiva'}\n`;
-                msg += `Prioridade: ${req.prioridade || 'N/A'}\n`;
-                msg += `Descrição: ${req.descricao}\n`;
-                if (req.anexos && req.anexos.length > 0) {
-                    msg += `\n📎 Anexos: ${req.anexos.length} ficheiro(s) anexado(s)`;
-                }
-                if (req.diagnostico) msg += `\n\nDiagnóstico: ${req.diagnostico}`;
-                if (req.valorTotal) msg += `\nValor Total: ${formatarMoedaM(req.valorTotal)}`;
-                if (req.relatorioExecucao) msg += `\n\nRelatório de Execução: ${req.relatorioExecucao}`;
-                if (req.historico && req.historico.length > 0) {
-                    msg += `\n\n📜 Histórico:`;
-                    req.historico.slice(-5).forEach(h => {
-                        msg += `\n  ${formatarDataHoraM(h.data)} - ${h.usuario}: ${h.acao}`;
-                    });
-                }
-                alert(msg);
-            }
-
-            // ===== DASHBOARD MANUTENÇÃO =====
+            // ===== DASHBOARD =====
             function carregarDashboardM() {
                 const div = document.getElementById('manutencaoAtividadesRecentes');
-                const recentes = [...reqs].reverse().slice(0, 8);
+                const recentes = [...reqs].sort((a, b) => new Date(b.data) - new Date(a.data)).slice(0, 8);
                 div.innerHTML = recentes.map(r => `
-                            <div class="activity-item">
+                            <div class="activity-item" onclick="manutencaoApp.abrirDetalhes('${r.id}')">
                                 <div class="activity-icon"><i class="fas fa-clipboard-list"></i></div>
                                 <div style="flex:1;">
                                     <strong>${r.codigo}</strong> - ${r.equipamento}
@@ -4720,9 +4512,11 @@
                 else if (usuarioAtual.role === 'Finanças') aprovPendentes = reqs.filter(r => r.status ===
                     'aguardando_financas').length;
                 else if (usuarioAtual.role === 'Manutenção') aprovPendentes = reqs.filter(r => r.status ===
-                    'em_execucao').length;
+                    'em_execucao' || r.status === 'pendente').length;
                 else if (usuarioAtual.role === 'Solicitante') aprovPendentes = reqs.filter(r => r.status ===
                     'aguardando_material' || r.status === 'aguardando_execucao').length;
+                else if (usuarioAtual.role === 'Admin') aprovPendentes = reqs.filter(r => r.status !== 'concluida' &&
+                    r.status !== 'reprovada').length;
                 document.getElementById('manutencaoAprovacoesBadge').innerText = aprovPendentes;
             }
 
@@ -4736,13 +4530,22 @@
                 document.getElementById('manutencaoRelTotal').innerText = total;
                 document.getElementById('manutencaoRelConcluidas').innerText = concluidas;
                 document.getElementById('manutencaoRelPendentes').innerText = pendentes;
-                document.getElementById('manutencaoRelValorTotal').innerText = formatarMoedaM(valorTotal);
+                document.getElementById('manutencaoRelValorTotal').innerHTML = formatarMoedaM(valorTotal);
             }
 
-            // ===== FILTROS MANUTENÇÃO =====
+            // ===== FILTROS =====
             function filtrarRequisicoesM() {
                 filtroStatusM = document.getElementById('manutencaoFilterStatus').value;
                 filtroSearchM = document.getElementById('manutencaoFilterSearch').value;
+                paginaM = 1;
+                renderizarRequisicoesM();
+            }
+
+            function limparFiltrosM() {
+                document.getElementById('manutencaoFilterStatus').value = 'all';
+                document.getElementById('manutencaoFilterSearch').value = '';
+                filtroStatusM = 'all';
+                filtroSearchM = '';
                 paginaM = 1;
                 renderizarRequisicoesM();
             }
@@ -4755,57 +4558,58 @@
                 if (searchInput) searchInput.value = '';
                 paginaM = 1;
                 renderizarRequisicoesM();
+                // Navegar para requisições
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    if (item.textContent.trim().toLowerCase().includes('requisições')) {
+                        mudarAba('requisicoes', item);
+                    }
+                });
             }
 
-            // ===== CRUD: NOVA REQUISIÇÃO MANUTENÇÃO =====
-            async function novaRequisicaoM(e) {
+            // ===== CRUD: NOVA REQUISIÇÃO =====
+            function novaRequisicaoM(e) {
                 e.preventDefault();
+
+                const tipo = document.getElementById('manutencaoTipo').value;
+                const equipamento = document.getElementById('manutencaoEquipamento').value.trim();
+                const local = document.getElementById('manutencaoLocal').value;
+                const descricao = document.getElementById('manutencaoDescricao').value.trim();
+
+                if (!tipo || !equipamento || !local || !descricao) {
+                    notificarM('Preencha todos os campos obrigatórios!', 'error');
+                    return;
+                }
+
                 const nova = {
-                    id: String(Date.now()),
+                    id: String(nextIdM++),
                     codigo: gerarCodigoM(),
-                    tipo: document.getElementById('manutencaoTipo').value,
-                    equipamento: document.getElementById('manutencaoEquipamento').value,
-                    local: document.getElementById('manutencaoLocal').value,
+                    tipo: tipo,
+                    equipamento: equipamento,
+                    local: local,
                     prioridade: document.getElementById('manutencaoPrioridade').value,
-                    descricao: document.getElementById('manutencaoDescricao').value,
+                    descricao: descricao,
                     status: 'pendente',
                     data: new Date().toISOString(),
                     solicitante: usuarioAtual.nome,
                     email: usuarioAtual.email,
                     anexos: requisicaoAnexoM ? [{ nome: requisicaoAnexoM.name, data: requisicaoAnexoM.data }] : [],
                     historico: [{ data: new Date().toISOString(), usuario: usuarioAtual.nome,
-                        acao: 'Requisição criada' }]
+                        acao: 'Requisição criada' }],
+                    notaDespesa: null
                 };
-
-                showLoading();
-
-                const salvo = await salvarRequisicaoManutencaoNoSharePoint(nova);
-
-                if (salvo) {
-                    reqs.unshift(nova);
-                    salvarM();
-                    fecharModal('modalNovaRequisicaoManutencao');
-                    document.getElementById('formNovaRequisicaoManutencao').reset();
-                    requisicaoAnexoM = null;
-                    document.getElementById('manutencaoFileList').innerHTML = '';
-                    renderizarRequisicoesM();
-                    carregarDashboardM();
-                    notificarM(`Requisição ${nova.codigo} criada com sucesso no SharePoint!`, 'success');
-                } else {
-                    reqs.unshift(nova);
-                    salvarM();
-                    fecharModal('modalNovaRequisicaoManutencao');
-                    document.getElementById('formNovaRequisicaoManutencao').reset();
-                    requisicaoAnexoM = null;
-                    document.getElementById('manutencaoFileList').innerHTML = '';
-                    renderizarRequisicoesM();
-                    carregarDashboardM();
-                    notificarM(`Requisição ${nova.codigo} criada localmente (fallback).`, 'warning');
-                }
-                hideLoading();
+                reqs.unshift(nova);
+                salvarM();
+                fecharModal('modalNovaRequisicaoManutencao');
+                document.getElementById('formNovaRequisicaoManutencao').reset();
+                requisicaoAnexoM = null;
+                document.getElementById('requisicaoManutencaoFileList').innerHTML = '';
+                renderizarRequisicoesM();
+                carregarDashboardM();
+                notificarM(`✅ Requisição ${nova.codigo} criada com sucesso!`, 'success');
             }
 
-            // ===== AVALIAÇÃO TÉCNICO MANUTENÇÃO =====
+            // ===== AVALIAÇÃO TÉCNICO =====
             function abrirAvaliacaoM(id) {
                 document.getElementById('avaliacaoManutencaoId').value = id;
                 document.getElementById('manutencaoDiagnostico').value = '';
@@ -4813,10 +4617,9 @@
                 document.getElementById('manutencaoDetalhesTransferencia').style.display = 'none';
                 document.getElementById('manutencaoDetalhesConsumo').style.display = 'none';
                 document.getElementById('manutencaoDetalhesCompra').style.display = 'none';
-                document.getElementById('manutencaoProformaList').innerHTML = '';
-                document.getElementById('manutencaoAvaliacaoFileList').innerHTML = '';
+                document.getElementById('proformaManutencaoList').innerHTML = '';
+                document.getElementById('avaliacaoManutencaoFileList').innerHTML = '';
                 avaliacaoAnexoM = null;
-                consumiveisProformaM = null;
                 abrirModal('modalAvaliacaoManutencao');
             }
 
@@ -4829,13 +4632,22 @@
                     'block' : 'none';
             }
 
-            async function salvarAvaliacaoM(e) {
+            function salvarAvaliacaoM(e) {
                 e.preventDefault();
                 const id = document.getElementById('avaliacaoManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
-                req.diagnostico = document.getElementById('manutencaoDiagnostico').value;
-                req.opcaoResolucao = document.getElementById('manutencaoOpcaoResolucao').value;
+
+                const diagnostico = document.getElementById('manutencaoDiagnostico').value.trim();
+                const opcao = document.getElementById('manutencaoOpcaoResolucao').value;
+
+                if (!diagnostico || !opcao) {
+                    notificarM('Preencha o diagnóstico e selecione uma opção de resolução!', 'error');
+                    return;
+                }
+
+                req.diagnostico = diagnostico;
+                req.opcaoResolucao = opcao;
 
                 if (avaliacaoAnexoM) {
                     if (!req.anexos) req.anexos = [];
@@ -4844,58 +4656,48 @@
 
                 if (req.opcaoResolucao === 'com_material') {
                     req.status = 'em_execucao';
-                    adicionarHistoricoM(req, 'Técnico tem material, irá executar o serviço directamente');
-                    notificarM('Técnico irá executar o serviço directamente.', 'info');
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: 'Técnico tem material, irá executar o serviço directamente' });
+                    notificarM('✅ Técnico irá executar o serviço directamente.', 'info');
                 } else if (req.opcaoResolucao === 'transferencia') {
                     req.origemRecurso = document.getElementById('manutencaoOrigemRecurso').value;
-                    req.detalhesTransferencia = document.getElementById('manutencaoDetalhesTransferencia').value;
+                    req.detalhesTransferencia = document.getElementById('manutencaoDetalhesTransferenciaTexto').value;
                     req.valorTransferencia = parseFloat(document.getElementById('manutencaoValorTransferencia')
                     .value) || 0;
                     req.status = 'aguardando_consumiveis';
-                    adicionarHistoricoM(req,
-                        'Solicitação de transferência de recurso. Aguardando autorização dos Consumíveis.');
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: 'Solicitação de transferência de recurso. Aguardando autorização dos Consumíveis.' });
                     notificarM(
-                        'Solicitação enviada para Consumíveis (gescps3@accordgrouplda.com) autorizar transferência.',
+                        '📦 Solicitação enviada para Stephany Silva (stephany.silva@accordgrouplda.com) autorizar transferência.',
                         'info');
                 } else if (req.opcaoResolucao === 'consumo') {
-                    req.detalhesConsumo = document.getElementById('manutencaoDetalhesConsumo').value;
+                    req.detalhesConsumo = document.getElementById('manutencaoDetalhesConsumoTexto').value;
                     req.valorConsumo = parseFloat(document.getElementById('manutencaoValorConsumo').value) || 0;
                     req.status = 'aguardando_cg';
-                    adicionarHistoricoM(req,
-                        'Solicitação de consumo de stock interno. Aguardando aprovação do Controlo Gestão.');
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: 'Solicitação de consumo de stock interno. Aguardando aprovação do Controlo Gestão.' });
                     notificarM(
-                        'Solicitação enviada para Controlo Gestão (dircg@accordgrouplda.com) aprovar consumo.',
+                        '📊 Solicitação enviada para Erikson Madureira (erikson.madureira@accordgrouplda.com) aprovar consumo.',
                         'info');
                 } else if (req.opcaoResolucao === 'precisa_comprar') {
                     req.fornecedorCompra = document.getElementById('manutencaoFornecedorCompra').value;
                     req.descricaoCompra = document.getElementById('manutencaoDescricaoCompra').value;
                     req.valorCompra = parseFloat(document.getElementById('manutencaoValorCompra').value) || 0;
-                    req.proformaData = consumiveisProformaM;
                     req.status = 'aguardando_consumiveis';
-                    adicionarHistoricoM(req, 'Solicitação de compra. Aguardando Consumíveis registar despesas.');
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: 'Solicitação de compra. Aguardando Consumíveis registar despesas.' });
                     notificarM(
-                        'Requisição enviada para Consumíveis (gescps3@accordgrouplda.com) registar despesas.',
+                        '📦 Requisição enviada para Stephany Silva (stephany.silva@accordgrouplda.com) registar despesas.',
                         'info');
                 }
-
-                showLoading();
-                const atualizado = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                if (atualizado) {
-                    salvarM();
-                    notificarM('Avaliação salva com sucesso!', 'success');
-                } else {
-                    salvarM();
-                    notificarM('Avaliação salva localmente (fallback).', 'warning');
-                }
-                hideLoading();
-
+                salvarM();
                 fecharModal('modalAvaliacaoManutencao');
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
             }
 
-            // ===== CONSUMÍVEIS - AUTORIZAÇÃO (Transferência) =====
+            // ===== CONSUMÍVEIS - AUTORIZAÇÃO =====
             function abrirConsumiveisAutorizacaoM(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
@@ -4911,52 +4713,53 @@
                         `;
                 document.getElementById('consumiveisManutencaoDecisao').value = '';
                 document.getElementById('consumiveisManutencaoComentario').value = '';
+                document.getElementById('consumiveisManutencaoAssinatura').value = usuarioAtual.nome;
                 abrirModal('modalConsumiveisAutorizacaoManutencao');
             }
 
-            async function salvarConsumiveisAutorizacaoM(e) {
+            function salvarConsumiveisAutorizacaoM(e) {
                 e.preventDefault();
                 const id = document.getElementById('consumiveisAutorizacaoManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
                 const decisao = document.getElementById('consumiveisManutencaoDecisao').value;
-                const comentario = document.getElementById('consumiveisManutencaoComentario').value;
+                const comentario = document.getElementById('consumiveisManutencaoComentario').value.trim();
+                const assinatura = document.getElementById('consumiveisManutencaoAssinatura').value.trim();
+
+                if (!decisao || !comentario || !assinatura) {
+                    notificarM('Preencha todos os campos!', 'error');
+                    return;
+                }
 
                 if (decisao === 'reprovar') {
                     req.status = 'reprovada';
-                    adicionarHistoricoM(req, `Consumíveis reprovou: ${comentario}`);
-                    notificarM('Requisição reprovada por Consumíveis.', 'error');
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: `Consumíveis reprovou: ${comentario}` });
+                    notificarM('❌ Requisição reprovada por Stephany Silva.', 'error');
                 } else {
                     req.status = 'em_execucao';
-                    adicionarHistoricoM(req, `Consumíveis autorizou transferência. Manutenção pode executar.`);
-                    notificarM('Autorização concedida! Manutenção pode executar o serviço.', 'success');
+                    req.assinaturaConsumiveis = assinatura;
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: 'Stephany Silva autorizou transferência. Manutenção pode executar.' });
+                    notificarM('✅ Autorização concedida! Manutenção pode executar o serviço.', 'success');
                 }
-
-                showLoading();
-                const atualizado = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                if (atualizado) {
-                    salvarM();
-                } else {
-                    salvarM();
-                }
-                hideLoading();
-
+                salvarM();
                 fecharModal('modalConsumiveisAutorizacaoManutencao');
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
             }
 
-            // ===== CONSUMÍVEIS - DESPESAS (Compra) =====
+            // ===== CONSUMÍVEIS - DESPESAS =====
             function adicionarItemConsumiveisM() {
                 const idx = consumiveisItensM.length;
                 const div = document.createElement('div');
                 div.className = 'item-row';
                 div.innerHTML = `
-                            <input type="text" placeholder="Descrição" id="manutencaoConsumivelDesc_${idx}" style="flex:2">
-                            <input type="number" placeholder="Qtd" id="manutencaoConsumivelQtd_${idx}" style="flex:1" value="1">
-                            <input type="number" placeholder="Valor Unit." id="manutencaoConsumivelPreco_${idx}" style="flex:1" onchange="manutencaoApp.calcularTotalConsumiveis()">
-                            <button type="button" class="btn-small btn-reject" onclick="this.parentElement.remove();manutencaoApp.calcularTotalConsumiveis()">✖</button>
+                            <input type="text" placeholder="Descrição" id="consumivelDescM_${idx}" style="flex:2">
+                            <input type="number" placeholder="Qtd" id="consumivelQtdM_${idx}" style="flex:1" value="1" min="1">
+                            <input type="number" placeholder="Valor Unit." id="consumivelPrecoM_${idx}" style="flex:1" min="0" step="0.01" onchange="manutencaoApp.calcularTotalConsumiveis()" oninput="manutencaoApp.calcularTotalConsumiveis()">
+                            <button type="button" class="btn-small btn-reject" onclick="this.parentElement.remove();manutencaoApp.calcularTotalConsumiveis();">✖</button>
                         `;
                 document.getElementById('manutencaoConsumiveisItensList').appendChild(div);
                 consumiveisItensM.push(idx);
@@ -4965,8 +4768,8 @@
             function calcularTotalConsumiveisM() {
                 let total = 0;
                 for (let i = 0; i < consumiveisItensM.length; i++) {
-                    const qtd = parseFloat(document.getElementById(`manutencaoConsumivelQtd_${i}`)?.value) || 0;
-                    const preco = parseFloat(document.getElementById(`manutencaoConsumivelPreco_${i}`)?.value) || 0;
+                    const qtd = parseFloat(document.getElementById(`consumivelQtdM_${i}`)?.value) || 0;
+                    const preco = parseFloat(document.getElementById(`consumivelPrecoM_${i}`)?.value) || 0;
                     total += qtd * preco;
                 }
                 document.getElementById('manutencaoConsumiveisTotal').value = total;
@@ -4975,14 +4778,14 @@
             function getItensConsumiveisM() {
                 let itens = [];
                 for (let i = 0; i < consumiveisItensM.length; i++) {
-                    const desc = document.getElementById(`manutencaoConsumivelDesc_${i}`)?.value;
+                    const desc = document.getElementById(`consumivelDescM_${i}`)?.value;
                     if (desc) {
                         itens.push({
                             desc: desc,
-                            qtd: parseFloat(document.getElementById(`manutencaoConsumivelQtd_${i}`)?.value) || 0,
-                            preco: parseFloat(document.getElementById(`manutencaoConsumivelPreco_${i}`)?.value) || 0,
-                            total: (parseFloat(document.getElementById(`manutencaoConsumivelQtd_${i}`)?.value) || 0) *
-                                (parseFloat(document.getElementById(`manutencaoConsumivelPreco_${i}`)?.value) || 0)
+                            qtd: parseFloat(document.getElementById(`consumivelQtdM_${i}`)?.value) || 0,
+                            preco: parseFloat(document.getElementById(`consumivelPrecoM_${i}`)?.value) || 0,
+                            total: (parseFloat(document.getElementById(`consumivelQtdM_${i}`)?.value) || 0) *
+                                (parseFloat(document.getElementById(`consumivelPrecoM_${i}`)?.value) || 0)
                         });
                     }
                 }
@@ -4997,11 +4800,12 @@
                 document.getElementById('manutencaoConsumiveisItensList').innerHTML = '';
                 document.getElementById('manutencaoConsumiveisFornecedor').value = '';
                 document.getElementById('manutencaoConsumiveisData').value = new Date().toISOString().slice(0, 10);
-                document.getElementById('manutencaoConsumiveisDocNum').value = '';
+                document.getElementById('manutencaoConsumiveisTipoPagamento').value = 'proforma';
                 document.getElementById('manutencaoConsumiveisMotivo').value = '';
                 document.getElementById('manutencaoConsumiveisTotal').value = '0';
-                consumiveisProformaM = null;
-                document.getElementById('manutencaoConsumiveisFileList').innerHTML = '';
+                document.getElementById('consumiveisManutencaoAssinatura').value = usuarioAtual.nome;
+                consumiveisAnexoM = null;
+                document.getElementById('consumiveisManutencaoFileList').innerHTML = '';
                 document.getElementById('consumiveisDespesasManutencaoInfo').innerHTML = `
                             <strong>Requisição:</strong> ${req.codigo}<br>
                             <strong>Equipamento:</strong> ${req.equipamento}<br>
@@ -5012,39 +4816,61 @@
                 abrirModal('modalConsumiveisDespesasManutencao');
             }
 
-            async function salvarConsumiveisDespesasM(e) {
+            function salvarConsumiveisDespesasM(e) {
                 e.preventDefault();
                 const id = document.getElementById('consumiveisDespesasManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
-                req.fornecedor = document.getElementById('manutencaoConsumiveisFornecedor').value;
-                req.dataDespesa = document.getElementById('manutencaoConsumiveisData').value;
-                req.docNumero = document.getElementById('manutencaoConsumiveisDocNum').value;
-                req.itens = getItensConsumiveisM();
-                req.valorTotal = parseFloat(document.getElementById('manutencaoConsumiveisTotal').value) || 0;
-                req.motivoDespesa = document.getElementById('manutencaoConsumiveisMotivo').value;
-                req.status = 'aguardando_cg';
-                adicionarHistoricoM(req,
-                    `Consumíveis registou despesas: Fornecedor ${req.fornecedor}, Valor ${formatarMoedaM(req.valorTotal)}`
-                    );
-                notificarM('Despesas registadas. Enviado para Controlo Gestão (dircg@accordgrouplda.com).', 'success');
 
-                showLoading();
-                const atualizado = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                if (atualizado) {
-                    salvarM();
-                } else {
-                    salvarM();
+                const fornecedor = document.getElementById('manutencaoConsumiveisFornecedor').value.trim();
+                const motivo = document.getElementById('manutencaoConsumiveisMotivo').value.trim();
+                const assinatura = document.getElementById('consumiveisManutencaoAssinatura').value.trim();
+                const itens = getItensConsumiveisM();
+                const total = parseFloat(document.getElementById('manutencaoConsumiveisTotal').value) || 0;
+                const tipoPagamento = document.getElementById('manutencaoConsumiveisTipoPagamento').value;
+
+                if (!fornecedor || !motivo || !assinatura || itens.length === 0) {
+                    notificarM('Preencha todos os campos obrigatórios e adicione pelo menos um item!', 'error');
+                    return;
                 }
-                hideLoading();
 
+                req.notaDespesa = {
+                    fornecedor: fornecedor,
+                    data: document.getElementById('manutencaoConsumiveisData').value,
+                    tipoPagamento: tipoPagamento,
+                    itens: itens,
+                    valorTotal: total,
+                    motivo: motivo,
+                    assinatura: assinatura,
+                    anexo: consumiveisAnexoM,
+                    pagamentoStatus: 'Pendente'
+                };
+
+                if (consumiveisAnexoM) {
+                    if (!req.anexos) req.anexos = [];
+                    req.anexos.push({ nome: consumiveisAnexoM.name, data: consumiveisAnexoM.data,
+                    tipo: 'comprovativo' });
+                }
+
+                req.fornecedor = fornecedor;
+                req.dataDespesa = document.getElementById('manutencaoConsumiveisData').value;
+                req.itens = itens;
+                req.valorTotal = total;
+                req.motivoDespesa = motivo;
+                req.assinaturaConsumiveis = assinatura;
+                req.status = 'aguardando_cg';
+                req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                    acao: `Stephany Silva registou despesas: Fornecedor ${req.fornecedor}, Valor ${formatarMoedaM(req.valorTotal)}` });
+                notificarM('✅ Despesas registadas. Enviado para Erikson Madureira (erikson.madureira@accordgrouplda.com).',
+                    'success');
+                salvarM();
                 fecharModal('modalConsumiveisDespesasManutencao');
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
             }
 
-            // ===== CG MANUTENÇÃO =====
+            // ===== CG =====
             function abrirCGM(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
@@ -5064,45 +4890,48 @@
                         `;
                 document.getElementById('cgManutencaoDecisao').value = '';
                 document.getElementById('cgManutencaoParecer').value = '';
+                document.getElementById('cgManutencaoAssinatura').value = usuarioAtual.nome;
                 abrirModal('modalCGManutencao');
             }
 
-            async function salvarCGM(e) {
+            function salvarCGM(e) {
                 e.preventDefault();
                 const id = document.getElementById('cgManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
                 const decisao = document.getElementById('cgManutencaoDecisao').value;
-                const parecer = document.getElementById('cgManutencaoParecer').value;
+                const parecer = document.getElementById('cgManutencaoParecer').value.trim();
+                const assinatura = document.getElementById('cgManutencaoAssinatura').value.trim();
+
+                if (!decisao || !parecer || !assinatura) {
+                    notificarM('Preencha todos os campos!', 'error');
+                    return;
+                }
+
+                req.assinaturaCG = assinatura;
 
                 if (decisao === 'reprovar') {
                     req.status = 'reprovada';
-                    adicionarHistoricoM(req, `Controlo Gestão reprovou: ${parecer}`);
-                    notificarM('Requisição reprovada pelo Controlo Gestão.', 'error');
+                    if (req.notaDespesa) req.notaDespesa.pagamentoStatus = 'Reprovado CG';
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: `Erikson Madureira reprovou: ${parecer}` });
+                    notificarM('❌ Requisição reprovada por Erikson Madureira.', 'error');
                 } else {
                     req.status = 'aguardando_diretor';
                     req.parecerCG = parecer;
-                    adicionarHistoricoM(req,
-                        'Controlo Gestão aprovou. Enviado para Director Geral (paulo.silva@accordgrouplda.com).');
-                    notificarM('Controlo Gestão aprovou. Enviado para o Director Geral.', 'success');
+                    if (req.notaDespesa) req.notaDespesa.pagamentoStatus = 'Aprovado CG';
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: 'Erikson Madureira aprovou. Enviado para Paulo Silva (paulo.silva@accordgrouplda.com).' });
+                    notificarM('✅ Erikson Madureira aprovou. Enviado para o Director Geral.', 'success');
                 }
-
-                showLoading();
-                const atualizado = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                if (atualizado) {
-                    salvarM();
-                } else {
-                    salvarM();
-                }
-                hideLoading();
-
+                salvarM();
                 fecharModal('modalCGManutencao');
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
             }
 
-            // ===== DIRECTOR MANUTENÇÃO =====
+            // ===== DIRECTOR =====
             function abrirDiretorM(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
@@ -5115,44 +4944,48 @@
                         `;
                 document.getElementById('diretorManutencaoDecisao').value = '';
                 document.getElementById('diretorManutencaoParecer').value = '';
+                document.getElementById('diretorManutencaoAssinatura').value = usuarioAtual.nome;
                 abrirModal('modalDiretorManutencao');
             }
 
-            async function salvarDiretorM(e) {
+            function salvarDiretorM(e) {
                 e.preventDefault();
                 const id = document.getElementById('diretorManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
                 const decisao = document.getElementById('diretorManutencaoDecisao').value;
-                const parecer = document.getElementById('diretorManutencaoParecer').value;
+                const parecer = document.getElementById('diretorManutencaoParecer').value.trim();
+                const assinatura = document.getElementById('diretorManutencaoAssinatura').value.trim();
+
+                if (!decisao || !parecer || !assinatura) {
+                    notificarM('Preencha todos os campos!', 'error');
+                    return;
+                }
+
+                req.assinaturaDiretor = assinatura;
 
                 if (decisao === 'reprovar') {
                     req.status = 'reprovada';
-                    adicionarHistoricoM(req, `Director Geral reprovou: ${parecer}`);
-                    notificarM('Requisição reprovada pelo Director Geral.', 'error');
+                    if (req.notaDespesa) req.notaDespesa.pagamentoStatus = 'Reprovado Director';
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: `Paulo Silva reprovou: ${parecer}` });
+                    notificarM('❌ Requisição reprovada por Paulo Silva.', 'error');
                 } else {
                     req.status = 'aguardando_financas';
                     req.parecerDiretor = parecer;
-                    adicionarHistoricoM(req, 'Director Geral aprovou. Enviado para Finanças.');
-                    notificarM('Director Geral aprovou. Aguardando pagamento.', 'success');
+                    if (req.notaDespesa) req.notaDespesa.pagamentoStatus = 'Aprovado Director';
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: 'Paulo Silva aprovou. Enviado para Liliana Borges.' });
+                    notificarM('✅ Paulo Silva aprovou. Aguardando pagamento.', 'success');
                 }
-
-                showLoading();
-                const atualizado = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                if (atualizado) {
-                    salvarM();
-                } else {
-                    salvarM();
-                }
-                hideLoading();
-
+                salvarM();
                 fecharModal('modalDiretorManutencao');
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
             }
 
-            // ===== FINANÇAS MANUTENÇÃO =====
+            // ===== FINANÇAS =====
             function abrirFinancasM(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
@@ -5162,54 +4995,67 @@
                             <strong>Fornecedor:</strong> ${req.fornecedor}<br>
                             <strong>Valor a Pagar:</strong> ${formatarMoedaM(req.valorTotal)}<br>
                             <strong>Motivo:</strong> ${req.motivoDespesa}<br>
-                            <strong>Aprovado por:</strong> ${req.parecerDiretor || 'N/A'}
+                            <strong>Aprovado por:</strong> ${req.assinaturaDiretor || 'N/A'}
                         `;
                 document.getElementById('financasManutencaoStatus').value = '';
                 document.getElementById('financasManutencaoComprovativo').value = '';
                 document.getElementById('financasManutencaoDataPagamento').value = new Date().toISOString().slice(0, 10);
                 document.getElementById('financasManutencaoObs').value = '';
+                document.getElementById('financasManutencaoAssinatura').value = usuarioAtual.nome;
+                financasAnexoM = null;
+                document.getElementById('financasManutencaoFileList').innerHTML = '';
                 abrirModal('modalFinancasManutencao');
             }
 
-            async function salvarFinancasM(e) {
+            function salvarFinancasM(e) {
                 e.preventDefault();
                 const id = document.getElementById('financasManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
                 const status = document.getElementById('financasManutencaoStatus').value;
-                const comprovativo = document.getElementById('financasManutencaoComprovativo').value;
+                const comprovativo = document.getElementById('financasManutencaoComprovativo').value.trim();
                 const dataPagamento = document.getElementById('financasManutencaoDataPagamento').value;
-                const obs = document.getElementById('financasManutencaoObs').value;
+                const obs = document.getElementById('financasManutencaoObs').value.trim();
+                const assinatura = document.getElementById('financasManutencaoAssinatura').value.trim();
+
+                if (!status || !obs || !assinatura) {
+                    notificarM('Preencha todos os campos obrigatórios!', 'error');
+                    return;
+                }
 
                 if (status === 'pago') {
+                    if (financasAnexoM) {
+                        if (!req.anexos) req.anexos = [];
+                        req.anexos.push({ nome: financasAnexoM.name, data: financasAnexoM.data,
+                            tipo: 'comprovativo_pagamento' });
+                    }
+
                     req.status = 'em_execucao';
                     req.dataPagamento = dataPagamento;
                     req.comprovativo = comprovativo;
                     req.obsFinanceiras = obs;
-                    adicionarHistoricoM(req, `Pagamento confirmado. Comprovativo: ${comprovativo}`);
-                    notificarM('Pagamento confirmado! Manutenção pode executar o serviço.', 'success');
+                    req.assinaturaFinancas = assinatura;
+                    if (req.notaDespesa) {
+                        req.notaDespesa.pagamentoStatus = 'Pago';
+                        req.notaDespesa.comprovativo = comprovativo;
+                        req.notaDespesa.dataPagamento = dataPagamento;
+                    }
+                    req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                        acao: `Pagamento confirmado por Liliana Borges. Comprovativo: ${comprovativo || 'N/A'}` });
+                    notificarM('✅ Pagamento confirmado! Francisco Sandramo pode executar o serviço.', 'success');
                 } else {
-                    notificarM('Pagamento pendente.', 'warning');
+                    notificarM('⏳ Pagamento pendente.', 'warning');
                     fecharModal('modalFinancasManutencao');
                     return;
                 }
-
-                showLoading();
-                const atualizado = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                if (atualizado) {
-                    salvarM();
-                } else {
-                    salvarM();
-                }
-                hideLoading();
-
+                salvarM();
                 fecharModal('modalFinancasManutencao');
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
             }
 
-            // ===== EXECUÇÃO MANUTENÇÃO =====
+            // ===== EXECUÇÃO =====
             function abrirExecucaoM(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
@@ -5221,35 +5067,35 @@
                 abrirModal('modalExecucaoManutencao');
             }
 
-            async function salvarExecucaoM(e) {
+            function salvarExecucaoM(e) {
                 e.preventDefault();
                 const id = document.getElementById('execucaoManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
-                req.relatorioExecucao = document.getElementById('manutencaoRelatorioExecucao').value;
+
+                const relatorio = document.getElementById('manutencaoRelatorioExecucao').value.trim();
+                if (!relatorio) {
+                    notificarM('Preencha o relatório de execução!', 'error');
+                    return;
+                }
+
+                req.relatorioExecucao = relatorio;
                 req.dataExecucao = document.getElementById('manutencaoDataExecucao').value;
-                req.tecnicoResponsavel = document.getElementById('manutencaoTecnicoResponsavel').value;
+                req.tecnicoResponsavel = document.getElementById('manutencaoTecnicoResponsavel').value || usuarioAtual
+                    .nome;
                 req.obsExecucao = document.getElementById('manutencaoObsExecucao').value;
                 req.status = 'aguardando_material';
-                adicionarHistoricoM(req, 'Manutenção executou o serviço. Aguardando confirmação do solicitante.');
-                notificarM('Serviço executado! Aguardando confirmação do solicitante.', 'success');
-
-                showLoading();
-                const atualizado = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                if (atualizado) {
-                    salvarM();
-                } else {
-                    salvarM();
-                }
-                hideLoading();
-
+                req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                    acao: 'Francisco Sandramo executou o serviço. Aguardando confirmação de Teodoro Tavare.' });
+                notificarM('✅ Serviço executado! Aguardando confirmação de Teodoro Tavare.', 'success');
+                salvarM();
                 fecharModal('modalExecucaoManutencao');
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
             }
 
-            // ===== CONFIRMAÇÃO MANUTENÇÃO =====
+            // ===== CONFIRMAÇÃO =====
             function abrirConfirmacaoM(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
@@ -5262,28 +5108,36 @@
                 document.getElementById('manutencaoConfirmMaterial').value = '';
                 document.getElementById('manutencaoConfirmExecucao').value = '';
                 document.getElementById('manutencaoConfirmComentario').value = '';
+                document.getElementById('manutencaoSolicitanteAssinatura').value = usuarioAtual.nome;
                 abrirModal('modalConfirmacaoManutencao');
             }
 
-            async function enviarConfirmacaoM() {
+            function enviarConfirmacaoM() {
                 const confirmMaterial = document.getElementById('manutencaoConfirmMaterial').value;
                 const confirmExecucao = document.getElementById('manutencaoConfirmExecucao').value;
                 const comentario = document.getElementById('manutencaoConfirmComentario').value;
+                const assinatura = document.getElementById('manutencaoSolicitanteAssinatura').value.trim();
 
                 if (!confirmMaterial || !confirmExecucao) {
                     notificarM('Confirme o MATERIAL e a EXECUÇÃO da manutenção.', 'error');
                     return;
                 }
+                if (!assinatura) {
+                    notificarM('Por favor, assine o documento.', 'error');
+                    return;
+                }
+
                 const req = reqs.find(r => r.id === confirmacaoIdM);
                 if (!req) return;
 
                 if (confirmMaterial === 'nao' || confirmExecucao === 'nao') {
                     req.status = 'reprovada';
-                    notificarM('Requisição reprovada pelo solicitante.', 'error');
+                    notificarM('❌ Requisição reprovada por Teodoro Tavare.', 'error');
                 } else {
                     if (req.status === 'aguardando_material') {
                         req.status = 'aguardando_execucao';
-                        notificarM('Material confirmado! Aguardando confirmação da execução.', 'success');
+                        notificarM('✅ Material confirmado por Teodoro Tavare! Aguardando confirmação da execução.',
+                            'success');
                         salvarM();
                         fecharModal('modalConfirmacaoManutencao');
                         renderizarRequisicoesM();
@@ -5292,36 +5146,44 @@
                     } else if (req.status === 'aguardando_execucao') {
                         req.status = 'concluida';
                         req.dataConclusao = new Date().toISOString();
-                        notificarM('🎉 REQUISIÇÃO CONCLUÍDA COM SUCESSO!', 'success');
+                        if (req.notaDespesa) req.notaDespesa.pagamentoStatus = 'Concluído';
+                        notificarM('🎉 REQUISIÇÃO CONCLUÍDA COM SUCESSO por Teodoro Tavare!', 'success');
                     }
                 }
                 req.comentarioFinal = comentario;
-                adicionarHistoricoM(req,
-                    `Solicitante confirmou: Material=${confirmMaterial}, Execução=${confirmExecucao}`);
-
-                showLoading();
-                const atualizado = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                if (atualizado) {
-                    salvarM();
-                } else {
-                    salvarM();
-                }
-                hideLoading();
-
+                req.assinaturaSolicitante = assinatura;
+                req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
+                    acao: `Teodoro Tavare confirmou: Material=${confirmMaterial}, Execução=${confirmExecucao}` });
+                salvarM();
                 fecharModal('modalConfirmacaoManutencao');
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
             }
 
-            // ===== NOTA DE DESPESA MANUTENÇÃO =====
-            function imprimirNotaDespesaM() {
-                const id = document.getElementById('financasManutencaoId').value;
-                const req = reqs.find(r => r.id === id);
-                if (!req) return;
+            // ===== VISUALIZAR ANEXO =====
+            function visualizarAnexoM(reqId, idx) {
+                const req = reqs.find(r => r.id === reqId);
+                if (!req || !req.anexos || !req.anexos[idx]) return;
+                const anexo = req.anexos[idx];
+                const win = window.open('', '_blank');
+                if (anexo.data.startsWith('data:application/pdf')) {
+                    win.document.write(`<iframe src="${anexo.data}" style="width:100%;height:100vh;border:none;"></iframe>`);
+                } else if (anexo.data.startsWith('data:image')) {
+                    win.document.write(`<img src="${anexo.data}" style="max-width:100%;max-height:100vh;display:block;margin:auto;">`);
+                } else {
+                    win.document.write(`<pre>${anexo.data}</pre>`);
+                }
+                win.document.title = anexo.nome;
+            }
 
+            // ===== VISUALIZAR NOTA DESPESA =====
+            function visualizarNotaDespesaM(reqId) {
+                const req = reqs.find(r => r.id === reqId);
+                if (!req || !req.notaDespesa) return;
                 const notaDiv = document.getElementById('notaConteudoManutencao');
-                const itensHtml = (req.itens || []).map(i =>
+                const nd = req.notaDespesa;
+                const itensHtml = (nd.itens || []).map(i =>
                     `<tr><td>${i.desc}</td><td style="text-align:center">${i.qtd}</td><td style="text-align:right">${formatarMoedaM(i.preco)}</td><td style="text-align:right">${formatarMoedaM(i.total)}</td></tr>`
                 ).join('');
 
@@ -5329,37 +5191,102 @@
                             <div class="nota-detalhes">
                                 <table style="width:100%">
                                     <tr><td style="width:140px"><strong>Nº Requisição:</strong></td><td>${req.codigo}</td></tr>
-                                    <tr><td><strong>Data Emissão:</strong></td><td>${formatarDataM(new Date())}</td></tr>
+                                    <tr><td><strong>Data Emissão:</strong></td><td>${formatarDataM(nd.data || new Date())}</td></tr>
                                     <tr><td><strong>Solicitante:</strong></td><td>${req.solicitante}</td></tr>
                                     <tr><td><strong>Equipamento:</strong></td><td>${req.equipamento}</td></tr>
-                                    <tr><td><strong>Local:</strong></td><td>${req.local}</td></tr>
-                                    <tr><td><strong>Fornecedor:</strong></td><td>${req.fornecedor || 'N/A'}</td></tr>
-                                    <tr><td><strong>Nº Documento:</strong></td><td>${req.docNumero || 'N/A'}</td></tr>
+                                    <tr><td><strong>Fornecedor:</strong></td><td>${nd.fornecedor || 'N/A'}</td></tr>
+                                    <tr><td><strong>Tipo Documento:</strong></td><td>${nd.tipoPagamento || 'N/A'}</td></tr>
                                 </table>
                             </div>
                             <h3>Detalhes da Despesa</h3>
                             <table class="nota-itens">
                                 <thead><tr><th>Descrição</th><th style="width:60px">Qtd</th><th style="width:120px">Valor Unit.</th><th style="width:120px">Total</th></tr></thead>
                                 <tbody>${itensHtml || '<tr><td colspan="4">Nenhum item registado</td></tr>'}</tbody>
-                                <tfoot><tr style="background:#f0f0f0"><td colspan="3" style="text-align:right"><strong>TOTAL</strong></td><td style="text-align:right;font-size:18px"><strong>${formatarMoedaM(req.valorTotal)}</strong></td></tr></tfoot>
+                                <tfoot><tr style="background:#f0f0f0"><td colspan="3" style="text-align:right"><strong>TOTAL</strong></td><td style="text-align:right;font-size:18px"><strong>${formatarMoedaM(nd.valorTotal)}</strong></td></tr></tfoot>
                             </table>
                             <div class="nota-detalhes">
-                                <p><strong>Motivo:</strong> ${req.motivoDespesa || 'N/A'}</p>
+                                <p><strong>Motivo:</strong> ${nd.motivo || 'N/A'}</p>
                                 <p><strong>Parecer CG:</strong> ${req.parecerCG || 'N/A'}</p>
                                 <p><strong>Parecer Director:</strong> ${req.parecerDiretor || 'N/A'}</p>
-                                <p><strong>Pagamento:</strong> Comprovativo ${req.comprovativo || 'N/A'} - ${req.dataPagamento ? formatarDataM(req.dataPagamento) : 'N/A'}</p>
+                                <p><strong>Status Pagamento:</strong> ${nd.pagamentoStatus || 'Pendente'}</p>
+                                ${nd.comprovativo ? `<p><strong>Comprovativo:</strong> ${nd.comprovativo}</p>` : ''}
+                                ${nd.dataPagamento ? `<p><strong>Data Pagamento:</strong> ${formatarDataM(nd.dataPagamento)}</p>` : ''}
                             </div>
                         `;
                 notaDiv.innerHTML = html;
                 document.getElementById('notaDespesaManutencao').style.display = 'block';
             }
 
-            // ===== EXPORT MANUTENÇÃO =====
+            // ===== IMPRIMIR NOTA DESPESA =====
+            function imprimirNotaDespesaM() {
+                const id = document.getElementById('financasManutencaoId').value;
+                const req = reqs.find(r => r.id === id);
+                if (!req || !req.notaDespesa) {
+                    notificarM('Nenhuma nota de despesa encontrada!', 'warning');
+                    return;
+                }
+                visualizarNotaDespesaM(id);
+            }
+
+            // ===== ABRIR DETALHES =====
+            function abrirDetalhesM(id) {
+                const req = reqs.find(r => r.id === id);
+                if (!req) return;
+
+                let html = `
+                            <div class="req-detalhes-grid">
+                                <div><span class="label">Código</span><div class="value"><strong>${req.codigo}</strong></div></div>
+                                <div><span class="label">Estado</span><div class="value"><span class="status-badge status-${getStatusClassM(req.status)}">${getStatusTextM(req.status)}</span></div></div>
+                                <div><span class="label">Equipamento</span><div class="value">${req.equipamento}</div></div>
+                                <div><span class="label">Local</span><div class="value">${req.local || 'N/A'}</div></div>
+                                <div><span class="label">Tipo</span><div class="value"><span class="type-badge type-${req.tipo}">${req.tipo === 'corretiva' ? 'Correctiva' : 'Preventiva'}</span></div></div>
+                                <div><span class="label">Prioridade</span><div class="value"><span class="priority-badge priority-${req.prioridade}">${req.prioridade || 'N/A'}</span></div></div>
+                                <div><span class="label">Solicitante</span><div class="value">${req.solicitante}</div></div>
+                                <div><span class="label">Data</span><div class="value">${formatarDataHoraM(req.data)}</div></div>
+                                <div style="grid-column:1/-1;"><span class="label">Descrição</span><div class="value">${req.descricao}</div></div>
+                                ${req.diagnostico ? `<div style="grid-column:1/-1;"><span class="label">Diagnóstico</span><div class="value">${req.diagnostico}</div></div>` : ''}
+                                ${req.valorTotal ? `<div><span class="label">Valor Total</span><div class="value"><strong>${formatarMoedaM(req.valorTotal)}</strong></div></div>` : ''}
+                                ${req.relatorioExecucao ? `<div style="grid-column:1/-1;"><span class="label">Relatório de Execução</span><div class="value">${req.relatorioExecucao}</div></div>` : ''}
+                                ${req.tecnicoResponsavel ? `<div><span class="label">Técnico</span><div class="value">${req.tecnicoResponsavel}</div></div>` : ''}
+                            </div>
+                            <div style="margin-top:16px;">
+                                <span class="label">Anexos</span>
+                                <div style="margin-top:4px;">${renderAnexosM(req)}</div>
+                            </div>
+                            <div style="margin-top:16px;">
+                                <span class="label">Histórico</span>
+                                <div style="margin-top:4px;max-height:200px;overflow-y:auto;">
+                                    ${(req.historico || []).slice().reverse().map(h => 
+                                        `<div class="historico-item"><span class="h-data">${formatarDataHoraM(h.data)}</span> - <strong>${h.usuario}</strong>: ${h.acao}</div>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                            <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+                                ${getAcoesM(req)}
+                            </div>
+                        `;
+
+                document.getElementById('manutencaoDetalhesConteudo').innerHTML = html;
+                abrirModal('modalDetalhesManutencao');
+            }
+
+            // ===== EXCLUIR REQUISIÇÃO (ADMIN) =====
+            function excluirRequisicaoM(id) {
+                if (!confirm('Tem certeza que deseja excluir esta requisição permanentemente?')) return;
+                reqs = reqs.filter(r => r.id !== id);
+                salvarM();
+                renderizarRequisicoesM();
+                renderizarAprovacoesM();
+                carregarDashboardM();
+                notificarM('Requisição excluída com sucesso!', 'info');
+            }
+
+            // ===== EXPORT =====
             function exportarDadosM() {
                 const data = {
                     requisicoes: reqs,
                     exportedAt: new Date().toISOString(),
-                    version: '7.0'
+                    version: '8.0'
                 };
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
@@ -5368,15 +5295,16 @@
                 a.download = `kero_backup_${new Date().toISOString().slice(0,10)}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
-                notificarM('Dados exportados com sucesso!', 'success');
+                notificarM('✅ Dados exportados com sucesso!', 'success');
             }
 
-            function exportarPDFM() { notificarM('Relatório PDF gerado com sucesso!', 'success'); }
+            function exportarPDFM() { notificarM('📄 Relatório PDF gerado com sucesso!', 'success'); }
 
-            function exportarExcelM() { notificarM('Relatório Excel gerado com sucesso!', 'success'); }
+            function exportarExcelM() { notificarM('📊 Relatório Excel gerado com sucesso!', 'success'); }
 
-            // ===== INICIALIZAR MANUTENÇÃO =====
-            async function inicializarM() {
+            // ===== INICIALIZAR =====
+            function inicializarM() {
+                // Mapear perfil do usuário para role do manutenção
                 const roleMap = {
                     'Administrador': 'admin',
                     'RH': 'solicitante',
@@ -5389,36 +5317,20 @@
                 const perfilM = perfisManutencao[roleM] || perfisManutencao.solicitante;
                 usuarioAtual.role = perfilM.role;
 
-                showLoading();
-                const carregado = await carregarRequisicoesManutencaoDoSharePoint();
-                if (!carregado) {
-                    carregarM();
-                    notificarM('Carregando dados localmente (SharePoint não disponível).', 'warning');
-                } else {
-                    salvarM();
-                    notificarM(`Carregadas ${reqs.length} requisições do SharePoint!`, 'success');
-                }
-                hideLoading();
-
+                carregarM();
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
                 atualizarRelatoriosM();
                 atualizarBadgesM();
 
+                // Configurar eventos
                 document.getElementById('formNovaRequisicaoManutencao').addEventListener('submit', novaRequisicaoM);
-                
-                // === CORREÇÃO: GARANTIR QUE O BOTÃO NOVA REQUISIÇÃO ESTÁ VISÍVEL E FUNCIONANDO ===
-                const btnNovaManutencao = document.getElementById('btnNovaRequisicaoManutencao');
-                if (btnNovaManutencao) {
-                    btnNovaManutencao.style.display = 'flex !important';
-                    btnNovaManutencao.style.alignItems = 'center';
-                    btnNovaManutencao.style.justifyContent = 'center';
-                    btnNovaManutencao.style.gap = '10px';
-                    // Remove todos os listeners antigos e adiciona um novo
-                    btnNovaManutencao.replaceWith(btnNovaManutencao.cloneNode(true));
-                    const novoBtn = document.getElementById('btnNovaRequisicaoManutencao');
-                    novoBtn.addEventListener('click', function(e) {
+
+                // Botão Nova Requisição
+                const btnNova = document.getElementById('btnNovaRequisicaoManutencao');
+                if (btnNova) {
+                    btnNova.addEventListener('click', function(e) {
                         e.preventDefault();
                         abrirModal('modalNovaRequisicaoManutencao');
                     });
@@ -5437,6 +5349,7 @@
                 document.getElementById('formFinancasManutencao').addEventListener('submit', salvarFinancasM);
                 document.getElementById('formExecucaoManutencao').addEventListener('submit', salvarExecucaoM);
 
+                // Status filter
                 const statusSelect = document.getElementById('manutencaoFilterStatus');
                 if (statusSelect) {
                     const statuses = ['all', 'pendente', 'aguardando_consumiveis', 'aguardando_cg', 'aguardando_diretor',
@@ -5455,14 +5368,15 @@
                     if (e.key === 'Enter') filtrarRequisicoesM();
                 });
 
-                setupDropzone('manutencaoDropzone', 'manutencaoFileInput', 'manutencaoFileList', () => requisicaoAnexoM,
-                    (val) => requisicaoAnexoM = val);
-                setupDropzone('manutencaoDropzoneAvaliacao', 'manutencaoAvaliacaoFileInput', 'manutencaoAvaliacaoFileList',
+                // Setup dropzones
+                setupDropzone('dropzoneRequisicaoManutencao', 'requisicaoManutencaoFileInput',
+                    'requisicaoManutencaoFileList', () => requisicaoAnexoM, (val) => requisicaoAnexoM = val);
+                setupDropzone('dropzoneAvaliacaoManutencao', 'avaliacaoManutencaoFileInput', 'avaliacaoManutencaoFileList',
                     () => avaliacaoAnexoM, (val) => avaliacaoAnexoM = val);
-                setupDropzone('manutencaoConsumiveisDropzone', 'manutencaoConsumiveisFileInput',
-                    'manutencaoConsumiveisFileList', () => consumiveisProformaM, (val) => consumiveisProformaM = val);
-                setupDropzone('manutencaoDropzoneProforma', 'manutencaoProformaInput', 'manutencaoProformaList', () =>
-                    consumiveisProformaM, (val) => consumiveisProformaM = val);
+                setupDropzone('dropzoneConsumiveisManutencao', 'consumiveisManutencaoFileInput',
+                    'consumiveisManutencaoFileList', () => consumiveisAnexoM, (val) => consumiveisAnexoM = val);
+                setupDropzone('dropzoneFinancasManutencao', 'financasManutencaoFileInput', 'financasManutencaoFileList',
+                    () => financasAnexoM, (val) => financasAnexoM = val);
 
                 function setupDropzone(dropId, inputId, listId, getter, setter) {
                     const drop = document.getElementById(dropId);
@@ -5491,7 +5405,7 @@
                                 setter({ name: file.name, data: ev.target.result });
                                 if (list) list.innerHTML =
                                     `<div class="file-item"><span class="file-name"><i class="fas fa-file"></i> ${file.name}</span><span class="file-remove" onclick="this.parentElement.remove();setter(null);">✕</span></div>`;
-                                notificarM(`Ficheiro "${file.name}" anexado!`, 'success');
+                                notificarM(`📎 Ficheiro "${file.name}" anexado!`, 'success');
                             };
                             reader.readAsDataURL(file);
                         }
@@ -5503,13 +5417,14 @@
                                 setter({ name: e.target.files[0].name, data: ev.target.result });
                                 if (list) list.innerHTML =
                                     `<div class="file-item"><span class="file-name"><i class="fas fa-file"></i> ${e.target.files[0].name}</span><span class="file-remove" onclick="this.parentElement.remove();setter(null);">✕</span></div>`;
-                                notificarM('Ficheiro anexado!', 'success');
+                                notificarM('📎 Ficheiro anexado!', 'success');
                             };
                             reader.readAsDataURL(e.target.files[0]);
                         }
                     });
                 }
 
+                // Menu do sidebar
                 document.querySelectorAll('.sidebar-manutencao .menu li').forEach(item => {
                     item.addEventListener('click', function() {
                         const section = this.dataset.section;
@@ -5534,7 +5449,7 @@
                                 document.querySelectorAll('.sidebar-manutencao .menu li').forEach(li => li
                                     .classList.remove('active'));
                                 this.classList.add('active');
-                                document.querySelectorAll('.manutencao-container .section').forEach(s => s
+                                document.querySelectorAll('#manutencaoSection .section').forEach(s => s
                                     .classList.remove('active'));
                                 const target = document.getElementById(section);
                                 if (target) target.classList.add('active');
@@ -5542,11 +5457,15 @@
                         }
                     });
                 });
+
+                notificarM(`👋 Bem-vindo ao módulo Manutenção, ${usuarioAtual.nome}!`, 'success');
             }
 
+            // ===== PUBLIC API =====
             return {
                 inicializar: inicializarM,
                 filtrarRequisicoes: filtrarRequisicoesM,
+                limparFiltros: limparFiltrosM,
                 filtrarPorStatus: filtrarPorStatusM,
                 abrirAvaliacao: abrirAvaliacaoM,
                 abrirConsumiveisAutorizacao: abrirConsumiveisAutorizacaoM,
@@ -5556,13 +5475,17 @@
                 abrirFinancas: abrirFinancasM,
                 abrirExecucao: abrirExecucaoM,
                 abrirConfirmacao: abrirConfirmacaoM,
+                abrirDetalhes: abrirDetalhesM,
+                visualizarAnexo: visualizarAnexoM,
+                visualizarNotaDespesa: visualizarNotaDespesaM,
                 enviarConfirmacao: enviarConfirmacaoM,
                 adicionarItemConsumiveis: adicionarItemConsumiveisM,
                 calcularTotalConsumiveis: calcularTotalConsumiveisM,
                 imprimirNotaDespesa: imprimirNotaDespesaM,
                 exportarPDF: exportarPDFM,
                 exportarExcel: exportarExcelM,
-                exportarDados: exportarDadosM
+                exportarDados: exportarDadosM,
+                excluirRequisicao: excluirRequisicaoM
             };
         })();
 
@@ -5716,7 +5639,8 @@
 
         console.log('✅ Kero SIR - Sistema Integrado de Requisições carregado!');
         console.log('📋 Módulos disponíveis: Recrutamento e Manutenção');
-        console.log('🟠 Módulo Manutenção com cores laranja e botão Nova Requisição corrigido!');
+        console.log('🟠 Módulo Manutenção atualizado com novo código!');
+        console.log('👤 Perfis Manutenção: Solicitante, Manutenção, Consumíveis, CG, Director, Finanças, Admin');
         console.log('🔒 Emails bloqueados:', BLOCKED_EMAILS);
     </script>
 </body>
