@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -100,7 +99,7 @@
         .login-error { color: var(--danger); font-size: 14px; margin-top: 10px; padding: 10px; background: #ffebee; border-radius: 4px; display: none; }
 
         /* ============================================================
-           SELEÇÃO DE MÓDULOS
+           SELEÇÃO DE MÓDULOS - ORIGINAL + AVALIAÇÃO
            ============================================================ */
         .module-selection-screen {
             display: flex;
@@ -150,7 +149,7 @@
         .btn-logout-module:hover { background: var(--gray-500); color: white; }
 
         /* ============================================================
-           HEADER E NAVEGAÇÃO
+           HEADER E NAVEGAÇÃO - ORIGINAL
            ============================================================ */
         .app-header {
             background: white;
@@ -995,6 +994,186 @@
         }
 
         /* ============================================================
+           ESTILOS DA AVALIAÇÃO (mantidos do código original)
+           ============================================================ */
+        .container-avaliacao { max-width: 1200px; width: 100%; margin: auto; background: #ffffff; padding: 30px 35px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0, 60, 30, 0.12); }
+        .pesquisa-area { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; background: var(--verde-suave); padding: 12px 20px; border-radius: 12px; border: 2px solid var(--verde-borda); margin-bottom: 20px; }
+        .pesquisa-area label { font-weight: 600; color: var(--verde-escuro); font-size: 14px; }
+        .pesquisa-area input { padding: 10px 16px; border: 2px solid var(--verde-borda); border-radius: 8px; font-size: 14px; width: 150px; background: white; transition: border 0.3s; }
+        .pesquisa-area input:focus { border-color: var(--verde-medio); outline: none; }
+        .pesquisa-area .btn-buscar { background: var(--verde-medio); color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .pesquisa-area .btn-buscar:hover { background: var(--verde-escuro); transform: scale(1.02); }
+        .pesquisa-area .avaliador-nome { font-weight: 500; color: var(--verde-escuro); padding: 6px 14px; background: white; border-radius: 20px; border: 1px solid var(--verde-borda); font-size: 14px; margin-left: auto; }
+        .msg-pesquisa { font-size: 13px; font-weight: 500; padding: 4px 12px; border-radius: 6px; min-width: 150px; }
+        .msg-pesquisa.erro { color: #b33; }
+        .msg-pesquisa.sucesso { color: var(--verde-escuro); }
+        .msg-pesquisa.aviso { color: var(--laranja); }
+        
+        .progress-container { width: 100%; background: #e0ece0; border-radius: 10px; height: 8px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { width: 33.33%; height: 8px; background: var(--verde-medio); border-radius: 10px; transition: width 0.4s ease; }
+        
+        .steps { display: flex; justify-content: center; gap: 0; margin-bottom: 25px; background: var(--verde-suave); border-radius: 50px; padding: 6px; border: 2px solid var(--verde-borda); }
+        .step-btn { flex: 1; padding: 12px 20px; border: none; background: transparent; border-radius: 40px; font-weight: 600; font-size: 15px; color: #5a7a6a; cursor: pointer; transition: all 0.3s; max-width: 220px; }
+        .step-btn:hover { background: rgba(42, 122, 74, 0.1); }
+        .step-btn.active { background: var(--verde-medio); color: white; box-shadow: 0 4px 12px rgba(26, 92, 58, 0.3); }
+        .step-btn .num { display: inline-block; background: rgba(255,255,255,0.3); border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; font-size: 13px; margin-right: 8px; }
+        .step-btn.active .num { background: rgba(255,255,255,0.25); }
+        
+        .page { display: none; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 20px 0; }
+        .intro-card { background: var(--verde-suave); padding: 25px; border-radius: 12px; border-left: 5px solid var(--verde-medio); }
+        .intro-card h3 { color: var(--verde-escuro); margin-bottom: 12px; font-size: 18px; }
+        .intro-card ul { list-style: none; padding: 0; }
+        .intro-card ul li { padding: 6px 0; padding-left: 24px; position: relative; color: #2a4a3a; font-size: 14px; }
+        .intro-card ul li::before { content: "✅"; position: absolute; left: 0; color: var(--verde-medio); }
+        .intro-card p { color: #2a4a3a; font-size: 14px; line-height: 1.6; }
+        
+        .dicionario-item { background: white; border-radius: 8px; padding: 14px 18px; margin-bottom: 10px; border: 1px solid var(--verde-borda); }
+        .dicionario-item strong { color: var(--verde-escuro); display: block; margin-bottom: 4px; }
+        .dicionario-item p { margin: 0; font-size: 13px; color: #3a5a4a; }
+        
+        .avaliacao-header { display: flex; flex-wrap: wrap; gap: 20px; background: var(--verde-suave); padding: 18px 22px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--verde-borda); }
+        .avaliacao-header .campo { flex: 1; min-width: 140px; }
+        .avaliacao-header .campo label { font-size: 12px; text-transform: uppercase; color: #4a7a5a; font-weight: 700; display: block; }
+        .avaliacao-header .campo .valor { font-weight: 600; color: var(--verde-escuro); font-size: 15px; }
+        
+        .competencias-grupo { margin-bottom: 25px; }
+        .competencias-grupo h3 { color: var(--verde-escuro); padding: 10px 16px; background: var(--verde-suave); border-radius: 8px; border-left: 4px solid var(--verde-medio); margin-bottom: 12px; font-size: 16px; }
+        .competencia-row { display: flex; flex-wrap: wrap; align-items: center; padding: 14px 16px; border-bottom: 1px solid #e8f0e8; gap: 10px 20px; transition: background 0.2s; }
+        .competencia-row:hover { background: #f8fcf8; }
+        .competencia-row .nome { flex: 2; min-width: 200px; font-weight: 500; color: #1a3a2a; font-size: 14px; }
+        .competencia-row .peso { color: #5a7a6a; font-size: 13px; min-width: 70px; }
+        .competencia-row select { padding: 8px 12px; border: 2px solid var(--verde-borda); border-radius: 8px; background: white; font-size: 14px; min-width: 180px; cursor: pointer; transition: border 0.2s; }
+        .competencia-row select:focus { border-color: var(--verde-medio); outline: none; }
+        .competencia-row select:disabled { opacity: 0.6; cursor: not-allowed; }
+        .competencia-row .resultado { min-width: 70px; font-weight: 600; color: var(--verde-escuro); text-align: center; }
+        .competencia-row .status-indicator { font-size: 18px; min-width: 30px; text-align: center; }
+        
+        .btn-calcular { background: var(--verde-medio); color: white; border: none; padding: 14px 35px; border-radius: 30px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; margin: 20px 0; }
+        .btn-calcular:hover { background: var(--verde-escuro); transform: scale(1.02); box-shadow: 0 4px 15px rgba(26, 92, 58, 0.3); }
+        .btn-calcular:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        
+        .resultado-box { background: var(--verde-destaque); padding: 20px 25px; border-radius: 12px; border: 2px solid var(--verde-borda); margin: 15px 0; display: none; }
+        .resultado-box.visible { display: block; }
+        .resultado-box .nota-final { font-size: 2.2rem; font-weight: 700; color: var(--verde-escuro); }
+        .resultado-box .classif { font-size: 1.2rem; font-weight: 600; }
+        .resultado-box .classif.acima { color: #1a7a3a; }
+        .resultado-box .classif.deacordo { color: #2a6a8a; }
+        .resultado-box .classif.abaixo { color: #b33; }
+        
+        .feedback-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin: 15px 0; }
+        .feedback-grid textarea { width: 100%; min-height: 100px; padding: 12px 15px; border: 2px solid var(--verde-borda); border-radius: 10px; font-family: inherit; font-size: 14px; resize: vertical; transition: border 0.2s; }
+        .feedback-grid textarea:focus { border-color: var(--verde-medio); outline: none; }
+        .feedback-grid textarea:disabled { opacity: 0.6; cursor: not-allowed; }
+        .feedback-grid label { font-weight: 600; color: var(--verde-escuro); display: block; margin-bottom: 6px; font-size: 14px; }
+        
+        .feedback-full { margin: 15px 0; }
+        .feedback-full textarea { width: 100%; min-height: 80px; padding: 12px 15px; border: 2px solid var(--verde-borda); border-radius: 10px; font-family: inherit; font-size: 14px; resize: vertical; transition: border 0.2s; }
+        .feedback-full textarea:focus { border-color: var(--verde-medio); outline: none; }
+        .feedback-full textarea:disabled { opacity: 0.6; cursor: not-allowed; }
+        .feedback-full label { font-weight: 600; color: var(--verde-escuro); display: block; margin-bottom: 6px; font-size: 14px; }
+        
+        .classificacao-select { padding: 12px 20px; border: 2px solid var(--verde-borda); border-radius: 10px; font-size: 15px; background: white; min-width: 250px; cursor: pointer; }
+        .classificacao-select:focus { border-color: var(--verde-medio); outline: none; }
+        .classificacao-select:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .assinatura-area { background: var(--verde-suave); padding: 25px; border-radius: 12px; border: 2px solid var(--verde-borda); margin: 20px 0; }
+        .assinatura-area h4 { color: var(--verde-escuro); margin-bottom: 15px; }
+        .assinatura-opcoes { display: flex; gap: 30px; flex-wrap: wrap; align-items: center; }
+        .assinatura-opcoes label { display: flex; align-items: center; gap: 10px; font-weight: 500; color: #1a3a2a; cursor: pointer; }
+        .assinatura-opcoes input[type="radio"] { width: 18px; height: 18px; accent-color: var(--verde-medio); cursor: pointer; }
+        .assinatura-opcoes input[type="radio"]:disabled { cursor: not-allowed; }
+        .assinatura-opcoes input[type="text"] { padding: 10px 16px; border: 2px solid var(--verde-borda); border-radius: 8px; font-size: 14px; min-width: 200px; flex: 1; transition: border 0.3s; }
+        .assinatura-opcoes input[type="text"]:focus { border-color: var(--verde-medio); outline: none; }
+        .assinatura-opcoes input[type="text"]:disabled { opacity: 0.6; cursor: not-allowed; }
+        .data-assinatura { font-size: 14px; color: #4a6a5a; }
+        
+        .btn-group { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 25px; padding-top: 20px; border-top: 2px solid var(--verde-borda); }
+        .btn { padding: 12px 30px; border: none; border-radius: 30px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--verde-medio); color: white; }
+        .btn-primary:hover { background: var(--verde-escuro); transform: scale(1.02); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-secondary { background: #e0ece0; color: var(--verde-escuro); }
+        .btn-secondary:hover { background: #c8dcc8; }
+        .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-success { background: #1a7a3a; color: white; }
+        .btn-success:hover { background: #0f5a2a; transform: scale(1.02); }
+        .btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-pdf { background: #c0392b; color: white; }
+        .btn-pdf:hover { background: #a93226; transform: scale(1.02); }
+        .btn-pdf:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-outline { background: transparent; color: var(--verde-escuro); border: 2px solid var(--verde-borda); }
+        .btn-outline:hover { background: var(--verde-suave); }
+        
+        .status-msg { padding: 12px 18px; border-radius: 10px; margin-top: 12px; font-weight: 500; }
+        .status-success { background: #d4edda; color: #0b5e3a; border: 1px solid #a3cfb0; }
+        .status-error { background: #f8d7da; color: #7a2a2a; border: 1px solid #f0b8b8; }
+        .status-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .status-warning { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+        
+        /* Medidas */
+        .medidas-container { margin: 15px 0; }
+        .medida-item { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 14px; background: #f8fcf8; border-radius: 8px; border: 1px solid var(--verde-borda); margin-bottom: 10px; }
+        .medida-item textarea { flex: 1; min-width: 200px; min-height: 40px; padding: 8px 12px; border: 2px solid var(--verde-borda); border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical; transition: border 0.2s; }
+        .medida-item textarea:focus { border-color: var(--verde-medio); outline: none; }
+        .medida-item textarea:disabled { opacity: 0.6; cursor: not-allowed; }
+        .medida-item .prioridade-label { font-size: 12px; font-weight: 600; color: #5a7a6a; }
+        .medida-item select { padding: 8px 12px; border: 2px solid var(--verde-borda); border-radius: 8px; font-size: 13px; background: white; min-width: 110px; cursor: pointer; }
+        .medida-item select:focus { border-color: var(--verde-medio); outline: none; }
+        .medida-item select:disabled { opacity: 0.6; cursor: not-allowed; }
+        .medida-item .btn-remover { background: transparent; border: none; color: #b33; font-size: 18px; cursor: pointer; padding: 0 8px; }
+        .medida-item .btn-remover:hover { color: #8a2a2a; }
+        .medida-item .btn-remover:disabled { opacity: 0.3; cursor: not-allowed; }
+        .prioridade-baixa { border-left: 4px solid #2ecc71 !important; }
+        .prioridade-media { border-left: 4px solid #f39c12 !important; }
+        .prioridade-alta { border-left: 4px solid #e74c3c !important; }
+        .btn-add-medida { background: var(--verde-claro); color: white; border: none; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-add-medida:hover { background: var(--verde-medio); }
+        .btn-add-medida:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* RH */
+        .rh-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .rh-stat-card { background: var(--verde-suave); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--verde-borda); }
+        .rh-stat-card .numero { font-size: 28px; font-weight: 700; color: var(--verde-escuro); }
+        .rh-stat-card .label { font-size: 13px; color: #5a7a6a; }
+        .rh-tabela-wrapper { overflow-x: auto; max-height: 500px; overflow-y: auto; border-radius: 12px; border: 1px solid var(--verde-borda); }
+        .rh-tabela { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .rh-tabela th { background: var(--verde-escuro); color: white; padding: 10px 12px; text-align: left; position: sticky; top: 0; z-index: 10; white-space: nowrap; }
+        .rh-tabela td { padding: 8px 12px; border-bottom: 1px solid #e8f0e8; vertical-align: top; }
+        .rh-tabela tr:hover { background: #f8fcf8; }
+        .sp-config-area { background: var(--verde-suave); padding: 20px; border-radius: 12px; border: 1px solid var(--verde-borda); margin: 15px 0; }
+        .sp-config-area label { font-weight: 600; color: var(--verde-escuro); display: block; margin-bottom: 5px; font-size: 14px; }
+        .sp-config-area input { width: 100%; padding: 10px 16px; border: 2px solid var(--verde-borda); border-radius: 8px; font-size: 14px; margin-bottom: 10px; }
+        .sp-config-area input:focus { border-color: var(--verde-medio); outline: none; }
+
+        @media (max-width: 768px) {
+            .app-header { flex-direction: column; gap: 10px; text-align: center; }
+            .user-info { flex-wrap: wrap; justify-content: center; }
+            .intro-grid { grid-template-columns: 1fr; }
+            .feedback-grid { grid-template-columns: 1fr; }
+            .steps { flex-direction: column; border-radius: 16px; gap: 4px; }
+            .step-btn { max-width: 100%; text-align: center; padding: 10px; }
+            .competencia-row { flex-direction: column; align-items: stretch; }
+            .competencia-row select { width: 100%; }
+            .pesquisa-area { flex-direction: column; align-items: stretch; }
+            .pesquisa-area input { width: 100%; }
+            .pesquisa-area .avaliador-nome { margin-left: 0; text-align: center; }
+            .medida-item { flex-direction: column; align-items: stretch; }
+            .medida-item select { width: 100%; }
+            .module-grid { grid-template-columns: 1fr; }
+            .login-box { padding: 30px 20px; margin: 0 15px; }
+            .module-selection-container { padding: 30px 20px; }
+        }
+        
+        @media print {
+            .btn-group, .steps, .btn-calcular, .pesquisa-area, .progress-container,
+            .app-header, .user-info { display: none !important; }
+        }
+
+        /* ============================================================
            OUTROS
            ============================================================ */
         .edit-badge {
@@ -1229,7 +1408,7 @@
     </div>
 
     <!-- ============================================================
-    SELEÇÃO DE MÓDULOS
+    SELEÇÃO DE MÓDULOS - ORIGINAL + AVALIAÇÃO
     ============================================================ -->
     <div id="moduleSelectionScreen" class="module-selection-screen" style="display: none;">
         <div class="module-selection-container">
@@ -1253,6 +1432,12 @@
                     <div class="module-icon-large" style="color: #FF9800;"><i class="fas fa-tools"></i></div>
                     <h2 style="color: #E65100;">Manutenção</h2>
                     <p>Requisições de manutenção, gestão de equipamentos e acompanhamento de serviços.</p>
+                </div>
+                <!-- Módulo Avaliação - Azul/Verde (NOVO) -->
+                <div class="module-card-large" style="border-color: #2196F3;" onclick="selecionarModulo('avaliacao')">
+                    <div class="module-icon-large" style="color: #2196F3;"><i class="fas fa-star"></i></div>
+                    <h2 style="color: #1565c0;">Avaliação</h2>
+                    <p>Avaliação de desempenho dos colaboradores, competências e feedback.</p>
                 </div>
             </div>
             <div style="text-align: center;">
@@ -1380,7 +1565,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO MANUTENÇÃO - NOVO CÓDIGO COMPLETO
+            MÓDULO MANUTENÇÃO - CÓDIGO ORIGINAL (inalterado)
             ============================================================ -->
             <div id="manutencaoSection" style="display: none;">
                 <div class="manutencao-container">
@@ -1577,6 +1762,183 @@
                 </div>
             </div>
 
+            <!-- ============================================================
+            MÓDULO AVALIAÇÃO - CÓDIGO ORIGINAL (inalterado)
+            ============================================================ -->
+            <div id="avaliacaoSection" style="display: none;">
+                <div class="container-avaliacao">
+                    <div class="pesquisa-area">
+                        <label>👤 Avaliador:</label>
+                        <span class="avaliador-nome" id="avaliadorNomeDisplay">-</span>
+                        <label style="margin-left:15px;">🔍 ID do Colaborador:</label>
+                        <input type="number" id="pesquisaID" placeholder="Ex: 101" min="1" />
+                        <button class="btn-buscar" onclick="buscarColaborador()">🔍 Buscar</button>
+                        <button class="btn-buscar" style="background:#6a8a7a;" onclick="limparBusca()">✖ Limpar</button>
+                        <span class="msg-pesquisa" id="msgPesquisa"></span>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+
+                    <div class="steps">
+                        <button class="step-btn active" onclick="mudarPagina(1)" id="step1">
+                            <span class="num">1</span> Introdução
+                        </button>
+                        <button class="step-btn" onclick="mudarPagina(2)" id="step2">
+                            <span class="num">2</span> Avaliação
+                        </button>
+                        <button class="step-btn" onclick="mudarPagina(3)" id="step3">
+                            <span class="num">3</span> Feedback
+                        </button>
+                    </div>
+
+                    <!-- PAGE 1 - INTRODUÇÃO -->
+                    <div class="page active" id="page1">
+                        <h2 style="color:var(--verde-escuro);">📖 Introdução à Avaliação de Desempenho</h2>
+
+                        <div class="intro-grid">
+                            <div class="intro-card">
+                                <h3>🎯 Objetivo</h3>
+                                <ul>
+                                    <li>Monitorizar a performance do colaborador de forma objetiva</li>
+                                    <li>Identificar e propor áreas de melhoria de desenvolvimento</li>
+                                    <li>Acompanhar o crescimento profissional do colaborador</li>
+                                    <li>Dar e receber feedback construtivo sobre a performance</li>
+                                </ul>
+                            </div>
+                            <div class="intro-card">
+                                <h3>👥 Público Alvo</h3>
+                                <ul>
+                                    <li>Todos os colaboradores contratados há mais de 3 meses</li>
+                                    <li>Todas as categorias de Operador, exceto Operadores Principais</li>
+                                    <li>Operadores Principais são avaliados como Chefias</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="intro-card" style="border-left-color:var(--verde-claro);">
+                            <h3>📋 Metodologia</h3>
+                            <p>A ferramenta de avaliação é constituída por dois momentos distintos:</p>
+                            <ul style="margin-top:10px;">
+                                <li><strong>1. Ficha de Avaliação</strong> — Avaliação das competências atribuídas a cada função, de acordo com a escala predefinida.</li>
+                                <li><strong>2. Sessão de Feedback</strong> — Análise e discussão da performance. Momento para dar e receber feedback.</li>
+                            </ul>
+                        </div>
+
+                        <h3 style="color:var(--verde-escuro); margin-top:25px;">📚 Dicionário de Competências</h3>
+                        <p style="color:#3a5a4a; margin-bottom:12px;">As competências são comportamentos observáveis que permitem avaliar a performance do colaborador.</p>
+
+                        <div class="dicionario-item"><strong>🎯 Foco no Cliente</strong><p>Proatividade com o cliente, satisfazendo as suas necessidades com compreensão, respeito e disponibilidade.</p></div>
+                        <div class="dicionario-item"><strong>🤝 Compromisso com a Equipa</strong><p>Facilidade de integração, espírito aberto para diálogo, partilha de conhecimento e experiências.</p></div>
+                        <div class="dicionario-item"><strong>📚 Vontade de Aprender</strong><p>Aplica os conhecimentos da empresa na sua função. Procura informação sobre produtos, serviços e boas práticas.</p></div>
+                        <div class="dicionario-item"><strong>🏆 Orientação para Resultados</strong><p>Atinge objetivos com rigor e eficácia. Identifica e procura soluções para problemas.</p></div>
+                        <div class="dicionario-item"><strong>🧠 Análise e Resolução de Problemas</strong><p>Analisa o problema identificando a informação mais relevante. Toma decisões adequadas.</p></div>
+                        <div class="dicionario-item"><strong>🧹 Organização do Local de Trabalho</strong><p>Garante arrumação, limpeza, higiene e manutenção da área de trabalho.</p></div>
+                        <div class="dicionario-item"><strong>📦 Conhecimento do Produto</strong><p>Conhecimento das características específicas dos produtos e sua localização.</p></div>
+                        <div class="dicionario-item"><strong>💼 Dinâmica Comercial</strong><p>Iniciativa para se dirigir e estabelecer contacto com o cliente. Orienta a venda.</p></div>
+                        <div class="dicionario-item"><strong>⚙️ Conhecimento dos Processos de Trabalho</strong><p>Detém e aplica o conhecimento técnico exigido para a sua área de trabalho.</p></div>
+
+                        <div style="margin-top:25px; text-align:right;">
+                            <button class="btn btn-primary" id="btnAvancar1" onclick="mudarPagina(2)" disabled>⚠️ Selecione um colaborador</button>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 2 - AVALIAÇÃO -->
+                    <div class="page" id="page2">
+                        <h2 style="color:var(--verde-escuro);">📊 Ficha de Avaliação</h2>
+                        <div class="avaliacao-header">
+                            <div class="campo"><label>ID</label><span class="valor" id="avaliacaoID">-</span></div>
+                            <div class="campo"><label>Funcionário</label><span class="valor" id="avaliacaoNome">-</span></div>
+                            <div class="campo"><label>Direcção</label><span class="valor" id="avaliacaoDirecao">-</span></div>
+                            <div class="campo"><label>Departamento</label><span class="valor" id="avaliacaoDepartamento">-</span></div>
+                            <div class="campo"><label>Função</label><span class="valor" id="avaliacaoFuncao">-</span></div>
+                            <div class="campo"><label>Admissão</label><span class="valor" id="avaliacaoAdmissao">-</span></div>
+                        </div>
+                        
+                        <div id="competenciasComportamentais" class="competencias-grupo">
+                            <h3>🧠 Competências Comportamentais</h3>
+                            <div id="competenciasComportamentaisContainer"></div>
+                        </div>
+                        
+                        <div id="competenciasTecnicas" class="competencias-grupo">
+                            <h3>⚙️ Competências Técnicas</h3>
+                            <div id="competenciasTecnicasContainer"></div>
+                        </div>
+                        
+                        <div style="background:var(--verde-suave); padding:15px 20px; border-radius:10px; margin:15px 0; border:1px solid var(--verde-borda);">
+                            <strong style="color:var(--verde-escuro);">📊 Escala:</strong>
+                            <span style="margin-left:10px;">1-Insuficiente</span>
+                            <span style="margin-left:10px;">2-Parcial</span>
+                            <span style="margin-left:10px;">3-Atende</span>
+                            <span style="margin-left:10px;">4-Supera</span>
+                            <span style="margin-left:10px;">5-Excepcional</span>
+                        </div>
+                        <button class="btn btn-calcular" id="btnCalcular" onclick="calcularResultado()" disabled>📈 Calcular</button>
+                        <div id="resultadoFinal" class="resultado-box"></div>
+                        <div style="margin-top:15px;">
+                            <label style="font-weight:600; color:var(--verde-escuro);">Comentário Adicional</label>
+                            <textarea id="comentarioAdicional" style="width:100%; min-height:70px; padding:12px; border:2px solid var(--verde-borda); border-radius:10px; font-family:inherit; font-size:14px; resize:vertical;" disabled></textarea>
+                        </div>
+                        <div style="margin-top:25px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                            <button class="btn btn-secondary" onclick="mudarPagina(1)">← Voltar</button>
+                            <button class="btn btn-primary" id="btnAvancar2" onclick="validarEAvançar()" disabled>⚠️ Selecione um colaborador</button>
+                        </div>
+                    </div>
+
+                    <!-- PAGE 3 - FEEDBACK -->
+                    <div class="page" id="page3">
+                        <h2 style="color:var(--verde-escuro);">💬 Sessão de Feedback</h2>
+                        <div class="avaliacao-header" style="background:#f0f8f0;">
+                            <div class="campo"><label>Colaborador</label><span class="valor" id="feedbackNome">-</span></div>
+                            <div class="campo"><label>Função</label><span class="valor" id="feedbackFuncao">-</span></div>
+                            <div class="campo"><label>Data</label><span class="valor" id="feedbackData">-</span></div>
+                        </div>
+                        <h3 style="color:var(--verde-escuro); margin-top:20px;">1. Análise</h3>
+                        <div class="feedback-grid">
+                            <div><label>✅ Pontos Fortes</label><textarea id="feedbackFortes" placeholder="Descreva os pontos fortes..." disabled></textarea></div>
+                            <div><label>🔄 Pontos Fracos</label><textarea id="feedbackMelhorar" placeholder="Descreva os pontos a desenvolver..." disabled></textarea></div>
+                        </div>
+                        <h3 style="color:var(--verde-escuro); margin-top:25px;">2. Avaliação Global</h3>
+                        <div class="feedback-full"><label>📝 Feedback</label><textarea id="feedbackGlobal" placeholder="Análise geral..." disabled></textarea></div>
+                        <div class="feedback-full"><label>🚀 Desenvolvimento</label><textarea id="feedbackCarreira" placeholder="Sugestões..." disabled></textarea></div>
+                        
+                        <h3 style="color:var(--verde-escuro); margin-top:25px;">📋 Medidas / Ações a Realizar</h3>
+                        <div class="feedback-full">
+                            <div class="medidas-container" id="medidasContainer">
+                                <div id="medidasList"></div>
+                                <div style="margin-top:10px;">
+                                    <button class="btn-add-medida" id="btnAddMedida" onclick="adicionarMedida()" disabled>➕ Adicionar Medida/Ação</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 style="color:var(--verde-escuro); margin-top:25px;">🏷️ Classificação Final</h3>
+                        <select id="classificacaoFinal" class="classificacao-select" disabled>
+                            <option value="1">1 - Abaixo</option>
+                            <option value="2" selected>2 - De acordo</option>
+                            <option value="3">3 - Acima</option>
+                        </select>
+                        <div class="assinatura-area">
+                            <h4>✍️ Assinatura</h4>
+                            <div class="assinatura-opcoes">
+                                <label><input type="radio" name="concordancia" value="concordo" checked disabled /> ✅ Concordo</label>
+                                <label><input type="radio" name="concordancia" value="naoconcordo" disabled /> ❌ Não concordo</label>
+                                <label style="flex:1; min-width:150px;">Nome: <input type="text" id="nomeAssinatura" placeholder="Nome completo" disabled /></label>
+                                <span class="data-assinatura" id="dataAssinatura"></span>
+                            </div>
+                        </div>
+                        <div class="status-msg" id="statusFeedback"></div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="mudarPagina(2)" id="btnVoltar2" disabled>← Voltar</button>
+                            <button class="btn btn-success" id="btnSalvar" onclick="salvarAvaliacao()" disabled>💾 Salvar</button>
+                            <button class="btn btn-pdf" id="btnPDF" onclick="exportarPDF()" disabled>📄 PDF</button>
+                            <button class="btn btn-outline" id="btnNova" onclick="novaAvaliacao()" disabled>🔄 Nova</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -1596,7 +1958,7 @@
     <div class="modal" id="modalConfirmacao"><div class="modal-content" style="max-width:400px;"><div class="modal-header"><h2>Confirmar Ação</h2><span class="close-modal" onclick="fecharModal('modalConfirmacao')">&times;</span></div><div class="modal-body"><p id="confirmacaoMensagem"></p><div class="form-actions"><button class="btn-small" onclick="fecharModal('modalConfirmacao')">Cancelar</button><button class="btn-small btn-approve" id="confirmacaoBtn">Confirmar</button></div></div></div></div>
 
     <!-- ============================================================
-    MODAIS - MANUTENÇÃO (NOVO CÓDIGO)
+    MODAIS - MANUTENÇÃO (código original)
     ============================================================ -->
     <div class="modal" id="modalNovaRequisicaoManutencao">
         <div class="modal-content">
@@ -2556,9 +2918,13 @@
             document.getElementById('moduleSelectionScreen').style.display = 'none';
             document.getElementById('mainSystem').style.display = 'block';
 
+            // Esconder todas as sections
+            document.getElementById('recrutamentoSection').style.display = 'none';
+            document.getElementById('manutencaoSection').style.display = 'none';
+            document.getElementById('avaliacaoSection').style.display = 'none';
+
             if (mod === 'recrutamento') {
                 document.getElementById('recrutamentoSection').style.display = 'block';
-                document.getElementById('manutencaoSection').style.display = 'none';
                 document.getElementById('systemTitle').textContent = 'Kero Recrutamento';
                 document.getElementById('systemSubtitle').textContent = 'Sistema de Requisição de Vagas';
                 document.getElementById('navMenu').style.display = 'flex';
@@ -2576,7 +2942,6 @@
                 atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
                 carregarUtilizadores();
             } else if (mod === 'manutencao') {
-                document.getElementById('recrutamentoSection').style.display = 'none';
                 document.getElementById('manutencaoSection').style.display = 'block';
                 document.getElementById('systemTitle').textContent = 'Kero Manutenção';
                 document.getElementById('systemSubtitle').textContent = 'Sistema de Gestão de Manutenção';
@@ -2586,11 +2951,21 @@
                 atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
                 // Inicializa o módulo de manutenção
                 manutencaoApp.inicializar();
+            } else if (mod === 'avaliacao') {
+                document.getElementById('avaliacaoSection').style.display = 'block';
+                document.getElementById('systemTitle').textContent = 'Kero Avaliação';
+                document.getElementById('systemSubtitle').textContent = 'Sistema de Avaliação de Desempenho';
+                document.getElementById('navMenu').style.display = 'none';
+                document.getElementById('currentUserName').textContent = usuarioAtual.nome;
+                document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
+                atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
+                // Inicializa o módulo de avaliação
+                inicializarAvaliacao();
             }
         }
 
         // ============================================================
-        // FUNÇÕES DO RECRUTAMENTO
+        // FUNÇÕES DO RECRUTAMENTO (100% ORIGINAL)
         // ============================================================
         function inicializarDirecoes() {
             const sel = document.getElementById('direcao');
@@ -4157,8 +4532,73 @@
             mostrarNotificacao('CSV gerado!', 'success');
         }
 
+        async function salvarEdicaoRequisicao(e) {
+            e.preventDefault();
+            const id = document.getElementById('editRequisicaoId').value;
+            const req = requisicoes.find(r => r.id == id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (!podeEditarRequisicao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
+            showLoading();
+            const alteracoes = [];
+            if (req.funcao !== document.getElementById('editFuncao').value) {
+                alteracoes.push(`Função: "${req.funcao}" → "${document.getElementById('editFuncao').value}"`);
+                req.funcao = document.getElementById('editFuncao').value;
+            }
+            if (req.direcao !== document.getElementById('editDirecao').value) {
+                alteracoes.push(`Direção: "${req.direcao}" → "${document.getElementById('editDirecao').value}"`);
+                req.direcao = document.getElementById('editDirecao').value;
+            }
+            if (req.area !== document.getElementById('editArea').value) {
+                alteracoes.push(`Categoria: "${req.area}" → "${document.getElementById('editArea').value}"`);
+                req.area = document.getElementById('editArea').value;
+            }
+            if (req.quantidade !== parseInt(document.getElementById('editQuantidade').value)) {
+                alteracoes.push(`Quantidade: ${req.quantidade} → ${document.getElementById('editQuantidade').value}`);
+                req.quantidade = parseInt(document.getElementById('editQuantidade').value);
+            }
+            req.dataInicio = document.getElementById('editDataInicio').value;
+            req.observacoes = document.getElementById('editObservacoes').value;
+            if (req.tipo === 'substituicao') {
+                req.colaboradorSubstituir = document.getElementById('editColaboradorSubstituir').value;
+                req.motivoSubstituicao = document.getElementById('editMotivoSubstituicao').value;
+            }
+            if (req.tipo === 'reforco_quadro') req.justificativaReforco = document.getElementById('editJustificativaReforco')
+                .value;
+            if (alteracoes.length > 0) {
+                if (!req.historicoComentarios) req.historicoComentarios = [];
+                req.historicoComentarios.unshift({
+                    id: Date.now().toString(),
+                    acao: 'edicao',
+                    usuario: usuarioAtual.nome,
+                    perfil: usuarioAtual.perfil,
+                    comentario: `Editada por ${usuarioAtual.nome}. Alterações: ${alteracoes.join(', ')}`,
+                    data: new Date().toISOString(),
+                    statusAnterior: req.status,
+                    statusNovo: req.status
+                });
+            }
+            const statusAntes = req.status;
+            const atualizado = await atualizarRequisicaoNoSharePoint(req);
+            if (atualizado) {
+                if (statusAntes === 'devolvida_solicitante' && usuarioAtual.email === req.criadoPorEmail) {
+                    req.status = 'em_validacao_rh';
+                    await atualizarRequisicaoNoSharePoint(req);
+                    await enviarEmail(emailsAprovadores['RH'], `Requisição Reenviada - ${req.codigo}`,
+                        templateAprovacao(req, usuarioAtual.nome, "Reenviada após correções", "RH"));
+                    mostrarNotificacao(`Requisição ${req.codigo} reenviada!`, 'success');
+                } else mostrarNotificacao('Requisição editada!', 'success');
+                fecharModal('modalEditarRequisicao');
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                carregarDashboardTempos();
+                carregarDashboardStatus();
+            } else mostrarNotificacao('Erro ao salvar', 'error');
+            hideLoading();
+        }
+
         // ============================================================
-        // MÓDULO MANUTENÇÃO - APP COMPLETA (NOVO CÓDIGO)
+        // MÓDULO MANUTENÇÃO - APP COMPLETA (100% ORIGINAL)
         // ============================================================
         const manutencaoApp = (function() {
             // ===== DADOS =====
@@ -4364,13 +4804,13 @@
             // ===== RENDERIZAR APROVAÇÕES MANUTENÇÃO =====
             function renderizarAprovacoesM() {
                 let pendentes = [];
-                if (usuarioAtual.role === 'Consumíveis') pendentes = reqs.filter(r => r.status === 'aguardando_consumiveis');
-                else if (usuarioAtual.role === 'Controlo Gestão') pendentes = reqs.filter(r => r.status === 'aguardando_cg');
-                else if (usuarioAtual.role === 'Director Geral') pendentes = reqs.filter(r => r.status === 'aguardando_diretor');
-                else if (usuarioAtual.role === 'Finanças') pendentes = reqs.filter(r => r.status === 'aguardando_financas');
-                else if (usuarioAtual.role === 'Manutenção') pendentes = reqs.filter(r => r.status === 'em_execucao' || r.status === 'pendente');
-                else if (usuarioAtual.role === 'Solicitante') pendentes = reqs.filter(r => r.status === 'aguardando_material' || r.status === 'aguardando_execucao');
-                else if (usuarioAtual.role === 'Admin') pendentes = reqs.filter(r => r.status !== 'concluida' && r.status !== 'reprovada');
+                if (usuarioAtual.perfil === 'Consumíveis') pendentes = reqs.filter(r => r.status === 'aguardando_consumiveis');
+                else if (usuarioAtual.perfil === 'Controlo de Gestão') pendentes = reqs.filter(r => r.status === 'aguardando_cg');
+                else if (usuarioAtual.perfil === 'Director Geral') pendentes = reqs.filter(r => r.status === 'aguardando_diretor');
+                else if (usuarioAtual.perfil === 'Finanças') pendentes = reqs.filter(r => r.status === 'aguardando_financas');
+                else if (usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Manutenção') pendentes = reqs.filter(r => r.status === 'em_execucao' || r.status === 'pendente');
+                else if (usuarioAtual.perfil === 'Solicitante') pendentes = reqs.filter(r => r.status === 'aguardando_material' || r.status === 'aguardando_execucao');
+                else if (usuarioAtual.perfil === 'Administrador') pendentes = reqs.filter(r => r.status !== 'concluida' && r.status !== 'reprovada');
 
                 document.getElementById('manutencaoAprovacoesCount').textContent = `${pendentes.length} pendências`;
 
@@ -4422,11 +4862,11 @@
                 let btns =
                     `<button class="btn-small btn-view" onclick="event.stopPropagation();manutencaoApp.abrirDetalhes('${req.id}')"><i class="fas fa-eye"></i></button>`;
 
-                if (usuarioAtual.role === 'Manutenção' && req.status === 'pendente') {
+                if ((usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Manutenção') && req.status === 'pendente') {
                     btns +=
                         `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirAvaliacao('${req.id}')" style="background:var(--success);"><i class="fas fa-clipboard-check"></i> Avaliar</button>`;
                 }
-                if (usuarioAtual.role === 'Consumíveis' && req.status === 'aguardando_consumiveis') {
+                if (usuarioAtual.perfil === 'Consumíveis' && req.status === 'aguardando_consumiveis') {
                     if (req.opcaoResolucao === 'transferencia') {
                         btns +=
                             `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirConsumiveisAutorizacao('${req.id}')"><i class="fas fa-check-circle"></i> Autorizar</button>`;
@@ -4435,28 +4875,28 @@
                             `<button class="btn-small btn-warning" onclick="event.stopPropagation();manutencaoApp.abrirConsumiveisDespesas('${req.id}')"><i class="fas fa-file-invoice"></i> Despesas</button>`;
                     }
                 }
-                if (usuarioAtual.role === 'Controlo Gestão' && req.status === 'aguardando_cg') {
+                if (usuarioAtual.perfil === 'Controlo de Gestão' && req.status === 'aguardando_cg') {
                     btns +=
                         `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirCG('${req.id}')"><i class="fas fa-check"></i> Aprovar</button>`;
                 }
-                if (usuarioAtual.role === 'Director Geral' && req.status === 'aguardando_diretor') {
+                if (usuarioAtual.perfil === 'Director Geral' && req.status === 'aguardando_diretor') {
                     btns +=
                         `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirDiretor('${req.id}')"><i class="fas fa-user-tie"></i> Aprovar</button>`;
                 }
-                if (usuarioAtual.role === 'Finanças' && req.status === 'aguardando_financas') {
+                if (usuarioAtual.perfil === 'Finanças' && req.status === 'aguardando_financas') {
                     btns +=
                         `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirFinancas('${req.id}')" style="background:var(--success);"><i class="fas fa-coins"></i> Pagar</button>`;
                 }
-                if (usuarioAtual.role === 'Manutenção' && req.status === 'em_execucao') {
+                if ((usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Manutenção') && req.status === 'em_execucao') {
                     btns +=
                         `<button class="btn-small btn-warning" onclick="event.stopPropagation();manutencaoApp.abrirExecucao('${req.id}')"><i class="fas fa-tools"></i> Executar</button>`;
                 }
-                if (usuarioAtual.role === 'Solicitante' && (req.status === 'aguardando_material' || req.status ===
+                if (usuarioAtual.perfil === 'Solicitante' && (req.status === 'aguardando_material' || req.status ===
                         'aguardando_execucao')) {
                     btns +=
                         `<button class="btn-small btn-approve" onclick="event.stopPropagation();manutencaoApp.abrirConfirmacao('${req.id}')"><i class="fas fa-check-double"></i> Confirmar</button>`;
                 }
-                if (usuarioAtual.role === 'Admin') {
+                if (usuarioAtual.perfil === 'Administrador') {
                     btns +=
                         `<button class="btn-small btn-reject" onclick="event.stopPropagation();manutencaoApp.excluirRequisicao('${req.id}')"><i class="fas fa-trash"></i></button>`;
                 }
@@ -4504,19 +4944,19 @@
                 document.getElementById('manutencaoTotalBadge').innerText = pendentes;
 
                 let aprovPendentes = 0;
-                if (usuarioAtual.role === 'Consumíveis') aprovPendentes = reqs.filter(r => r.status ===
+                if (usuarioAtual.perfil === 'Consumíveis') aprovPendentes = reqs.filter(r => r.status ===
                     'aguardando_consumiveis').length;
-                else if (usuarioAtual.role === 'Controlo Gestão') aprovPendentes = reqs.filter(r => r.status ===
+                else if (usuarioAtual.perfil === 'Controlo de Gestão') aprovPendentes = reqs.filter(r => r.status ===
                     'aguardando_cg').length;
-                else if (usuarioAtual.role === 'Director Geral') aprovPendentes = reqs.filter(r => r.status ===
+                else if (usuarioAtual.perfil === 'Director Geral') aprovPendentes = reqs.filter(r => r.status ===
                     'aguardando_diretor').length;
-                else if (usuarioAtual.role === 'Finanças') aprovPendentes = reqs.filter(r => r.status ===
+                else if (usuarioAtual.perfil === 'Finanças') aprovPendentes = reqs.filter(r => r.status ===
                     'aguardando_financas').length;
-                else if (usuarioAtual.role === 'Manutenção') aprovPendentes = reqs.filter(r => r.status ===
+                else if (usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Manutenção') aprovPendentes = reqs.filter(r => r.status ===
                     'em_execucao' || r.status === 'pendente').length;
-                else if (usuarioAtual.role === 'Solicitante') aprovPendentes = reqs.filter(r => r.status ===
+                else if (usuarioAtual.perfil === 'Solicitante') aprovPendentes = reqs.filter(r => r.status ===
                     'aguardando_material' || r.status === 'aguardando_execucao').length;
-                else if (usuarioAtual.role === 'Admin') aprovPendentes = reqs.filter(r => r.status !== 'concluida' &&
+                else if (usuarioAtual.perfil === 'Administrador') aprovPendentes = reqs.filter(r => r.status !== 'concluida' &&
                     r.status !== 'reprovada').length;
                 document.getElementById('manutencaoAprovacoesBadge').innerText = aprovPendentes;
             }
@@ -5305,18 +5745,20 @@
 
             // ===== INICIALIZAR =====
             function inicializarM() {
-                // Mapear perfil do usuário para role do manutenção
+                // Mapear perfil do usuário para role da manutenção
                 const roleMap = {
-                    'Administrador': 'admin',
-                    'RH': 'solicitante',
-                    'Controlo de Gestão': 'cg',
-                    'Director Geral': 'diretor',
-                    'Recrutador': 'manutencao',
-                    'Colaborador': 'solicitante'
+                    'Administrador': 'Admin',
+                    'RH': 'Solicitante',
+                    'Controlo de Gestão': 'Controlo Gestão',
+                    'Director Geral': 'Director Geral',
+                    'Recrutador': 'Manutenção',
+                    'Colaborador': 'Solicitante'
                 };
-                const roleM = roleMap[usuarioAtual.perfil] || 'solicitante';
-                const perfilM = perfisManutencao[roleM] || perfisManutencao.solicitante;
-                usuarioAtual.role = perfilM.role;
+                const roleM = roleMap[usuarioAtual.perfil] || 'Solicitante';
+                // Atualizar perfil do usuário para a manutenção
+                if (!usuarioAtual.role) {
+                    usuarioAtual.role = roleM;
+                }
 
                 carregarM();
                 renderizarRequisicoesM();
@@ -5491,6 +5933,618 @@
         })();
 
         // ============================================================
+        // FUNÇÕES DA AVALIAÇÃO (100% ORIGINAL)
+        // ============================================================
+        function inicializarAvaliacao() {
+            // Carregar dados da avaliação
+            carregarDadosIniciaisAvaliacao();
+            renderizarCompetenciasVazias();
+            atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
+        }
+
+        function carregarDadosIniciaisAvaliacao() {
+            const saved = localStorage.getItem('avaliacoes_' + (usuarioAtual?.email || 'default'));
+            if (saved) {
+                try { avaliacoesDataAval = JSON.parse(saved); } 
+                catch (e) { avaliacoesDataAval = []; }
+            } else { avaliacoesDataAval = []; }
+        }
+
+        // Variáveis da avaliação
+        let colaboradorAtualAval = null;
+        let colaboradorIDAtualAval = null;
+        let colaboradorCarregadoAval = false;
+        let colaboradorJaAvaliadoAval = false;
+        let resultadoCalculadoAval = null;
+        let avaliacoesDataAval = [];
+        let medidaIdCounterAval = 0;
+
+        // COLABORADORES (lista enorme do sistema de avaliação)
+        // A lista já está definida globalmente no início do script
+
+        const competenciasAval = [
+            { id: 1, nome: "Foco no Cliente", peso: 0.10, grupo: "comportamental" },
+            { id: 2, nome: "Compromisso com a Equipa", peso: 0.10, grupo: "comportamental" },
+            { id: 3, nome: "Vontade de Aprender", peso: 0.10, grupo: "comportamental" },
+            { id: 4, nome: "Orientação para Resultados", peso: 0.10, grupo: "comportamental" },
+            { id: 5, nome: "Análise e Resolução de Problemas", peso: 0.05, grupo: "comportamental" },
+            { id: 6, nome: "Organização do Local de Trabalho", peso: 0.10, grupo: "comportamental" },
+            { id: 8, nome: "Dinâmica Comercial", peso: 0.10, grupo: "comportamental" },
+            { id: 7, nome: "Conhecimento do Produto", peso: 0.15, grupo: "tecnica" },
+            { id: 9, nome: "Conhecimento dos Processos de Trabalho", peso: 0.20, grupo: "tecnica" }
+        ];
+
+        function renderizarCompetenciasVazias() {
+            const containerComp = document.getElementById('competenciasComportamentaisContainer');
+            const containerTec = document.getElementById('competenciasTecnicasContainer');
+            if (!containerComp || !containerTec) return;
+            containerComp.innerHTML = '';
+            containerTec.innerHTML = '';
+            
+            const compsComportamentais = competenciasAval.filter(c => c.grupo === 'comportamental');
+            const compsTecnicas = competenciasAval.filter(c => c.grupo === 'tecnica');
+            
+            compsComportamentais.forEach((comp, index) => {
+                const div = document.createElement('div');
+                div.className = 'competencia-row';
+                div.innerHTML = `
+                    <span class="nome">${index+1}. ${comp.nome}</span>
+                    <span class="peso">Peso: ${comp.peso * 100}%</span>
+                    <select id="nota_${comp.id}" disabled>
+                        <option value="">Selecione</option>
+                        <option value="1">1 - Insuficiente</option>
+                        <option value="2">2 - Parcial</option>
+                        <option value="3" selected>3 - Atende Expectativas</option>
+                        <option value="4">4 - Supera Expectativas</option>
+                        <option value="5">5 - Excepcional</option>
+                    </select>
+                    <span class="status-indicator" id="status_${comp.id}">⚪</span>
+                    <span class="resultado" id="resultado_${comp.id}"></span>
+                `;
+                containerComp.appendChild(div);
+            });
+            
+            compsTecnicas.forEach((comp, index) => {
+                const div = document.createElement('div');
+                div.className = 'competencia-row';
+                div.innerHTML = `
+                    <span class="nome">${index+1}. ${comp.nome}</span>
+                    <span class="peso">Peso: ${comp.peso * 100}%</span>
+                    <select id="nota_${comp.id}" disabled>
+                        <option value="">Selecione</option>
+                        <option value="1">1 - Insuficiente</option>
+                        <option value="2">2 - Parcial</option>
+                        <option value="3" selected>3 - Atende Expectativas</option>
+                        <option value="4">4 - Supera Expectativas</option>
+                        <option value="5">5 - Excepcional</option>
+                    </select>
+                    <span class="status-indicator" id="status_${comp.id}">⚪</span>
+                    <span class="resultado" id="resultado_${comp.id}"></span>
+                `;
+                containerTec.appendChild(div);
+            });
+        }
+
+        function renderizarCompetenciasAval() {
+            const containerComp = document.getElementById('competenciasComportamentaisContainer');
+            const containerTec = document.getElementById('competenciasTecnicasContainer');
+            if (!containerComp || !containerTec) return;
+            containerComp.innerHTML = '';
+            containerTec.innerHTML = '';
+            
+            const habilitado = colaboradorCarregadoAval && !colaboradorJaAvaliadoAval;
+            const compsComportamentais = competenciasAval.filter(c => c.grupo === 'comportamental');
+            const compsTecnicas = competenciasAval.filter(c => c.grupo === 'tecnica');
+            
+            compsComportamentais.forEach((comp, index) => {
+                const div = document.createElement('div');
+                div.className = 'competencia-row';
+                div.innerHTML = `
+                    <span class="nome">${index+1}. ${comp.nome}</span>
+                    <span class="peso">Peso: ${comp.peso * 100}%</span>
+                    <select id="nota_${comp.id}" ${habilitado ? '' : 'disabled'}>
+                        <option value="">Selecione</option>
+                        <option value="1">1 - Insuficiente</option>
+                        <option value="2">2 - Parcial</option>
+                        <option value="3" selected>3 - Atende Expectativas</option>
+                        <option value="4">4 - Supera Expectativas</option>
+                        <option value="5">5 - Excepcional</option>
+                    </select>
+                    <span class="status-indicator" id="status_${comp.id}">⚪</span>
+                    <span class="resultado" id="resultado_${comp.id}"></span>
+                `;
+                containerComp.appendChild(div);
+                if (habilitado) {
+                    document.getElementById(`nota_${comp.id}`).addEventListener('change', function() {
+                        document.getElementById(`status_${comp.id}`).textContent = this.value ? '✅' : '⚪';
+                    });
+                }
+            });
+            
+            compsTecnicas.forEach((comp, index) => {
+                const div = document.createElement('div');
+                div.className = 'competencia-row';
+                div.innerHTML = `
+                    <span class="nome">${index+1}. ${comp.nome}</span>
+                    <span class="peso">Peso: ${comp.peso * 100}%</span>
+                    <select id="nota_${comp.id}" ${habilitado ? '' : 'disabled'}>
+                        <option value="">Selecione</option>
+                        <option value="1">1 - Insuficiente</option>
+                        <option value="2">2 - Parcial</option>
+                        <option value="3" selected>3 - Atende Expectativas</option>
+                        <option value="4">4 - Supera Expectativas</option>
+                        <option value="5">5 - Excepcional</option>
+                    </select>
+                    <span class="status-indicator" id="status_${comp.id}">⚪</span>
+                    <span class="resultado" id="resultado_${comp.id}"></span>
+                `;
+                containerTec.appendChild(div);
+                if (habilitado) {
+                    document.getElementById(`nota_${comp.id}`).addEventListener('change', function() {
+                        document.getElementById(`status_${comp.id}`).textContent = this.value ? '✅' : '⚪';
+                    });
+                }
+            });
+            
+            document.getElementById('btnCalcular').disabled = !habilitado;
+        }
+
+        function buscarColaborador() {
+            const input = document.getElementById('pesquisaID');
+            const id = parseInt(input.value.trim());
+            const msg = document.getElementById('msgPesquisa');
+            
+            msg.className = 'msg-pesquisa';
+            msg.textContent = '';
+            
+            if (!id || isNaN(id) || id <= 0) {
+                msg.className = 'msg-pesquisa erro';
+                msg.textContent = '⚠️ Por favor, insira um ID válido.';
+                return;
+            }
+            
+            if (!colaboradores[id]) {
+                msg.className = 'msg-pesquisa erro';
+                msg.textContent = `❌ ID ${id} não encontrado.`;
+                return;
+            }
+            
+            colaboradorIDAtualAval = id;
+            colaboradorAtualAval = colaboradores[id];
+            
+            verificarAvaliacaoExistenteAval();
+            
+            if (colaboradorJaAvaliadoAval) {
+                msg.className = 'msg-pesquisa aviso';
+                msg.textContent = `⚠️ ${colaboradorAtualAval.nome} já foi avaliado hoje!`;
+                habilitarCamposAval(false);
+                return;
+            }
+            
+            msg.className = 'msg-pesquisa sucesso';
+            msg.textContent = `✅ ${colaboradorAtualAval.nome} (ID: ${id})`;
+            
+            document.getElementById('avaliacaoID').textContent = id;
+            document.getElementById('avaliacaoNome').textContent = colaboradorAtualAval.nome;
+            document.getElementById('avaliacaoDirecao').textContent = colaboradorAtualAval.direcao;
+            document.getElementById('avaliacaoDepartamento').textContent = colaboradorAtualAval.departamento;
+            document.getElementById('avaliacaoFuncao').textContent = colaboradorAtualAval.funcao;
+            document.getElementById('avaliacaoAdmissao').textContent = colaboradorAtualAval.dataAdmissao;
+            
+            document.getElementById('feedbackNome').textContent = colaboradorAtualAval.nome;
+            document.getElementById('feedbackFuncao').textContent = colaboradorAtualAval.funcao;
+            document.getElementById('feedbackData').textContent = new Date().toISOString().split('T')[0];
+            document.getElementById('dataAssinatura').textContent = 'Data: ' + new Date().toISOString().split('T')[0];
+            document.getElementById('nomeAssinatura').value = colaboradorAtualAval.nome;
+            
+            document.getElementById('feedbackFortes').value = '';
+            document.getElementById('feedbackMelhorar').value = '';
+            document.getElementById('feedbackGlobal').value = '';
+            document.getElementById('feedbackCarreira').value = '';
+            document.getElementById('medidasList').innerHTML = '';
+            document.getElementById('classificacaoFinal').value = '2';
+            document.querySelector('input[name="concordancia"][value="concordo"]').checked = true;
+            
+            document.getElementById('resultadoFinal').className = 'resultado-box';
+            document.getElementById('resultadoFinal').style.display = 'none';
+            document.getElementById('statusFeedback').innerHTML = '';
+            document.getElementById('statusFeedback').className = 'status-msg';
+            resultadoCalculadoAval = null;
+            
+            colaboradorCarregadoAval = true;
+            renderizarCompetenciasAval();
+            habilitarCamposAval(true);
+            
+            mudarPaginaAval(1);
+            document.getElementById('btnAvancar1').innerHTML = 'Avançar para Avaliação →';
+            document.getElementById('btnAvancar1').disabled = false;
+            document.getElementById('btnAddMedida').disabled = false;
+        }
+
+        function verificarAvaliacaoExistenteAval() {
+            if (!colaboradorIDAtualAval) { colaboradorJaAvaliadoAval = false; return; }
+            const hoje = new Date().toISOString().split('T')[0];
+            colaboradorJaAvaliadoAval = avaliacoesDataAval.some(av => 
+                av.colaborador.id === colaboradorIDAtualAval && av.dataAvaliacao === hoje
+            );
+            return colaboradorJaAvaliadoAval;
+        }
+
+        function habilitarCamposAval(habilitado) {
+            colaboradorCarregadoAval = habilitado;
+            
+            document.querySelectorAll('#competenciasComportamentaisContainer select, #competenciasTecnicasContainer select')
+                .forEach(s => s.disabled = !habilitado);
+            
+            document.getElementById('comentarioAdicional').disabled = !habilitado;
+            document.getElementById('btnCalcular').disabled = !habilitado;
+            document.getElementById('feedbackFortes').disabled = !habilitado;
+            document.getElementById('feedbackMelhorar').disabled = !habilitado;
+            document.getElementById('feedbackGlobal').disabled = !habilitado;
+            document.getElementById('feedbackCarreira').disabled = !habilitado;
+            document.getElementById('classificacaoFinal').disabled = !habilitado;
+            document.getElementById('nomeAssinatura').disabled = !habilitado;
+            document.querySelectorAll('input[name="concordancia"]').forEach(r => r.disabled = !habilitado);
+            document.getElementById('btnSalvar').disabled = !habilitado || colaboradorJaAvaliadoAval;
+            document.getElementById('btnPDF').disabled = !habilitado;
+            document.getElementById('btnNova').disabled = !habilitado;
+            document.getElementById('btnVoltar2').disabled = !habilitado;
+            document.getElementById('btnAddMedida').disabled = !habilitado;
+            
+            const btnAvancar1 = document.getElementById('btnAvancar1');
+            const btnAvancar2 = document.getElementById('btnAvancar2');
+            
+            if (habilitado) {
+                btnAvancar1.innerHTML = 'Avançar para Avaliação →';
+                btnAvancar1.disabled = false;
+                btnAvancar2.innerHTML = colaboradorJaAvaliadoAval ? '⚠️ Já avaliado!' : 'Avançar para Feedback →';
+                btnAvancar2.disabled = colaboradorJaAvaliadoAval;
+                if (colaboradorJaAvaliadoAval) document.getElementById('btnCalcular').disabled = true;
+            } else {
+                btnAvancar1.innerHTML = '⚠️ Selecione um colaborador primeiro';
+                btnAvancar1.disabled = true;
+                btnAvancar2.innerHTML = '⚠️ Selecione um colaborador primeiro';
+                btnAvancar2.disabled = true;
+            }
+        }
+
+        function limparBusca() {
+            document.getElementById('pesquisaID').value = '';
+            document.getElementById('pesquisaID').focus();
+            document.getElementById('msgPesquisa').className = 'msg-pesquisa';
+            document.getElementById('msgPesquisa').textContent = '';
+            
+            colaboradorAtualAval = null;
+            colaboradorIDAtualAval = null;
+            colaboradorCarregadoAval = false;
+            colaboradorJaAvaliadoAval = false;
+            
+            document.getElementById('avaliacaoID').textContent = '-';
+            document.getElementById('avaliacaoNome').textContent = '-';
+            document.getElementById('avaliacaoDirecao').textContent = '-';
+            document.getElementById('avaliacaoDepartamento').textContent = '-';
+            document.getElementById('avaliacaoFuncao').textContent = '-';
+            document.getElementById('avaliacaoAdmissao').textContent = '-';
+            document.getElementById('feedbackNome').textContent = '-';
+            document.getElementById('feedbackFuncao').textContent = '-';
+            document.getElementById('resultadoFinal').className = 'resultado-box';
+            document.getElementById('resultadoFinal').style.display = 'none';
+            document.getElementById('statusFeedback').innerHTML = '';
+            document.getElementById('statusFeedback').className = 'status-msg';
+            document.getElementById('medidasList').innerHTML = '';
+            resultadoCalculadoAval = null;
+            
+            habilitarCamposAval(false);
+            renderizarCompetenciasVazias();
+            mudarPaginaAval(1);
+        }
+
+        function mudarPaginaAval(num) {
+            if (num > 1 && !colaboradorCarregadoAval) {
+                mostrarStatusFeedback('⚠️ Por favor, selecione um colaborador primeiro.', 'error');
+                return;
+            }
+            if ((num === 2 || num === 3) && colaboradorJaAvaliadoAval) {
+                mostrarStatusFeedback(`⚠️ ${colaboradorAtualAval.nome} já foi avaliado hoje!`, 'error');
+                return;
+            }
+            if (num === 3 && resultadoCalculadoAval === null && colaboradorCarregadoAval) {
+                if (!confirm('⚠️ Ainda não calculou o resultado. Deseja calcular automaticamente?')) return;
+                calcularResultadoAval();
+                if (resultadoCalculadoAval === null) {
+                    mostrarStatusFeedback('⚠️ Por favor, avalie todas as competências primeiro.', 'error');
+                    return;
+                }
+            }
+            
+            document.querySelectorAll('#avaliacaoSection .page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + num).classList.add('active');
+            document.querySelectorAll('#avaliacaoSection .step-btn').forEach((btn, index) => {
+                btn.classList.toggle('active', index === num - 1);
+            });
+            document.getElementById('progressFill').style.width = (num * 33.33) + '%';
+            if (num === 3) {
+                document.getElementById('dataAssinatura').textContent = 'Data: ' + new Date().toISOString().split('T')[0];
+            }
+        }
+
+        function mostrarStatusFeedback(msg, tipo) {
+            const el = document.getElementById('statusFeedback');
+            if (!el) return;
+            el.className = `status-msg status-${tipo}`;
+            el.innerHTML = msg;
+        }
+
+        function calcularResultadoAval() {
+            if (!colaboradorCarregadoAval || colaboradorJaAvaliadoAval) return;
+            
+            let totalPonderado = 0, somaPesos = 0, notas = [], todasSelecionadas = true;
+            
+            competenciasAval.forEach(comp => {
+                const select = document.getElementById(`nota_${comp.id}`);
+                if (!select) return;
+                const nota = parseFloat(select.value);
+                if (!nota || nota < 1 || nota > 5) {
+                    todasSelecionadas = false;
+                    document.getElementById(`resultado_${comp.id}`).textContent = '⚠️';
+                    document.getElementById(`status_${comp.id}`).textContent = '❌';
+                    return;
+                }
+                document.getElementById(`status_${comp.id}`).textContent = '✅';
+                const resultado = nota * comp.peso;
+                document.getElementById(`resultado_${comp.id}`).textContent = resultado.toFixed(2);
+                totalPonderado += resultado;
+                somaPesos += comp.peso;
+                notas.push(nota);
+            });
+            
+            const resultDiv = document.getElementById('resultadoFinal');
+            if (!todasSelecionadas || notas.length === 0) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `<span style="color:#b33;">⚠️ Por favor, selecione uma nota para todas as competências.</span>`;
+                resultDiv.className = 'resultado-box visible';
+                resultadoCalculadoAval = null;
+                return;
+            }
+            
+            const media = totalPonderado / somaPesos;
+            resultadoCalculadoAval = media;
+            
+            let classificacao = '', classe = '';
+            if (media >= 4) { classificacao = '🌟 Acima das Expectativas'; classe = 'acima'; }
+            else if (media >= 2.5) { classificacao = '✅ De acordo com as Expectativas'; classe = 'deacordo'; }
+            else { classificacao = '⚠️ Abaixo das Expectativas'; classe = 'abaixo'; }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'resultado-box visible';
+            resultDiv.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-size:0.9rem; color:#4a6a5a;">Resultado da Avaliação</div>
+                        <div class="nota-final">${media.toFixed(2)} / 5</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="classif ${classe}" style="font-size:1.3rem;">${classificacao}</div>
+                        <div style="font-size:0.85rem; color:#5a7a6a;">Média simples: ${(notas.reduce((a,b) => a+b, 0) / notas.length).toFixed(2)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function validarEAvançar() {
+            if (!colaboradorCarregadoAval || colaboradorJaAvaliadoAval) return;
+            
+            let todasOk = true;
+            competenciasAval.forEach(comp => {
+                const select = document.getElementById(`nota_${comp.id}`);
+                if (!select || !select.value) { todasOk = false; }
+            });
+            if (!todasOk) {
+                mostrarStatusFeedback('⚠️ Por favor, avalie todas as competências antes de avançar.', 'error');
+                return;
+            }
+            if (resultadoCalculadoAval === null) {
+                calcularResultadoAval();
+                if (resultadoCalculadoAval === null) {
+                    mostrarStatusFeedback('⚠️ Erro ao calcular o resultado.', 'error');
+                    return;
+                }
+            }
+            mudarPaginaAval(3);
+        }
+
+        function adicionarMedida() {
+            if (!colaboradorCarregadoAval || colaboradorJaAvaliadoAval) return;
+            
+            medidaIdCounterAval++;
+            const container = document.getElementById('medidasList');
+            const div = document.createElement('div');
+            div.className = 'medida-item prioridade-media';
+            div.id = `medida_${medidaIdCounterAval}`;
+            div.innerHTML = `
+                <textarea id="medida_texto_${medidaIdCounterAval}" placeholder="Descreva a medida ou ação..." disabled></textarea>
+                <span class="prioridade-label">Prioridade:</span>
+                <select id="medida_prioridade_${medidaIdCounterAval}" disabled>
+                    <option value="baixa">🟢 Baixa</option>
+                    <option value="media" selected>🟡 Média</option>
+                    <option value="alta">🔴 Alta</option>
+                </select>
+                <button class="btn-remover" onclick="removerMedidaAval(${medidaIdCounterAval})" disabled>✕</button>
+            `;
+            container.appendChild(div);
+            
+            document.getElementById(`medida_texto_${medidaIdCounterAval}`).disabled = false;
+            document.getElementById(`medida_prioridade_${medidaIdCounterAval}`).disabled = false;
+            div.querySelector('.btn-remover').disabled = false;
+            
+            document.getElementById(`medida_prioridade_${medidaIdCounterAval}`).addEventListener('change', function() {
+                div.className = 'medida-item';
+                if (this.value === 'baixa') div.classList.add('prioridade-baixa');
+                else if (this.value === 'media') div.classList.add('prioridade-media');
+                else if (this.value === 'alta') div.classList.add('prioridade-alta');
+            });
+        }
+
+        function removerMedidaAval(id) {
+            const el = document.getElementById(`medida_${id}`);
+            if (el) el.remove();
+        }
+
+        function coletarMedidasAval() {
+            const medidas = [];
+            document.querySelectorAll('#medidasList .medida-item').forEach(item => {
+                const id = item.id.replace('medida_', '');
+                const texto = document.getElementById(`medida_texto_${id}`)?.value || '';
+                const prioridade = document.getElementById(`medida_prioridade_${id}`)?.value || 'media';
+                if (texto.trim()) medidas.push({ texto: texto.trim(), prioridade });
+            });
+            return medidas;
+        }
+
+        function salvarAvaliacao() {
+            if (!colaboradorCarregadoAval || colaboradorJaAvaliadoAval) {
+                mostrarStatusFeedback('❌ Este colaborador já foi avaliado ou não está selecionado.', 'error');
+                return;
+            }
+            
+            let todasOk = true;
+            competenciasAval.forEach(comp => {
+                const select = document.getElementById(`nota_${comp.id}`);
+                if (!select || !select.value) todasOk = false;
+            });
+            if (!todasOk) {
+                mostrarStatusFeedback('⚠️ Por favor, avalie todas as competências antes de salvar.', 'error');
+                return;
+            }
+            if (resultadoCalculadoAval === null) {
+                calcularResultadoAval();
+                if (resultadoCalculadoAval === null) {
+                    mostrarStatusFeedback('⚠️ Erro ao calcular o resultado.', 'error');
+                    return;
+                }
+            }
+            
+            const campos = [
+                { id: 'feedbackFortes', nome: 'Pontos Fortes' },
+                { id: 'feedbackMelhorar', nome: 'Pontos a Desenvolver' },
+                { id: 'feedbackGlobal', nome: 'Feedback do Avaliador' },
+                { id: 'feedbackCarreira', nome: 'Desenvolvimento de Carreira' }
+            ];
+            
+            const faltam = campos.filter(c => {
+                const el = document.getElementById(c.id);
+                return !el.value || el.value.trim() === '';
+            });
+            
+            const nomeAssinatura = document.getElementById('nomeAssinatura');
+            if (!nomeAssinatura.value || nomeAssinatura.value.trim() === '') {
+                faltam.push({ nome: 'Assinatura do Colaborador' });
+            }
+            
+            const medidas = coletarMedidasAval();
+            if (medidas.length === 0) {
+                faltam.push({ nome: 'Pelo menos uma Medida/Ação' });
+            }
+            
+            if (faltam.length > 0) {
+                mostrarStatusFeedback(`⚠️ Por favor, preencha: ${faltam.map(f => f.nome).join(', ')}`, 'error');
+                return;
+            }
+            
+            const dados = {
+                avaliador: usuarioAtual?.nome || 'Desconhecido',
+                colaborador: {
+                    id: colaboradorIDAtualAval,
+                    nome: colaboradorAtualAval.nome,
+                    direcao: colaboradorAtualAval.direcao,
+                    departamento: colaboradorAtualAval.departamento,
+                    funcao: colaboradorAtualAval.funcao,
+                    dataAdmissao: colaboradorAtualAval.dataAdmissao
+                },
+                dataAvaliacao: new Date().toISOString().split('T')[0],
+                competencias: competenciasAval.map(comp => ({
+                    nome: comp.nome,
+                    peso: comp.peso,
+                    grupo: comp.grupo,
+                    nota: parseInt(document.getElementById(`nota_${comp.id}`).value) || 0
+                })),
+                resultado: resultadoCalculadoAval,
+                comentarioAdicional: document.getElementById('comentarioAdicional').value,
+                feedback: {
+                    pontosFortes: document.getElementById('feedbackFortes').value,
+                    pontosMelhorar: document.getElementById('feedbackMelhorar').value,
+                    global: document.getElementById('feedbackGlobal').value,
+                    carreira: document.getElementById('feedbackCarreira').value
+                },
+                medidas: medidas,
+                classificacaoFinal: document.getElementById('classificacaoFinal').value,
+                assinatura: {
+                    concordancia: document.querySelector('input[name="concordancia"]:checked').value,
+                    nome: document.getElementById('nomeAssinatura').value,
+                    data: new Date().toISOString().split('T')[0]
+                }
+            };
+            
+            const hoje = new Date().toISOString().split('T')[0];
+            const existe = avaliacoesDataAval.some(av => 
+                av.colaborador.id === colaboradorIDAtualAval && av.dataAvaliacao === hoje
+            );
+            if (existe) {
+                mostrarStatusFeedback(`❌ ${colaboradorAtualAval.nome} já foi avaliado hoje!`, 'error');
+                return;
+            }
+            
+            const key = 'avaliacoes_' + (usuarioAtual?.email || 'default');
+            avaliacoesDataAval.push(dados);
+            localStorage.setItem(key, JSON.stringify(avaliacoesDataAval));
+            
+            colaboradorJaAvaliadoAval = true;
+            habilitarCamposAval(false);
+            mostrarStatusFeedback(`✅ Avaliação de <strong>${colaboradorAtualAval.nome}</strong> salva com sucesso!`, 'success');
+            
+            document.getElementById('btnAvancar2').innerHTML = '✅ Avaliação concluída!';
+            document.getElementById('btnAvancar2').disabled = true;
+            document.getElementById('btnCalcular').disabled = true;
+            document.getElementById('btnSalvar').disabled = true;
+            document.getElementById('btnPDF').disabled = false;
+        }
+
+        function exportarPDF() {
+            if (!colaboradorAtualAval) {
+                mostrarStatusFeedback('❌ Nenhum colaborador selecionado.', 'error');
+                return;
+            }
+            window.print();
+        }
+
+        function novaAvaliacao() {
+            resultadoCalculadoAval = null;
+            colaboradorJaAvaliadoAval = false;
+            
+            document.getElementById('feedbackFortes').value = '';
+            document.getElementById('feedbackMelhorar').value = '';
+            document.getElementById('feedbackGlobal').value = '';
+            document.getElementById('feedbackCarreira').value = '';
+            document.getElementById('comentarioAdicional').value = '';
+            document.getElementById('nomeAssinatura').value = colaboradorAtualAval ? colaboradorAtualAval.nome : '';
+            document.getElementById('classificacaoFinal').value = '2';
+            document.getElementById('medidasList').innerHTML = '';
+            document.getElementById('resultadoFinal').className = 'resultado-box';
+            document.getElementById('resultadoFinal').style.display = 'none';
+            document.getElementById('statusFeedback').innerHTML = '';
+            document.getElementById('statusFeedback').className = 'status-msg';
+            
+            renderizarCompetenciasAval();
+            habilitarCamposAval(true);
+            verificarAvaliacaoExistenteAval();
+            mudarPaginaAval(1);
+            
+            if (colaboradorAtualAval) {
+                mostrarStatusFeedback(`🔄 Nova avaliação para <strong>${colaboradorAtualAval.nome}</strong>`, 'info');
+            }
+        }
+
+        // ============================================================
         // INICIALIZAÇÃO
         // ============================================================
         document.addEventListener('DOMContentLoaded', async function() {
@@ -5573,75 +6627,9 @@
             }, 5000);
         });
 
-        async function salvarEdicaoRequisicao(e) {
-            e.preventDefault();
-            const id = document.getElementById('editRequisicaoId').value;
-            const req = requisicoes.find(r => r.id == id);
-            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
-            if (!podeEditarRequisicao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
-            showLoading();
-            const alteracoes = [];
-            if (req.funcao !== document.getElementById('editFuncao').value) {
-                alteracoes.push(`Função: "${req.funcao}" → "${document.getElementById('editFuncao').value}"`);
-                req.funcao = document.getElementById('editFuncao').value;
-            }
-            if (req.direcao !== document.getElementById('editDirecao').value) {
-                alteracoes.push(`Direção: "${req.direcao}" → "${document.getElementById('editDirecao').value}"`);
-                req.direcao = document.getElementById('editDirecao').value;
-            }
-            if (req.area !== document.getElementById('editArea').value) {
-                alteracoes.push(`Categoria: "${req.area}" → "${document.getElementById('editArea').value}"`);
-                req.area = document.getElementById('editArea').value;
-            }
-            if (req.quantidade !== parseInt(document.getElementById('editQuantidade').value)) {
-                alteracoes.push(`Quantidade: ${req.quantidade} → ${document.getElementById('editQuantidade').value}`);
-                req.quantidade = parseInt(document.getElementById('editQuantidade').value);
-            }
-            req.dataInicio = document.getElementById('editDataInicio').value;
-            req.observacoes = document.getElementById('editObservacoes').value;
-            if (req.tipo === 'substituicao') {
-                req.colaboradorSubstituir = document.getElementById('editColaboradorSubstituir').value;
-                req.motivoSubstituicao = document.getElementById('editMotivoSubstituicao').value;
-            }
-            if (req.tipo === 'reforco_quadro') req.justificativaReforco = document.getElementById('editJustificativaReforco')
-                .value;
-            if (alteracoes.length > 0) {
-                if (!req.historicoComentarios) req.historicoComentarios = [];
-                req.historicoComentarios.unshift({
-                    id: Date.now().toString(),
-                    acao: 'edicao',
-                    usuario: usuarioAtual.nome,
-                    perfil: usuarioAtual.perfil,
-                    comentario: `Editada por ${usuarioAtual.nome}. Alterações: ${alteracoes.join(', ')}`,
-                    data: new Date().toISOString(),
-                    statusAnterior: req.status,
-                    statusNovo: req.status
-                });
-            }
-            const statusAntes = req.status;
-            const atualizado = await atualizarRequisicaoNoSharePoint(req);
-            if (atualizado) {
-                if (statusAntes === 'devolvida_solicitante' && usuarioAtual.email === req.criadoPorEmail) {
-                    req.status = 'em_validacao_rh';
-                    await atualizarRequisicaoNoSharePoint(req);
-                    await enviarEmail(emailsAprovadores['RH'], `Requisição Reenviada - ${req.codigo}`,
-                        templateAprovacao(req, usuarioAtual.nome, "Reenviada após correções", "RH"));
-                    mostrarNotificacao(`Requisição ${req.codigo} reenviada!`, 'success');
-                } else mostrarNotificacao('Requisição editada!', 'success');
-                fecharModal('modalEditarRequisicao');
-                filtrarRequisicoes();
-                carregarAprovacoes();
-                atualizarKPIs();
-                carregarDashboardTempos();
-                carregarDashboardStatus();
-            } else mostrarNotificacao('Erro ao salvar', 'error');
-            hideLoading();
-        }
-
         console.log('✅ Kero SIR - Sistema Integrado de Requisições carregado!');
-        console.log('📋 Módulos disponíveis: Recrutamento e Manutenção');
-        console.log('🟠 Módulo Manutenção atualizado com novo código!');
-        console.log('👤 Perfis Manutenção: Solicitante, Manutenção, Consumíveis, CG, Director, Finanças, Admin');
+        console.log('📋 Módulos disponíveis: Recrutamento, Manutenção e Avaliação');
+        console.log('👤 Perfis:', Object.keys(perfisManuais).join(', '));
         console.log('🔒 Emails bloqueados:', BLOCKED_EMAILS);
     </script>
 </body>
