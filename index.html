@@ -1840,7 +1840,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO MANUTENÇÃO
+            MÓDULO MANUTENÇÃO - CÓDIGO ORIGINAL (INALTERADO)
             ============================================================ -->
             <div id="manutencaoSection" style="display: none;">
                 <div class="manutencao-container">
@@ -2032,7 +2032,7 @@
                                 </div>
                             </div>
 
-                            <!-- NOTA DE DESPESA MANUTENÇÃO -->
+                            <!-- NOTA DE DESPESA MANUTENÇÃO - DENTRO DO MÓDULO -->
                             <div id="notaDespesaManutencao">
                                 <div style="max-width:800px; margin:0 auto;">
                                     <div style="text-align:right; margin-bottom:20px;">
@@ -2063,7 +2063,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO AVALIAÇÃO
+            MÓDULO AVALIAÇÃO - COM RESTRIÇÃO DE ACESSO
             ============================================================ -->
             <div id="avaliacaoSection" style="display: none;">
                 <div class="container-avaliacao">
@@ -2258,7 +2258,7 @@
     <div class="modal" id="modalConfirmacao"><div class="modal-content" style="max-width:400px;"><div class="modal-header"><h2>Confirmar Ação</h2><span class="close-modal" onclick="fecharModal('modalConfirmacao')">&times;</span></div><div class="modal-body"><p id="confirmacaoMensagem"></p><div class="form-actions"><button class="btn-small" onclick="fecharModal('modalConfirmacao')">Cancelar</button><button class="btn-small btn-approve" id="confirmacaoBtn">Confirmar</button></div></div></div></div>
 
     <!-- ============================================================
-    MODAIS - MANUTENÇÃO
+    MODAIS - MANUTENÇÃO (código original)
     ============================================================ -->
     <div class="modal" id="modalNovaRequisicaoManutencao">
         <div class="modal-content">
@@ -2499,6 +2499,201 @@
 
         function isEmailBlocked(email) { return BLOCKED_EMAILS.includes(email?.toLowerCase()); }
 
+        async function enviarEmail(destinatario, assunto, corpoHtml) {
+            if (!configuracoes.emailNotif) return false;
+            if (isEmailBlocked(destinatario)) return false;
+            try {
+                const token = await getAccessToken(["Mail.Send"]);
+                const email = {
+                    message: {
+                        subject: assunto,
+                        body: { contentType: "HTML", content: corpoHtml },
+                        toRecipients: [{ emailAddress: { address: destinatario } }]
+                    },
+                    saveToSentItems: "true"
+                };
+                const adminEmail = configuracoes.emailAdmin;
+                if (adminEmail && adminEmail.trim() !== "" && adminEmail !== destinatario && !isEmailBlocked(adminEmail))
+                    email.message.ccRecipients = [{ emailAddress: { address: adminEmail } }];
+                const response = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(email)
+                });
+                const sucesso = response.ok;
+                historicoEmails.unshift({ id: Date.now(), destinatario, assunto, data: new Date().toISOString(),
+                    status: sucesso ? 'enviado' : 'erro' });
+                if (historicoEmails.length > 50) historicoEmails.pop();
+                return sucesso;
+            } catch (error) { console.error('Erro ao enviar email:', error); return false; }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            const textSpan = document.getElementById('darkModeText');
+            if (textSpan) textSpan.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
+        }
+
+        function carregarDarkMode() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                const textSpan = document.getElementById('darkModeText');
+                if (textSpan) textSpan.textContent = 'Modo Claro';
+            }
+        }
+
+        function isAprovador() { if (!usuarioAtual) return false; return PERFIS_QUE_APROVAM.includes(usuarioAtual.perfil); }
+
+        function podeFinalizarRecrutamento(req) {
+            if (!usuarioAtual) return false;
+            if (req.status !== 'em_recrutamento') return false;
+            return (usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Administrador');
+        }
+
+        function podeConfirmarAtendimento(req) {
+            if (!usuarioAtual) return false;
+            if (req.status !== 'aguardando_confirmacao_solicitante') return false;
+            return (usuarioAtual.email === req.criadoPorEmail || usuarioAtual.perfil === 'Administrador');
+        }
+
+        function podeVerRequisicao(req) {
+            if (!usuarioAtual) return false;
+            if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return true;
+            if (isAprovador() && req.status === 'em_recrutamento') return true;
+            return req.criadoPorEmail === usuarioAtual.email;
+        }
+
+        function filtrarRequisicoesVisiveis(lista) {
+            if (!usuarioAtual) return [];
+            if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return lista;
+            if (isAprovador()) return lista.filter(req => req.criadoPorEmail === usuarioAtual.email || req.status ===
+                'em_recrutamento');
+            return lista.filter(req => req.criadoPorEmail === usuarioAtual.email);
+        }
+
+        function utilizadorJaAprovou(req) {
+            if (!req.historicoComentarios) return false;
+            return req.historicoComentarios.some(reg => reg.acao === 'aprovar' && reg.usuario === usuarioAtual.nome && reg
+                .perfil === usuarioAtual.perfil);
+        }
+
+        function podeAprovarStatus(req) {
+            if (usuarioAtual.perfil === 'Administrador') return (req.status === 'em_validacao_rh' || req.status ===
+                'em_validacao_financas' || req.status === 'em_validacao_director');
+            else if (usuarioAtual.perfil === 'RH') return (req.status === 'em_validacao_rh');
+            else if (usuarioAtual.perfil === 'Controlo de Gestão') return (req.status === 'em_validacao_financas');
+            else if (usuarioAtual.perfil === 'Director Geral') return (req.status === 'em_validacao_director');
+            return false;
+        }
+
+        function podeEditarRequisicao(req) {
+            if (!usuarioAtual) return false;
+            if (usuarioAtual.perfil === 'Administrador') return true;
+            if (req.status === 'devolvida_solicitante' && usuarioAtual.email === req.criadoPorEmail) return true;
+            if (usuarioAtual.perfil === 'RH' && req.status === 'em_validacao_rh') return true;
+            if (usuarioAtual.perfil === 'Controlo de Gestão' && req.status === 'em_validacao_financas') return true;
+            if (usuarioAtual.perfil === 'Director Geral' && req.status === 'em_validacao_director') return true;
+            if (utilizadorJaAprovou(req)) return false;
+            return false;
+        }
+
+        function podeDevolverRequisicao(req) {
+            if (!usuarioAtual) return false;
+            if (!isAprovador()) return false;
+            if (utilizadorJaAprovou(req)) return false;
+            if (req.criadoPorEmail === usuarioAtual.email) return false;
+            if (!podeAprovarStatus(req)) return false;
+            return true;
+        }
+
+        function inicializarBotoesPorPerfil() {
+            const btnNova = document.getElementById('btnNovaRequisicao');
+            if (!btnNova) return;
+            const podeCriar = PERFIS_QUE_PODEM_CRIAR.includes(usuarioAtual.perfil);
+            btnNova.style.display = podeCriar ? 'block' : 'none';
+            if (podeCriar) btnNova.setAttribute('data-tooltip', 'Criar nova requisição de vaga');
+            atualizarBotaoPastaRequisicao();
+        }
+
+        function getProximoStatus(statusAtual) {
+            const proximo = {
+                'em_validacao_rh': 'em_validacao_financas',
+                'em_validacao_financas': 'em_validacao_director',
+                'em_validacao_director': 'em_recrutamento'
+            };
+            return proximo[statusAtual] || statusAtual;
+        }
+
+        function calcularTempoEmMilissegundos(dataInicio, dataFim) {
+            if (!dataInicio) return null;
+            const inicio = new Date(dataInicio);
+            const fim = dataFim ? new Date(dataFim) : new Date();
+            return Math.abs(fim - inicio);
+        }
+
+        function calcularTempoRecrutamento(req) {
+            if (!req.dataInicioRecrutamento) return null;
+            return calcularTempoEmMilissegundos(req.dataInicioRecrutamento, req.dataFimRecrutamento);
+        }
+
+        function getStatusAprovacaoPorPerfil(req, perfil) {
+            if (!req.historicoComentarios) return null;
+            return req.historicoComentarios.find(h => h.acao === 'aprovar' && h.perfil === perfil);
+        }
+
+        function adicionarAoHistorico(req, acao, comentario) {
+            if (!req.historicoComentarios) req.historicoComentarios = [];
+            req.historicoComentarios.unshift({
+                id: Date.now().toString(),
+                acao: acao,
+                usuario: usuarioAtual.nome,
+                perfil: usuarioAtual.perfil,
+                comentario: comentario,
+                data: new Date().toISOString(),
+                statusAnterior: req.status,
+                statusNovo: acao === 'aprovar' ? getProximoStatus(req.status) : acao === 'rejeitar' ? 'rejeitada' : (
+                    acao === 'devolver' ? (req.status === 'em_validacao_rh' ? 'devolvida_solicitante' : (req.status ===
+                        'em_validacao_financas' ? 'em_validacao_rh' : 'em_validacao_financas')) : req.status)
+            });
+        }
+
+        function adicionarNotificacao(titulo, mensagem, tipo, requisicaoId) {
+            notificacoes.unshift({ id: Date.now(), titulo, mensagem, tipo, requisicaoId, data: new Date().toISOString(),
+                lida: false });
+            if (notificacoes.length > 50) notificacoes.pop();
+            atualizarPainelNotificacoes();
+        }
+
+        function atualizarPainelNotificacoes() {
+            const list = document.getElementById('notificationList');
+            const count = document.getElementById('notificationCount');
+            const naoLidas = notificacoes.filter(n => !n.lida).length;
+            if (count) count.textContent = naoLidas;
+            if (!list) return;
+            if (notificacoes.length === 0) { list.innerHTML = '<div style="padding:20px;text-align:center;">Sem notificações</div>'; return; }
+            list.innerHTML = notificacoes.slice(0, 20).map(n =>
+                `<div class="notification-item ${!n.lida ? 'unread' : ''}" onclick="marcarNotificacaoLida(${n.id})">
+                    <div class="notification-title">${n.titulo}</div>
+                    <div class="notification-message" style="font-size:12px;color:#666;">${n.mensagem}</div>
+                    <div class="notification-time">${formatarDataHora(n.data)}</div>
+                </div>`
+            ).join('');
+        }
+
+        function marcarNotificacaoLida(id) {
+            const notif = notificacoes.find(n => n.id === id);
+            if (notif) notif.lida = true;
+            atualizarPainelNotificacoes();
+        }
+
+        function toggleNotifications() {
+            const panel = document.getElementById('notificationPanel');
+            if (panel) panel.classList.toggle('show');
+        }
+
         // ============================================================
         // FUNÇÕES DE TEMPLATE DE EMAIL
         // ============================================================
@@ -2701,6 +2896,7 @@
                 atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
                 manutencaoApp.inicializar();
             } else if (mod === 'avaliacao') {
+                // VERIFICA PERMISSÃO DE ACESSO
                 if (!PERFIS_AVALIACAO.includes(usuarioAtual.perfil)) {
                     mostrarNotificacao('⛔ Acesso negado! Não tem autorização para aceder este modulo.', 'error');
                     voltarParaModulos();
@@ -3511,453 +3707,791 @@
         }
 
         // ============================================================
-        // FUNÇÕES DE SHAREPOINT - MANUTENÇÃO
+        // FUNÇÕES DE APROVAÇÃO RECRUTAMENTO
         // ============================================================
-
-        async function criarListaManutencao(siteId, token) {
-            try {
-                const listDefinition = {
-                    displayName: "Manutencoes",
-                    description: "Lista de requisições de manutenção",
-                    columns: [
-                        { name: "Codigo", displayName: "Código", description: "Código da requisição", indexed: true,
-                            required: true, type: "text" },
-                        { name: "Equipamento", displayName: "Equipamento", description: "Nome do equipamento",
-                            required: true, type: "text" },
-                        { name: "Local", displayName: "Local", description: "Local/Direção", required: true,
-                            type: "text" },
-                        { name: "Tipo", displayName: "Tipo", description: "Tipo de manutenção", required: true,
-                            type: "choice", choices: ["Corretiva", "Preventiva"] },
-                        { name: "Prioridade", displayName: "Prioridade", description: "Prioridade da requisição",
-                            required: true, type: "choice", choices: ["Baixa", "Média", "Alta"] },
-                        { name: "Descricao", displayName: "Descrição", description: "Descrição do problema",
-                            required: true, type: "note" },
-                        { name: "Status", displayName: "Status", description: "Status da requisição", required: true,
-                            type: "choice", choices: ["Pendente", "Aguard. Consumíveis", "Aguard. CG", "Aguard. Director",
-                                "Aguard. Finanças", "Em Execução", "Aguard. Confirmação", "Concluída", "Reprovada"
-                            ] },
-                        { name: "Solicitante", displayName: "Solicitante", description: "Nome do solicitante",
-                            required: true, type: "text" },
-                        { name: "SolicitanteEmail", displayName: "Email do Solicitante",
-                            description: "Email do solicitante", required: true, type: "text" },
-                        { name: "DataCriacao", displayName: "Data de Criação", description: "Data de criação",
-                            required: true, type: "dateTime" },
-                        { name: "Diagnostico", displayName: "Diagnóstico", description: "Diagnóstico técnico",
-                            type: "note" },
-                        { name: "OpcaoResolucao", displayName: "Opção de Resolução",
-                            description: "Opção escolhida para resolução", type: "choice",
-                            choices: ["Com Material", "Transferência", "Consumo", "Precisa Comprar"] },
-                        { name: "OrigemRecurso", displayName: "Origem do Recurso",
-                            description: "Origem do recurso para transferência", type: "text" },
-                        { name: "DetalhesTransferencia", displayName: "Detalhes da Transferência",
-                            description: "Detalhes da transferência", type: "note" },
-                        { name: "ValorTransferencia", displayName: "Valor da Transferência",
-                            description: "Valor estimado da transferência", type: "number" },
-                        { name: "DetalhesConsumo", displayName: "Detalhes do Consumo",
-                            description: "Detalhes do consumo de stock", type: "note" },
-                        { name: "ValorConsumo", displayName: "Valor do Consumo", description: "Valor estimado do consumo",
-                            type: "number" },
-                        { name: "Fornecedor", displayName: "Fornecedor", description: "Fornecedor para compra",
-                            type: "text" },
-                        { name: "DescricaoCompra", displayName: "Descrição da Compra",
-                            description: "Descrição do que comprar", type: "note" },
-                        { name: "ValorCompra", displayName: "Valor da Compra", description: "Valor estimado da compra",
-                            type: "number" },
-                        { name: "ValorTotal", displayName: "Valor Total", description: "Valor total da despesa",
-                            type: "number" },
-                        { name: "RelatorioExecucao", displayName: "Relatório de Execução",
-                            description: "Relatório da execução", type: "note" },
-                        { name: "DataExecucao", displayName: "Data de Execução", description: "Data da execução",
-                            type: "dateTime" },
-                        { name: "TecnicoResponsavel", displayName: "Técnico Responsável",
-                            description: "Técnico que executou", type: "text" },
-                        { name: "ObsExecucao", displayName: "Observações da Execução",
-                            description: "Observações da execução", type: "note" },
-                        { name: "DataConclusao", displayName: "Data de Conclusão", description: "Data de conclusão",
-                            type: "dateTime" },
-                        { name: "Anexos", displayName: "Anexos", description: "JSON com anexos", type: "note" },
-                        { name: "Historico", displayName: "Histórico", description: "JSON com histórico",
-                        type: "note" },
-                        { name: "NotaDespesa", displayName: "Nota de Despesa", description: "JSON com nota de despesa",
-                            type: "note" }
-                    ],
-                    list: { template: "genericList" }
-                };
-
-                const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(listDefinition)
-                });
-
-                if (!response.ok) {
-                    console.error('Erro ao criar lista Manutencoes:', await response.text());
-                    return false;
-                }
-                console.log('✅ Lista Manutencoes criada com sucesso!');
-                return true;
-            } catch (error) {
-                console.error('Erro ao criar lista Manutencoes:', error);
-                return false;
+        function carregarAprovacoes() {
+            const tbody = document.getElementById('corpoAprovacoes');
+            if (!tbody) return;
+            if (!isAprovador()) {
+                tbody.innerHTML =
+                    '<tr><td colspan="6" style="text-align:center; padding:30px; color:#999;">Acesso restrito a aprovadores</td></tr>';
+                return;
             }
+            let pendentes = [];
+            if (usuarioAtual?.perfil === 'Administrador') pendentes = requisicoes.filter(r => ['em_validacao_rh',
+                    'em_validacao_financas', 'em_validacao_director'
+                ].includes(r.status));
+            else if (usuarioAtual?.perfil === 'RH') pendentes = requisicoes.filter(r => r.status === 'em_validacao_rh');
+            else if (usuarioAtual?.perfil === 'Controlo de Gestão') pendentes = requisicoes.filter(r => r.status ===
+                'em_validacao_financas');
+            else if (usuarioAtual?.perfil === 'Director Geral') pendentes = requisicoes.filter(r => r.status ===
+                'em_validacao_director');
+            pendentes = pendentes.filter(r => !utilizadorJaAprovou(r) && r.criadoPorEmail !== usuarioAtual.email);
+            if (pendentes.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="6" style="text-align:center; padding:30px; color:#999;">Nenhuma aprovação pendente</td></tr>';
+                return;
+            }
+            tbody.innerHTML = pendentes.map(r =>
+                `<tr onclick="visualizarRequisicao('${r.id}')">
+                        <td>${r.codigo}${r.ficheiros && r.ficheiros.length > 0 ? ' 📎' : ''}${podeEditarRequisicao(r) ? '<span class="edit-badge"></span>' : ''}</td>
+                        <td>${r.funcao}</td>
+                        <td>${r.direcao}</td>
+                        <td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td>
+                        <td>${formatarData(r.dataCriacao)}</td>
+                        <td><div class="action-buttons">${getBotoesAcao(r)}</div></td>
+                    </tr>`
+            ).join('');
         }
 
-        async function criarListaAvaliacao(siteId, token) {
-            try {
-                const listDefinition = {
-                    displayName: "Avaliacoes",
-                    description: "Lista de avaliações de desempenho",
-                    columns: [
-                        { name: "ColaboradorID", displayName: "ID do Colaborador", description: "ID do colaborador",
-                            required: true, type: "number" },
-                        { name: "ColaboradorNome", displayName: "Nome do Colaborador", description: "Nome do colaborador",
-                            required: true, type: "text" },
-                        { name: "ColaboradorDirecao", displayName: "Direção do Colaborador",
-                            description: "Direção do colaborador", required: true, type: "text" },
-                        { name: "ColaboradorDepartamento", displayName: "Departamento do Colaborador",
-                            description: "Departamento do colaborador", required: true, type: "text" },
-                        { name: "ColaboradorFuncao", displayName: "Função do Colaborador",
-                            description: "Função do colaborador", required: true, type: "text" },
-                        { name: "ColaboradorAdmissao", displayName: "Data de Admissão",
-                            description: "Data de admissão do colaborador", required: true, type: "dateTime" },
-                        { name: "AvaliadorNome", displayName: "Nome do Avaliador", description: "Nome do avaliador",
-                            required: true, type: "text" },
-                        { name: "AvaliadorEmail", displayName: "Email do Avaliador", description: "Email do avaliador",
-                            required: true, type: "text" },
-                        { name: "DataAvaliacao", displayName: "Data da Avaliação", description: "Data da avaliação",
-                            required: true, type: "dateTime" },
-                        { name: "Competencias", displayName: "Competências", description: "JSON com competências e notas",
-                            required: true, type: "note" },
-                        { name: "PontosFortes", displayName: "Pontos Fortes", description: "Pontos fortes",
-                            type: "note" },
-                        { name: "PontosMelhorar", displayName: "Pontos a Melhorar", description: "Pontos a melhorar",
-                            type: "note" },
-                        { name: "FeedbackGlobal", displayName: "Feedback Global", description: "Feedback global",
-                            type: "note" },
-                        { name: "Desenvolvimento", displayName: "Desenvolvimento",
-                            description: "Sugestões de desenvolvimento", type: "note" },
-                        { name: "Medidas", displayName: "Medidas", description: "JSON com medidas/ações",
-                            type: "note" },
-                        { name: "ClassificacaoFinal", displayName: "Classificação Final",
-                            description: "Classificação final da avaliação", required: true, type: "choice",
-                            choices: ["1 - Abaixo", "2 - De acordo", "3 - Acima"] },
-                        { name: "NotaFinal", displayName: "Nota Final", description: "Média final da avaliação",
-                            required: true, type: "number" },
-                        { name: "Assinatura", displayName: "Assinatura", description: "Assinatura do avaliador",
-                            type: "text" },
-                        { name: "Status", displayName: "Status", description: "Status da avaliação", type: "choice",
-                            choices: ["Rascunho", "Finalizado"] }
-                    ],
-                    list: { template: "genericList" }
-                };
-
-                const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(listDefinition)
-                });
-
-                if (!response.ok) {
-                    console.error('Erro ao criar lista Avaliacoes:', await response.text());
-                    return false;
-                }
-                console.log('✅ Lista Avaliacoes criada com sucesso!');
-                return true;
-            } catch (error) {
-                console.error('Erro ao criar lista Avaliacoes:', error);
-                return false;
-            }
+        // ============================================================
+        // FUNÇÕES DE MODAL E FORMULÁRIOS RECRUTAMENTO
+        // ============================================================
+        function abrirModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) { modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; }
         }
 
-        async function salvarRequisicaoManutencaoNoSharePoint(req) {
-            try {
-                const token = await getSharePointToken();
-                const siteId = await getSiteId();
-                const listName = "Manutencoes";
-
-                // Verifica se a lista existe
-                const listCheck = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (!listCheck.ok) {
-                    // Cria a lista se não existir
-                    await criarListaManutencao(siteId, token);
-                }
-
-                const fields = {
-                    "Title": req.codigo,
-                    "Codigo": req.codigo,
-                    "Equipamento": req.equipamento,
-                    "Local": req.local,
-                    "Tipo": req.tipo === 'corretiva' ? 'Corretiva' : 'Preventiva',
-                    "Prioridade": req.prioridade.charAt(0).toUpperCase() + req.prioridade.slice(1),
-                    "Descricao": req.descricao,
-                    "Status": req.status.charAt(0).toUpperCase() + req.status.slice(1).replace(/_/g, ' '),
-                    "Solicitante": req.solicitante,
-                    "SolicitanteEmail": req.email,
-                    "DataCriacao": req.data || new Date().toISOString(),
-                    "Diagnostico": req.diagnostico || "",
-                    "OpcaoResolucao": req.opcaoResolucao ? {
-                        'com_material': 'Com Material',
-                        'transferencia': 'Transferência',
-                        'consumo': 'Consumo',
-                        'precisa_comprar': 'Precisa Comprar'
-                    } [req.opcaoResolucao] || "" : "",
-                    "OrigemRecurso": req.origemRecurso || "",
-                    "DetalhesTransferencia": req.detalhesTransferencia || "",
-                    "ValorTransferencia": req.valorTransferencia || 0,
-                    "DetalhesConsumo": req.detalhesConsumo || "",
-                    "ValorConsumo": req.valorConsumo || 0,
-                    "Fornecedor": req.fornecedor || "",
-                    "DescricaoCompra": req.descricaoCompra || "",
-                    "ValorCompra": req.valorCompra || 0,
-                    "ValorTotal": req.valorTotal || 0,
-                    "RelatorioExecucao": req.relatorioExecucao || "",
-                    "DataExecucao": req.dataExecucao || null,
-                    "TecnicoResponsavel": req.tecnicoResponsavel || "",
-                    "ObsExecucao": req.obsExecucao || "",
-                    "DataConclusao": req.dataConclusao || null,
-                    "Anexos": JSON.stringify(req.anexos || []),
-                    "Historico": JSON.stringify(req.historico || []),
-                    "NotaDespesa": JSON.stringify(req.notaDespesa || null)
-                };
-
-                const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ fields: fields })
-                });
-
-                if (response.ok) {
-                    const newItem = await response.json();
-                    req.id = newItem.id;
-                    return true;
-                } else {
-                    console.error('Erro ao salvar manutenção:', await response.text());
-                    return false;
-                }
-            } catch (error) {
-                console.error('Erro ao salvar manutenção no SharePoint:', error);
-                return false;
-            }
+        function fecharModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) { modal.style.display = 'none';
+                document.body.style.overflow = 'auto'; }
         }
 
-        async function atualizarRequisicaoManutencaoNoSharePoint(req) {
-            try {
-                const token = await getSharePointToken();
-                const siteId = await getSiteId();
-                const listName = "Manutencoes";
-
-                if (!req.id) {
-                    return await salvarRequisicaoManutencaoNoSharePoint(req);
-                }
-
-                const fields = {
-                    "Equipamento": req.equipamento,
-                    "Local": req.local,
-                    "Tipo": req.tipo === 'corretiva' ? 'Corretiva' : 'Preventiva',
-                    "Prioridade": req.prioridade.charAt(0).toUpperCase() + req.prioridade.slice(1),
-                    "Descricao": req.descricao,
-                    "Status": req.status.charAt(0).toUpperCase() + req.status.slice(1).replace(/_/g, ' '),
-                    "Solicitante": req.solicitante,
-                    "SolicitanteEmail": req.email,
-                    "Diagnostico": req.diagnostico || "",
-                    "OpcaoResolucao": req.opcaoResolucao ? {
-                        'com_material': 'Com Material',
-                        'transferencia': 'Transferência',
-                        'consumo': 'Consumo',
-                        'precisa_comprar': 'Precisa Comprar'
-                    } [req.opcaoResolucao] || "" : "",
-                    "OrigemRecurso": req.origemRecurso || "",
-                    "DetalhesTransferencia": req.detalhesTransferencia || "",
-                    "ValorTransferencia": req.valorTransferencia || 0,
-                    "DetalhesConsumo": req.detalhesConsumo || "",
-                    "ValorConsumo": req.valorConsumo || 0,
-                    "Fornecedor": req.fornecedor || "",
-                    "DescricaoCompra": req.descricaoCompra || "",
-                    "ValorCompra": req.valorCompra || 0,
-                    "ValorTotal": req.valorTotal || 0,
-                    "RelatorioExecucao": req.relatorioExecucao || "",
-                    "DataExecucao": req.dataExecucao || null,
-                    "TecnicoResponsavel": req.tecnicoResponsavel || "",
-                    "ObsExecucao": req.obsExecucao || "",
-                    "DataConclusao": req.dataConclusao || null,
-                    "Anexos": JSON.stringify(req.anexos || []),
-                    "Historico": JSON.stringify(req.historico || []),
-                    "NotaDespesa": JSON.stringify(req.notaDespesa || null)
-                };
-
-                const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items/${req.id}/fields`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(fields)
-                });
-
-                if (response.ok) {
-                    return true;
-                } else {
-                    console.error('Erro ao atualizar manutenção:', await response.text());
-                    return false;
-                }
-            } catch (error) {
-                console.error('Erro ao atualizar manutenção no SharePoint:', error);
-                return false;
-            }
+        function selecionarTipo(tipo) {
+            document.getElementById('tipoRequisicao').value = tipo;
+            fecharModal('modalTipo');
+            abrirModal('modalNovaRequisicao');
+            document.getElementById('campoSubstituicao').style.display = tipo === 'substituicao' ? 'block' : 'none';
+            document.getElementById('campoReforco').style.display = tipo === 'reforco_quadro' ? 'block' : 'none';
         }
 
-        async function carregarRequisicoesManutencaoDoSharePoint() {
-            try {
-                const token = await getSharePointToken();
-                const siteId = await getSiteId();
-                const listName = "Manutencoes";
+        function editarRequisicao(id) {
+            const req = requisicoes.find(r => r.id == id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (!podeEditarRequisicao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
+            document.getElementById('editRequisicaoId').value = req.id;
+            document.getElementById('editFuncao').value = req.funcao;
+            document.getElementById('editDirecao').value = req.direcao;
+            document.getElementById('editArea').value = req.area;
+            document.getElementById('editQuantidade').value = req.quantidade;
+            document.getElementById('editDataInicio').value = req.dataInicio.split('T')[0];
+            document.getElementById('editObservacoes').value = req.observacoes || '';
+            document.getElementById('editTipo').value = req.tipo;
+            if (req.tipo === 'substituicao') {
+                document.getElementById('editColaboradorSubstituir').value = req.colaboradorSubstituir || '';
+                document.getElementById('editMotivoSubstituicao').value = req.motivoSubstituicao || '';
+            }
+            if (req.tipo === 'reforco_quadro') document.getElementById('editJustificativaReforco').value = req
+                .justificativaReforco || '';
+            document.getElementById('editCampoSubstituicao').style.display = req.tipo === 'substituicao' ? 'block' : 'none';
+            document.getElementById('editCampoReforco').style.display = req.tipo === 'reforco_quadro' ? 'block' : 'none';
+            abrirModal('modalEditarRequisicao');
+        }
 
-                const listCheck = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+        function abrirModalComentario(id, acao) {
+            document.getElementById('comentarioRequisicaoId').value = id;
+            document.getElementById('comentarioAcao').value = acao;
+            document.getElementById('comentario').value = '';
+            const titulo = document.getElementById('comentarioTitulo');
+            const btnSubmit = document.getElementById('comentarioBtnSubmit');
+            const obrigatorioSpan = document.getElementById('comentarioObrigatorio');
+            if (acao === 'aprovar') {
+                titulo.textContent = 'Aprovar Requisição';
+                btnSubmit.textContent = 'Confirmar Aprovação';
+                btnSubmit.classList.remove('btn-devolver');
+                btnSubmit.classList.add('btn-approve');
+                obrigatorioSpan.style.display = 'none';
+            } else if (acao === 'rejeitar') {
+                titulo.textContent = 'Rejeitar Requisição';
+                btnSubmit.textContent = 'Confirmar Rejeição';
+                btnSubmit.classList.remove('btn-devolver');
+                btnSubmit.classList.add('btn-reject');
+                obrigatorioSpan.style.display = 'inline';
+            } else if (acao === 'devolver') {
+                titulo.textContent = 'Devolver para Edição';
+                btnSubmit.textContent = 'Confirmar Devolução';
+                btnSubmit.classList.remove('btn-approve', 'btn-reject');
+                btnSubmit.classList.add('btn-devolver');
+                obrigatorioSpan.style.display = 'inline';
+            }
+            abrirModal('modalComentario');
+        }
+
+        function visualizarRequisicao(id) {
+            const req = requisicoes.find(r => r.id == id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (!podeVerRequisicao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
+            requisicaoVisualizarAtual = req;
+            const tempos = calcularTempoPorFaseDetalhado(req);
+            let infoRecrutamento = '';
+            if (req.dataInicioRecrutamento) {
+                const inicioHistorico = req.historicoComentarios?.find(h => h.acao === 'inicio_recrutamento' || h.acao ===
+                    'inicio_recrutamento_manual');
+                const tipoInicio = inicioHistorico?.acao === 'inicio_recrutamento_manual' ? ' (Manual)' : ' (Auto)';
+                infoRecrutamento =
+                    `<div style="margin-top:10px;padding:10px;background:#e3f2fd;border-radius:8px;">
+                            <strong><i class="fas fa-info-circle"></i> Recrutamento:</strong>
+                            <div>Início: ${formatarDataHora(req.dataInicioRecrutamento)}${tipoInicio}</div>
+                            ${inicioHistorico?.comentario ? `<div>Obs: ${inicioHistorico.comentario}</div>` : ''}
+                        </div>`;
+            }
+            let html =
+                `<div><strong>Código:</strong> ${req.codigo}</div>
+                    <div><strong>Função:</strong> ${req.funcao}</div>
+                    <div><strong>Direção:</strong> ${req.direcao}</div>
+                    <div><strong>Categoria:</strong> ${req.area}</div>
+                    <div><strong>Quantidade:</strong> ${req.quantidade}</div>
+                    <div><strong>Status:</strong> <span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></div>
+                    <div><strong>Data Início:</strong> ${formatarData(req.dataInicio)}</div>
+                    <div><strong>Solicitante:</strong> ${req.criadoPor || 'N/A'}</div>
+                    <div><strong>Data Criação:</strong> ${formatarDataHora(req.dataCriacao)}</div>
+                    <div><strong>Observações:</strong> ${req.observacoes || 'N/A'}</div>`;
+            if (req.tipo === 'substituicao') html +=
+                `<div><strong>Substituir:</strong> ${req.colaboradorSubstituir || 'N/A'}</div>
+                        <div><strong>Motivo:</strong> ${req.motivoSubstituicao || 'N/A'}</div>`;
+            if (req.tipo === 'reforco_quadro') html +=
+                `<div><strong>Justificativa:</strong> ${req.justificativaReforco || 'N/A'}</div>`;
+            html += infoRecrutamento;
+            if (req.dataInicioRecrutamento) {
+                if (req.dataFimRecrutamento) html +=
+                    `<div><strong>Fim Recrutamento:</strong> ${formatarDataHora(req.dataFimRecrutamento)}</div>`;
+                html += `<div><strong>Tempo Recrutamento:</strong> ${formatarTempo(calcularTempoRecrutamento(req)) || 'N/A'}</div>`;
+            }
+            if (podeVerBotaoSharePoint() && req.ficheiros && req.ficheiros.length > 0) {
+                const nomePasta = `Requisicao_${req.codigo}`;
+                const pastaUrl =
+                    `${SHAREPOINT_CONFIG.siteUrl}/${SHAREPOINT_CONFIG.bibliotecaDocumentos}/${SHAREPOINT_CONFIG.pastaAnexos}/${nomePasta}`;
+                html +=
+                    `<div style="margin-top:20px;text-align:center;"><button class="btn-sharepoint" onclick="window.open('${pastaUrl}', '_blank')" style="background-color:#0078d4;padding:10px 20px;"><i class="fab fa-microsoft"></i> Abrir Pasta (${req.ficheiros.length} ficheiros)</button></div>`;
+            }
+            if (usuarioAtual.perfil === 'Administrador' && req.status === 'aprovada' && !req.dataInicioRecrutamento) {
+                html +=
+                    `<div style="margin-top:20px;text-align:center;"><button class="btn-small btn-approve" onclick="iniciarRecrutamentoManual('${req.id}');fecharModal('modalVisualizar');" style="background-color:#9c27b0;padding:10px 20px;"><i class="fas fa-play-circle"></i> Iniciar Recrutamento</button></div>`;
+            }
+            html +=
+                `<div style="margin-top:25px;padding-top:20px;border-top:2px solid var(--primary);">
+                        <h4>Tempos por Fase</h4>
+                        <div class="tempos-fases-container" style="grid-template-columns:repeat(4,1fr);">
+                            <div class="fase-card rh" style="border-left-color:#4CAF50;">
+                                <div class="fase-header"><div class="fase-titulo">RH</div><div class="fase-tempo">${formatarTempo(tempos.tempoRH)}</div></div>
+                            </div>
+                            <div class="fase-card cg" style="border-left-color:#FF9800;">
+                                <div class="fase-header"><div class="fase-titulo">CG</div><div class="fase-tempo">${formatarTempo(tempos.tempoCG)}</div></div>
+                            </div>
+                            <div class="fase-card dg" style="border-left-color:#f44336;">
+                                <div class="fase-header"><div class="fase-titulo">Director</div><div class="fase-tempo">${formatarTempo(tempos.tempoDir)}</div></div>
+                            </div>
+                            <div class="fase-card recrutamento" style="border-left-color:#2196F3;">
+                                <div class="fase-header"><div class="fase-titulo">Recrutamento</div><div class="fase-tempo">${formatarTempo(tempos.tempoRecrutamento)}</div></div>
+                            </div>
+                        </div>
+                    </div>`;
+            const historico = req.historicoComentarios || [];
+            if (historico.length > 0) {
+                html += `<div style="margin-top:25px;"><h4>Histórico</h4>`;
+                historico.forEach(reg => {
+                    let icone = '',
+                        cor = '';
+                    if (reg.acao === 'aprovar') { icone = '✅';
+                        cor = '#4CAF50'; } else if (reg.acao === 'rejeitar') { icone = '❌';
+                        cor = '#f44336'; } else if (reg.acao === 'edicao') { icone = '✏️';
+                        cor = '#2196F3'; } else if (reg.acao === 'devolver') { icone = '🔄';
+                        cor = '#ff9800'; } else if (reg.acao === 'inicio_recrutamento' || reg.acao ===
+                        'inicio_recrutamento_manual') { icone = '🚀';
+                        cor = '#2196F3'; } else if (reg.acao === 'fim_recrutamento') { icone = '🏁';
+                        cor = '#ff9800'; } else if (reg.acao === 'confirmacao_atendimento') { icone = '✅';
+                        cor = '#4CAF50'; }
+                    html +=
+                        `<div class="historico-item" style="border-left-color:${cor};">
+                                <div class="historico-header">
+                                    <div><strong>${icone} ${reg.acao.toUpperCase()}</strong> - ${reg.usuario} (${reg.perfil})</div>
+                                    <div>${formatarDataHora(reg.data)}</div>
+                                </div>
+                                <div class="historico-comentario">${reg.comentario}</div>
+                            </div>`;
                 });
+                html += `</div>`;
+            }
+            const ficheiros = req.ficheiros || [];
+            if (ficheiros.length > 0) {
+                window[`ficheiros_${req.id}`] = ficheiros;
+                const primeiro = ficheiros[0];
+                html +=
+                    `<div class="ficheiros-section">
+                            <h4>Ficheiros (${ficheiros.length})</h4>
+                            <div class="ficheiros-tabs" id="ficheiroTabs_${req.id}">`;
+                ficheiros.forEach((f, i) => {
+                    html +=
+                        `<button class="ficheiro-tab ${i === 0 ? 'active' : ''}" onclick="mostrarFicheiro('${req.id}', ${i})">
+                                <i class="fas ${getIconePorTipo(f.tipo)}"></i> ${f.nome.length > 25 ? f.nome.substring(0, 25) + '...' : f.nome}
+                            </button>`;
+                });
+                html +=
+                    `</div>
+                            <div class="ficheiro-viewer-container">
+                                <div class="ficheiro-viewer" id="ficheiroViewer_${req.id}">${gerarVisualizadorFicheiro(primeiro)}</div>
+                            </div>
+                            <div class="ficheiro-info-bar" id="ficheiroInfo_${req.id}">
+                                <div class="ficheiro-details">
+                                    <span class="ficheiro-nome" id="ficheiroNome_${req.id}">${primeiro.nome}</span>
+                                    <span class="ficheiro-meta">${formatarTamanho(primeiro.tamanho)} • ${formatarData(primeiro.dataUpload)}</span>
+                                </div>
+                                <div class="ficheiro-actions">
+                                    <button class="btn-download" onclick="baixarFicheiro('${primeiro.downloadUrl || primeiro.url}', '${primeiro.nome}')"><i class="fas fa-download"></i> Download</button>
+                                    <button class="btn-sharepoint" onclick="window.open('${primeiro.webUrl || primeiro.url}', '_blank')"><i class="fas fa-external-link-alt"></i> SharePoint</button>
+                                </div>
+                            </div>
+                        </div>`;
+            }
+            document.getElementById('conteudoModal').innerHTML = html;
+            abrirModal('modalVisualizar');
+        }
 
-                if (!listCheck.ok) {
-                    await criarListaManutencao(siteId, token);
-                    return [];
-                }
+        function gerarVisualizadorFicheiro(ficheiro) {
+            const url = ficheiro.downloadUrl || ficheiro.url || ficheiro.webUrl;
+            if (!url) return '<div class="ficheiro-preview-unavailable"><i class="fas fa-exclamation-triangle"></i><p>URL não disponível</p></div>';
+            if (ficheiro.tipo && ficheiro.tipo.startsWith('image/')) return `<div class="ficheiro-preview-image"><img src="${url}" alt="${ficheiro.nome}" style="max-width:100%;max-height:500px;border-radius:8px;"></div>`;
+            if (ficheiro.tipo === 'application/pdf') return `<iframe src="${url}" class="ficheiro-preview-pdf"></iframe>`;
+            if (ficheiro.tipo && (ficheiro.tipo.includes('word') || ficheiro.tipo.includes('excel') || ficheiro.tipo.includes(
+                'powerpoint'))) return `<iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}" class="ficheiro-preview-office"></iframe>`;
+            if (ficheiro.tipo && ficheiro.tipo.startsWith('text/')) return `<iframe src="${url}" class="ficheiro-preview-text"></iframe>`;
+            return `<div class="ficheiro-preview-unavailable"><i class="fas fa-file"></i><h4>Pré-visualização não disponível</h4><button class="btn-download" onclick="baixarFicheiro('${url}','${ficheiro.nome}')"><i class="fas fa-download"></i> Download</button></div>`;
+        }
 
-                const listUrl =
-                    `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields`;
-                const response = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+        function mostrarFicheiro(reqId, index) {
+            const ficheiros = window[`ficheiros_${reqId}`];
+            if (!ficheiros || !ficheiros[index]) return;
+            const ficheiro = ficheiros[index];
+            const viewerDiv = document.getElementById(`ficheiroViewer_${reqId}`);
+            if (viewerDiv) viewerDiv.innerHTML = gerarVisualizadorFicheiro(ficheiro);
+            const nomeSpan = document.getElementById(`ficheiroNome_${reqId}`);
+            if (nomeSpan) nomeSpan.textContent = ficheiro.nome;
+            const metaSpan = document.querySelector(`#ficheiroInfo_${reqId} .ficheiro-meta`);
+            if (metaSpan) metaSpan.innerHTML = `${formatarTamanho(ficheiro.tamanho)} • ${formatarData(ficheiro.dataUpload)}`;
+            const actionsDiv = document.querySelector(`#ficheiroInfo_${reqId} .ficheiro-actions`);
+            if (actionsDiv) {
+                const downloadUrl = ficheiro.downloadUrl || ficheiro.url || ficheiro.webUrl;
+                actionsDiv.innerHTML =
+                    `<button class="btn-download" onclick="baixarFicheiro('${downloadUrl}', '${ficheiro.nome}')"><i class="fas fa-download"></i> Download</button>
+                                <button class="btn-sharepoint" onclick="window.open('${ficheiro.webUrl || ficheiro.url}', '_blank')"><i class="fas fa-external-link-alt"></i> SharePoint</button>`;
+            }
+            const tabs = document.querySelectorAll(`#ficheiroTabs_${reqId} .ficheiro-tab`);
+            tabs.forEach((tab, i) => { tab.classList.toggle('active', i === index); });
+        }
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.value && data.value.length > 0) {
-                        const items = data.value.map(item => {
-                            const f = item.fields;
-                            let anexos = [],
-                                historico = [],
-                                notaDespesa = null;
-                            if (f.Anexos) { try { anexos = JSON.parse(f.Anexos); } catch (e) {} }
-                            if (f.Historico) { try { historico = JSON.parse(f.Historico); } catch (e) {} }
-                            if (f.NotaDespesa) { try { notaDespesa = JSON.parse(f.NotaDespesa); } catch (e) {} }
+        function baixarFicheiro(url, nome) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nome;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            mostrarNotificacao(`Download de "${nome}" iniciado!`, 'success');
+        }
 
-                            return {
-                                id: item.id,
-                                codigo: f.Codigo || f.Title || `MAN-${item.id}`,
-                                equipamento: f.Equipamento || "",
-                                local: f.Local || "",
-                                tipo: f.Tipo === 'Corretiva' ? 'corretiva' : 'preventiva',
-                                prioridade: (f.Prioridade || 'média').toLowerCase(),
-                                descricao: f.Descricao || "",
-                                status: (f.Status || 'pendente').toLowerCase().replace(/ /g, '_'),
-                                solicitante: f.Solicitante || "",
-                                email: f.SolicitanteEmail || "",
-                                data: f.DataCriacao || new Date().toISOString(),
-                                diagnostico: f.Diagnostico || "",
-                                opcaoResolucao: f.OpcaoResolucao ? {
-                                    'Com Material': 'com_material',
-                                    'Transferência': 'transferencia',
-                                    'Consumo': 'consumo',
-                                    'Precisa Comprar': 'precisa_comprar'
-                                } [f.OpcaoResolucao] || "" : "",
-                                origemRecurso: f.OrigemRecurso || "",
-                                detalhesTransferencia: f.DetalhesTransferencia || "",
-                                valorTransferencia: f.ValorTransferencia || 0,
-                                detalhesConsumo: f.DetalhesConsumo || "",
-                                valorConsumo: f.ValorConsumo || 0,
-                                fornecedor: f.Fornecedor || "",
-                                descricaoCompra: f.DescricaoCompra || "",
-                                valorCompra: f.ValorCompra || 0,
-                                valorTotal: f.ValorTotal || 0,
-                                relatorioExecucao: f.RelatorioExecucao || "",
-                                dataExecucao: f.DataExecucao || null,
-                                tecnicoResponsavel: f.TecnicoResponsavel || "",
-                                obsExecucao: f.ObsExecucao || "",
-                                dataConclusao: f.DataConclusao || null,
-                                anexos: anexos,
-                                historico: historico,
-                                notaDespesa: notaDespesa
-                            };
-                        });
-                        return items;
+        function exportarRequisicaoIndividual() {
+            if (!requisicaoVisualizarAtual) { mostrarNotificacao('Nenhuma requisição selecionada', 'warning'); return; }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const req = requisicaoVisualizarAtual;
+            doc.setFontSize(18);
+            doc.setTextColor(46, 125, 50);
+            doc.text(`Requisição ${req.codigo}`, 14, 20);
+            doc.setFontSize(11);
+            doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-PT')}`, 14, 30);
+            const body = [
+                ['Código', req.codigo],
+                ['Função', req.funcao],
+                ['Direção', req.direcao],
+                ['Categoria', req.area],
+                ['Quantidade', req.quantidade.toString()],
+                ['Status', getStatusText(req.status)],
+                ['Data Início', formatarData(req.dataInicio)],
+                ['Solicitante', req.criadoPor || 'N/A'],
+                ['Data Criação', formatarDataHora(req.dataCriacao)],
+                ['Observações', req.observacoes || 'N/A']
+            ];
+            if (req.dataInicioRecrutamento) body.push(['Início Recrutamento', formatarDataHora(req.dataInicioRecrutamento)]);
+            if (req.dataFimRecrutamento) body.push(['Fim Recrutamento', formatarDataHora(req.dataFimRecrutamento)]);
+            if (req.dataInicioRecrutamento) body.push(['Tempo em Recrutamento', formatarTempo(calcularTempoRecrutamento(
+                req)) || 'N/A']);
+            doc.autoTable({ startY: 40, body: body, styles: { fontSize: 10, cellPadding: 4 },
+                columnStyles: { 0: { fontStyle: 'bold', textColor: [46, 125, 50] } } });
+            doc.save(`requisicao_${req.codigo}.pdf`);
+            mostrarNotificacao('PDF exportado!', 'success');
+        }
+
+        // ============================================================
+        // FUNÇÕES DE AÇÃO RECRUTAMENTO
+        // ============================================================
+        async function iniciarRecrutamentoManual(id) {
+            const req = requisicoes.find(r => r.id == id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (usuarioAtual.perfil !== 'Administrador') { mostrarNotificacao('Apenas o Administrador pode iniciar recrutamento manualmente!', 'error'); return; }
+            if (req.status !== 'aprovada') { mostrarNotificacao('Apenas requisições aprovadas!', 'warning'); return; }
+            if (req.dataInicioRecrutamento) { mostrarNotificacao('Recrutamento já iniciado!', 'warning'); return; }
+            showLoading();
+            try {
+                req.status = 'em_recrutamento';
+                req.dataInicioRecrutamento = new Date().toISOString();
+                adicionarAoHistorico(req, 'inicio_recrutamento_manual',
+                    `Recrutamento iniciado manualmente por ${usuarioAtual.nome}`);
+                await atualizarRequisicaoNoSharePoint(req);
+                await enviarEmail(req.criadoPorEmail, `Recrutamento Iniciado - ${req.codigo}`,
+                    templateInicioRecrutamentoManual(req));
+                await enviarEmail(emailsAprovadores['Recrutador'], `Recrutamento Iniciado - ${req.codigo}`,
+                    templateInicioRecrutamentoManual(req));
+                adicionarNotificacao('Recrutamento Iniciado', `Recrutamento manual iniciado para ${req.codigo}`, 'info',
+                    req.id);
+                mostrarNotificacao(`Recrutamento da requisição ${req.codigo} iniciado manualmente!`, 'success');
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                atualizarGraficos();
+                carregarDashboardTempos();
+                carregarDashboardStatus();
+            } catch (error) { console.error(error);
+                mostrarNotificacao('Erro ao iniciar recrutamento', 'error'); } finally { hideLoading(); }
+        }
+
+        async function finalizarRecrutamento(id) {
+            const req = requisicoes.find(r => r.id == id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (!podeFinalizarRecrutamento(req)) { mostrarNotificacao('Apenas o Recrutador pode finalizar!', 'error'); return; }
+            showLoading();
+            try {
+                req.status = 'aguardando_confirmacao_solicitante';
+                req.dataFimRecrutamento = new Date().toISOString();
+                adicionarAoHistorico(req, 'fim_recrutamento',
+                    `Recrutamento concluído. Tempo: ${formatarTempo(calcularTempoRecrutamento(req))}`);
+                await atualizarRequisicaoNoSharePoint(req);
+                await enviarEmail(req.criadoPorEmail, `Recrutamento Concluído - ${req.codigo}`,
+                    templateFimRecrutamento(req));
+                adicionarNotificacao('Recrutamento Concluído', `Recrutamento finalizado para ${req.codigo}`, 'success',
+                    req.id);
+                mostrarNotificacao(`Recrutamento da requisição ${req.codigo} concluído!`, 'success');
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                atualizarGraficos();
+                carregarDashboardTempos();
+                carregarDashboardStatus();
+            } catch (error) { console.error(error);
+                mostrarNotificacao('Erro ao finalizar recrutamento', 'error'); } finally { hideLoading(); }
+        }
+
+        async function confirmarAtendimento(id) {
+            const req = requisicoes.find(r => r.id == id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (!podeConfirmarAtendimento(req)) { mostrarNotificacao('Não tem permissão!', 'error'); return; }
+            showLoading();
+            try {
+                req.status = 'concluida';
+                adicionarAoHistorico(req, 'confirmacao_atendimento',
+                    `Atendimento confirmado por ${usuarioAtual.nome}`);
+                await atualizarRequisicaoNoSharePoint(req);
+                adicionarNotificacao('Requisição Confirmada', `Requisição ${req.codigo} confirmada!`, 'success', req.id);
+                mostrarNotificacao(`Requisição ${req.codigo} confirmada! Processo concluído.`, 'success');
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                atualizarGraficos();
+                carregarDashboardTempos();
+                carregarDashboardStatus();
+            } catch (error) { console.error(error);
+                mostrarNotificacao('Erro ao confirmar atendimento', 'error'); } finally { hideLoading(); }
+        }
+
+        async function processarComentario(e) {
+            e.preventDefault();
+            const id = document.getElementById('comentarioRequisicaoId').value;
+            const acao = document.getElementById('comentarioAcao').value;
+            const coment = document.getElementById('comentario').value;
+            const req = requisicoes.find(r => r.id == id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if ((acao === 'rejeitar' || acao === 'devolver') && !coment.trim()) { mostrarNotificacao(
+                    'Comentário obrigatório!', 'error'); return; }
+            const submitBtn = document.getElementById('comentarioBtnSubmit');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processando...';
+            try {
+                if (acao === 'devolver') {
+                    if (!podeDevolverRequisicao(req)) { mostrarNotificacao('Sem permissão!', 'error'); return; }
+                    let novoStatus = req.status,
+                        destinatarioEmail = '',
+                        destinatarioPerfil = '';
+                    if (req.status === 'em_validacao_rh') {
+                        novoStatus = 'devolvida_solicitante';
+                        destinatarioEmail = req.criadoPorEmail;
+                        destinatarioPerfil = 'Solicitante';
+                    } else if (req.status === 'em_validacao_financas') {
+                        novoStatus = 'em_validacao_rh';
+                        destinatarioEmail = emailsAprovadores['RH'];
+                        destinatarioPerfil = 'RH';
+                    } else if (req.status === 'em_validacao_director') {
+                        novoStatus = 'em_validacao_financas';
+                        destinatarioEmail = emailsAprovadores['Controlo de Gestão'];
+                        destinatarioPerfil = 'Controlo de Gestão';
+                    } else { mostrarNotificacao('Não pode devolver este status', 'warning'); return; }
+                    adicionarAoHistorico(req, 'devolver', coment);
+                    req.status = novoStatus;
+                    await atualizarRequisicaoNoSharePoint(req);
+                    await enviarEmail(destinatarioEmail, `Requisição Devolvida - ${req.codigo}`,
+                        templateDevolucao(req, usuarioAtual.nome, coment, destinatarioPerfil));
+                    adicionarNotificacao('Devolvida', `Requisição ${req.codigo} devolvida`, 'warning', req.id);
+                    mostrarNotificacao(`Requisição devolvida para ${destinatarioPerfil}!`, 'warning');
+                } else if (acao === 'aprovar') {
+                    if (utilizadorJaAprovou(req)) { mostrarNotificacao('Já aprovou esta requisição!', 'warning'); return; }
+                    if (!podeAprovarStatus(req)) { mostrarNotificacao('Sem permissão para aprovar!', 'error'); return; }
+                    if (req.criadoPorEmail === usuarioAtual.email) { mostrarNotificacao(
+                            'Não pode aprovar sua própria requisição!', 'error'); return; }
+                    adicionarAoHistorico(req, acao, coment || 'Aprovado');
+                    await atualizarRequisicaoNoSharePoint(req);
+                    let novoStatus = '',
+                        emailDestinatario = '',
+                        proximoStatusTexto = '';
+                    if (req.status === 'em_validacao_rh') {
+                        novoStatus = 'em_validacao_financas';
+                        emailDestinatario = emailsAprovadores['Controlo de Gestão'];
+                        proximoStatusTexto = 'Controlo de Gestão';
+                        await enviarEmail(emailDestinatario, `Requisição para Aprovação - ${req.codigo}`,
+                            templateAprovacao(req, usuarioAtual.nome, coment, proximoStatusTexto));
+                        mostrarNotificacao(`Requisição aprovada pelo RH!`, 'success');
+                    } else if (req.status === 'em_validacao_financas') {
+                        novoStatus = 'em_validacao_director';
+                        emailDestinatario = emailsAprovadores['Director Geral'];
+                        proximoStatusTexto = 'Director Geral';
+                        await enviarEmail(emailDestinatario, `Requisição para Aprovação - ${req.codigo}`,
+                            templateAprovacao(req, usuarioAtual.nome, coment, proximoStatusTexto));
+                        mostrarNotificacao(`Requisição aprovada pelo CG!`, 'success');
+                    } else if (req.status === 'em_validacao_director') {
+                        novoStatus = 'em_recrutamento';
+                        req.dataInicioRecrutamento = new Date().toISOString();
+                        adicionarAoHistorico(req, 'inicio_recrutamento',
+                            `Recrutamento iniciado após aprovação do Director`);
+                        const todosEmails = [req.criadoPorEmail, emailsAprovadores['RH'], emailsAprovadores['Recrutador'],
+                            configuracoes.emailAdmin
+                        ].filter((v, i, a) => a.indexOf(v) === i);
+                        for (const email of todosEmails) await enviarEmail(email,
+                            `Requisição Aprovada - ${req.codigo}`,
+                            templateAprovacaoFinal(req, usuarioAtual.nome, coment));
+                        mostrarNotificacao(`Requisição APROVADA e recrutamento iniciado!`, 'success');
                     }
+                    req.status = novoStatus;
+                    await atualizarRequisicaoNoSharePoint(req);
+                } else if (acao === 'rejeitar') {
+                    adicionarAoHistorico(req, acao, coment);
+                    await atualizarRequisicaoNoSharePoint(req);
+                    req.status = 'rejeitada';
+                    await atualizarRequisicaoNoSharePoint(req);
+                    await enviarEmail(req.criadoPorEmail, `Requisição Rejeitada - ${req.codigo}`,
+                        templateRejeicao(req, usuarioAtual.nome, coment));
+                    mostrarNotificacao(`Requisição REJEITADA!`, 'warning');
                 }
-                return [];
-            } catch (error) {
-                console.error('Erro ao carregar manutenções do SharePoint:', error);
-                return [];
+                fecharModal('modalComentario');
+                await carregarRequisicoesDoSharePoint();
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                atualizarGraficos();
+                carregarDashboardTempos();
+                carregarDashboardStatus();
+            } catch (error) { console.error(error);
+                mostrarNotificacao('Erro: ' + error.message, 'error'); } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirmar';
             }
         }
 
-        // ============================================================
-        // FUNÇÕES DE SHAREPOINT - AVALIAÇÃO
-        // ============================================================
+        async function salvarRequisicao(e) {
+            e.preventDefault();
+            const tipo = document.getElementById('tipoRequisicao').value;
+            const dir = document.getElementById('direcao').value;
+            const area = document.getElementById('area').value;
+            const funcao = document.getElementById('funcao').value;
+            const qtd = parseInt(document.getElementById('quantidade').value);
+            const dataInicio = document.getElementById('dataInicio').value;
+            const obs = document.getElementById('observacoes').value;
+            if (!tipo || !dir || !area || !funcao || !qtd || !dataInicio) { mostrarNotificacao(
+                    'Preencha todos os campos obrigatórios', 'error'); return; }
+            showLoading();
+            const novoCodigo = gerarCodigoRequisicao();
+            let ficheirosSalvos = [];
+            if (arquivosUpload.length > 0) {
+                mostrarNotificacao(`Enviando ${arquivosUpload.length} ficheiro(s)...`, 'info');
+                for (const arquivo of arquivosUpload) {
+                    try {
+                        const ficheiroSalvo = await uploadFicheiroParaSharePoint(arquivo, novoCodigo);
+                        ficheirosSalvos.push(ficheiroSalvo);
+                    } catch (error) { console.error('Erro:', error);
+                        mostrarNotificacao(`Erro ao enviar ${arquivo.name}`, 'error'); }
+                }
+                if (ficheirosSalvos.length > 0) mostrarNotificacao(`${ficheirosSalvos.length} ficheiro(s) enviado(s)!`,
+                    'success');
+            }
+            const novaRequisicao = {
+                id: Date.now().toString(),
+                codigo: novoCodigo,
+                funcao: funcao,
+                direcao: dir,
+                area: area,
+                quantidade: qtd,
+                status: 'em_validacao_rh',
+                tipo: tipo,
+                dataCriacao: new Date().toISOString(),
+                dataInicio: dataInicio,
+                criadoPor: usuarioAtual.nome,
+                criadoPorEmail: usuarioAtual.email,
+                observacoes: obs || '',
+                colaboradorSubstituir: document.getElementById('colaboradorSubstituir')?.value || '',
+                motivoSubstituicao: document.getElementById('motivoSubstituicao')?.value || '',
+                justificativaReforco: document.getElementById('justificativaReforco')?.value || '',
+                ficheiros: ficheirosSalvos,
+                historicoComentarios: [],
+                dataInicioRecrutamento: null,
+                dataFimRecrutamento: null
+            };
+            const salvo = await salvarRequisicaoNoSharePoint(novaRequisicao);
+            if (salvo) {
+                requisicoes.unshift(novaRequisicao);
+                await enviarEmail(emailsAprovadores['RH'], `Nova Requisição - ${novoCodigo}`,
+                    templateNovaRequisicao(novaRequisicao));
+                adicionarNotificacao('Nova Requisição', `Requisição ${novoCodigo} criada!`, 'info', novaRequisicao.id);
+                fecharModal('modalNovaRequisicao');
+                document.getElementById('formNovaRequisicao').reset();
+                arquivosUpload = [];
+                document.getElementById('fileList').innerHTML = '';
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                atualizarGraficos();
+                carregarDashboardTempos();
+                carregarDashboardStatus();
+                mostrarNotificacao(`Requisição ${novoCodigo} criada!`, 'success');
+            } else mostrarNotificacao('Erro ao salvar no SharePoint', 'error');
+            hideLoading();
+        }
 
-        async function salvarAvaliacaoNoSharePoint(avaliacao) {
+        async function uploadFicheiroParaSharePoint(arquivo, requisicaoCodigo) {
             try {
                 const token = await getSharePointToken();
                 const siteId = await getSiteId();
-                const listName = "Avaliacoes";
-
-                const listCheck = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (!listCheck.ok) {
-                    await criarListaAvaliacao(siteId, token);
-                }
-
-                const fields = {
-                    "Title": `Avaliação - ${avaliacao.colaborador.nome}`,
-                    "ColaboradorID": avaliacao.colaborador.id,
-                    "ColaboradorNome": avaliacao.colaborador.nome,
-                    "ColaboradorDirecao": avaliacao.colaborador.direcao,
-                    "ColaboradorDepartamento": avaliacao.colaborador.departamento,
-                    "ColaboradorFuncao": avaliacao.colaborador.funcao,
-                    "ColaboradorAdmissao": avaliacao.colaborador.admissao,
-                    "AvaliadorNome": avaliacao.avaliadorNome,
-                    "AvaliadorEmail": avaliacao.avaliadorEmail,
-                    "DataAvaliacao": avaliacao.data || new Date().toISOString(),
-                    "Competencias": JSON.stringify(avaliacao.competencias || []),
-                    "PontosFortes": avaliacao.pontosFortes || "",
-                    "PontosMelhorar": avaliacao.pontosMelhorar || "",
-                    "FeedbackGlobal": avaliacao.feedbackGlobal || "",
-                    "Desenvolvimento": avaliacao.desenvolvimento || "",
-                    "Medidas": JSON.stringify(avaliacao.medidas || []),
-                    "ClassificacaoFinal": avaliacao.classificacao || "2 - De acordo",
-                    "NotaFinal": avaliacao.notaFinal || 0,
-                    "Assinatura": avaliacao.assinatura || "",
-                    "Status": avaliacao.status || "Finalizado"
-                };
-
-                const response = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ fields: fields })
-                });
-
-                if (response.ok) {
-                    const newItem = await response.json();
-                    return newItem.id;
+                const driveId = await getDriveId();
+                const nomePasta = `Requisicao_${requisicaoCodigo}`;
+                const caminhoPasta = `${SHAREPOINT_CONFIG.pastaAnexos}/${nomePasta}`;
+                const nomeArquivo = `${Date.now()}_${arquivo.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                let fileData;
+                if (arquivo.size < 4 * 1024 * 1024) {
+                    const reader = new FileReader();
+                    const arrayBufferPromise = new Promise((resolve, reject) => {
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                    });
+                    reader.readAsArrayBuffer(arquivo.file);
+                    const arrayBuffer = await arrayBufferPromise;
+                    const uploadUrl =
+                        `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${caminhoPasta}/${nomeArquivo}:/content`;
+                    const response = await fetch(uploadUrl, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': arquivo.type ||
+                                'application/octet-stream' },
+                        body: arrayBuffer
+                    });
+                    if (!response.ok) throw new Error(`Erro no upload: ${response.status}`);
+                    fileData = await response.json();
                 } else {
-                    console.error('Erro ao salvar avaliação:', await response.text());
-                    return null;
+                    const uploadUrl =
+                        `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${caminhoPasta}/${nomeArquivo}:/createUploadSession`;
+                    const sessionResponse = await fetch(uploadUrl, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ "@microsoft.graph.conflictBehavior": "rename" })
+                    });
+                    if (!sessionResponse.ok) throw new Error(`Erro ao criar sessão: ${sessionResponse.status}`);
+                    const sessionData = await sessionResponse.json();
+                    const uploadSessionUrl = sessionData.uploadUrl;
+                    const reader = new FileReader();
+                    const arrayBufferPromise = new Promise((resolve, reject) => {
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                    });
+                    reader.readAsArrayBuffer(arquivo.file);
+                    const arrayBuffer = await arrayBufferPromise;
+                    const uploadResponse = await fetch(uploadSessionUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Length': arrayBuffer.byteLength,
+                            'Content-Range': `bytes 0-${arrayBuffer.byteLength - 1}/${arrayBuffer.byteLength}`
+                        },
+                        body: arrayBuffer
+                    });
+                    if (!uploadResponse.ok) throw new Error(`Erro no upload: ${uploadResponse.status}`);
+                    fileData = await uploadResponse.json();
                 }
-            } catch (error) {
-                console.error('Erro ao salvar avaliação no SharePoint:', error);
-                return null;
+                const shareResponse = await fetch(
+                    `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/items/${fileData.id}/createLink`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type: "view", scope: "organization" })
+                    });
+                let link = fileData.webUrl;
+                let downloadUrl = fileData['@microsoft.graph.downloadUrl'] || fileData.webUrl;
+                if (shareResponse.ok) { const shareData = await shareResponse.json();
+                    link = shareData.link.webUrl; }
+                return {
+                    id: fileData.id,
+                    nome: arquivo.name,
+                    tamanho: arquivo.size,
+                    tipo: arquivo.type,
+                    url: link,
+                    downloadUrl: downloadUrl,
+                    webUrl: fileData.webUrl,
+                    dataUpload: new Date().toISOString(),
+                    requisicaoCodigo: requisicaoCodigo
+                };
+            } catch (error) { console.error('❌ Erro ao fazer upload:', error); throw error; }
+        }
+
+        // ============================================================
+        // FUNÇÕES DE RELATÓRIO RECRUTAMENTO
+        // ============================================================
+        function obterDadosRelatorio() {
+            const dataInicio = document.getElementById('relatorioDataInicio').value;
+            const dataFim = document.getElementById('relatorioDataFim').value;
+            const status = document.getElementById('relatorioStatus').value;
+            let dados = filtrarRequisicoesVisiveis(requisicoes);
+            if (dataInicio) dados = dados.filter(r => new Date(r.dataCriacao) >= new Date(dataInicio));
+            if (dataFim) dados = dados.filter(r => new Date(r.dataCriacao) <= new Date(dataFim + 'T23:59:59'));
+            if (status !== 'all') dados = dados.filter(r => r.status === status);
+            return dados;
+        }
+
+        function exportarRelatorioPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const dados = obterDadosRelatorio();
+            const dataRelatorio = new Date().toLocaleDateString('pt-PT');
+            doc.setFontSize(18);
+            doc.setTextColor(46, 125, 50);
+            doc.text('Kero SIR - Relatório de Requisições', 14, 20);
+            doc.setFontSize(11);
+            doc.text(`Gerado em: ${dataRelatorio}`, 14, 30);
+            doc.text(`Total: ${dados.length}`, 14, 38);
+            doc.autoTable({
+                startY: 45,
+                head: [
+                    ['Código', 'Função', 'Direção', 'Status', 'Data Criação']
+                ],
+                body: dados.map(r => [r.codigo, r.funcao, r.direcao, getStatusText(r.status), formatarData(r
+                .dataCriacao)]),
+                headStyles: { fillColor: [76, 175, 80] }
+            });
+            doc.save(`relatorio_${dataRelatorio.replace(/\//g, '-')}.pdf`);
+            mostrarNotificacao('PDF gerado!', 'success');
+        }
+
+        function exportarRelatorioExcel() {
+            const dados = obterDadosRelatorio();
+            const dataRelatorio = new Date().toLocaleDateString('pt-PT');
+            const wsData = [
+                ['Kero SIR - Relatório'],
+                [`Gerado: ${dataRelatorio}`],
+                [`Total: ${dados.length}`],
+                [],
+                ['Código', 'Função', 'Direção', 'Categoria', 'Status', 'Tipo', 'Data Criação', 'Data Início',
+                    'Solicitante'
+                ]
+            ];
+            dados.forEach(r => wsData.push([r.codigo, r.funcao, r.direcao, r.area, getStatusText(r.status), getTipoBadge(
+                r.tipo), formatarData(r.dataCriacao), formatarData(r.dataInicio), r.criadoPor]));
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Requisições');
+            XLSX.writeFile(wb, `relatorio_${dataRelatorio.replace(/\//g, '-')}.xlsx`);
+            mostrarNotificacao('Excel gerado!', 'success');
+        }
+
+        function exportarRelatorioCSV() {
+            const dados = obterDadosRelatorio();
+            const dataRelatorio = new Date().toLocaleDateString('pt-PT');
+            let csv = 'Código;Função;Direção;Categoria;Status;Tipo;Data Criação;Data Início;Solicitante\n';
+            dados.forEach(r => csv +=
+                `"${r.codigo}";"${r.funcao}";"${r.direcao}";"${r.area}";"${getStatusText(r.status)}";"${getTipoBadge(r.tipo)}";"${formatarData(r.dataCriacao)}";"${formatarData(r.dataInicio)}";"${r.criadoPor}"\n`
+                );
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `relatorio_${dataRelatorio.replace(/\//g, '-')}.csv`;
+            link.click();
+            mostrarNotificacao('CSV gerado!', 'success');
+        }
+
+        async function salvarEdicaoRequisicao(e) {
+            e.preventDefault();
+            const id = document.getElementById('editRequisicaoId').value;
+            const req = requisicoes.find(r => r.id == id);
+            if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+            if (!podeEditarRequisicao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
+            showLoading();
+            const alteracoes = [];
+            if (req.funcao !== document.getElementById('editFuncao').value) {
+                alteracoes.push(`Função: "${req.funcao}" → "${document.getElementById('editFuncao').value}"`);
+                req.funcao = document.getElementById('editFuncao').value;
             }
+            if (req.direcao !== document.getElementById('editDirecao').value) {
+                alteracoes.push(`Direção: "${req.direcao}" → "${document.getElementById('editDirecao').value}"`);
+                req.direcao = document.getElementById('editDirecao').value;
+            }
+            if (req.area !== document.getElementById('editArea').value) {
+                alteracoes.push(`Categoria: "${req.area}" → "${document.getElementById('editArea').value}"`);
+                req.area = document.getElementById('editArea').value;
+            }
+            if (req.quantidade !== parseInt(document.getElementById('editQuantidade').value)) {
+                alteracoes.push(`Quantidade: ${req.quantidade} → ${document.getElementById('editQuantidade').value}`);
+                req.quantidade = parseInt(document.getElementById('editQuantidade').value);
+            }
+            req.dataInicio = document.getElementById('editDataInicio').value;
+            req.observacoes = document.getElementById('editObservacoes').value;
+            if (req.tipo === 'substituicao') {
+                req.colaboradorSubstituir = document.getElementById('editColaboradorSubstituir').value;
+                req.motivoSubstituicao = document.getElementById('editMotivoSubstituicao').value;
+            }
+            if (req.tipo === 'reforco_quadro') req.justificativaReforco = document.getElementById('editJustificativaReforco')
+                .value;
+            if (alteracoes.length > 0) {
+                if (!req.historicoComentarios) req.historicoComentarios = [];
+                req.historicoComentarios.unshift({
+                    id: Date.now().toString(),
+                    acao: 'edicao',
+                    usuario: usuarioAtual.nome,
+                    perfil: usuarioAtual.perfil,
+                    comentario: `Editada por ${usuarioAtual.nome}. Alterações: ${alteracoes.join(', ')}`,
+                    data: new Date().toISOString(),
+                    statusAnterior: req.status,
+                    statusNovo: req.status
+                });
+            }
+            const statusAntes = req.status;
+            const atualizado = await atualizarRequisicaoNoSharePoint(req);
+            if (atualizado) {
+                if (statusAntes === 'devolvida_solicitante' && usuarioAtual.email === req.criadoPorEmail) {
+                    req.status = 'em_validacao_rh';
+                    await atualizarRequisicaoNoSharePoint(req);
+                    await enviarEmail(emailsAprovadores['RH'], `Requisição Reenviada - ${req.codigo}`,
+                        templateAprovacao(req, usuarioAtual.nome, "Reenviada após correções", "RH"));
+                    mostrarNotificacao(`Requisição ${req.codigo} reenviada!`, 'success');
+                } else mostrarNotificacao('Requisição editada!', 'success');
+                fecharModal('modalEditarRequisicao');
+                filtrarRequisicoes();
+                carregarAprovacoes();
+                atualizarKPIs();
+                carregarDashboardTempos();
+                carregarDashboardStatus();
+            } else mostrarNotificacao('Erro ao salvar', 'error');
+            hideLoading();
         }
 
         // ============================================================
@@ -4006,25 +4540,17 @@
                 return `MAN-${year}-${num}`;
             }
 
-            function notificarM(msg, tipo = 'success') { mostrarNotificacao(msg, tipo); }
+            function salvarM() { try { localStorage.setItem('kero_manutencao_v8', JSON.stringify(reqs)); } catch (e) {
+                    notificarM('Erro ao salvar dados!', 'error'); } }
 
-            async function carregarDadosM() {
-                const dados = await carregarRequisicoesManutencaoDoSharePoint();
-                if (dados && dados.length > 0) {
-                    reqs = dados;
-                    // Atualiza nextId
-                    reqs.forEach(r => {
-                        const num = parseInt(r.codigo.split('-')[2]);
-                        if (num >= nextIdM) nextIdM = num + 1;
-                    });
-                } else {
-                    carregarExemploM();
-                }
-                renderizarRequisicoesM();
-                renderizarAprovacoesM();
-                carregarDashboardM();
-                atualizarRelatoriosM();
-                atualizarBadgesM();
+            function carregarM() {
+                try {
+                    const data = localStorage.getItem('kero_manutencao_v8');
+                    if (data) {
+                        reqs = JSON.parse(data);
+                        reqs.forEach(r => { if (parseInt(r.id) >= nextIdM) nextIdM = parseInt(r.id) + 1; });
+                    } else { carregarExemploM(); }
+                } catch (e) { carregarExemploM(); }
             }
 
             function carregarExemploM() {
@@ -4068,11 +4594,10 @@
                         ], notaDespesa: null }
                 ];
                 nextIdM = 4;
-                // Salva no SharePoint
-                reqs.forEach(async (req) => {
-                    await salvarRequisicaoManutencaoNoSharePoint(req);
-                });
+                salvarM();
             }
+
+            function notificarM(msg, tipo = 'success') { mostrarNotificacao(msg, tipo); }
 
             function renderizarRequisicoesM() {
                 let filtradas = reqs;
@@ -4316,7 +4841,7 @@
                 });
             }
 
-            async function novaRequisicaoM(e) {
+            function novaRequisicaoM(e) {
                 e.preventDefault();
                 const tipo = document.getElementById('manutencaoTipo').value;
                 const equipamento = document.getElementById('manutencaoEquipamento').value.trim();
@@ -4327,7 +4852,7 @@
                     return;
                 }
                 const nova = {
-                    id: String(Date.now()),
+                    id: String(nextIdM++),
                     codigo: gerarCodigoM(),
                     tipo: tipo,
                     equipamento: equipamento,
@@ -4343,23 +4868,15 @@
                         acao: 'Requisição criada' }],
                     notaDespesa: null
                 };
-                
-                showLoading();
-                const salvo = await salvarRequisicaoManutencaoNoSharePoint(nova);
-                hideLoading();
-                
-                if (salvo) {
-                    reqs.unshift(nova);
-                    fecharModal('modalNovaRequisicaoManutencao');
-                    document.getElementById('formNovaRequisicaoManutencao').reset();
-                    requisicaoAnexoM = null;
-                    document.getElementById('requisicaoManutencaoFileList').innerHTML = '';
-                    renderizarRequisicoesM();
-                    carregarDashboardM();
-                    notificarM(`✅ Requisição ${nova.codigo} criada com sucesso!`, 'success');
-                } else {
-                    notificarM('❌ Erro ao salvar no SharePoint!', 'error');
-                }
+                reqs.unshift(nova);
+                salvarM();
+                fecharModal('modalNovaRequisicaoManutencao');
+                document.getElementById('formNovaRequisicaoManutencao').reset();
+                requisicaoAnexoM = null;
+                document.getElementById('requisicaoManutencaoFileList').innerHTML = '';
+                renderizarRequisicoesM();
+                carregarDashboardM();
+                notificarM(`✅ Requisição ${nova.codigo} criada com sucesso!`, 'success');
             }
 
             function abrirAvaliacaoM(id) {
@@ -4375,395 +4892,6 @@
                 abrirModal('modalAvaliacaoManutencao');
             }
 
-            // Adicionar modal de avaliação dinamicamente
-            function criarModalAvaliacao() {
-                const modalHTML = `
-                <div class="modal" id="modalAvaliacaoManutencao">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 style="color: var(--primary-dark);"><i class="fas fa-clipboard-check" style="color: var(--primary);"></i> Avaliação Técnica</h2>
-                            <span class="close-modal" onclick="fecharModal('modalAvaliacaoManutencao')">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formAvaliacaoManutencao">
-                                <input type="hidden" id="avaliacaoManutencaoId">
-                                <div class="form-group">
-                                    <label>Diagnóstico Técnico *</label>
-                                    <textarea id="manutencaoDiagnostico" class="form-control" rows="3" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Opção de Resolução *</label>
-                                    <select id="manutencaoOpcaoResolucao" class="form-control" required>
-                                        <option value="">Selecione</option>
-                                        <option value="com_material">Tenho material em stock - vou executar</option>
-                                        <option value="transferencia">Preciso transferir de outra loja</option>
-                                        <option value="consumo">Vou consumir de stock interno</option>
-                                        <option value="precisa_comprar">Precisa comprar material</option>
-                                    </select>
-                                </div>
-                                <div id="manutencaoDetalhesTransferencia" style="display:none;">
-                                    <div class="form-group">
-                                        <label>Origem do Recurso *</label>
-                                        <input type="text" id="manutencaoOrigemRecurso" class="form-control" placeholder="Ex: Loja Talatona">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Detalhes da Transferência</label>
-                                        <textarea id="manutencaoDetalhesTransferenciaTexto" class="form-control" rows="2"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Valor Estimado (KZ)</label>
-                                        <input type="number" id="manutencaoValorTransferencia" class="form-control" min="0">
-                                    </div>
-                                </div>
-                                <div id="manutencaoDetalhesConsumo" style="display:none;">
-                                    <div class="form-group">
-                                        <label>Detalhes do Consumo</label>
-                                        <textarea id="manutencaoDetalhesConsumoTexto" class="form-control" rows="2"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Valor Estimado (KZ)</label>
-                                        <input type="number" id="manutencaoValorConsumo" class="form-control" min="0">
-                                    </div>
-                                </div>
-                                <div id="manutencaoDetalhesCompra" style="display:none;">
-                                    <div class="form-group">
-                                        <label>Fornecedor *</label>
-                                        <input type="text" id="manutencaoFornecedorCompra" class="form-control" placeholder="Nome do fornecedor">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Descrição do Material *</label>
-                                        <textarea id="manutencaoDescricaoCompra" class="form-control" rows="2" placeholder="Descreva o material necessário"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Valor Estimado (KZ)</label>
-                                        <input type="number" id="manutencaoValorCompra" class="form-control" min="0">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Anexar Ficheiro</label>
-                                    <div class="dropzone" id="dropzoneAvaliacaoManutencao"><i class="fas fa-cloud-upload-alt"></i> Clique ou arraste para anexar<input type="file" id="avaliacaoManutencaoFileInput" style="display:none"></div>
-                                    <div id="avaliacaoManutencaoFileList"></div>
-                                </div>
-                                <div class="form-actions">
-                                    <button type="button" class="btn-small" onclick="fecharModal('modalAvaliacaoManutencao')">Cancelar</button>
-                                    <button type="submit" class="btn-small btn-approve"><i class="fas fa-check"></i> Enviar Avaliação</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
-            }
-
-            // Criar modais adicionais para manutenção
-            function criarModaisManutencao() {
-                // Modal Consumíveis Autorização
-                const modalConsumiveisAutorizacao = `
-                <div class="modal" id="modalConsumiveisAutorizacaoManutencao">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 style="color: var(--primary-dark);"><i class="fas fa-check-circle" style="color: var(--secondary);"></i> Autorização - Consumíveis</h2>
-                            <span class="close-modal" onclick="fecharModal('modalConsumiveisAutorizacaoManutencao')">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formConsumiveisAutorizacaoManutencao">
-                                <input type="hidden" id="consumiveisAutorizacaoManutencaoId">
-                                <div id="consumiveisAutorizacaoManutencaoInfo" style="background:var(--primary-light);padding:15px;border-radius:8px;margin-bottom:15px;"></div>
-                                <div class="form-group">
-                                    <label>Decisão *</label>
-                                    <select id="consumiveisManutencaoDecisao" class="form-control" required>
-                                        <option value="">Selecione</option>
-                                        <option value="aprovar">✅ Aprovar</option>
-                                        <option value="reprovar">❌ Reprovar</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Comentário *</label>
-                                    <textarea id="consumiveisManutencaoComentario" class="form-control" rows="3" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Assinatura *</label>
-                                    <input type="text" id="consumiveisManutencaoAssinatura" class="form-control" required>
-                                </div>
-                                <div class="form-actions">
-                                    <button type="button" class="btn-small" onclick="fecharModal('modalConsumiveisAutorizacaoManutencao')">Cancelar</button>
-                                    <button type="submit" class="btn-small btn-approve"><i class="fas fa-check"></i> Enviar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalConsumiveisAutorizacao);
-
-                // Modal Consumíveis Despesas
-                const modalConsumiveisDespesas = `
-                <div class="modal" id="modalConsumiveisDespesasManutencao">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 style="color: var(--primary-dark);"><i class="fas fa-file-invoice" style="color: var(--secondary);"></i> Registar Despesas - Consumíveis</h2>
-                            <span class="close-modal" onclick="fecharModal('modalConsumiveisDespesasManutencao')">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formConsumiveisDespesasManutencao">
-                                <input type="hidden" id="consumiveisDespesasManutencaoId">
-                                <div id="consumiveisDespesasManutencaoInfo" style="background:var(--primary-light);padding:15px;border-radius:8px;margin-bottom:15px;"></div>
-                                <div class="form-group">
-                                    <label>Fornecedor *</label>
-                                    <input type="text" id="manutencaoConsumiveisFornecedor" class="form-control" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Data</label>
-                                    <input type="date" id="manutencaoConsumiveisData" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>Tipo de Documento</label>
-                                    <select id="manutencaoConsumiveisTipoPagamento" class="form-control">
-                                        <option value="proforma">Pró-forma</option>
-                                        <option value="fatura">Fatura</option>
-                                        <option value="recibo">Recibo</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Itens / Produtos</label>
-                                    <div id="manutencaoConsumiveisItensList"></div>
-                                    <button type="button" class="btn-small btn-approve" onclick="manutencaoApp.adicionarItemConsumiveis()" style="margin-top:10px;"><i class="fas fa-plus"></i> Adicionar Item</button>
-                                </div>
-                                <div class="form-group">
-                                    <label>Total (KZ)</label>
-                                    <input type="number" id="manutencaoConsumiveisTotal" class="form-control" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label>Motivo da Despesa *</label>
-                                    <textarea id="manutencaoConsumiveisMotivo" class="form-control" rows="2" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Anexar Comprovativo</label>
-                                    <div class="dropzone" id="dropzoneConsumiveisManutencao"><i class="fas fa-cloud-upload-alt"></i> Clique ou arraste para anexar<input type="file" id="consumiveisManutencaoFileInput" style="display:none"></div>
-                                    <div id="consumiveisManutencaoFileList"></div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Assinatura *</label>
-                                    <input type="text" id="consumiveisManutencaoAssinatura" class="form-control" required>
-                                </div>
-                                <div class="form-actions">
-                                    <button type="button" class="btn-small" onclick="fecharModal('modalConsumiveisDespesasManutencao')">Cancelar</button>
-                                    <button type="submit" class="btn-small btn-approve"><i class="fas fa-save"></i> Salvar Despesas</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalConsumiveisDespesas);
-
-                // Modal CG
-                const modalCG = `
-                <div class="modal" id="modalCGManutencao">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 style="color: var(--primary-dark);"><i class="fas fa-chart-line" style="color: var(--secondary);"></i> Controlo de Gestão</h2>
-                            <span class="close-modal" onclick="fecharModal('modalCGManutencao')">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formCGManutencao">
-                                <input type="hidden" id="cgManutencaoId">
-                                <div id="cgManutencaoInfo" style="background:var(--primary-light);padding:15px;border-radius:8px;margin-bottom:15px;"></div>
-                                <div class="form-group">
-                                    <label>Decisão *</label>
-                                    <select id="cgManutencaoDecisao" class="form-control" required>
-                                        <option value="">Selecione</option>
-                                        <option value="aprovar">✅ Aprovar</option>
-                                        <option value="reprovar">❌ Reprovar</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Parecer *</label>
-                                    <textarea id="cgManutencaoParecer" class="form-control" rows="3" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Assinatura *</label>
-                                    <input type="text" id="cgManutencaoAssinatura" class="form-control" required>
-                                </div>
-                                <div class="form-actions">
-                                    <button type="button" class="btn-small" onclick="fecharModal('modalCGManutencao')">Cancelar</button>
-                                    <button type="submit" class="btn-small btn-approve"><i class="fas fa-check"></i> Enviar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalCG);
-
-                // Modal Director
-                const modalDiretor = `
-                <div class="modal" id="modalDiretorManutencao">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 style="color: var(--primary-dark);"><i class="fas fa-user-tie" style="color: var(--secondary);"></i> Director Geral</h2>
-                            <span class="close-modal" onclick="fecharModal('modalDiretorManutencao')">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formDiretorManutencao">
-                                <input type="hidden" id="diretorManutencaoId">
-                                <div id="diretorManutencaoInfo" style="background:var(--primary-light);padding:15px;border-radius:8px;margin-bottom:15px;"></div>
-                                <div class="form-group">
-                                    <label>Decisão *</label>
-                                    <select id="diretorManutencaoDecisao" class="form-control" required>
-                                        <option value="">Selecione</option>
-                                        <option value="aprovar">✅ Aprovar</option>
-                                        <option value="reprovar">❌ Reprovar</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Parecer *</label>
-                                    <textarea id="diretorManutencaoParecer" class="form-control" rows="3" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Assinatura *</label>
-                                    <input type="text" id="diretorManutencaoAssinatura" class="form-control" required>
-                                </div>
-                                <div class="form-actions">
-                                    <button type="button" class="btn-small" onclick="fecharModal('modalDiretorManutencao')">Cancelar</button>
-                                    <button type="submit" class="btn-small btn-approve"><i class="fas fa-check"></i> Enviar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalDiretor);
-
-                // Modal Finanças
-                const modalFinancas = `
-                <div class="modal" id="modalFinancasManutencao">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 style="color: var(--primary-dark);"><i class="fas fa-coins" style="color: var(--secondary);"></i> Finanças - Pagamento</h2>
-                            <span class="close-modal" onclick="fecharModal('modalFinancasManutencao')">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formFinancasManutencao">
-                                <input type="hidden" id="financasManutencaoId">
-                                <div id="financasManutencaoInfo" style="background:var(--primary-light);padding:15px;border-radius:8px;margin-bottom:15px;"></div>
-                                <div class="form-group">
-                                    <label>Status Pagamento *</label>
-                                    <select id="financasManutencaoStatus" class="form-control" required>
-                                        <option value="">Selecione</option>
-                                        <option value="pago">✅ Pago</option>
-                                        <option value="pendente">⏳ Pendente</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Comprovativo</label>
-                                    <input type="text" id="financasManutencaoComprovativo" class="form-control" placeholder="Nº do comprovativo">
-                                </div>
-                                <div class="form-group">
-                                    <label>Data de Pagamento</label>
-                                    <input type="date" id="financasManutencaoDataPagamento" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>Observações *</label>
-                                    <textarea id="financasManutencaoObs" class="form-control" rows="2" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Anexar Comprovativo</label>
-                                    <div class="dropzone" id="dropzoneFinancasManutencao"><i class="fas fa-cloud-upload-alt"></i> Clique ou arraste para anexar<input type="file" id="financasManutencaoFileInput" style="display:none"></div>
-                                    <div id="financasManutencaoFileList"></div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Assinatura *</label>
-                                    <input type="text" id="financasManutencaoAssinatura" class="form-control" required>
-                                </div>
-                                <div class="form-actions">
-                                    <button type="button" class="btn-small" onclick="fecharModal('modalFinancasManutencao')">Cancelar</button>
-                                    <button type="submit" class="btn-small btn-approve"><i class="fas fa-check"></i> Confirmar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalFinancas);
-
-                // Modal Execução
-                const modalExecucao = `
-                <div class="modal" id="modalExecucaoManutencao">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 style="color: var(--primary-dark);"><i class="fas fa-tools" style="color: var(--secondary);"></i> Execução de Serviço</h2>
-                            <span class="close-modal" onclick="fecharModal('modalExecucaoManutencao')">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <form id="formExecucaoManutencao">
-                                <input type="hidden" id="execucaoManutencaoId">
-                                <div class="form-group">
-                                    <label>Relatório de Execução *</label>
-                                    <textarea id="manutencaoRelatorioExecucao" class="form-control" rows="4" required placeholder="Descreva detalhadamente o serviço executado..."></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Data de Execução</label>
-                                    <input type="date" id="manutencaoDataExecucao" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>Técnico Responsável</label>
-                                    <input type="text" id="manutencaoTecnicoResponsavel" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label>Observações</label>
-                                    <textarea id="manutencaoObsExecucao" class="form-control" rows="2"></textarea>
-                                </div>
-                                <div class="form-actions">
-                                    <button type="button" class="btn-small" onclick="fecharModal('modalExecucaoManutencao')">Cancelar</button>
-                                    <button type="submit" class="btn-small btn-approve"><i class="fas fa-check"></i> Finalizar Execução</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalExecucao);
-
-                // Modal Confirmação
-                const modalConfirmacao = `
-                <div class="modal" id="modalConfirmacaoManutencao">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 style="color: var(--primary-dark);"><i class="fas fa-check-double" style="color: var(--secondary);"></i> Confirmação de Atendimento</h2>
-                            <span class="close-modal" onclick="fecharModal('modalConfirmacaoManutencao')">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <div id="manutencaoConfirmInfo" style="background:var(--primary-light);padding:15px;border-radius:8px;margin-bottom:15px;"></div>
-                            <div class="form-group">
-                                <label>Confirmação do Material *</label>
-                                <select id="manutencaoConfirmMaterial" class="form-control" required>
-                                    <option value="">Selecione</option>
-                                    <option value="sim">✅ Sim, material confirmado</option>
-                                    <option value="nao">❌ Não, material não confirmado</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Confirmação da Execução *</label>
-                                <select id="manutencaoConfirmExecucao" class="form-control" required>
-                                    <option value="">Selecione</option>
-                                    <option value="sim">✅ Sim, execução confirmada</option>
-                                    <option value="nao">❌ Não, execução não confirmada</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Comentário</label>
-                                <textarea id="manutencaoConfirmComentario" class="form-control" rows="2"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Assinatura *</label>
-                                <input type="text" id="manutencaoSolicitanteAssinatura" class="form-control" required>
-                            </div>
-                            <div class="form-actions">
-                                <button type="button" class="btn-small" onclick="fecharModal('modalConfirmacaoManutencao')">Cancelar</button>
-                                <button type="button" class="btn-small btn-approve" onclick="manutencaoApp.enviarConfirmacao()"><i class="fas fa-check"></i> Confirmar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalConfirmacao);
-            }
-
-            // Funções para os modais
             function toggleOpcaoResolucaoM(valor) {
                 document.getElementById('manutencaoDetalhesTransferencia').style.display = valor === 'transferencia' ?
                     'block' : 'none';
@@ -4773,7 +4901,7 @@
                     'block' : 'none';
             }
 
-            async function salvarAvaliacaoM(e) {
+            function salvarAvaliacaoM(e) {
                 e.preventDefault();
                 const id = document.getElementById('avaliacaoManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
@@ -4816,7 +4944,7 @@
                         '📊 Solicitação enviada para Erikson Madureira (erikson.madureira@accordgrouplda.com) aprovar consumo.',
                         'info');
                 } else if (req.opcaoResolucao === 'precisa_comprar') {
-                    req.fornecedor = document.getElementById('manutencaoFornecedorCompra').value;
+                    req.fornecedorCompra = document.getElementById('manutencaoFornecedorCompra').value;
                     req.descricaoCompra = document.getElementById('manutencaoDescricaoCompra').value;
                     req.valorCompra = parseFloat(document.getElementById('manutencaoValorCompra').value) || 0;
                     req.status = 'aguardando_consumiveis';
@@ -4826,20 +4954,11 @@
                         '📦 Requisição enviada para Stephany Silva (stephany.silva@accordgrouplda.com) registar despesas.',
                         'info');
                 }
-                
-                showLoading();
-                const salvo = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                hideLoading();
-                
-                if (salvo) {
-                    fecharModal('modalAvaliacaoManutencao');
-                    renderizarRequisicoesM();
-                    renderizarAprovacoesM();
-                    carregarDashboardM();
-                    notificarM('✅ Avaliação salva com sucesso!', 'success');
-                } else {
-                    notificarM('❌ Erro ao salvar avaliação!', 'error');
-                }
+                salvarM();
+                fecharModal('modalAvaliacaoManutencao');
+                renderizarRequisicoesM();
+                renderizarAprovacoesM();
+                carregarDashboardM();
             }
 
             function abrirConsumiveisAutorizacaoM(id) {
@@ -4854,7 +4973,7 @@
                 abrirModal('modalConsumiveisAutorizacaoManutencao');
             }
 
-            async function salvarConsumiveisAutorizacaoM(e) {
+            function salvarConsumiveisAutorizacaoM(e) {
                 e.preventDefault();
                 const id = document.getElementById('consumiveisAutorizacaoManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
@@ -4878,19 +4997,11 @@
                         acao: 'Stephany Silva autorizou transferência. Manutenção pode executar.' });
                     notificarM('✅ Autorização concedida! Manutenção pode executar o serviço.', 'success');
                 }
-                
-                showLoading();
-                const salvo = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                hideLoading();
-                
-                if (salvo) {
-                    fecharModal('modalConsumiveisAutorizacaoManutencao');
-                    renderizarRequisicoesM();
-                    renderizarAprovacoesM();
-                    carregarDashboardM();
-                } else {
-                    notificarM('❌ Erro ao salvar!', 'error');
-                }
+                salvarM();
+                fecharModal('modalConsumiveisAutorizacaoManutencao');
+                renderizarRequisicoesM();
+                renderizarAprovacoesM();
+                carregarDashboardM();
             }
 
             function adicionarItemConsumiveisM() {
@@ -4950,7 +5061,7 @@
                 abrirModal('modalConsumiveisDespesasManutencao');
             }
 
-            async function salvarConsumiveisDespesasM(e) {
+            function salvarConsumiveisDespesasM(e) {
                 e.preventDefault();
                 const id = document.getElementById('consumiveisDespesasManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
@@ -4992,19 +5103,11 @@
                     acao: `Stephany Silva registou despesas: Fornecedor ${req.fornecedor}, Valor ${formatarMoedaM(req.valorTotal)}` });
                 notificarM('✅ Despesas registadas. Enviado para Erikson Madureira (erikson.madureira@accordgrouplda.com).',
                     'success');
-                
-                showLoading();
-                const salvo = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                hideLoading();
-                
-                if (salvo) {
-                    fecharModal('modalConsumiveisDespesasManutencao');
-                    renderizarRequisicoesM();
-                    renderizarAprovacoesM();
-                    carregarDashboardM();
-                } else {
-                    notificarM('❌ Erro ao salvar despesas!', 'error');
-                }
+                salvarM();
+                fecharModal('modalConsumiveisDespesasManutencao');
+                renderizarRequisicoesM();
+                renderizarAprovacoesM();
+                carregarDashboardM();
             }
 
             function abrirCGM(id) {
@@ -5025,7 +5128,7 @@
                 abrirModal('modalCGManutencao');
             }
 
-            async function salvarCGM(e) {
+            function salvarCGM(e) {
                 e.preventDefault();
                 const id = document.getElementById('cgManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
@@ -5052,19 +5155,11 @@
                         acao: 'Erikson Madureira aprovou. Enviado para Paulo Silva (paulo.silva@accordgrouplda.com).' });
                     notificarM('✅ Erikson Madureira aprovou. Enviado para o Director Geral.', 'success');
                 }
-                
-                showLoading();
-                const salvo = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                hideLoading();
-                
-                if (salvo) {
-                    fecharModal('modalCGManutencao');
-                    renderizarRequisicoesM();
-                    renderizarAprovacoesM();
-                    carregarDashboardM();
-                } else {
-                    notificarM('❌ Erro ao salvar!', 'error');
-                }
+                salvarM();
+                fecharModal('modalCGManutencao');
+                renderizarRequisicoesM();
+                renderizarAprovacoesM();
+                carregarDashboardM();
             }
 
             function abrirDiretorM(id) {
@@ -5079,7 +5174,7 @@
                 abrirModal('modalDiretorManutencao');
             }
 
-            async function salvarDiretorM(e) {
+            function salvarDiretorM(e) {
                 e.preventDefault();
                 const id = document.getElementById('diretorManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
@@ -5106,19 +5201,11 @@
                         acao: 'Paulo Silva aprovou. Enviado para Liliana Borges.' });
                     notificarM('✅ Paulo Silva aprovou. Aguardando pagamento.', 'success');
                 }
-                
-                showLoading();
-                const salvo = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                hideLoading();
-                
-                if (salvo) {
-                    fecharModal('modalDiretorManutencao');
-                    renderizarRequisicoesM();
-                    renderizarAprovacoesM();
-                    carregarDashboardM();
-                } else {
-                    notificarM('❌ Erro ao salvar!', 'error');
-                }
+                salvarM();
+                fecharModal('modalDiretorManutencao');
+                renderizarRequisicoesM();
+                renderizarAprovacoesM();
+                carregarDashboardM();
             }
 
             function abrirFinancasM(id) {
@@ -5137,7 +5224,7 @@
                 abrirModal('modalFinancasManutencao');
             }
 
-            async function salvarFinancasM(e) {
+            function salvarFinancasM(e) {
                 e.preventDefault();
                 const id = document.getElementById('financasManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
@@ -5175,19 +5262,11 @@
                     fecharModal('modalFinancasManutencao');
                     return;
                 }
-                
-                showLoading();
-                const salvo = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                hideLoading();
-                
-                if (salvo) {
-                    fecharModal('modalFinancasManutencao');
-                    renderizarRequisicoesM();
-                    renderizarAprovacoesM();
-                    carregarDashboardM();
-                } else {
-                    notificarM('❌ Erro ao salvar!', 'error');
-                }
+                salvarM();
+                fecharModal('modalFinancasManutencao');
+                renderizarRequisicoesM();
+                renderizarAprovacoesM();
+                carregarDashboardM();
             }
 
             function abrirExecucaoM(id) {
@@ -5201,7 +5280,7 @@
                 abrirModal('modalExecucaoManutencao');
             }
 
-            async function salvarExecucaoM(e) {
+            function salvarExecucaoM(e) {
                 e.preventDefault();
                 const id = document.getElementById('execucaoManutencaoId').value;
                 const req = reqs.find(r => r.id === id);
@@ -5220,19 +5299,11 @@
                 req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
                     acao: 'Francisco Sandramo executou o serviço. Aguardando confirmação de Teodoro Tavare.' });
                 notificarM('✅ Serviço executado! Aguardando confirmação de Teodoro Tavare.', 'success');
-                
-                showLoading();
-                const salvo = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                hideLoading();
-                
-                if (salvo) {
-                    fecharModal('modalExecucaoManutencao');
-                    renderizarRequisicoesM();
-                    renderizarAprovacoesM();
-                    carregarDashboardM();
-                } else {
-                    notificarM('❌ Erro ao salvar!', 'error');
-                }
+                salvarM();
+                fecharModal('modalExecucaoManutencao');
+                renderizarRequisicoesM();
+                renderizarAprovacoesM();
+                carregarDashboardM();
             }
 
             function abrirConfirmacaoM(id) {
@@ -5252,7 +5323,7 @@
                 abrirModal('modalConfirmacaoManutencao');
             }
 
-            async function enviarConfirmacaoM() {
+            function enviarConfirmacaoM() {
                 const confirmMaterial = document.getElementById('manutencaoConfirmMaterial').value;
                 const confirmExecucao = document.getElementById('manutencaoConfirmExecucao').value;
                 const comentario = document.getElementById('manutencaoConfirmComentario').value;
@@ -5275,7 +5346,7 @@
                         req.status = 'aguardando_execucao';
                         notificarM('✅ Material confirmado por Teodoro Tavare! Aguardando confirmação da execução.',
                             'success');
-                        await atualizarRequisicaoManutencaoNoSharePoint(req);
+                        salvarM();
                         fecharModal('modalConfirmacaoManutencao');
                         renderizarRequisicoesM();
                         renderizarAprovacoesM();
@@ -5291,19 +5362,11 @@
                 req.assinaturaSolicitante = assinatura;
                 req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
                     acao: `Teodoro Tavare confirmou: Material=${confirmMaterial}, Execução=${confirmExecucao}` });
-                
-                showLoading();
-                const salvo = await atualizarRequisicaoManutencaoNoSharePoint(req);
-                hideLoading();
-                
-                if (salvo) {
-                    fecharModal('modalConfirmacaoManutencao');
-                    renderizarRequisicoesM();
-                    renderizarAprovacoesM();
-                    carregarDashboardM();
-                } else {
-                    notificarM('❌ Erro ao salvar!', 'error');
-                }
+                salvarM();
+                fecharModal('modalConfirmacaoManutencao');
+                renderizarRequisicoesM();
+                renderizarAprovacoesM();
+                carregarDashboardM();
             }
 
             function visualizarAnexoM(reqId, idx) {
@@ -5336,6 +5399,16 @@
                 document.getElementById('notaDespesaManutencao').style.display = 'block';
             }
 
+            function imprimirNotaDespesaM() {
+                const id = document.getElementById('financasManutencaoId').value;
+                const req = reqs.find(r => r.id === id);
+                if (!req || !req.notaDespesa) {
+                    notificarM('Nenhuma nota de despesa encontrada!', 'warning');
+                    return;
+                }
+                visualizarNotaDespesaM(id);
+            }
+
             function abrirDetalhesM(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
@@ -5355,36 +5428,14 @@
                 abrirModal('modalDetalhesManutencao');
             }
 
-            // Criar modal de detalhes
-            function criarModalDetalhes() {
-                const modalDetalhes = `
-                <div class="modal" id="modalDetalhesManutencao">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 style="color: var(--primary-dark);"><i class="fas fa-info-circle" style="color: var(--secondary);"></i> Detalhes da Requisição</h2>
-                            <span class="close-modal" onclick="fecharModal('modalDetalhesManutencao')">&times;</span>
-                        </div>
-                        <div class="modal-body">
-                            <div id="manutencaoDetalhesConteudo"></div>
-                        </div>
-                    </div>
-                </div>`;
-                document.body.insertAdjacentHTML('beforeend', modalDetalhes);
-            }
-
-            async function excluirRequisicaoM(id) {
+            function excluirRequisicaoM(id) {
                 if (!confirm('Tem certeza que deseja excluir esta requisição permanentemente?')) return;
-                const req = reqs.find(r => r.id === id);
-                if (req && req.id) {
-                    // Marca como removida no SharePoint
-                    req.status = 'reprovada';
-                    await atualizarRequisicaoManutencaoNoSharePoint(req);
-                }
                 reqs = reqs.filter(r => r.id !== id);
+                salvarM();
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
-                notificarM('Requisição removida com sucesso!', 'info');
+                notificarM('Requisição excluída com sucesso!', 'info');
             }
 
             function exportarDadosM() {
@@ -5403,16 +5454,14 @@
 
             function exportarExcelM() { notificarM('📊 Relatório Excel gerado com sucesso!', 'success'); }
 
-            async function inicializarM() {
-                // Criar modais
-                criarModalAvaliacao();
-                criarModaisManutencao();
-                criarModalDetalhes();
+            function inicializarM() {
+                carregarM();
+                renderizarRequisicoesM();
+                renderizarAprovacoesM();
+                carregarDashboardM();
+                atualizarRelatoriosM();
+                atualizarBadgesM();
 
-                // Carregar dados do SharePoint
-                await carregarDadosM();
-
-                // Event listeners
                 document.getElementById('formNovaRequisicaoManutencao').addEventListener('submit', novaRequisicaoM);
                 const btnNova = document.getElementById('btnNovaRequisicaoManutencao');
                 if (btnNova) {
@@ -5433,7 +5482,23 @@
                 document.getElementById('formFinancasManutencao').addEventListener('submit', salvarFinancasM);
                 document.getElementById('formExecucaoManutencao').addEventListener('submit', salvarExecucaoM);
 
-                // Dropzones
+                const statusSelect = document.getElementById('manutencaoFilterStatus');
+                if (statusSelect) {
+                    const statuses = ['all', 'pendente', 'aguardando_consumiveis', 'aguardando_cg', 'aguardando_diretor',
+                        'aguardando_financas', 'em_execucao', 'aguardando_material', 'aguardando_execucao',
+                        'concluida', 'reprovada'
+                    ];
+                    statuses.forEach(s => {
+                        const opt = document.createElement('option');
+                        opt.value = s;
+                        opt.innerText = getStatusTextM(s);
+                        statusSelect.appendChild(opt);
+                    });
+                }
+                document.getElementById('manutencaoFilterSearch').addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') filtrarRequisicoesM();
+                });
+
                 function setupDropzone(dropId, inputId, listId, getter, setter) {
                     const drop = document.getElementById(dropId);
                     const input = document.getElementById(inputId);
@@ -5487,7 +5552,6 @@
                 setupDropzone('dropzoneFinancasManutencao', 'financasManutencaoFileInput', 'financasManutencaoFileList',
                     () => financasAnexoM, (val) => financasAnexoM = val);
 
-                // Menu sidebar
                 document.querySelectorAll('.sidebar-manutencao .menu li').forEach(item => {
                     item.addEventListener('click', function() {
                         const section = this.dataset.section;
@@ -5520,25 +5584,6 @@
                         }
                     });
                 });
-
-                // Status filter
-                const statusSelect = document.getElementById('manutencaoFilterStatus');
-                if (statusSelect) {
-                    const statuses = ['all', 'pendente', 'aguardando_consumiveis', 'aguardando_cg', 'aguardando_diretor',
-                        'aguardando_financas', 'em_execucao', 'aguardando_material', 'aguardando_execucao',
-                        'concluida', 'reprovada'
-                    ];
-                    statuses.forEach(s => {
-                        const opt = document.createElement('option');
-                        opt.value = s;
-                        opt.innerText = getStatusTextM(s);
-                        statusSelect.appendChild(opt);
-                    });
-                }
-                document.getElementById('manutencaoFilterSearch').addEventListener('keyup', (e) => {
-                    if (e.key === 'Enter') filtrarRequisicoesM();
-                });
-
                 notificarM(`👋 Bem-vindo ao módulo Manutenção, ${usuarioAtual.nome}!`, 'success');
             }
 
@@ -5561,6 +5606,7 @@
                 enviarConfirmacao: enviarConfirmacaoM,
                 adicionarItemConsumiveis: adicionarItemConsumiveisM,
                 calcularTotalConsumiveis: calcularTotalConsumiveisM,
+                imprimirNotaDespesa: imprimirNotaDespesaM,
                 exportarPDF: exportarPDFM,
                 exportarExcel: exportarExcelM,
                 exportarDados: exportarDadosM,
@@ -5572,7 +5618,6 @@
         // MÓDULO AVALIAÇÃO - FUNÇÕES
         // ============================================================
         // LISTA MOCK DE COLABORADORES - COLOQUE AQUI TODOS OS SEUS COLABORADORES
-        // (A lista mock foi mantida do código original)
         const mockColaboradores = {
              "10": { "nome": "ALBERTO TANGU SIMAO", "direcao": "Lubango", "departamento": "Departamento PF", "funcao": "Gerente de Departamento", "dataAdmissao": "2010-12-01" },
     "101": { "nome": "ANA AUGUSTO PASCOAL MONTEIRO", "direcao": "Kilamba", "departamento": "Gastronomia", "funcao": "Operador de Loja", "dataAdmissao": "2012-06-04" },
@@ -7421,12 +7466,10 @@
     "996": { "nome": "EDNA PATRICIA BENEDITO DOS SANTOS", "direcao": "Mártires", "departamento": "Supermercado Mártires", "funcao": "Operador de Loja (Supers)", "dataAdmissao": "2017-05-02" },
     "998": { "nome": "EVARISTO BOAVENTURA ZEFERINO", "direcao": "Benguela", "departamento": "Segurança", "funcao": "Supervisor de Segurança", "dataAdmissao": "2017-06-05" },
     "999": { "nome": "ANTONIA DE CASTRO JOAO", "direcao": "Viana", "departamento": "Padaria e Pastelaria", "funcao": "Aprendiz de Pasteleiro", "dataAdmissao": "2017-06-12" }
-            // ... (mantenha a lista de colaboradores do código original)
         };
 
         let colaboradorSelecionado = null;
         let avaliacaoData = null;
-        let competenciasAvaliacao = [];
 
         function buscarColaborador() {
             const id = document.getElementById('pesquisaID').value;
@@ -7607,28 +7650,18 @@
             if (!colaboradorSelecionado) { mostrarNotificacao('Selecione um colaborador!', 'error'); return; }
             let total = 0;
             let count = 0;
-            const competencias = [];
             for (let i = 0; i < 5; i++) {
                 const sel = document.getElementById(`avaliacao_compC_${i}`);
-                if (sel && sel.value) { 
-                    const valor = parseInt(sel.value);
-                    total += valor;
-                    count++;
-                    competencias.push({ nome: sel.closest('.competencia-row').querySelector('.nome').textContent, nota: valor });
-                }
+                if (sel && sel.value) { total += parseInt(sel.value);
+                    count++; }
             }
             for (let i = 0; i < 4; i++) {
                 const sel = document.getElementById(`avaliacao_compT_${i}`);
-                if (sel && sel.value) { 
-                    const valor = parseInt(sel.value);
-                    total += valor;
-                    count++;
-                    competencias.push({ nome: sel.closest('.competencia-row').querySelector('.nome').textContent, nota: valor });
-                }
+                if (sel && sel.value) { total += parseInt(sel.value);
+                    count++; }
             }
             if (count === 0) { mostrarNotificacao('Selecione pelo menos uma competência!', 'warning'); return; }
             const media = total / count;
-            competenciasAvaliacao = competencias;
             const resultadoDiv = document.getElementById('resultadoFinal');
             resultadoDiv.classList.add('visible');
             let classifText = '',
@@ -7676,46 +7709,18 @@
             if (el) el.remove();
         }
 
-        async function salvarAvaliacao() {
+        function salvarAvaliacao() {
             if (!colaboradorSelecionado) { mostrarNotificacao('Selecione um colaborador!', 'error'); return; }
-            
-            // Coleta todas as competências com notas
-            const competencias = [];
-            for (let i = 0; i < 5; i++) {
-                const sel = document.getElementById(`avaliacao_compC_${i}`);
-                if (sel && sel.value) {
-                    const nome = sel.closest('.competencia-row').querySelector('.nome').textContent;
-                    competencias.push({ nome: nome, nota: parseInt(sel.value) });
-                }
-            }
-            for (let i = 0; i < 4; i++) {
-                const sel = document.getElementById(`avaliacao_compT_${i}`);
-                if (sel && sel.value) {
-                    const nome = sel.closest('.competencia-row').querySelector('.nome').textContent;
-                    competencias.push({ nome: nome, nota: parseInt(sel.value) });
-                }
-            }
-            
-            // Calcula a nota final
-            const total = competencias.reduce((sum, c) => sum + c.nota, 0);
-            const notaFinal = competencias.length > 0 ? total / competencias.length : 0;
-            
             const feedback = {
                 colaborador: colaboradorSelecionado,
-                competencias: competencias,
-                notaFinal: notaFinal,
                 pontosFortes: document.getElementById('feedbackFortes').value,
                 pontosMelhorar: document.getElementById('feedbackMelhorar').value,
                 feedbackGlobal: document.getElementById('feedbackGlobal').value,
                 desenvolvimento: document.getElementById('feedbackCarreira').value,
                 classificacao: document.getElementById('classificacaoFinal').value,
                 assinatura: document.getElementById('nomeAssinatura').value,
-                data: new Date().toISOString(),
-                avaliadorNome: usuarioAtual.nome,
-                avaliadorEmail: usuarioAtual.email,
-                status: 'Finalizado'
+                data: new Date().toISOString()
             };
-            
             const medidas = [];
             document.querySelectorAll('#medidasList .medida-item').forEach(item => {
                 const textarea = item.querySelector('textarea');
@@ -7726,104 +7731,42 @@
             });
             feedback.medidas = medidas;
             avaliacaoData = feedback;
-            
-            showLoading();
-            const id = await salvarAvaliacaoNoSharePoint(feedback);
-            hideLoading();
-            
-            if (id) {
-                const statusDiv = document.getElementById('statusFeedback');
-                statusDiv.textContent = '✅ Avaliação salva com sucesso no SharePoint!';
-                statusDiv.className = 'status-msg status-success';
-                mostrarNotificacao('Avaliação salva com sucesso no SharePoint!', 'success');
-            } else {
-                const statusDiv = document.getElementById('statusFeedback');
-                statusDiv.textContent = '❌ Erro ao salvar avaliação no SharePoint. Verifique sua conexão.';
-                statusDiv.className = 'status-msg status-error';
-                mostrarNotificacao('Erro ao salvar avaliação!', 'error');
-            }
+            const statusDiv = document.getElementById('statusFeedback');
+            statusDiv.textContent = '✅ Avaliação salva com sucesso!';
+            statusDiv.className = 'status-msg status-success';
+            mostrarNotificacao('Avaliação salva com sucesso!', 'success');
         }
 
         function exportarPDF() {
             if (!avaliacaoData) { mostrarNotificacao('Salve a avaliação primeiro!', 'warning'); return; }
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            // Cabeçalho
-            doc.setFontSize(18);
+            doc.setFontSize(16);
             doc.setTextColor(26, 74, 42);
             doc.text('ACCORD GROUP - Avaliação de Desempenho', 14, 20);
             doc.setFontSize(11);
             doc.text(`Data: ${new Date().toLocaleDateString('pt-PT')}`, 14, 30);
-            doc.text(`Avaliador: ${avaliacaoData.avaliadorNome || usuarioAtual.nome}`, 14, 37);
-            
-            // Dados do colaborador
-            doc.setFontSize(14);
-            doc.text('Dados do Colaborador', 14, 48);
-            doc.setFontSize(11);
-            doc.text(`ID: ${avaliacaoData.colaborador.id}`, 14, 55);
-            doc.text(`Nome: ${avaliacaoData.colaborador.nome}`, 14, 62);
-            doc.text(`Função: ${avaliacaoData.colaborador.funcao}`, 14, 69);
-            doc.text(`Direção: ${avaliacaoData.colaborador.direcao}`, 14, 76);
-            doc.text(`Departamento: ${avaliacaoData.colaborador.departamento}`, 14, 83);
-            
-            // Competências
-            doc.setFontSize(14);
-            doc.text('Competências Avaliadas', 14, 94);
-            doc.setFontSize(10);
-            let y = 102;
-            
-            if (avaliacaoData.competencias && avaliacaoData.competencias.length > 0) {
-                const tableData = avaliacaoData.competencias.map(c => [c.nome, c.nota.toString()]);
-                doc.autoTable({
-                    startY: y,
-                    head: [['Competência', 'Nota']],
-                    body: tableData,
-                    headStyles: { fillColor: [26, 74, 42] },
-                    styles: { fontSize: 9 }
-                });
-                y = doc.lastAutoTable.finalY + 8;
-            }
-            
-            // Nota Final
-            doc.setFontSize(12);
-            doc.text(`Nota Final: ${(avaliacaoData.notaFinal || 0).toFixed(1)}`, 14, y);
-            const classifMap = { '1': 'Abaixo das Expectativas', '2': 'De acordo com as Expectativas', '3': 'Acima das Expectativas' };
-            doc.text(`Classificação: ${classifMap[avaliacaoData.classificacao] || 'N/A'}`, 14, y + 8);
-            
-            y += 16;
-            
-            // Feedback
-            doc.setFontSize(14);
-            doc.text('Feedback', 14, y);
-            y += 8;
-            doc.setFontSize(10);
-            doc.text(`Pontos Fortes: ${avaliacaoData.pontosFortes || 'N/A'}`, 14, y);
-            y += 6;
-            doc.text(`Pontos a Melhorar: ${avaliacaoData.pontosMelhorar || 'N/A'}`, 14, y);
-            y += 6;
-            doc.text(`Feedback Global: ${avaliacaoData.feedbackGlobal || 'N/A'}`, 14, y);
-            y += 6;
-            doc.text(`Desenvolvimento: ${avaliacaoData.desenvolvimento || 'N/A'}`, 14, y);
-            y += 8;
-            
-            // Medidas
-            if (avaliacaoData.medidas && avaliacaoData.medidas.length > 0) {
-                doc.setFontSize(14);
-                doc.text('Medidas/Ações a Realizar', 14, y);
-                y += 8;
-                doc.setFontSize(10);
-                avaliacaoData.medidas.forEach((m, i) => {
-                    doc.text(`${i+1}. ${m.descricao} (${m.prioridade})`, 14, y);
-                    y += 6;
-                });
-                y += 8;
-            }
-            
-            // Assinatura
-            doc.setFontSize(12);
-            doc.text(`Assinatura: ${avaliacaoData.assinatura || 'Não assinado'}`, 14, y + 20);
-            
+            doc.text(`Colaborador: ${avaliacaoData.colaborador.nome} (ID: ${avaliacaoData.colaborador.id})`, 14, 38);
+            doc.text(`Função: ${avaliacaoData.colaborador.funcao}`, 14, 44);
+            doc.text(`Direção: ${avaliacaoData.colaborador.direcao}`, 14, 50);
+            doc.autoTable({
+                startY: 56,
+                head: [['Aspecto', 'Comentário']],
+                body: [
+                    ['Pontos Fortes', avaliacaoData.pontosFortes || 'N/A'],
+                    ['Pontos a Melhorar', avaliacaoData.pontosMelhorar || 'N/A'],
+                    ['Feedback Global', avaliacaoData.feedbackGlobal || 'N/A'],
+                    ['Desenvolvimento', avaliacaoData.desenvolvimento || 'N/A']
+                ]
+            });
+            const medidasText = (avaliacaoData.medidas || []).map(m => `${m.descricao} (${m.prioridade})`).join('\n') ||
+                'Nenhuma medida definida';
+            doc.text('Medidas/Ações a Realizar:', 14, doc.lastAutoTable.finalY + 12);
+            doc.text(medidasText, 14, doc.lastAutoTable.finalY + 20);
+            const classifMap = { '1': 'Abaixo', '2': 'De acordo', '3': 'Acima' };
+            doc.text(`Classificação Final: ${classifMap[avaliacaoData.classificacao] || 'N/A'}`, 14, doc.lastAutoTable
+                .finalY + 40);
+            doc.text(`Assinatura: ${avaliacaoData.assinatura || 'Não assinado'}`, 14, doc.lastAutoTable.finalY + 48);
             doc.save(`avaliacao_${avaliacaoData.colaborador.nome.replace(/\s/g, '_')}.pdf`);
             mostrarNotificacao('PDF exportado com sucesso!', 'success');
         }
@@ -7831,7 +7774,6 @@
         function novaAvaliacao() {
             colaboradorSelecionado = null;
             avaliacaoData = null;
-            competenciasAvaliacao = [];
             document.getElementById('pesquisaID').value = '';
             document.getElementById('msgPesquisa').textContent = '';
             document.getElementById('msgPesquisa').className = 'msg-pesquisa';
@@ -7955,7 +7897,6 @@
         console.log('📋 Módulos disponíveis: Recrutamento, Manutenção, Avaliação');
         console.log('⛔ Módulos inativos: Ticket, Ocorrência/Segurança (em desenvolvimento)');
         console.log('🔒 Módulo Avaliação: Acesso restrito a Administrador, RH, Controlo de Gestão e Director Geral');
-        console.log('📁 SharePoint: Dados salvos nas listas Manutencoes e Avaliacoes');
     </script>
 </body>
 </html>
