@@ -2898,7 +2898,7 @@
             } else if (mod === 'avaliacao') {
                 // VERIFICA PERMISSÃO DE ACESSO
                 if (!PERFIS_AVALIACAO.includes(usuarioAtual.perfil)) {
-                    mostrarNotificacao('⛔ Acesso negado! Apenas Administrador, RH, Controlo de Gestão e Director Geral podem acessar este módulo.', 'error');
+                    mostrarNotificacao('⛔ Acesso negado! Não tem autorização para aceder este modulo.', 'error');
                     voltarParaModulos();
                     return;
                 }
