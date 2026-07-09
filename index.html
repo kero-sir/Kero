@@ -1646,6 +1646,52 @@
             transition: all 0.2s;
         }
         .avaliacao-bloqueada .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        
+        /* ============================================================
+           ESTILOS DO STOCK
+           ============================================================ */
+        .stock-table-wrapper { overflow-x: auto; max-height: 600px; overflow-y: auto; border-radius: 12px; border: 1px solid #e0e0e0; }
+        body.dark-mode .stock-table-wrapper { border-color: #4a4a6a; }
+        .stock-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .stock-table th { background: #E65100; color: white; padding: 12px 15px; text-align: left; position: sticky; top: 0; z-index: 10; }
+        .stock-table td { padding: 10px 15px; border-bottom: 1px solid #e0e0e0; }
+        body.dark-mode .stock-table td { border-bottom-color: #4a4a6a; }
+        .stock-table tr:hover { background: #fff3e0; }
+        body.dark-mode .stock-table tr:hover { background: #3a2a1a; }
+        .stock-qtd { font-weight: 700; text-align: center; }
+        .stock-qtd.alta { color: #2E7D32; }
+        .stock-qtd.media { color: #E65100; }
+        .stock-qtd.baixa { color: #c62828; }
+        
+        /* ============================================================
+           BOTÕES DA BARRA LATERAL MANUTENÇÃO
+           ============================================================ */
+        .sidebar-actions {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .sidebar-actions .btn-sidebar {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: white;
+            width: 100%;
+            justify-content: center;
+        }
+        .sidebar-actions .btn-sidebar i { font-size: 18px; }
+        .sidebar-actions .btn-sidebar.btn-nova { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
+        .sidebar-actions .btn-sidebar.btn-nova:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); }
+        .sidebar-actions .btn-sidebar.btn-stock { background: linear-gradient(135deg, #2196F3, #0d47a1); }
+        .sidebar-actions .btn-sidebar.btn-stock:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4); }
     </style>
 </head>
 <body>
@@ -1840,7 +1886,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO MANUTENÇÃO - CÓDIGO ORIGINAL (INALTERADO)
+            MÓDULO MANUTENÇÃO - CÓDIGO ORIGINAL (INALTERADO) + BOTÕES + STOCK
             ============================================================ -->
             <div id="manutencaoSection" style="display: none;">
                 <div class="manutencao-container">
@@ -1855,6 +1901,17 @@
                                     <small>Manutenção</small>
                                 </div>
                             </div>
+                            
+                            <!-- NOVOS BOTÕES NA BARRA LATERAL -->
+                            <div class="sidebar-actions">
+                                <button class="btn-sidebar btn-nova" onclick="manutencaoApp.abrirNovaRequisicao()">
+                                    <i class="fas fa-plus-circle"></i> Nova Requisição
+                                </button>
+                                <button class="btn-sidebar btn-stock" onclick="manutencaoApp.abrirStock()">
+                                    <i class="fas fa-boxes"></i> Stock
+                                </button>
+                            </div>
+                            
                             <ul class="menu">
                                 <li class="active" data-section="dashboard-manutencao">
                                     <span class="icon">📊</span> Dashboard
@@ -2053,6 +2110,44 @@
                                             <div class="nota-assinatura"><div class="linha"></div><p>Finanças<br><small>Pagamento</small></p></div>
                                         </div>
                                         <div style="text-align:center; margin-top:30px; font-size:10px; color:#999;">Documento gerado electronicamente - Kero SIR Manutenção</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MODAL STOCK -->
+                            <div class="modal" id="modalStock">
+                                <div class="modal-content" style="max-width: 1000px;">
+                                    <div class="modal-header">
+                                        <h2 style="color: var(--primary-dark);"><i class="fas fa-boxes" style="color: #2196F3;"></i> Stock de Peças e Equipamentos</h2>
+                                        <span class="close-modal" onclick="fecharModal('modalStock')">&times;</span>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div style="margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                                            <div style="flex: 1; min-width: 200px;">
+                                                <label style="font-weight: 600;">Pesquisar:</label>
+                                                <input type="text" id="stockFilterInput" class="form-control" placeholder="Código ou descrição..." onkeyup="manutencaoApp.filtrarStock()">
+                                            </div>
+                                            <div>
+                                                <button class="btn-small btn-approve" onclick="manutencaoApp.filtrarStock()"><i class="fas fa-search"></i> Filtrar</button>
+                                                <button class="btn-small btn-devolver" onclick="manutencaoApp.limparFiltroStock()"><i class="fas fa-undo"></i> Limpar</button>
+                                            </div>
+                                            <span style="margin-left: auto; font-size: 14px; color: #888;" id="stockTotalCount">Total: 0 itens</span>
+                                        </div>
+                                        <div class="stock-table-wrapper">
+                                            <table class="stock-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Código</th>
+                                                        <th>Descrição</th>
+                                                        <th style="text-align: center;">Qtd SAP</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="stockTableBody">
+                                                    <tr><td colspan="4" style="text-align: center; padding: 40px; color: #999;">Carregando stock...</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -2385,7 +2480,9 @@
             siteUrl: "https://accordgroupslda.sharepoint.com/sites/SIR",
             listName: "RequisicoesRH",
             pastaAnexos: "Requisicoes_Anexos",
-            bibliotecaDocumentos: "Documentos Partilhados"
+            bibliotecaDocumentos: "Documentos Partilhados",
+            listaAvaliacoes: "Avaliacoes",
+            listaManutencoes: "Manutecoes"
         };
 
         let msalInstance = null,
@@ -4509,6 +4606,9 @@
             let avaliacaoAnexoM = null;
             let nextIdM = 1;
             let confirmacaoIdM = null;
+            
+            // Dados do stock carregados do ficheiro Stock.xlsx
+            let stockData = [];
 
             function getStatusTextM(s) {
                 const map = {
@@ -4540,8 +4640,13 @@
                 return `MAN-${year}-${num}`;
             }
 
-            function salvarM() { try { localStorage.setItem('kero_manutencao_v8', JSON.stringify(reqs)); } catch (e) {
-                    notificarM('Erro ao salvar dados!', 'error'); } }
+            function salvarM() { 
+                try { 
+                    localStorage.setItem('kero_manutencao_v8', JSON.stringify(reqs)); 
+                } catch (e) {
+                    notificarM('Erro ao salvar dados!', 'error'); 
+                } 
+            }
 
             function carregarM() {
                 try {
@@ -4598,6 +4703,104 @@
             }
 
             function notificarM(msg, tipo = 'success') { mostrarNotificacao(msg, tipo); }
+
+            // ============================================================
+            // FUNÇÕES DO STOCK
+            // ============================================================
+            
+            // Carrega os dados do stock a partir do ficheiro Stock.xlsx (embutido no HTML)
+            function carregarStock() {
+                // Dados do ficheiro Stock.xlsx (extraídos do conteúdo do ficheiro)
+                stockData = [
+                    { codigo: "10001601", descricao: "PNEU DE FRENTE (CONTINENTAL)", qtd: 4 },
+                    { codigo: "10001603", descricao: "PNEU TRASEIRO (CONTINENTAL)", qtd: 0 },
+                    { codigo: "10001604", descricao: "CENTRALINA 1", qtd: 0 },
+                    { codigo: "10001606", descricao: "ROLAMENTO DO CUBO", qtd: 4 },
+                    { codigo: "10001608", descricao: "RODA DE CARGA 1", qtd: 4 },
+                    { codigo: "10001609", descricao: "RODA DE TRAÇÃO 1", qtd: 0 },
+                    { codigo: "10001610", descricao: "SENSOR DE BATERIA", qtd: 20 },
+                    { codigo: "10001611", descricao: "CENTRALINA 2", qtd: 1 },
+                    { codigo: "10001612", descricao: "MACACO HIDRAULICO", qtd: 1 },
+                    { codigo: "10001613", descricao: "POTENCIOMETRO DO PEDAL", qtd: 2 },
+                    { codigo: "10001615", descricao: "CASQUILHO (CONEXAO MACACO", qtd: 7 },
+                    { codigo: "10001616", descricao: "TUBO DO BLOCO HIDRAULICO (CONEXAO MACACO", qtd: 4 },
+                    { codigo: "10001617", descricao: "RODA DE APOIO 1", qtd: 19 },
+                    { codigo: "10001619", descricao: "RODA DE CARGA 2", qtd: 4 },
+                    { codigo: "10001620", descricao: "RODAS DE TRACAO 2", qtd: 0 },
+                    { codigo: "10001621", descricao: "CONTACTOR DE ANDAMENTO", qtd: 6 },
+                    { codigo: "10001622", descricao: "RODA DE APOIO 2", qtd: 0 },
+                    { codigo: "10001624", descricao: "CONTACTOR DE VOLANTE", qtd: 12 },
+                    { codigo: "10001625", descricao: "SENSOR DE ROTACAO", qtd: 6 },
+                    { codigo: "10001626", descricao: "FUSIVEL 250 AMP", qtd: 29 },
+                    { codigo: "10001631", descricao: "PLACA DE VOLANTE", qtd: 6 },
+                    { codigo: "10001632", descricao: "FUSIVEL DE 40 AMP", qtd: 6 },
+                    { codigo: "10001633", descricao: "FREIO ELETROMAGNETICO", qtd: 6 },
+                    { codigo: "10001634", descricao: "DISPLAY", qtd: 6 },
+                    { codigo: "10001640", descricao: "FUSIVEL DE 10 AMP", qtd: 18 },
+                    { codigo: "10001647", descricao: "CONTACTOR ANDAMENTO", qtd: 4 },
+                    { codigo: "10001648", descricao: "FUSIVEL DE 80 AMP E FUSIVEL DE 250 AMP", qtd: 3 }
+                ];
+            }
+
+            function abrirStock() {
+                carregarStock();
+                renderizarStock();
+                abrirModal('modalStock');
+            }
+
+            function renderizarStock(filtro = '') {
+                const tbody = document.getElementById('stockTableBody');
+                if (!tbody) return;
+                
+                let dados = [...stockData];
+                if (filtro.trim()) {
+                    const f = filtro.toLowerCase().trim();
+                    dados = dados.filter(item => 
+                        item.codigo.toLowerCase().includes(f) || 
+                        item.descricao.toLowerCase().includes(f)
+                    );
+                }
+                
+                document.getElementById('stockTotalCount').textContent = `Total: ${dados.length} itens`;
+                
+                if (dados.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: #999;">Nenhum item encontrado.</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = dados.map(item => {
+                    let statusClass = 'media';
+                    let statusText = 'Médio';
+                    if (item.qtd === 0) { statusClass = 'baixa'; statusText = 'Sem Stock'; }
+                    else if (item.qtd <= 2) { statusClass = 'baixa'; statusText = 'Stock Baixo'; }
+                    else if (item.qtd <= 5) { statusClass = 'media'; statusText = 'Stock Médio'; }
+                    else { statusClass = 'alta'; statusText = 'Stock Alto'; }
+                    
+                    return `<tr>
+                        <td><strong>${item.codigo}</strong></td>
+                        <td>${item.descricao}</td>
+                        <td class="stock-qtd ${statusClass}">${item.qtd}</td>
+                        <td><span class="status-badge status-${statusClass}">${statusText}</span></td>
+                    </tr>`;
+                }).join('');
+            }
+
+            function filtrarStock() {
+                const filtro = document.getElementById('stockFilterInput').value || '';
+                renderizarStock(filtro);
+            }
+
+            function limparFiltroStock() {
+                document.getElementById('stockFilterInput').value = '';
+                renderizarStock('');
+            }
+
+            // ============================================================
+            // FUNÇÕES DE NAVEGAÇÃO DA BARRA LATERAL
+            // ============================================================
+            function abrirNovaRequisicao() {
+                abrirModal('modalNovaRequisicaoManutencao');
+            }
 
             function renderizarRequisicoesM() {
                 let filtradas = reqs;
@@ -4877,6 +5080,9 @@
                 renderizarRequisicoesM();
                 carregarDashboardM();
                 notificarM(`✅ Requisição ${nova.codigo} criada com sucesso!`, 'success');
+                
+                // Salvar no SharePoint
+                salvarManutencaoNoSharePoint(nova);
             }
 
             function abrirAvaliacaoM(id) {
@@ -4959,6 +5165,9 @@
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
+                
+                // Atualizar no SharePoint
+                atualizarManutencaoNoSharePoint(req);
             }
 
             function abrirConsumiveisAutorizacaoM(id) {
@@ -5002,6 +5211,9 @@
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
+                
+                // Atualizar no SharePoint
+                atualizarManutencaoNoSharePoint(req);
             }
 
             function adicionarItemConsumiveisM() {
@@ -5108,6 +5320,9 @@
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
+                
+                // Atualizar no SharePoint
+                atualizarManutencaoNoSharePoint(req);
             }
 
             function abrirCGM(id) {
@@ -5160,6 +5375,9 @@
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
+                
+                // Atualizar no SharePoint
+                atualizarManutencaoNoSharePoint(req);
             }
 
             function abrirDiretorM(id) {
@@ -5198,7 +5416,7 @@
                     req.parecerDiretor = parecer;
                     if (req.notaDespesa) req.notaDespesa.pagamentoStatus = 'Aprovado Director';
                     req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome,
-                        acao: 'Paulo Silva aprovou. Enviado para Liliana Borges.' });
+                        acao: 'Paulo Silva aprovou. Aguardando pagamento.' });
                     notificarM('✅ Paulo Silva aprovou. Aguardando pagamento.', 'success');
                 }
                 salvarM();
@@ -5206,6 +5424,9 @@
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
+                
+                // Atualizar no SharePoint
+                atualizarManutencaoNoSharePoint(req);
             }
 
             function abrirFinancasM(id) {
@@ -5267,6 +5488,9 @@
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
+                
+                // Atualizar no SharePoint
+                atualizarManutencaoNoSharePoint(req);
             }
 
             function abrirExecucaoM(id) {
@@ -5304,6 +5528,9 @@
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
+                
+                // Atualizar no SharePoint
+                atualizarManutencaoNoSharePoint(req);
             }
 
             function abrirConfirmacaoM(id) {
@@ -5350,6 +5577,7 @@
                         fecharModal('modalConfirmacaoManutencao');
                         renderizarRequisicoesM();
                         renderizarAprovacoesM();
+                        atualizarManutencaoNoSharePoint(req);
                         return;
                     } else if (req.status === 'aguardando_execucao') {
                         req.status = 'concluida';
@@ -5367,6 +5595,9 @@
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
+                
+                // Atualizar no SharePoint
+                atualizarManutencaoNoSharePoint(req);
             }
 
             function visualizarAnexoM(reqId, idx) {
@@ -5454,8 +5685,98 @@
 
             function exportarExcelM() { notificarM('📊 Relatório Excel gerado com sucesso!', 'success'); }
 
+            // ============================================================
+            // FUNÇÕES DE SHAREPOINT PARA MANUTENÇÃO
+            // ============================================================
+            async function salvarManutencaoNoSharePoint(req) {
+                try {
+                    const token = await getSharePointToken();
+                    const siteId = await getSiteId();
+                    const fields = {
+                        "Title": req.codigo,
+                        "Codigo": req.codigo,
+                        "Equipamento": req.equipamento,
+                        "Local": req.local || "",
+                        "Typo": req.tipo,
+                        "Prioridade": req.prioridade,
+                        "Descricao": req.descricao,
+                        "Status": req.status,
+                        "Solicitante": req.solicitante,
+                        "SolicitanteEmail": req.email || "",
+                        "DataCriacao": req.data || new Date().toISOString(),
+                        "Diagnostico": req.diagnostico || "",
+                        "OpcaoResolucao": req.opcaoResolucao || "",
+                        "OrigemRecurso": req.origemRecurso || "",
+                        "DetalhesTransferencia": req.detalhesTransferencia || "",
+                        "ValorTransferencia": req.valorTransferencia || 0,
+                        "DetalhesConsumo": req.detalhesConsumo || "",
+                        "ValorConsumo": req.valorConsumo || 0,
+                        "Fornecedor": req.fornecedor || "",
+                        "DescricaoCompra": req.descricaoCompra || "",
+                        "ValorCompra": req.valorCompra || 0,
+                        "ValorTotal": req.valorTotal || 0,
+                        "RelatorioExecucao": req.relatorioExecucao || "",
+                        "DataExecucao": req.dataExecucao || null,
+                        "TecnicoResponsavel": req.tecnicoResponsavel || "",
+                        "ObsExecucao": req.obsExecucao || "",
+                        "DataConclusao": req.dataConclusao || null,
+                        "Anexoss": req.anexos ? JSON.stringify(req.anexos) : "",
+                        "Historico": req.historico ? JSON.stringify(req.historico) : "",
+                        "NotaDespesa": req.notaDespesa ? JSON.stringify(req.notaDespesa) : ""
+                    };
+                    
+                    // Verifica se já existe
+                    const listUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items?expand=fields&$filter=fields/Title eq '${req.codigo}'`;
+                    const checkResponse = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                    let existingItem = null;
+                    if (checkResponse.ok) {
+                        const data = await checkResponse.json();
+                        if (data.value && data.value.length > 0) {
+                            existingItem = data.value[0];
+                        }
+                    }
+                    
+                    if (existingItem) {
+                        // Atualiza
+                        const updateResponse = await fetch(
+                            `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items/${existingItem.id}/fields`,
+                            {
+                                method: 'PATCH',
+                                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                                body: JSON.stringify(fields)
+                            }
+                        );
+                        return updateResponse.ok;
+                    } else {
+                        // Cria novo
+                        const createResponse = await fetch(
+                            `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items`,
+                            {
+                                method: 'POST',
+                                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ fields: fields })
+                            }
+                        );
+                        if (createResponse.ok) {
+                            const newItem = await createResponse.json();
+                            req.id = newItem.id;
+                            return true;
+                        }
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Erro ao salvar manutenção no SharePoint:', error);
+                    return false;
+                }
+            }
+
+            async function atualizarManutencaoNoSharePoint(req) {
+                return await salvarManutencaoNoSharePoint(req);
+            }
+
             function inicializarM() {
                 carregarM();
+                carregarStock();
                 renderizarRequisicoesM();
                 renderizarAprovacoesM();
                 carregarDashboardM();
@@ -5584,6 +5905,12 @@
                         }
                     });
                 });
+                
+                // Fecha o modal de stock ao clicar fora
+                document.getElementById('modalStock').addEventListener('click', function(e) {
+                    if (e.target === this) fecharModal('modalStock');
+                });
+                
                 notificarM(`👋 Bem-vindo ao módulo Manutenção, ${usuarioAtual.nome}!`, 'success');
             }
 
@@ -5610,7 +5937,11 @@
                 exportarPDF: exportarPDFM,
                 exportarExcel: exportarExcelM,
                 exportarDados: exportarDadosM,
-                excluirRequisicao: excluirRequisicaoM
+                excluirRequisicao: excluirRequisicaoM,
+                abrirNovaRequisicao: abrirNovaRequisicao,
+                abrirStock: abrirStock,
+                filtrarStock: filtrarStock,
+                limparFiltroStock: limparFiltroStock
             };
         })();
 
@@ -7709,6 +8040,103 @@
             if (el) el.remove();
         }
 
+        // ============================================================
+        // FUNÇÕES DE SHAREPOINT PARA AVALIAÇÃO
+        // ============================================================
+        async function salvarAvaliacaoNoSharePoint(feedback) {
+            try {
+                const token = await getSharePointToken();
+                const siteId = await getSiteId();
+                
+                // Buscar competências avaliadas
+                const competencias = [];
+                let notaFinal = 0;
+                let count = 0;
+                for (let i = 0; i < 5; i++) {
+                    const sel = document.getElementById(`avaliacao_compC_${i}`);
+                    if (sel && sel.value) {
+                        const nome = document.querySelector(`#compC_${i} .nome`)?.textContent || `Competência ${i+1}`;
+                        competencias.push({ nome: nome.trim(), nota: parseInt(sel.value) });
+                        notaFinal += parseInt(sel.value);
+                        count++;
+                    }
+                }
+                for (let i = 0; i < 4; i++) {
+                    const sel = document.getElementById(`avaliacao_compT_${i}`);
+                    if (sel && sel.value) {
+                        const nome = document.querySelector(`#compT_${i} .nome`)?.textContent || `Competência ${i+6}`;
+                        competencias.push({ nome: nome.trim(), nota: parseInt(sel.value) });
+                        notaFinal += parseInt(sel.value);
+                        count++;
+                    }
+                }
+                notaFinal = count > 0 ? notaFinal / count : 0;
+                
+                const medidasText = (feedback.medidas || []).map(m => `${m.descricao} (${m.prioridade})`).join('\n') || '';
+                
+                const fields = {
+                    "Title": `Avaliação - ${feedback.colaborador.nome}`,
+                    "ColaboradorID": feedback.colaborador.id,
+                    "ColaboradorNome": feedback.colaborador.nome,
+                    "ColaboradorDirecao": feedback.colaborador.direcao || "",
+                    "ColaboradorDepartamento": feedback.colaborador.departamento || "",
+                    "ColaboradorFuncao": feedback.colaborador.funcao || "",
+                    "ColaboradorAdmissao": feedback.colaborador.admissao || "",
+                    "AvaliadorNome": usuarioAtual.nome,
+                    "AvaliadorEmail": usuarioAtual.email,
+                    "DataAvaliacao": new Date().toISOString(),
+                    "Competencias": JSON.stringify(competencias),
+                    "PontosFortes": feedback.pontosFortes || "",
+                    "PontosMelhorar": feedback.pontosMelhorar || "",
+                    "FeedbackGlobal": feedback.feedbackGlobal || "",
+                    "Desenvolvimento": feedback.desenvolvimento || "",
+                    "Medidas": medidasText,
+                    "ClassificacaoFinal": feedback.classificacao || "2",
+                    "NotaFinal": notaFinal,
+                    "Assinatura": feedback.assinatura || "",
+                    "Status": "Concluída"
+                };
+                
+                // Verifica se já existe avaliação para este colaborador
+                const listUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaAvaliacoes}/items?expand=fields&$filter=fields/ColaboradorID eq ${feedback.colaborador.id}`;
+                const checkResponse = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                let existingItem = null;
+                if (checkResponse.ok) {
+                    const data = await checkResponse.json();
+                    if (data.value && data.value.length > 0) {
+                        existingItem = data.value[0];
+                    }
+                }
+                
+                if (existingItem) {
+                    // Atualiza
+                    const updateResponse = await fetch(
+                        `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaAvaliacoes}/items/${existingItem.id}/fields`,
+                        {
+                            method: 'PATCH',
+                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify(fields)
+                        }
+                    );
+                    return updateResponse.ok;
+                } else {
+                    // Cria nova
+                    const createResponse = await fetch(
+                        `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaAvaliacoes}/items`,
+                        {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ fields: fields })
+                        }
+                    );
+                    return createResponse.ok;
+                }
+            } catch (error) {
+                console.error('Erro ao salvar avaliação no SharePoint:', error);
+                return false;
+            }
+        }
+
         function salvarAvaliacao() {
             if (!colaboradorSelecionado) { mostrarNotificacao('Selecione um colaborador!', 'error'); return; }
             const feedback = {
@@ -7731,10 +8159,19 @@
             });
             feedback.medidas = medidas;
             avaliacaoData = feedback;
-            const statusDiv = document.getElementById('statusFeedback');
-            statusDiv.textContent = '✅ Avaliação salva com sucesso!';
-            statusDiv.className = 'status-msg status-success';
-            mostrarNotificacao('Avaliação salva com sucesso!', 'success');
+            
+            showLoading();
+            salvarAvaliacaoNoSharePoint(feedback).then(sucesso => {
+                hideLoading();
+                if (sucesso) {
+                    const statusDiv = document.getElementById('statusFeedback');
+                    statusDiv.textContent = '✅ Avaliação salva com sucesso no SharePoint!';
+                    statusDiv.className = 'status-msg status-success';
+                    mostrarNotificacao('Avaliação salva com sucesso no SharePoint!', 'success');
+                } else {
+                    mostrarNotificacao('Erro ao salvar avaliação no SharePoint. Verifique a ligação.', 'error');
+                }
+            });
         }
 
         function exportarPDF() {
