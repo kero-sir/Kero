@@ -5747,87 +5747,85 @@
                 });
             }
 
-            function inicializarM() {
-                carregarM();
-                carregarStock();
-                renderizarRequisicoesM();
-                renderizarAprovacoesM();
-                carregarDashboardM();
-                atualizarRelatoriosM();
-                atualizarBadgesM();
-
-                document.getElementById('formNovaRequisicaoManutencao').addEventListener('submit', novaRequisicaoM);
-                const btnNova = document.getElementById('btnNovaRequisicaoManutencao');
-                if (btnNova) {
-                    btnNova.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        abrirModal('modalNovaRequisicaoManutencao');
-                    });
-                }
-
-                const statusSelect = document.getElementById('manutencaoFilterStatus');
-                if (statusSelect) {
-                    const statuses = ['all', 'pendente', 'aguardando_consumiveis', 'aguardando_cg', 'aguardando_diretor',
-                        'aguardando_financas', 'em_execucao', 'aguardando_material', 'aguardando_execucao',
-                        'concluida', 'reprovada'
-                    ];
-                    statuses.forEach(s => {
-                        const opt = document.createElement('option');
-                        opt.value = s;
-                        opt.innerText = getStatusTextM(s);
-                        statusSelect.appendChild(opt);
-                    });
-                }
-                document.getElementById('manutencaoFilterSearch').addEventListener('keyup', (e) => {
-                    if (e.key === 'Enter') filtrarRequisicoesM();
-                });
-
-                // Configurar dropzones
-                setupDropzoneM('dropzoneRequisicaoManutencao', 'requisicaoManutencaoFileInput',
-                    'requisicaoManutencaoFileList', (val) => requisicaoAnexoM = val);
-                setupDropzoneM('dropzoneAvaliacaoManutencao', 'avaliacaoManutencaoFileInput', 'avaliacaoManutencaoFileList',
-                    (val) => avaliacaoAnexoM = val);
-                setupDropzoneM('dropzoneConsumiveisManutencao', 'consumiveisManutencaoFileInput',
-                    'consumiveisManutencaoFileList', (val) => consumiveisAnexoM = val);
-                setupDropzoneM('dropzoneFinancasManutencao', 'financasManutencaoFileInput', 'financasManutencaoFileList',
-                    (val) => financasAnexoM = val);
-
-                // Fecha o modal de stock ao clicar fora
-                document.getElementById('modalStock').addEventListener('click', function(e) {
-                    if (e.target === this) fecharModal('modalStock');
-                });
-                
-                notificarM(`👋 Bem-vindo ao módulo Manutenção, ${usuarioAtual.nome}!`, 'success');
+function inicializarM() {
+    carregarM();
+    carregarStock();
+    
+    // CORREÇÃO: Garantir que todas as seções estejam ocultas inicialmente
+    document.querySelectorAll('#manutencaoSection .section').forEach(s => {
+        s.classList.remove('active');
+    });
+    
+    // Ativa apenas o dashboard por padrão
+    const dashboardSection = document.getElementById('section-dashboard-manutencao');
+    if (dashboardSection) {
+        dashboardSection.classList.add('active');
+    }
+    
+    // CORREÇÃO: Configurar listeners de clique para os itens do menu
+    document.querySelectorAll('.sidebar-manutencao .menu li').forEach(li => {
+        // Remove listeners existentes
+        li.removeEventListener('click', li._clickHandler);
+        
+        // Adiciona novo listener
+        const handler = function(e) {
+            const section = this.dataset.section;
+            if (section) {
+                mudarSecao(section, this);
             }
+        };
+        li._clickHandler = handler;
+        li.addEventListener('click', handler);
+    });
+    
+    renderizarRequisicoesM();
+    renderizarAprovacoesM();
+    carregarDashboardM();
+    atualizarRelatoriosM();
+    atualizarBadgesM();
 
-            return {
-                inicializar: inicializarM,
-                filtrarRequisicoes: filtrarRequisicoesM,
-                limparFiltros: limparFiltrosM,
-                filtrarPorStatus: filtrarPorStatusM,
-                abrirAvaliacao: abrirAvaliacaoM,
-                abrirConsumiveisAutorizacao: abrirConsumiveisAutorizacaoM,
-                abrirConsumiveisDespesas: abrirConsumiveisDespesasM,
-                abrirCG: abrirCGM,
-                abrirDiretor: abrirDiretorM,
-                abrirFinancas: abrirFinancasM,
-                abrirExecucao: abrirExecucaoM,
-                abrirConfirmacao: abrirConfirmacaoM,
-                abrirDetalhes: abrirDetalhesM,
-                visualizarAnexo: visualizarAnexoM,
-                visualizarNotaDespesa: visualizarNotaDespesaM,
-                exportarPDF: exportarPDFM,
-                exportarExcel: exportarExcelM,
-                exportarDados: exportarDadosM,
-                excluirRequisicao: excluirRequisicaoM,
-                abrirNovaRequisicao: abrirNovaRequisicao,
-                abrirStock: abrirStock,
-                filtrarStock: filtrarStock,
-                limparFiltroStock: limparFiltroStock,
-                imprimirStock: imprimirStock,
-                mudarSecao: mudarSecao
-            };
-        })();
+    document.getElementById('formNovaRequisicaoManutencao').addEventListener('submit', novaRequisicaoM);
+    
+    // CORREÇÃO: Configurar o botão de nova requisição
+    const btnNova = document.getElementById('btnNovaRequisicaoManutencao');
+    if (btnNova) {
+        btnNova.removeEventListener('click', btnNova._clickHandler);
+        const handler = function(e) {
+            e.preventDefault();
+            abrirModal('modalNovaRequisicaoManutencao');
+        };
+        btnNova._clickHandler = handler;
+        btnNova.addEventListener('click', handler);
+    }
+
+    const statusSelect = document.getElementById('manutencaoFilterStatus');
+    if (statusSelect) {
+        const statuses = ['all', 'pendente', 'aguardando_consumiveis', 'aguardando_cg', 'aguardando_diretor',
+            'aguardando_financas', 'em_execucao', 'aguardando_material', 'aguardando_execucao',
+            'concluida', 'reprovada'
+        ];
+        statuses.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s;
+            opt.innerText = getStatusTextM(s);
+            statusSelect.appendChild(opt);
+        });
+    }
+    document.getElementById('manutencaoFilterSearch').addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') filtrarRequisicoesM();
+    });
+
+    // Configurar dropzones
+    setupDropzoneM('dropzoneRequisicaoManutencao', 'requisicaoManutencaoFileInput',
+        'requisicaoManutencaoFileList', (val) => requisicaoAnexoM = val);
+
+    // Fecha o modal de stock ao clicar fora
+    document.getElementById('modalStock').addEventListener('click', function(e) {
+        if (e.target === this) fecharModal('modalStock');
+    });
+    
+    notificarM(`👋 Bem-vindo ao módulo Manutenção, ${usuarioAtual.nome}!`, 'success');
+}
 
         // ============================================================
         // MÓDULO AVALIAÇÃO - APP COMPLETA COM SUBMÓDULO RELATÓRIO
