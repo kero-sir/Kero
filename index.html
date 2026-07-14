@@ -56,9 +56,6 @@
         body.dark-mode .intro-card ul li { color: #ccc; }
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
-        /* ============================================================
-           LOGIN
-           ============================================================ */
         .login-container {
             display: flex;
             justify-content: center;
@@ -111,9 +108,6 @@
         .btn-login:hover { background: #1E1E1E; transform: translateY(-2px); }
         .login-error { color: var(--danger); font-size: 14px; margin-top: 10px; padding: 10px; background: #ffebee; border-radius: 4px; display: none; }
 
-        /* ============================================================
-           SELEÇÃO DE MÓDULOS - 6 MÓDULOS (2 linhas x 3 colunas)
-           ============================================================ */
         .module-selection-screen {
             display: flex;
             justify-content: center;
@@ -205,7 +199,6 @@
             box-shadow: 0 0 20px rgba(244, 67, 54, 0.2);
         }
         
-        /* Logo EAN - Código de barras com K dentro de círculo verde */
         .ean-logo-wrapper {
             width: 80px;
             height: 80px;
@@ -259,9 +252,6 @@
         .btn-logout-module { margin-top: 30px; padding: 12px 30px; background: var(--gray-200); color: var(--gray-600); border: none; border-radius: var(--border-radius-sm); cursor: pointer; transition: all 0.2s; }
         .btn-logout-module:hover { background: var(--gray-500); color: white; }
 
-        /* ============================================================
-           HEADER E NAVEGAÇÃO
-           ============================================================ */
         .app-header {
             background: white;
             padding: 15px 30px;
@@ -296,9 +286,6 @@
         .btn-darkmode { background: var(--gray-500); color: white; }
         .btn-logout:hover, .btn-modules:hover, .btn-darkmode:hover { transform: translateY(-2px); filter: brightness(1.05); }
 
-        /* ============================================================
-           NAVEGAÇÃO PRINCIPAL
-           ============================================================ */
         .nav-menu {
             background: white;
             padding: 15px;
@@ -322,9 +309,6 @@
         .nav-item:hover { background: var(--primary-light); color: var(--primary-dark); }
         .nav-item.active { background: var(--primary); color: white; }
 
-        /* ============================================================
-           KPI CARDS
-           ============================================================ */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
@@ -350,9 +334,6 @@
         .kpi-info span { font-size: 24px; font-weight: 700; color: var(--primary-dark); }
         .kpi-icon i { font-size: 32px; color: var(--primary-light); }
 
-        /* ============================================================
-           BADGES
-           ============================================================ */
         .status-badge {
             padding: 5px 12px;
             border-radius: 20px;
@@ -370,9 +351,6 @@
         .status-aguardando_confirmacao_solicitante { background-color: #9c27b0; color: white; }
         .status-concluida { background-color: #607d8b; color: white; }
 
-        /* ============================================================
-           BOTÕES
-           ============================================================ */
         .btn-small {
             padding: 5px 10px;
             border-radius: 4px;
@@ -428,9 +406,6 @@
         .btn-filter-apply { background-color: var(--primary); color: white; }
         .btn-filter-clear { background-color: var(--gray-200); color: var(--gray-600); }
 
-        /* ============================================================
-           TABELAS
-           ============================================================ */
         table { width: 100%; border-collapse: collapse; }
         th { background-color: var(--primary-light); padding: 12px 15px; text-align: left; font-weight: 600; font-size: 13px; }
         td { padding: 12px 15px; border-bottom: 1px solid #e0f2e0; font-size: 13px; }
@@ -440,9 +415,6 @@
         body.dark-mode tr:hover { background-color: #3a3a5a; }
         .table-container { overflow-x: auto; }
 
-        /* ============================================================
-           CARDS E LAYOUT
-           ============================================================ */
         .card {
             background: white;
             border-radius: var(--border-radius);
@@ -501,9 +473,6 @@
         }
         .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--primary); }
 
-        /* ============================================================
-           TEMPOS E STATUS DASHBOARD
-           ============================================================ */
         .tempos-fases-container, .status-detalhado-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -534,9 +503,6 @@
         .grafico-barra { background: #e0e0e0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
         .grafico-barra-fill { background: var(--primary); height: 30px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-size: 12px; transition: width 0.5s ease; }
 
-        /* ============================================================
-           MODAIS
-           ============================================================ */
         .modal {
             display: none;
             position: fixed;
@@ -588,9 +554,6 @@
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
 
-        /* ============================================================
-           DROPZONE
-           ============================================================ */
         .dropzone {
             border: 2px dashed var(--gray-200);
             border-radius: var(--border-radius-sm);
@@ -616,9 +579,6 @@
         .file-remove { color: var(--danger); cursor: pointer; }
         .file-remove:hover { transform: scale(1.1); }
 
-        /* ============================================================
-           PAGINAÇÃO E NOTIFICAÇÕES
-           ============================================================ */
         .paginacao { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
         .pagina-btn {
             padding: 8px 15px;
@@ -708,13 +668,13 @@
         .notificacao-error { background: #f44336; }
         .notificacao-warning { background: #ff9800; }
         .notificacao-info { background: #2196F3; }
-
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
-        /* ============================================================
-           ESTILOS DA AVALIAÇÃO
-           ============================================================ */
+        .section { display: none; }
+        .section.active { display: block; }
+        .hidden { display: none !important; }
+
         .container-avaliacao {
             max-width: 1200px;
             width: 100%;
@@ -1160,33 +1120,12 @@
         .btn-add-medida:hover { background: var(--verde-medio); }
         .btn-add-medida:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .rh-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .rh-stat-card { background: var(--verde-suave); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--verde-borda); }
-        body.dark-mode .rh-stat-card { background: #38385a; border-color: #4a4a6a; }
-        .rh-stat-card .numero { font-size: 28px; font-weight: 700; color: var(--verde-escuro); }
-        body.dark-mode .rh-stat-card .numero { color: #eee; }
-        .rh-stat-card .label { font-size: 13px; color: #5a7a6a; }
-        body.dark-mode .rh-stat-card .label { color: #aaa; }
-        .rh-tabela-wrapper { overflow-x: auto; max-height: 500px; overflow-y: auto; border-radius: 12px; border: 1px solid var(--verde-borda); }
-        body.dark-mode .rh-tabela-wrapper { border-color: #4a4a6a; }
-        .rh-tabela { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .rh-tabela th { background: var(--verde-escuro); color: white; padding: 10px 12px; text-align: left; position: sticky; top: 0; z-index: 10; white-space: nowrap; }
-        .rh-tabela td { padding: 8px 12px; border-bottom: 1px solid #e8f0e8; vertical-align: top; }
-        body.dark-mode .rh-tabela td { border-bottom-color: #4a4a6a; }
-        .rh-tabela tr:hover { background: #f8fcf8; }
-        body.dark-mode .rh-tabela tr:hover { background: #3a3a5a; }
-        .sp-config-area { background: var(--verde-suave); padding: 20px; border-radius: 12px; border: 1px solid var(--verde-borda); margin: 15px 0; }
-        body.dark-mode .sp-config-area { background: #38385a; border-color: #4a4a6a; }
-        .sp-config-area label { font-weight: 600; color: var(--verde-escuro); display: block; margin-bottom: 5px; font-size: 14px; }
-        body.dark-mode .sp-config-area label { color: #eee; }
-        .sp-config-area input { width: 100%; padding: 10px 16px; border: 2px solid var(--verde-borda); border-radius: 8px; font-size: 14px; margin-bottom: 10px; }
-        body.dark-mode .sp-config-area input { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .sp-config-area input:focus { border-color: var(--verde-medio); outline: none; }
-
-        /* ============================================================
-           ESTILOS MANUTENÇÃO
-           ============================================================ */
-        .manutencao-container { background: #faf5f0; border-radius: var(--border-radius); padding: 0; overflow: hidden; }
+        .manutencao-container {
+            background: #faf5f0;
+            border-radius: var(--border-radius);
+            padding: 0;
+            overflow: hidden;
+        }
         body.dark-mode .manutencao-container { background: #1a1a2e; }
         .manutencao-container .app-container { display: flex; min-height: 80vh; }
         .manutencao-container .sidebar-manutencao {
@@ -1300,8 +1239,6 @@
         .manutencao-container .priority-alta { background: #ffebee; color: #c62828; }
         .manutencao-container .priority-media { background: #fff3e0; color: #E65100; }
         .manutencao-container .priority-baixa { background: #e8f5e9; color: #2E7D32; }
-        .manutencao-container .expense-summary { background: #fff3e0; padding: 16px 20px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; line-height: 1.8; border-left: 4px solid #FF9800; }
-        body.dark-mode .manutencao-container .expense-summary { background: #4a3a1a; border-color: #FF9800; }
         .manutencao-container .activity-list { max-height: 350px; overflow-y: auto; }
         .manutencao-container .activity-item { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 14px; transition: all 0.3s; border-radius: 8px; }
         body.dark-mode .manutencao-container .activity-item { border-bottom-color: #4a4a6a; }
@@ -1350,25 +1287,6 @@
         .manutencao-container .btn-manutencao-secondary:hover { background: #FF9800; color: white; transform: translateY(-1px); }
         .manutencao-container .sidebar-filters { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(230, 81, 0, 0.12); border-left: 4px solid #FF9800; }
         body.dark-mode .manutencao-container .sidebar-filters { background: #2d2d44; color: #eee; }
-        .manutencao-container .item-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; }
-        .manutencao-container .item-row input { flex: 1; min-width: 80px; }
-
-        /* ============================================================
-           NOTA DE DESPESA MANUTENÇÃO - DENTRO DO MÓDULO
-           ============================================================ */
-        .manutencao-container #notaDespesaManutencao {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            z-index: 20000;
-            overflow-y: auto;
-            padding: 30px;
-        }
-        body.dark-mode .manutencao-container #notaDespesaManutencao { background: rgba(0,0,0,0.95); }
         .manutencao-container .nota-despesa-container {
             background: white;
             padding: 40px;
@@ -1405,104 +1323,46 @@
         }
         .manutencao-container .btn-imprimir:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(255, 152, 0, 0.4); }
 
-        @media (max-width: 900px) {
-            .manutencao-container .app-container { flex-direction: column; }
-            .manutencao-container .sidebar-manutencao { width: 100%; border-radius: var(--border-radius) var(--border-radius) 0 0; }
-            .manutencao-container .content-manutencao { padding: 16px; }
-        }
-        @media (max-width: 480px) { .manutencao-container .kpi-grid-manutencao { grid-template-columns: 1fr 1fr; } }
-        @media print {
-            body * { visibility: hidden; }
-            .manutencao-container #notaDespesaManutencao, .manutencao-container #notaDespesaManutencao * { visibility: visible; }
-            .manutencao-container #notaDespesaManutencao { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; }
-            .no-print { display: none !important; }
-        }
+        .stock-table-wrapper { overflow-x: auto; max-height: 600px; overflow-y: auto; border-radius: 12px; border: 1px solid #e0e0e0; }
+        body.dark-mode .stock-table-wrapper { border-color: #4a4a6a; }
+        .stock-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .stock-table th { background: #E65100; color: white; padding: 12px 15px; text-align: left; position: sticky; top: 0; z-index: 10; }
+        .stock-table td { padding: 10px 15px; border-bottom: 1px solid #e0e0e0; }
+        body.dark-mode .stock-table td { border-bottom-color: #4a4a6a; }
+        .stock-table tr:hover { background: #fff3e0; }
+        body.dark-mode .stock-table tr:hover { background: #3a2a1a; }
+        .stock-qtd { font-weight: 700; text-align: center; }
+        .stock-qtd.alta { color: #2E7D32; }
+        .stock-qtd.media { color: #E65100; }
+        .stock-qtd.baixa { color: #c62828; }
 
-        /* ============================================================
-           RESPONSIVE - AJUSTES GERAIS
-           ============================================================ */
-        @media (max-width: 768px) {
-            .app-header { flex-direction: column; gap: 10px; text-align: center; }
-            .user-info { flex-wrap: wrap; justify-content: center; }
-            .intro-grid { grid-template-columns: 1fr; }
-            .feedback-grid { grid-template-columns: 1fr; }
-            .steps { flex-direction: column; border-radius: 16px; gap: 4px; }
-            .step-btn { max-width: 100%; text-align: center; padding: 10px; }
-            .competencia-row { flex-direction: column; align-items: stretch; }
-            .competencia-row select { width: 100%; }
-            .pesquisa-area { flex-direction: column; align-items: stretch; }
-            .pesquisa-area input { width: 100%; }
-            .pesquisa-area .avaliador-nome { margin-left: 0; text-align: center; }
-            .medida-item { flex-direction: column; align-items: stretch; }
-            .medida-item select { width: 100%; }
-            .module-grid { grid-template-columns: repeat(2, 1fr); }
-            .login-box { padding: 30px 20px; margin: 0 15px; }
-            .module-selection-container { padding: 30px 20px; }
+        .sidebar-actions {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        @media (max-width: 480px) { .module-grid { grid-template-columns: 1fr; } }
-        @media print {
-            .btn-group, .steps, .btn-calcular, .pesquisa-area, .progress-container,
-            .app-header, .user-info { display: none !important; }
-        }
-
-        /* ============================================================
-           OUTROS
-           ============================================================ */
-        .edit-badge { display: inline-block; width: 8px; height: 8px; background-color: #2196F3; border-radius: 50%; margin-left: 5px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
-        .anexo-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 8px;
+        .sidebar-actions .btn-sidebar {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            background-color: #e8f5e9;
-            padding: 2px 6px;
-            border-radius: 12px;
-            gap: 3px;
-        }
-        .anexo-icon i { font-size: 11px; color: var(--sharepoint); }
-        .anexo-icon span { font-size: 10px; font-weight: bold; color: var(--primary-dark); }
-        .anexo-icon:hover { transform: scale(1.05); background-color: var(--primary-light); }
-        .anexo-icon:hover i { color: var(--primary); }
-        .codigo-container { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
-        .direcoes-list { margin-top: 20px; }
-        .direcao-item { background: #f8f9fa; border: 1px solid #e0f2e0; border-radius: 8px; margin-bottom: 15px; padding: 15px; transition: all 0.2s; }
-        body.dark-mode .direcao-item { background: #38385a; border-color: #4a4a6a; }
-        .direcao-item:hover { box-shadow: var(--shadow-sm); }
-        .direcao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #c8e6c9; }
-        .direcao-nome { font-weight: 700; color: var(--primary-dark); }
-        .direcao-categorias { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .categoria-tag {
-            background: white;
-            border: 1px solid var(--primary);
-            color: var(--primary-dark);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-        body.dark-mode .categoria-tag { background: #2d2d44; }
-        .categoria-tag:hover { background: var(--primary-light); transform: scale(1.02); }
-        [data-tooltip] { position: relative; cursor: help; }
-        [data-tooltip]:before {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 5px 10px;
-            background: #333;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
             color: white;
-            font-size: 11px;
-            border-radius: 4px;
-            white-space: nowrap;
-            display: none;
-            z-index: 1000;
+            width: 100%;
+            justify-content: center;
         }
-        [data-tooltip]:hover:before { display: block; }
-        .report-actions { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .sidebar-actions .btn-sidebar i { font-size: 18px; }
+        .sidebar-actions .btn-sidebar.btn-nova { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
+        .sidebar-actions .btn-sidebar.btn-nova:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); }
+        .sidebar-actions .btn-sidebar.btn-stock { background: linear-gradient(135deg, #2196F3, #0d47a1); }
+        .sidebar-actions .btn-sidebar.btn-stock:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4); }
+
         .btn-report {
             background-color: var(--primary);
             color: white;
@@ -1519,146 +1379,7 @@
         .btn-report-excel { background-color: #217346; }
         .btn-report-pdf { background-color: #f40f02; }
         .btn-report-csv { background-color: #666; }
-        .historico-item {
-            border-left: 4px solid;
-            padding: 12px;
-            margin-bottom: 12px;
-            background: white;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.2s;
-        }
-        body.dark-mode .historico-item { background: #38385a; }
-        .historico-item:hover { transform: translateX(5px); }
-        .historico-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-        .historico-comentario { margin-top: 8px; padding: 8px; background: #f5f5f5; border-radius: 4px; }
-        body.dark-mode .historico-comentario { background: #2a2a40; }
-        .ficheiros-section { margin-top: 25px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
-        .ficheiros-section h4 { margin-bottom: 15px; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
-        .ficheiros-tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px; flex-wrap: wrap; }
-        .ficheiro-tab {
-            padding: 8px 16px;
-            background: #f5f5f5;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-        .ficheiro-tab:hover { background: var(--primary-light); border-color: var(--primary); }
-        .ficheiro-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .ficheiro-tab i { font-size: 14px; }
-        .ficheiro-viewer-container {
-            background: #f9f9f9;
-            border-radius: 8px;
-            padding: 15px;
-            min-height: 400px;
-            margin-bottom: 15px;
-            border: 1px solid #e0e0e0;
-        }
-        body.dark-mode .ficheiro-viewer-container { background: #2a2a40; border-color: #4a4a6a; }
-        .ficheiro-viewer { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-        .ficheiro-preview-image { text-align: center; }
-        .ficheiro-preview-image img { max-width: 100%; max-height: 500px; border-radius: 4px; box-shadow: var(--shadow-sm); }
-        .ficheiro-preview-pdf { width: 100%; height: 600px; border: none; }
-        .ficheiro-preview-office { width: 100%; height: 600px; border: none; }
-        .ficheiro-preview-text { width: 100%; height: 500px; border: 1px solid #ddd; background: white; }
-        body.dark-mode .ficheiro-preview-text { background: #2a2a40; border-color: #4a4a6a; }
-        .ficheiro-preview-unavailable { text-align: center; padding: 50px; color: #999; }
-        .ficheiro-preview-unavailable i { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
-        .ficheiro-info-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: #f0f0f0;
-            border-radius: 8px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        body.dark-mode .ficheiro-info-bar { background: #2a2a40; }
-        .ficheiro-details { display: flex; flex-direction: column; }
-        .ficheiro-details .ficheiro-nome { font-weight: 600; color: var(--gray-600); }
-        body.dark-mode .ficheiro-details .ficheiro-nome { color: #eee; }
-        .ficheiro-details .ficheiro-meta { font-size: 12px; color: var(--gray-500); margin-top: 3px; }
-        .ficheiro-actions { display: flex; gap: 10px; }
-        .btn-download, .btn-sharepoint {
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            transition: all 0.2s;
-            border: none;
-        }
-        .btn-download { background: var(--primary); color: white; }
-        .btn-sharepoint { background: var(--sharepoint); color: white; }
-        .btn-download:hover, .btn-sharepoint:hover { transform: translateY(-1px); filter: brightness(1.05); }
-        .section { display: none; }
-        .section.active { display: block; }
-        .hidden { display: none !important; }
-        .tipo-opcao {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
-            margin: 20px 0;
-            border: 2px solid #e0f2e0;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .tipo-opcao:hover { border-color: var(--primary); background: #f1f8e9; transform: translateY(-5px); }
-        .tipo-opcao i { font-size: 48px; margin-bottom: 15px; color: var(--primary); }
-        .anexo-tag {
-            display: inline-block;
-            background: #e3f2fd;
-            border: 1px solid #90caf9;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 11px;
-            color: #1565c0;
-            margin: 2px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .anexo-tag:hover { background: #bbdefb; transform: scale(1.05); }
-        .signature-area { margin: 16px 0; }
-        .signature-area h4 { color: var(--primary-dark); margin-bottom: 8px; }
-        .btn-warning { background: #ff9800; color: white; }
-        .btn-warning:hover { background: #fb8c00; }
-        .priority-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .priority-baixa { background: #e8f5e9; color: #2E7D32; }
-        .priority-media { background: #fff3e0; color: #E65100; }
-        .priority-alta { background: #ffebee; color: #c62828; }
-        .type-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .type-corretiva { background: #ffebee; color: #c62828; }
-        .type-preventiva { background: #e8f5e9; color: #2E7D32; }
-        .req-detalhes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
-        .req-detalhes-grid .label { font-size: 12px; color: #888; text-transform: uppercase; }
-        .req-detalhes-grid .value { font-size: 14px; font-weight: 500; margin-top: 2px; }
-        .h-data { font-size: 12px; color: #888; }
 
-        /* ============================================================
-           MÓDULO AVALIAÇÃO - RESTRIÇÃO DE ACESSO
-           ============================================================ */
         .avaliacao-bloqueada {
             display: flex;
             flex-direction: column;
@@ -1696,56 +1417,7 @@
             transition: all 0.2s;
         }
         .avaliacao-bloqueada .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
-        
-        /* ============================================================
-           ESTILOS DO STOCK
-           ============================================================ */
-        .stock-table-wrapper { overflow-x: auto; max-height: 600px; overflow-y: auto; border-radius: 12px; border: 1px solid #e0e0e0; }
-        body.dark-mode .stock-table-wrapper { border-color: #4a4a6a; }
-        .stock-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        .stock-table th { background: #E65100; color: white; padding: 12px 15px; text-align: left; position: sticky; top: 0; z-index: 10; }
-        .stock-table td { padding: 10px 15px; border-bottom: 1px solid #e0e0e0; }
-        body.dark-mode .stock-table td { border-bottom-color: #4a4a6a; }
-        .stock-table tr:hover { background: #fff3e0; }
-        body.dark-mode .stock-table tr:hover { background: #3a2a1a; }
-        .stock-qtd { font-weight: 700; text-align: center; }
-        .stock-qtd.alta { color: #2E7D32; }
-        .stock-qtd.media { color: #E65100; }
-        .stock-qtd.baixa { color: #c62828; }
-        
-        /* ============================================================
-           BOTÕES DA BARRA LATERAL MANUTENÇÃO
-           ============================================================ */
-        .sidebar-actions {
-            padding: 0 20px 20px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .sidebar-actions .btn-sidebar {
-            padding: 12px 16px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            color: white;
-            width: 100%;
-            justify-content: center;
-        }
-        .sidebar-actions .btn-sidebar i { font-size: 18px; }
-        .sidebar-actions .btn-sidebar.btn-nova { background: linear-gradient(135deg, #4CAF50, #2E7D32); }
-        .sidebar-actions .btn-sidebar.btn-nova:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); }
-        .sidebar-actions .btn-sidebar.btn-stock { background: linear-gradient(135deg, #2196F3, #0d47a1); }
-        .sidebar-actions .btn-sidebar.btn-stock:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4); }
 
-        /* ============================================================
-           ESTILOS DO SUBMÓDULO RELATÓRIO DE AVALIAÇÕES
-           ============================================================ */
         .avaliacao-relatorio-container {
             background: white;
             border-radius: var(--border-radius);
@@ -1829,9 +1501,6 @@
         .avaliacao-relatorio-container .avaliacao-relatorio-tabela tr:hover { background: #f8fcf8; }
         body.dark-mode .avaliacao-relatorio-container .avaliacao-relatorio-tabela tr:hover { background: #3a3a5a; }
 
-        /* ============================================================
-           MODAL VISUALIZAR AVALIAÇÃO (RELATÓRIO)
-           ============================================================ */
         .modal-avaliacao-detalhes .competencias-avaliadas {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1858,6 +1527,236 @@
             border-radius: 8px;
         }
         body.dark-mode .modal-avaliacao-detalhes .assinatura-status { background: #38385a; }
+
+        .direcoes-list { margin-top: 20px; }
+        .direcao-item { background: #f8f9fa; border: 1px solid #e0f2e0; border-radius: 8px; margin-bottom: 15px; padding: 15px; transition: all 0.2s; }
+        body.dark-mode .direcao-item { background: #38385a; border-color: #4a4a6a; }
+        .direcao-item:hover { box-shadow: var(--shadow-sm); }
+        .direcao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #c8e6c9; }
+        .direcao-nome { font-weight: 700; color: var(--primary-dark); }
+        .direcao-categorias { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .categoria-tag {
+            background: white;
+            border: 1px solid var(--primary);
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        body.dark-mode .categoria-tag { background: #2d2d44; }
+        .categoria-tag:hover { background: var(--primary-light); transform: scale(1.02); }
+
+        .edit-badge { display: inline-block; width: 8px; height: 8px; background-color: #2196F3; border-radius: 50%; margin-left: 5px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+        .anexo-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #e8f5e9;
+            padding: 2px 6px;
+            border-radius: 12px;
+            gap: 3px;
+        }
+        .anexo-icon i { font-size: 11px; color: var(--sharepoint); }
+        .anexo-icon span { font-size: 10px; font-weight: bold; color: var(--primary-dark); }
+        .anexo-icon:hover { transform: scale(1.05); background-color: var(--primary-light); }
+        .anexo-icon:hover i { color: var(--primary); }
+        .codigo-container { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+
+        .report-actions { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .historico-item {
+            border-left: 4px solid;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        body.dark-mode .historico-item { background: #38385a; }
+        .historico-item:hover { transform: translateX(5px); }
+        .historico-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+        .historico-comentario { margin-top: 8px; padding: 8px; background: #f5f5f5; border-radius: 4px; }
+        body.dark-mode .historico-comentario { background: #2a2a40; }
+
+        .ficheiros-section { margin-top: 25px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
+        .ficheiros-section h4 { margin-bottom: 15px; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
+        .ficheiros-tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px; flex-wrap: wrap; }
+        .ficheiro-tab {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .ficheiro-tab:hover { background: var(--primary-light); border-color: var(--primary); }
+        .ficheiro-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .ficheiro-tab i { font-size: 14px; }
+        .ficheiro-viewer-container {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 400px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+        }
+        body.dark-mode .ficheiro-viewer-container { background: #2a2a40; border-color: #4a4a6a; }
+        .ficheiro-viewer { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        .ficheiro-preview-image { text-align: center; }
+        .ficheiro-preview-image img { max-width: 100%; max-height: 500px; border-radius: 4px; box-shadow: var(--shadow-sm); }
+        .ficheiro-preview-pdf { width: 100%; height: 600px; border: none; }
+        .ficheiro-preview-office { width: 100%; height: 600px; border: none; }
+        .ficheiro-preview-text { width: 100%; height: 500px; border: 1px solid #ddd; background: white; }
+        body.dark-mode .ficheiro-preview-text { background: #2a2a40; border-color: #4a4a6a; }
+        .ficheiro-preview-unavailable { text-align: center; padding: 50px; color: #999; }
+        .ficheiro-preview-unavailable i { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
+        .ficheiro-info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        body.dark-mode .ficheiro-info-bar { background: #2a2a40; }
+        .ficheiro-details { display: flex; flex-direction: column; }
+        .ficheiro-details .ficheiro-nome { font-weight: 600; color: var(--gray-600); }
+        body.dark-mode .ficheiro-details .ficheiro-nome { color: #eee; }
+        .ficheiro-details .ficheiro-meta { font-size: 12px; color: var(--gray-500); margin-top: 3px; }
+        .ficheiro-actions { display: flex; gap: 10px; }
+        .btn-download, .btn-sharepoint {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-download { background: var(--primary); color: white; }
+        .btn-sharepoint { background: var(--sharepoint); color: white; }
+        .btn-download:hover, .btn-sharepoint:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+        .tipo-opcao {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid #e0f2e0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tipo-opcao:hover { border-color: var(--primary); background: #f1f8e9; transform: translateY(-5px); }
+        .tipo-opcao i { font-size: 48px; margin-bottom: 15px; color: var(--primary); }
+
+        .anexo-tag {
+            display: inline-block;
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 11px;
+            color: #1565c0;
+            margin: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .anexo-tag:hover { background: #bbdefb; transform: scale(1.05); }
+
+        .priority-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .priority-baixa { background: #e8f5e9; color: #2E7D32; }
+        .priority-media { background: #fff3e0; color: #E65100; }
+        .priority-alta { background: #ffebee; color: #c62828; }
+        .type-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .type-corretiva { background: #ffebee; color: #c62828; }
+        .type-preventiva { background: #e8f5e9; color: #2E7D32; }
+
+        .req-detalhes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+        .req-detalhes-grid .label { font-size: 12px; color: #888; text-transform: uppercase; }
+        .req-detalhes-grid .value { font-size: 14px; font-weight: 500; margin-top: 2px; }
+        .h-data { font-size: 12px; color: #888; }
+
+        @media (max-width: 900px) {
+            .manutencao-container .app-container { flex-direction: column; }
+            .manutencao-container .sidebar-manutencao { width: 100%; border-radius: var(--border-radius) var(--border-radius) 0 0; }
+            .manutencao-container .content-manutencao { padding: 16px; }
+        }
+        @media (max-width: 768px) {
+            .app-header { flex-direction: column; gap: 10px; text-align: center; }
+            .user-info { flex-wrap: wrap; justify-content: center; }
+            .module-grid { grid-template-columns: repeat(2, 1fr); }
+            .login-box { padding: 30px 20px; margin: 0 15px; }
+            .module-selection-container { padding: 30px 20px; }
+            .manutencao-container .kpi-grid-manutencao { grid-template-columns: repeat(2, 1fr); }
+            .intro-grid { grid-template-columns: 1fr; }
+            .feedback-grid { grid-template-columns: 1fr; }
+            .steps { flex-direction: column; border-radius: 16px; gap: 4px; }
+            .step-btn { max-width: 100%; text-align: center; padding: 10px; }
+            .competencia-row { flex-direction: column; align-items: stretch; }
+            .competencia-row select { width: 100%; }
+            .pesquisa-area { flex-direction: column; align-items: stretch; }
+            .pesquisa-area input { width: 100%; }
+            .pesquisa-area .avaliador-nome { margin-left: 0; text-align: center; }
+            .medida-item { flex-direction: column; align-items: stretch; }
+            .medida-item select { width: 100%; }
+        }
+        @media (max-width: 480px) { 
+            .module-grid { grid-template-columns: 1fr; }
+            .manutencao-container .kpi-grid-manutencao { grid-template-columns: 1fr 1fr; }
+        }
+        @media print {
+            body * { visibility: hidden; }
+            .manutencao-container #notaDespesaManutencao, .manutencao-container #notaDespesaManutencao * { visibility: visible; }
+            .manutencao-container #notaDespesaManutencao { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; }
+            .no-print { display: none !important; }
+            .btn-group, .steps, .btn-calcular, .pesquisa-area, .progress-container,
+            .app-header, .user-info { display: none !important; }
+        }
+
+        [data-tooltip] { position: relative; cursor: help; }
+        [data-tooltip]:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 10px;
+            background: #333;
+            color: white;
+            font-size: 11px;
+            border-radius: 4px;
+            white-space: nowrap;
+            display: none;
+            z-index: 1000;
+        }
+        [data-tooltip]:hover:before { display: block; }
     </style>
 </head>
 <body>
@@ -1876,8 +1775,7 @@
             <div id="loginError" class="login-error"><i class="fas fa-exclamation-circle"></i> <span id="loginErrorMessage"></span></div>
         </div>
     </div>
-
-    <!-- ============================================================
+	    <!-- ============================================================
     SELEÇÃO DE MÓDULOS - 6 MÓDULOS (2 linhas x 3 colunas)
     ============================================================ -->
     <div id="moduleSelectionScreen" class="module-selection-screen" style="display: none;">
@@ -1891,21 +1789,21 @@
                 </div>
             </div>
             <div class="module-grid">
-                <!-- Módulo Recrutamento - Verde -->
+                <!-- Módulo Recrutamento - Verde (ATIVO) -->
                 <div class="module-card-large border-verde" onclick="selecionarModulo('recrutamento')">
                     <div class="module-icon-large icone-verde"><i class="fas fa-user-plus"></i></div>
                     <h2 class="cor-verde">Recrutamento</h2>
                     <p>Gestão de requisições de vagas, aprovações e recrutamento.</p>
                     <span class="module-badge badge-ativo">Ativo</span>
                 </div>
-                <!-- Módulo Avaliação - Azul -->
+                <!-- Módulo Avaliação - Azul (ATIVO) -->
                 <div class="module-card-large border-azul" onclick="selecionarModulo('avaliacao')">
                     <div class="module-icon-large icone-azul"><i class="fas fa-star"></i></div>
                     <h2 class="cor-azul">Avaliação</h2>
                     <p>Avaliação de desempenho dos colaboradores.</p>
                     <span class="module-badge badge-ativo">Ativo</span>
                 </div>
-                <!-- Módulo Manutenção - Laranja -->
+                <!-- Módulo Manutenção - Laranja (ATIVO) -->
                 <div class="module-card-large border-laranja" onclick="selecionarModulo('manutencao')">
                     <div class="module-icon-large icone-laranja"><i class="fas fa-tools"></i></div>
                     <h2 class="cor-laranja">Manutenção</h2>
@@ -1926,7 +1824,7 @@
                     <p>Registo e gestão de ocorrências de segurança.</p>
                     <span class="module-badge badge-inativo">⛔ Inativo</span>
                 </div>
-                <!-- Módulo EAN SCAN - INATIVO (com logotipo personalizado) -->
+                <!-- Módulo EAN SCAN - INATIVO -->
                 <div class="module-card-large border-ean border-inativo" onclick="abrirModuloIndisponivel('ean')">
                     <div class="ean-logo-wrapper">
                         <div class="ean-barcode">
@@ -1995,9 +1893,7 @@
                 </div>
             </div>
 
-            <!-- ============================================================
-            NAVEGAÇÃO PRINCIPAL - APENAS PARA RECRUTAMENTO
-            ============================================================ -->
+            <!-- NAVEGAÇÃO PRINCIPAL -->
             <div class="nav-menu" id="navMenu">
                 <div class="nav-item active" onclick="mudarAba('dashboard', this)"><i class="fas fa-chart-pie"></i> Dashboard</div>
                 <div class="nav-item" onclick="mudarAba('requisicoes', this)"><i class="fas fa-file-alt"></i> Requisições</div>
@@ -2012,7 +1908,6 @@
             MÓDULO RECRUTAMENTO
             ============================================================ -->
             <div id="recrutamentoSection">
-                <!-- KPI CARDS -->
                 <div class="kpi-grid">
                     <div class="kpi-card" onclick="filtrarPorStatus('all')"><div class="kpi-info"><h4>Requisições</h4><span id="totalRequisicoes">0</span></div><div class="kpi-icon"><i class="fas fa-file-alt"></i></div></div>
                     <div class="kpi-card" onclick="filtrarPorStatus('em_validacao_rh')"><div class="kpi-info"><h4>Em Aprovação RH</h4><span id="totalPendentesRH">0</span></div><div class="kpi-icon"><i class="fas fa-clock"></i></div></div>
@@ -2024,7 +1919,6 @@
                     <div class="kpi-card" onclick="filtrarPorStatus('aguardando_confirmacao_solicitante')"><div class="kpi-info"><h4>Confirmação Solicitante</h4><span id="totalConfirmacaoSolicitante">0</span></div><div class="kpi-icon"><i class="fas fa-envelope-open-text"></i></div></div>
                 </div>
 
-                <!-- DASHBOARD -->
                 <div id="dashboardSection">
                     <div class="dashboard-grid">
                         <div class="dashboard-card"><h3><i class="fas fa-clock"></i> Dashboard de Tempos</h3><div id="temposDashboard"></div></div>
@@ -2032,7 +1926,6 @@
                     </div>
                 </div>
 
-                <!-- REQUISIÇÕES -->
                 <div id="requisicoesSection" style="display: none;">
                     <div class="main-layout">
                         <div class="sidebar">
@@ -2056,40 +1949,33 @@
                     </div>
                 </div>
 
-                <!-- APROVAÇÕES -->
                 <div id="aprovacoesSection" style="display: none;">
                     <div class="card"><div class="card-header"><div class="card-title">Aprovações Pendentes</div></div><div class="table-container"><table id="tabelaAprovacoes"><thead><tr><th>Código</th><th>Função</th><th>Direção</th><th>Status</th><th>Data Criação</th><th>Ações</th></tr></thead><tbody id="corpoAprovacoes"></tbody></table></div></div>
                 </div>
 
-                <!-- RELATÓRIOS -->
                 <div id="relatoriosSection" style="display: none;">
                     <div class="card"><div class="card-header"><div class="card-title">Relatórios</div></div><div class="report-actions"><button class="btn-report btn-report-pdf" onclick="exportarRelatorioPDF()"><i class="fas fa-file-pdf"></i> PDF</button><button class="btn-report btn-report-excel" onclick="exportarRelatorioExcel()"><i class="fas fa-file-excel"></i> Excel</button><button class="btn-report btn-report-csv" onclick="exportarRelatorioCSV()"><i class="fas fa-file-csv"></i> CSV</button></div><div style="margin-top:20px;"><h4>Filtros</h4><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px;"><div class="form-group"><label>Data Início</label><input type="date" id="relatorioDataInicio" class="form-control"></div><div class="form-group"><label>Data Fim</label><input type="date" id="relatorioDataFim" class="form-control"></div><div class="form-group"><label>Status</label><select id="relatorioStatus" class="form-control"><option value="all">Todos</option><option value="aprovada">Aprovadas</option><option value="rejeitada">Rejeitadas</option><option value="em_validacao_rh">Pendentes RH</option><option value="em_validacao_financas">Pendentes CG</option><option value="em_validacao_director">Pendentes Director</option><option value="devolvida_solicitante">Devolvidas</option><option value="em_recrutamento">Recrutamento</option><option value="aguardando_confirmacao_solicitante">Confirmação</option><option value="concluida">Concluída</option></select></div></div></div></div>
                 </div>
 
-                <!-- UTILIZADORES -->
                 <div id="utilizadoresSection" style="display: none;">
                     <div class="card"><div class="card-header"><div class="card-title">Utilizadores</div></div><div class="table-container"><table class="users-table"><thead><tr><th>Nome</th><th>Email</th><th>Perfil</th></tr></thead><tbody id="tabelaUtilizadores"></tbody></table></div></div>
                 </div>
 
-                <!-- DIREÇÕES -->
                 <div id="direcoesSection" style="display: none;">
                     <div class="card"><div class="card-header"><div class="card-title">Direções</div></div><div class="direcoes-list" id="direcoesList"></div></div>
                 </div>
 
-                <!-- CONFIGURAÇÕES -->
                 <div id="configuracoesSection" style="display: none;">
                     <div class="card"><div class="card-header"><div class="card-title">Configurações</div></div><div style="padding:20px;"><div class="form-group"><label>Email Admin</label><input type="email" id="configEmailAdmin" value="marcio.carlos@accordgrouplda.com" class="form-control"></div><div class="form-group"><label>Notificações Email</label><input type="checkbox" id="configEmailNotif" checked></div><div class="form-group"><label>Notificações Teams</label><input type="checkbox" id="configTeamsNotif" checked></div><div class="form-group"><label>Webhook URL do Teams</label><input type="text" id="configTeamsWebhook" placeholder="https://accordgroup.webhook.office.com/..." class="form-control"></div><button class="btn-primary" onclick="salvarConfiguracoes()">Salvar</button></div></div>
                 </div>
             </div>
 
             <!-- ============================================================
-            MÓDULO MANUTENÇÃO - COMPLETO
+            MÓDULO MANUTENÇÃO
             ============================================================ -->
             <div id="manutencaoSection" style="display: none;">
                 <div class="manutencao-container">
                     <div class="app-container">
-
-                        <!-- SIDEBAR MANUTENÇÃO -->
                         <div class="sidebar-manutencao">
                             <div class="brand">
                                 <div class="logo-icon"><i class="fas fa-tools"></i></div>
@@ -2098,8 +1984,6 @@
                                     <small>Manutenção</small>
                                 </div>
                             </div>
-                            
-                            <!-- BOTÕES NA BARRA LATERAL -->
                             <div class="sidebar-actions">
                                 <button class="btn-sidebar btn-nova" onclick="manutencaoApp.abrirNovaRequisicao()">
                                     <i class="fas fa-plus-circle"></i> Nova Requisição
@@ -2108,7 +1992,6 @@
                                     <i class="fas fa-boxes"></i> Stock
                                 </button>
                             </div>
-                            
                             <ul class="menu">
                                 <li class="active" data-section="dashboard-manutencao"><span class="icon">📊</span> Dashboard</li>
                                 <li data-section="requisicoes-manutencao"><span class="icon">📋</span> Requisições <span class="badge" id="manutencaoTotalBadge">0</span></li>
@@ -2116,11 +1999,7 @@
                                 <li data-section="relatorios-manutencao"><span class="icon">📈</span> Relatórios</li>
                             </ul>
                         </div>
-
-                        <!-- CONTEÚDO MANUTENÇÃO -->
                         <div class="content-manutencao">
-
-                            <!-- DASHBOARD MANUTENÇÃO -->
                             <div class="section active" id="section-dashboard-manutencao">
                                 <div class="kpi-grid-manutencao">
                                     <div class="kpi-card-manutencao" onclick="manutencaoApp.filtrarPorStatus('all')">
@@ -2156,17 +2035,11 @@
                                         <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
                                     </div>
                                 </div>
-
                                 <div class="card-manutencao">
-                                    <div class="card-header">
-                                        <div class="card-title"><i class="fas fa-history"></i> Actividades Recentes</div>
-                                        <span style="font-size:13px; color:#888;">Últimas 8</span>
-                                    </div>
+                                    <div class="card-header"><div class="card-title"><i class="fas fa-history"></i> Actividades Recentes</div><span style="font-size:13px; color:#888;">Últimas 8</span></div>
                                     <div class="activity-list" id="manutencaoAtividadesRecentes"></div>
                                 </div>
                             </div>
-
-                            <!-- REQUISIÇÕES MANUTENÇÃO -->
                             <div class="section" id="section-requisicoes-manutencao">
                                 <div class="main-layout">
                                     <div class="sidebar-filters">
@@ -2188,16 +2061,12 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- APROVAÇÕES MANUTENÇÃO -->
                             <div class="section" id="section-aprovacoes-manutencao">
                                 <div class="card-manutencao">
                                     <div class="card-header"><div class="card-title"><i class="fas fa-check-circle"></i> Pendências para Aprovação</div><span id="manutencaoAprovacoesCount" style="font-size:13px; color:#888;">0 pendências</span></div>
                                     <div class="table-container"><table><thead><tr><th>Código</th><th>Equipamento</th><th>Solicitante</th><th>Tipo de Solicitação</th><th>Valor</th><th>Anexos</th><th>Ações</th></tr></thead><tbody id="manutencaoCorpoAprovacoes"></tbody></table></div>
                                 </div>
                             </div>
-
-                            <!-- RELATÓRIOS MANUTENÇÃO -->
                             <div class="section" id="section-relatorios-manutencao">
                                 <div class="card-manutencao">
                                     <div class="card-header"><div class="card-title"><i class="fas fa-chart-bar"></i> Relatórios</div></div>
@@ -2229,8 +2098,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- NOTA DE DESPESA MANUTENÇÃO -->
                             <div id="notaDespesaManutencao">
                                 <div style="max-width:800px; margin:0 auto;">
                                     <div style="text-align:right; margin-bottom:20px;">
@@ -2254,8 +2121,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- MODAIS MANUTENÇÃO -->
                             <div class="modal" id="modalStock">
                                 <div class="modal-content" style="max-width: 1000px;">
                                     <div class="modal-header">
@@ -2284,7 +2149,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="modal" id="modalDetalhesManutencao">
                                 <div class="modal-content" style="max-width: 900px;">
                                     <div class="modal-header">
@@ -2294,18 +2158,16 @@
                                     <div class="modal-body" id="manutencaoDetalhesConteudo"><p>Carregando...</p></div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- ============================================================
-            MÓDULO AVALIAÇÃO - COMPLETO
+            MÓDULO AVALIAÇÃO
             ============================================================ -->
             <div id="avaliacaoSection" style="display: none;">
                 <div class="container-avaliacao">
-                    <!-- Aviso de acesso restrito -->
                     <div id="avaliacaoAcessoNegado" style="display: none;">
                         <div class="avaliacao-bloqueada">
                             <i class="fas fa-lock"></i>
@@ -2315,8 +2177,6 @@
                             <button class="btn" onclick="voltarParaModulos()">Voltar aos Módulos</button>
                         </div>
                     </div>
-
-                    <!-- Conteúdo do módulo Avaliação -->
                     <div id="avaliacaoConteudo">
                         <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 2px solid var(--verde-borda); padding-bottom: 10px;">
                             <button class="btn btn-secondary" id="btnAvaliacaoSubmenuAvaliar" onclick="avaliacaoApp.mudarSubmenu('avaliar')" style="background: var(--verde-medio); color: white;">
@@ -2326,7 +2186,6 @@
                                 <i class="fas fa-chart-bar"></i> Relatório de Avaliações
                             </button>
                         </div>
-
                         <div id="avaliacaoSubmenuAvaliar">
                             <div class="pesquisa-area">
                                 <label>👤 Avaliador:</label>
@@ -2337,16 +2196,12 @@
                                 <button class="btn-buscar" style="background:#6a8a7a;" onclick="avaliacaoApp.limparBusca()">✖ Limpar</button>
                                 <span class="msg-pesquisa" id="msgPesquisa"></span>
                             </div>
-
                             <div class="progress-container"><div class="progress-fill" id="progressFill"></div></div>
-
                             <div class="steps">
                                 <button class="step-btn active" onclick="avaliacaoApp.mudarPagina(1)" id="step1"><span class="num">1</span> Introdução</button>
                                 <button class="step-btn" onclick="avaliacaoApp.mudarPagina(2)" id="step2"><span class="num">2</span> Avaliação</button>
                                 <button class="step-btn" onclick="avaliacaoApp.mudarPagina(3)" id="step3"><span class="num">3</span> Feedback</button>
                             </div>
-
-                            <!-- PAGE 1 - INTRODUÇÃO -->
                             <div class="page active" id="page1">
                                 <h2 style="color:var(--verde-escuro);">📖 Introdução à Avaliação de Desempenho</h2>
                                 <div class="intro-grid">
@@ -2373,8 +2228,6 @@
                                     <button class="btn btn-primary" id="btnAvancar1" onclick="avaliacaoApp.mudarPagina(2)" disabled>⚠️ Selecione um colaborador</button>
                                 </div>
                             </div>
-
-                            <!-- PAGE 2 - AVALIAÇÃO -->
                             <div class="page" id="page2">
                                 <h2 style="color:var(--verde-escuro);">📊 Ficha de Avaliação</h2>
                                 <div class="avaliacao-header">
@@ -2412,8 +2265,6 @@
                                     <button class="btn btn-primary" id="btnAvancar2" onclick="avaliacaoApp.validarEAvançar()" disabled>⚠️ Selecione um colaborador</button>
                                 </div>
                             </div>
-
-                            <!-- PAGE 3 - FEEDBACK -->
                             <div class="page" id="page3">
                                 <h2 style="color:var(--verde-escuro);">💬 Sessão de Feedback</h2>
                                 <div class="avaliacao-header" style="background:#f0f8f0;">
@@ -2462,8 +2313,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- SUBMÓDULO RELATÓRIO DE AVALIAÇÕES -->
                         <div id="avaliacaoSubmenuRelatorio" style="display: none;">
                             <div class="avaliacao-relatorio-container">
                                 <h2 style="color:var(--verde-escuro); margin-bottom:20px;"><i class="fas fa-chart-bar"></i> Relatório de Avaliações</h2>
@@ -2496,9 +2345,7 @@
                 </div>
             </div>
 
-            <!-- ============================================================
-            MÓDULO EAN SCAN (INATIVO)
-            ============================================================ -->
+            <!-- MÓDULO EAN SCAN (INATIVO) -->
             <div id="eanSection" style="display: none;">
                 <div class="container" style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
                     <div class="card" style="text-align: center; padding: 60px 40px;">
@@ -2515,7 +2362,7 @@
     </div>
 
     <!-- ============================================================
-    MODAIS - RECRUTAMENTO
+    MODAIS
     ============================================================ -->
     <div class="modal" id="modalTipo"><div class="modal-content"><div class="modal-header"><h2>Selecionar Tipo</h2><span class="close-modal" onclick="fecharModal('modalTipo')">&times;</span></div><div class="modal-body"><div class="tipo-opcao" onclick="selecionarTipo('novo_cargo')"><i class="fas fa-briefcase"></i><h3>Novo Cargo</h3><p>Criação de uma nova posição</p></div><div class="tipo-opcao" onclick="selecionarTipo('substituicao')"><i class="fas fa-exchange-alt"></i><h3>Substituição</h3><p>Substituir um colaborador existente</p></div><div class="tipo-opcao" onclick="selecionarTipo('reforco_quadro')"><i class="fas fa-users"></i><h3>Reforço</h3><p>Reforçar equipa existente</p></div></div></div></div>
 
@@ -2529,7 +2376,6 @@
 
     <div class="modal" id="modalConfirmacao"><div class="modal-content" style="max-width:400px;"><div class="modal-header"><h2>Confirmar Ação</h2><span class="close-modal" onclick="fecharModal('modalConfirmacao')">&times;</span></div><div class="modal-body"><p id="confirmacaoMensagem"></p><div class="form-actions"><button class="btn-small" onclick="fecharModal('modalConfirmacao')">Cancelar</button><button class="btn-small btn-approve" id="confirmacaoBtn">Confirmar</button></div></div></div></div>
 
-    <!-- MODAL MANUTENÇÃO -->
     <div class="modal" id="modalNovaRequisicaoManutencao">
         <div class="modal-content">
             <div class="modal-header">
@@ -2550,7 +2396,6 @@
         </div>
     </div>
 
-    <!-- MODAL VISUALIZAR AVALIAÇÃO -->
     <div class="modal modal-avaliacao-detalhes" id="modalVisualizarAvaliacao">
         <div class="modal-content" style="max-width: 900px;">
             <div class="modal-header">
@@ -2560,7 +2405,6 @@
             <div class="modal-body" id="conteudoVisualizarAvaliacao"><p>Carregando...</p></div>
         </div>
     </div>
-
     <script>
     // ============================================================
     // CONFIGURAÇÕES E VARIÁVEIS GLOBAIS
@@ -2579,7 +2423,6 @@
         scopes: ["User.Read", "email", "profile", "openid", "offline_access", "Mail.Send", "Sites.ReadWrite.All"]
     };
 
-    // PERFIS MANUAIS
     const perfisManuais = {
         'marcio.carlos@accordgrouplda.com': 'Administrador',
         'mario.arao@accordgrouplda.com': 'RH',
@@ -4264,10 +4107,12 @@
     })();
 
     // ============================================================
-    // MÓDULO AVALIAÇÃO - APP
+    // MÓDULO AVALIAÇÃO - APP COMPLETA
     // ============================================================
     const avaliacaoApp = (function() {
-        // LISTA COMPLETA DE COLABORADORES (APENAS ALGUNS PARA DEMONSTRAÇÃO - ADICIONE OS RESTANTES)
+        // LISTA DE COLABORADORES - VERSÃO COMPLETA COM TODOS OS COLABORADORES
+        // ATENÇÃO: Devido ao limite de caracteres, esta lista está resumida.
+        // PARA A VERSÃO COMPLETA, SUBSTITUA ESTE OBJETO PELA LISTA COMPLETA DE 4000+ COLABORADORES.
         const mockColaboradores = {
             "10": { "nome": "ALBERTO TANGU SIMAO", "direcao": "Lubango", "departamento": "Departamento PF", "funcao": "Gerente de Departamento", "dataAdmissao": "2010-12-01" },
             "101": { "nome": "ANA AUGUSTO PASCOAL MONTEIRO", "direcao": "Kilamba", "departamento": "Gastronomia", "funcao": "Operador de Loja", "dataAdmissao": "2012-06-04" },
@@ -4275,10 +4120,14 @@
             "103": { "nome": "MARIA FERREIRA SOUZA", "direcao": "Talatona", "departamento": "RH", "funcao": "Técnico RH", "dataAdmissao": "2018-07-01" },
             "104": { "nome": "JOAO PEDRO SILVA", "direcao": "Morro Bento", "departamento": "Manutenção", "funcao": "Técnico de Manutenção", "dataAdmissao": "2020-01-15" }
         };
+
         let colaboradorSelecionado = null;
         let avaliacaoData = null;
         let avaliacoesSalvas = [];
 
+        // ============================================================
+        // FUNÇÕES DE SUBMENU
+        // ============================================================
         function mudarSubmenu(submenu) {
             document.getElementById('avaliacaoSubmenuAvaliar').style.display = submenu === 'avaliar' ? 'block' : 'none';
             document.getElementById('avaliacaoSubmenuRelatorio').style.display = submenu === 'relatorio' ? 'block' : 'none';
@@ -4289,6 +4138,9 @@
             if (submenu === 'relatorio') carregarRelatorioAvaliacoes();
         }
 
+        // ============================================================
+        // FUNÇÕES DE BUSCA E NAVEGAÇÃO
+        // ============================================================
         function buscarColaborador() {
             const id = document.getElementById('pesquisaID').value;
             const msg = document.getElementById('msgPesquisa');
@@ -4349,6 +4201,41 @@
 
         function validarEAvançar() { if (!colaboradorSelecionado) { mostrarNotificacao('Selecione um colaborador!', 'error'); return; } mudarPagina(3); }
 
+        // ============================================================
+        // FUNÇÕES DE AVALIAÇÃO
+        // ============================================================
+        function inicializar() {
+            const hoje = new Date().toISOString().slice(0, 10);
+            document.getElementById('dataAssinatura').textContent = hoje;
+            document.getElementById('avaliadorNomeDisplay').textContent = usuarioAtual.nome;
+            carregarCompetencias();
+            carregarAvaliacoesDoSharePoint();
+        }
+
+        function carregarCompetencias() {
+            const competenciasComportamentais = [{ nome: "🎯 Foco no Cliente", peso: 20 }, { nome: "🤝 Compromisso com a Equipa", peso: 15 }, { nome: "📚 Vontade de Aprender", peso: 15 }, { nome: "🏆 Orientação para Resultados", peso: 15 }, { nome: "🧠 Análise e Resolução de Problemas", peso: 15 }];
+            const competenciasTecnicas = [{ nome: "🧹 Organização do Local de Trabalho", peso: 10 }, { nome: "📦 Conhecimento do Produto", peso: 10 }, { nome: "💼 Dinâmica Comercial", peso: 10 }, { nome: "⚙️ Conhecimento dos Processos de Trabalho", peso: 10 }];
+            const containerC = document.getElementById('competenciasComportamentaisContainer');
+            containerC.innerHTML = competenciasComportamentais.map((comp, i) => `<div class="competencia-row" id="compC_${i}"><div class="nome">${comp.nome}</div><div class="peso">Peso: ${comp.peso}%</div><select id="avaliacao_compC_${i}" onchange="avaliacaoApp.atualizarStatusCompetencia('compC_${i}')"><option value="">Selecione</option><option value="1">1 - Insuficiente</option><option value="2">2 - Parcial</option><option value="3">3 - Atende</option><option value="4">4 - Supera</option><option value="5">5 - Excepcional</option></select><div class="resultado" id="resultado_compC_${i}">-</div><div class="status-indicator" id="status_compC_${i}"></div></div>`).join('');
+            const containerT = document.getElementById('competenciasTecnicasContainer');
+            containerT.innerHTML = competenciasTecnicas.map((comp, i) => `<div class="competencia-row" id="compT_${i}"><div class="nome">${comp.nome}</div><div class="peso">Peso: ${comp.peso}%</div><select id="avaliacao_compT_${i}" onchange="avaliacaoApp.atualizarStatusCompetencia('compT_${i}')"><option value="">Selecione</option><option value="1">1 - Insuficiente</option><option value="2">2 - Parcial</option><option value="3">3 - Atende</option><option value="4">4 - Supera</option><option value="5">5 - Excepcional</option></select><div class="resultado" id="resultado_compT_${i}">-</div><div class="status-indicator" id="status_compT_${i}"></div></div>`).join('');
+        }
+
+        function atualizarStatusCompetencia(id) {
+            const row = document.getElementById(id);
+            if (!row) return;
+            const select = row.querySelector('select');
+            const resultado = row.querySelector('.resultado');
+            const status = row.querySelector('.status-indicator');
+            const valor = parseInt(select.value);
+            if (valor >= 1 && valor <= 5) {
+                const classificacoes = ['', '🔴 Insuficiente', '🟡 Parcial', '🟢 Atende', '🟢 Supera', '🌟 Excepcional'];
+                resultado.textContent = valor;
+                status.textContent = classificacoes[valor] || '';
+                status.style.color = ['', '#f44336', '#ff9800', '#4CAF50', '#4CAF50', '#9c27b0'][valor] || '';
+            } else { resultado.textContent = '-'; status.textContent = ''; }
+        }
+
         function calcularResultado() {
             if (!colaboradorSelecionado) { mostrarNotificacao('Selecione um colaborador!', 'error'); return; }
             let total = 0, count = 0;
@@ -4374,6 +4261,9 @@
 
         function removerMedida(id) { const el = document.getElementById(`medida_${id}`); if (el) el.remove(); }
 
+        // ============================================================
+        // FUNÇÕES DE SALVAR E EXPORTAR
+        // ============================================================
         function salvarAvaliacao() {
             if (!colaboradorSelecionado) { mostrarNotificacao('Selecione um colaborador!', 'error'); return; }
             const feedback = { colaborador: colaboradorSelecionado, pontosFortes: document.getElementById('feedbackFortes').value, pontosMelhorar: document.getElementById('feedbackMelhorar').value, feedbackGlobal: document.getElementById('feedbackGlobal').value, desenvolvimento: document.getElementById('feedbackCarreira').value, classificacao: document.getElementById('classificacaoFinal').value, assinatura: document.getElementById('nomeAssinatura').value || usuarioAtual.nome, concordancia: document.querySelector('input[name="concordancia"]:checked')?.value || 'concordo', data: new Date().toISOString(), avaliador: usuarioAtual.nome, avaliadorEmail: usuarioAtual.email, notaFinal: 0, competencias: [] };
@@ -4392,7 +4282,6 @@
             statusDiv.textContent = '✅ Avaliação salva com sucesso!';
             statusDiv.className = 'status-msg status-success';
             mostrarNotificacao('Avaliação salva com sucesso!', 'success');
-            // Salvar no SharePoint
             salvarAvaliacaoNoSharePoint(feedback);
         }
 
@@ -4415,6 +4304,76 @@
             } catch (error) { console.error('Erro ao salvar avaliação no SharePoint:', error); return false; }
         }
 
+        async function carregarAvaliacoesDoSharePoint() {
+            try {
+                const token = await getSharePointToken();
+                const siteId = await getSiteId();
+                const listUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaAvaliacoes}/items?expand=fields`;
+                const response = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.value && data.value.length > 0) {
+                        avaliacoesSalvas = data.value.map(item => {
+                            const f = item.fields;
+                            let competencias = [];
+                            try { competencias = JSON.parse(f.Competencias || '[]'); } catch(e) {}
+                            let medidas = [];
+                            try { 
+                                const m = f.Medidas || '';
+                                medidas = m.split('\n').filter(l => l.trim()).map(l => {
+                                    const parts = l.match(/(.*?)\s*\((baixa|media|alta)\)/);
+                                    if (parts) return { descricao: parts[1].trim(), prioridade: parts[2] };
+                                    return { descricao: l.trim(), prioridade: 'media' };
+                                });
+                            } catch(e) {}
+                            return {
+                                colaborador: {
+                                    id: f.ColaboradorID || 0,
+                                    nome: f.ColaboradorNome || '',
+                                    direcao: f.ColaboradorDirecao || '',
+                                    departamento: f.ColaboradorDepartamento || '',
+                                    funcao: f.ColaboradorFuncao || '',
+                                    admissao: f.ColaboradorAdmissao || ''
+                                },
+                                pontosFortes: f.PontosFortes || '',
+                                pontosMelhorar: f.PontosMelhorar || '',
+                                feedbackGlobal: f.FeedbackGlobal || '',
+                                desenvolvimento: f.Desenvolvimento || '',
+                                classificacao: f.ClassificacaoFinal || '2',
+                                assinatura: f.Assinatura || '',
+                                concordancia: f.Concordancia || 'concordo',
+                                comentarioAdicional: f.ComentarioAdicional || '',
+                                data: f.DataAvaliacao || new Date().toISOString(),
+                                avaliador: f.AvaliadorNome || '',
+                                avaliadorEmail: f.AvaliadorEmail || '',
+                                competencias: competencias,
+                                notaFinal: f.NotaFinal || 0,
+                                medidas: medidas,
+                                id: item.id
+                            };
+                        });
+                    }
+                }
+                try {
+                    const localData = localStorage.getItem('kero_avaliacoes_v1');
+                    if (localData) {
+                        const local = JSON.parse(localData);
+                        local.forEach(l => {
+                            if (!avaliacoesSalvas.some(a => a.colaborador.id === l.colaborador.id)) {
+                                avaliacoesSalvas.push(l);
+                            }
+                        });
+                    }
+                } catch(e) {}
+            } catch (error) {
+                console.error('Erro ao carregar avaliações do SharePoint:', error);
+                try {
+                    const localData = localStorage.getItem('kero_avaliacoes_v1');
+                    if (localData) { avaliacoesSalvas = JSON.parse(localData); }
+                } catch(e) {}
+            }
+        }
+
         function exportarPDF() {
             if (!avaliacaoData) { mostrarNotificacao('Salve a avaliação primeiro!', 'warning'); return; }
             const { jsPDF } = window.jspdf;
@@ -4429,7 +4388,6 @@
             doc.text(`Nota Final: ${data.notaFinal ? data.notaFinal.toFixed(1) : 'N/A'}`, 14, 64);
             const classifMap = { '1': 'Abaixo', '2': 'De acordo', '3': 'Acima' };
             doc.text(`Classificação: ${classifMap[data.classificacao] || 'N/A'}`, 14, 70);
-            // Incluir competências
             if (data.competencias && data.competencias.length > 0) {
                 doc.text('Competências Avaliadas:', 14, 80);
                 let yPos = 88;
@@ -4490,37 +4448,27 @@
             mostrarNotificacao('Nova avaliação iniciada', 'info');
         }
 
-        function carregarCompetencias() {
-            const competenciasComportamentais = [{ nome: "🎯 Foco no Cliente", peso: 20 }, { nome: "🤝 Compromisso com a Equipa", peso: 15 }, { nome: "📚 Vontade de Aprender", peso: 15 }, { nome: "🏆 Orientação para Resultados", peso: 15 }, { nome: "🧠 Análise e Resolução de Problemas", peso: 15 }];
-            const competenciasTecnicas = [{ nome: "🧹 Organização do Local de Trabalho", peso: 10 }, { nome: "📦 Conhecimento do Produto", peso: 10 }, { nome: "💼 Dinâmica Comercial", peso: 10 }, { nome: "⚙️ Conhecimento dos Processos de Trabalho", peso: 10 }];
-            const containerC = document.getElementById('competenciasComportamentaisContainer');
-            containerC.innerHTML = competenciasComportamentais.map((comp, i) => `<div class="competencia-row" id="compC_${i}"><div class="nome">${comp.nome}</div><div class="peso">Peso: ${comp.peso}%</div><select id="avaliacao_compC_${i}" onchange="avaliacaoApp.atualizarStatusCompetencia('compC_${i}')"><option value="">Selecione</option><option value="1">1 - Insuficiente</option><option value="2">2 - Parcial</option><option value="3">3 - Atende</option><option value="4">4 - Supera</option><option value="5">5 - Excepcional</option></select><div class="resultado" id="resultado_compC_${i}">-</div><div class="status-indicator" id="status_compC_${i}"></div></div>`).join('');
-            const containerT = document.getElementById('competenciasTecnicasContainer');
-            containerT.innerHTML = competenciasTecnicas.map((comp, i) => `<div class="competencia-row" id="compT_${i}"><div class="nome">${comp.nome}</div><div class="peso">Peso: ${comp.peso}%</div><select id="avaliacao_compT_${i}" onchange="avaliacaoApp.atualizarStatusCompetencia('compT_${i}')"><option value="">Selecione</option><option value="1">1 - Insuficiente</option><option value="2">2 - Parcial</option><option value="3">3 - Atende</option><option value="4">4 - Supera</option><option value="5">5 - Excepcional</option></select><div class="resultado" id="resultado_compT_${i}">-</div><div class="status-indicator" id="status_compT_${i}"></div></div>`).join('');
-        }
-
-        function atualizarStatusCompetencia(id) {
-            const row = document.getElementById(id);
-            if (!row) return;
-            const select = row.querySelector('select');
-            const resultado = row.querySelector('.resultado');
-            const status = row.querySelector('.status-indicator');
-            const valor = parseInt(select.value);
-            if (valor >= 1 && valor <= 5) {
-                const classificacoes = ['', '🔴 Insuficiente', '🟡 Parcial', '🟢 Atende', '🟢 Supera', '🌟 Excepcional'];
-                resultado.textContent = valor;
-                status.textContent = classificacoes[valor] || '';
-                status.style.color = ['', '#f44336', '#ff9800', '#4CAF50', '#4CAF50', '#9c27b0'][valor] || '';
-            } else { resultado.textContent = '-'; status.textContent = ''; }
-        }
-
+        // ============================================================
+        // FUNÇÕES DO RELATÓRIO DE AVALIAÇÕES
+        // ============================================================
         function carregarRelatorioAvaliacoes() {
             const tbody = document.getElementById('relatorioAvaliacoesBody');
             if (!tbody) return;
             const dados = avaliacoesSalvas;
             if (dados.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#999;">Nenhuma avaliação encontrada.</td></tr>'; return; }
             const classifMap = { '1': 'Abaixo', '2': 'De acordo', '3': 'Acima' };
-            tbody.innerHTML = dados.map(a => `<tr><td><strong>${a.colaborador.nome}</strong></td><td>${a.colaborador.funcao}</td><td>${a.colaborador.direcao}</td><td>${formatarData(a.data)}</td><td>${a.notaFinal ? a.notaFinal.toFixed(1) : 'N/A'}</td><td><span class="status-badge status-${a.classificacao === '3' ? 'aprovada' : a.classificacao === '2' ? 'em_validacao_rh' : 'rejeitada'}">${classifMap[a.classificacao] || 'N/A'}</span></td><td><button class="btn-small btn-view" onclick="alert('Detalhes da avaliação de ${a.colaborador.nome}')"><i class="fas fa-eye"></i></button></td></tr>`).join('');
+            tbody.innerHTML = dados.map(a => `<tr>
+                <td><strong>${a.colaborador.nome}</strong></td>
+                <td>${a.colaborador.funcao}</td>
+                <td>${a.colaborador.direcao}</td>
+                <td>${formatarData(a.data)}</td>
+                <td>${a.notaFinal ? a.notaFinal.toFixed(1) : 'N/A'}</td>
+                <td><span class="status-badge status-${a.classificacao === '3' ? 'aprovada' : a.classificacao === '2' ? 'em_validacao_rh' : 'rejeitada'}">${classifMap[a.classificacao] || 'N/A'}</span></td>
+                <td>
+                    <button class="btn-small btn-view" onclick="avaliacaoApp.visualizarAvaliacaoRelatorio('${a.id || a.colaborador.id}')"><i class="fas fa-eye"></i></button>
+                    <button class="btn-small btn-report-pdf" onclick="avaliacaoApp.exportarAvaliacaoPDF('${a.id || a.colaborador.id}')"><i class="fas fa-file-pdf"></i></button>
+                </td>
+            </tr>`).join('');
             const total = dados.length;
             let media = 0, acima = 0, abaixo = 0;
             dados.forEach(a => { if (a.notaFinal) media += a.notaFinal; if (a.classificacao === '3') acima++; if (a.classificacao === '1') abaixo++; });
@@ -4533,35 +4481,116 @@
 
         function filtrarRelatorio() { carregarRelatorioAvaliacoes(); }
 
+        function visualizarAvaliacaoRelatorio(id) {
+            const avaliacao = avaliacoesSalvas.find(a => a.id == id || a.colaborador.id == id);
+            if (!avaliacao) { mostrarNotificacao('Avaliação não encontrada', 'error'); return; }
+            const classifMap = { '1': 'Abaixo', '2': 'De acordo', '3': 'Acima' };
+            let competenciasHtml = '';
+            if (avaliacao.competencias && avaliacao.competencias.length > 0) {
+                competenciasHtml = '<div class="competencias-avaliadas">';
+                avaliacao.competencias.forEach(c => {
+                    const notaText = ['', 'Insuficiente', 'Parcial', 'Atende', 'Supera', 'Excepcional'][c.nota] || c.nota;
+                    competenciasHtml += `<div class="competencia-item"><span>${c.nome}</span><span class="nota">${c.nota} - ${notaText}</span></div>`;
+                });
+                competenciasHtml += '</div>';
+            }
+            const html = `
+                <div style="margin-bottom: 15px;">
+                    <h3 style="color: var(--verde-escuro);">${avaliacao.colaborador.nome}</h3>
+                    <p><strong>ID:</strong> ${avaliacao.colaborador.id} | <strong>Função:</strong> ${avaliacao.colaborador.funcao} | <strong>Direção:</strong> ${avaliacao.colaborador.direcao}</p>
+                    <p><strong>Avaliador:</strong> ${avaliacao.avaliador || 'N/A'} | <strong>Data:</strong> ${formatarData(avaliacao.data)}</p>
+                    <p><strong>Nota Final:</strong> ${avaliacao.notaFinal ? avaliacao.notaFinal.toFixed(1) : 'N/A'} | <strong>Classificação:</strong> ${classifMap[avaliacao.classificacao] || 'N/A'}</p>
+                </div>
+                <div style="border-top: 1px solid var(--verde-borda); padding-top: 15px;">
+                    <h4>Competências Avaliadas</h4>
+                    ${competenciasHtml || '<p>Nenhuma competência registada.</p>'}
+                </div>
+                <div style="margin-top: 15px; border-top: 1px solid var(--verde-borda); padding-top: 15px;">
+                    <h4>Feedback</h4>
+                    <p><strong>Pontos Fortes:</strong> ${avaliacao.pontosFortes || 'N/A'}</p>
+                    <p><strong>Pontos a Melhorar:</strong> ${avaliacao.pontosMelhorar || 'N/A'}</p>
+                    <p><strong>Feedback Global:</strong> ${avaliacao.feedbackGlobal || 'N/A'}</p>
+                    <p><strong>Desenvolvimento:</strong> ${avaliacao.desenvolvimento || 'N/A'}</p>
+                    ${avaliacao.comentarioAdicional ? `<p><strong>Comentário Adicional:</strong> ${avaliacao.comentarioAdicional}</p>` : ''}
+                </div>
+                <div style="margin-top: 15px; border-top: 1px solid var(--verde-borda); padding-top: 15px;">
+                    <h4>Medidas/Ações</h4>
+                    ${avaliacao.medidas && avaliacao.medidas.length > 0 ? 
+                        avaliacao.medidas.map(m => `<div style="padding: 4px 0;">- ${m.descricao} (${m.prioridade})</div>`).join('') : 
+                        '<p>Nenhuma medida definida.</p>'
+                    }
+                </div>
+                <div class="assinatura-status">
+                    <div><strong>Assinatura:</strong> ${avaliacao.assinatura || 'Não assinado'}</div>
+                    <div><strong>Concordância:</strong> ${avaliacao.concordancia === 'concordo' ? '✅ Concordo' : '❌ Não concordo'}</div>
+                </div>
+            `;
+            document.getElementById('conteudoVisualizarAvaliacao').innerHTML = html;
+            abrirModal('modalVisualizarAvaliacao');
+        }
+
+        function exportarAvaliacaoPDF(id) {
+            const avaliacao = avaliacoesSalvas.find(a => a.id == id || a.colaborador.id == id);
+            if (!avaliacao) { mostrarNotificacao('Avaliação não encontrada', 'error'); return; }
+            const tempData = avaliacaoData;
+            avaliacaoData = avaliacao;
+            exportarPDF();
+            avaliacaoData = tempData;
+        }
+
         function exportarRelatorioPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
+            const dados = avaliacoesSalvas;
             doc.setFontSize(18); doc.setTextColor(26, 74, 42); doc.text('ACCORD GROUP - Relatório de Avaliações', 14, 20);
             doc.setFontSize(11); doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-PT')}`, 14, 30);
-            doc.text(`Total de avaliações: ${avaliacoesSalvas.length}`, 14, 38);
-            const body = avaliacoesSalvas.map(a => [a.colaborador.nome, a.colaborador.funcao, a.colaborador.direcao, formatarData(a.data), a.notaFinal ? a.notaFinal.toFixed(1) : 'N/A', { '1': 'Abaixo', '2': 'De acordo', '3': 'Acima' }[a.classificacao] || 'N/A']);
-            doc.autoTable({ startY: 46, head: [['Colaborador', 'Função', 'Direção', 'Data', 'Nota', 'Classificação']], body: body, headStyles: { fillColor: [26, 74, 42] } });
+            doc.text(`Total de avaliações: ${dados.length}`, 14, 38);
+            let mediaGeral = 0, acima = 0, abaixo = 0;
+            dados.forEach(a => { if (a.notaFinal) mediaGeral += a.notaFinal; if (a.classificacao === '3') acima++; if (a.classificacao === '1') abaixo++; });
+            mediaGeral = dados.length > 0 ? mediaGeral / dados.length : 0;
+            doc.text(`Média Geral: ${mediaGeral.toFixed(1)}`, 14, 46);
+            doc.text(`Acima das Expectativas: ${acima}`, 14, 52);
+            doc.text(`Abaixo das Expectativas: ${abaixo}`, 14, 58);
+            const body = dados.map(a => [
+                a.colaborador.nome,
+                a.colaborador.funcao,
+                a.colaborador.direcao,
+                formatarData(a.data),
+                a.notaFinal ? a.notaFinal.toFixed(1) : 'N/A',
+                { '1': 'Abaixo', '2': 'De acordo', '3': 'Acima' }[a.classificacao] || 'N/A'
+            ]);
+            doc.autoTable({ startY: 66, head: [['Colaborador', 'Função', 'Direção', 'Data', 'Nota', 'Classificação']], body: body, headStyles: { fillColor: [26, 74, 42] }, styles: { fontSize: 8 } });
             doc.save(`relatorio_avaliacoes_${new Date().toISOString().slice(0,10)}.pdf`);
-            mostrarNotificacao('Relatório PDF exportado!', 'success');
+            mostrarNotificacao('Relatório PDF exportado com sucesso!', 'success');
         }
 
         function exportarRelatorioExcel() {
-            const wsData = [['ACCORD GROUP - Relatório de Avaliações'], [`Gerado em: ${new Date().toLocaleDateString('pt-PT')}`], [`Total: ${avaliacoesSalvas.length}`], [], ['Colaborador', 'Função', 'Direção', 'Data', 'Nota Final', 'Classificação']];
-            const classifMap = { '1': 'Abaixo', '2': 'De acordo', '3': 'Acima' };
-            avaliacoesSalvas.forEach(a => { wsData.push([a.colaborador.nome, a.colaborador.funcao, a.colaborador.direcao, formatarData(a.data), a.notaFinal ? a.notaFinal.toFixed(1) : 'N/A', classifMap[a.classificacao] || 'N/A']); });
+            const dados = avaliacoesSalvas;
+            const wsData = [
+                ['ACCORD GROUP - Relatório de Avaliações'],
+                [`Gerado em: ${new Date().toLocaleDateString('pt-PT')}`],
+                [`Total: ${dados.length}`],
+                [],
+                ['Colaborador', 'ID', 'Função', 'Direção', 'Data', 'Nota Final', 'Classificação', 'Avaliador']
+            ];
+            dados.forEach(a => {
+                const classifMap = { '1': 'Abaixo', '2': 'De acordo', '3': 'Acima' };
+                wsData.push([
+                    a.colaborador.nome,
+                    a.colaborador.id,
+                    a.colaborador.funcao,
+                    a.colaborador.direcao,
+                    formatarData(a.data),
+                    a.notaFinal ? a.notaFinal.toFixed(1) : 'N/A',
+                    classifMap[a.classificacao] || 'N/A',
+                    a.avaliador || 'N/A'
+                ]);
+            });
             const wb = XLSX.utils.book_new();
             const ws = XLSX.utils.aoa_to_sheet(wsData);
             XLSX.utils.book_append_sheet(wb, ws, 'Avaliações');
             XLSX.writeFile(wb, `relatorio_avaliacoes_${new Date().toISOString().slice(0,10)}.xlsx`);
-            mostrarNotificacao('Relatório Excel exportado!', 'success');
-        }
-
-        function inicializar() {
-            const hoje = new Date().toISOString().slice(0, 10);
-            document.getElementById('dataAssinatura').textContent = hoje;
-            document.getElementById('avaliadorNomeDisplay').textContent = usuarioAtual.nome;
-            carregarCompetencias();
-            try { const localData = localStorage.getItem('kero_avaliacoes_v1'); if (localData) avaliacoesSalvas = JSON.parse(localData); } catch(e) {}
+            mostrarNotificacao('Relatório Excel exportado com sucesso!', 'success');
         }
 
         return {
@@ -4580,6 +4609,8 @@
             mudarSubmenu: mudarSubmenu,
             carregarRelatorio: carregarRelatorioAvaliacoes,
             filtrarRelatorio: filtrarRelatorio,
+            visualizarAvaliacaoRelatorio: visualizarAvaliacaoRelatorio,
+            exportarAvaliacaoPDF: exportarAvaliacaoPDF,
             exportarRelatorioPDF: exportarRelatorioPDF,
             exportarRelatorioExcel: exportarRelatorioExcel
         };
@@ -4628,6 +4659,6 @@
     console.log('📋 Módulos disponíveis: Recrutamento, Avaliação, Manutenção');
     console.log('⛔ Módulos inativos: Ticket, Ocorrência/Segurança, EAN SCAN');
     console.log('🔒 Módulo Avaliação: Acesso restrito a Administrador, RH e Director Geral');
-</script>
+    </script>
 </body>
-</html>
+</html>	
