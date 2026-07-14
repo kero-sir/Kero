@@ -33,10 +33,6 @@
             --shadow-md: 0 5px 15px rgba(0,0,0,0.1);
             --border-radius: 10px;
             --border-radius-sm: 6px;
-            --ticket-blue: #1976D2;
-            --ticket-blue-light: #e3f2fd;
-            --ocorrencia-red: #c62828;
-            --ocorrencia-red-light: #ffebee;
             --verde-escuro: #1a4a2a;
             --verde-medio: #2a7a4a;
             --verde-claro: #4caf7a;
@@ -44,6 +40,7 @@
             --verde-borda: #b8d4b8;
             --verde-destaque: #d4f0d4;
             --laranja: #e67e22;
+            --ean-green: #2E7D32;
         }
         body { background-color: var(--gray-100); color: var(--gray-600); }
         body.dark-mode { --gray-100: #1a1a2e; --gray-200: #2d2d44; --gray-500: #aaa; --gray-600: #eee; background-color: #1a1a2e; }
@@ -52,14 +49,11 @@
         body.dark-mode .status-card, body.dark-mode .fase-card,
         body.dark-mode .module-selection-container, body.dark-mode .login-box,
         body.dark-mode .modal-content { background-color: #2d2d44; color: #eee; }
-        body.dark-mode .container-avaliacao { background: #2d2d44; color: #eee; }
-        body.dark-mode .intro-card, body.dark-mode .dicionario-item, body.dark-mode .competencia-row,
-        body.dark-mode .avaliacao-header, body.dark-mode .resultado-box, body.dark-mode .assinatura-area,
-        body.dark-mode .feedback-grid textarea, body.dark-mode .feedback-full textarea,
-        body.dark-mode .medida-item { background: #38385a; color: #eee; border-color: #4a4a6a; }
-        body.dark-mode .intro-card ul li { color: #ccc; }
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
 
+        /* ============================================================
+           LOGIN
+           ============================================================ */
         .login-container {
             display: flex;
             justify-content: center;
@@ -112,6 +106,9 @@
         .btn-login:hover { background: #1E1E1E; transform: translateY(-2px); }
         .login-error { color: var(--danger); font-size: 14px; margin-top: 10px; padding: 10px; background: #ffebee; border-radius: 4px; display: none; }
 
+        /* ============================================================
+           SELEÇÃO DE MÓDULOS - 6 MÓDULOS (2 linhas x 3 colunas)
+           ============================================================ */
         .module-selection-screen {
             display: flex;
             justify-content: center;
@@ -130,7 +127,7 @@
             padding: 50px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-md);
-            max-width: 1200px;
+            max-width: 1100px;
             width: 100%;
         }
         body.dark-mode .module-selection-container { background: #2d2d44; color: #eee; }
@@ -139,12 +136,11 @@
         .module-selection-title .user-welcome { margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .module-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
-        @media (max-width: 1200px) { .module-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 768px) { .module-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 480px) { .module-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .module-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .module-grid { grid-template-columns: 1fr; } }
         .module-card-large {
             background: white;
             border-radius: var(--border-radius);
@@ -181,16 +177,19 @@
         .module-card-large .module-icon-large.icone-azul { color: #2196F3; }
         .module-card-large .module-icon-large.icone-ticket { color: #1976D2; }
         .module-card-large .module-icon-large.icone-ocorrencia { color: #c62828; }
+        .module-card-large .module-icon-large.icone-ean { color: #2E7D32; }
         .module-card-large h2.cor-verde { color: var(--primary-dark); }
         .module-card-large h2.cor-laranja { color: #E65100; }
         .module-card-large h2.cor-azul { color: #1565c0; }
         .module-card-large h2.cor-ticket { color: #1976D2; }
         .module-card-large h2.cor-ocorrencia { color: #c62828; }
+        .module-card-large h2.cor-ean { color: #2E7D32; }
         .module-card-large.border-verde:hover { border-color: #4CAF50; }
         .module-card-large.border-laranja:hover { border-color: #FF9800; }
         .module-card-large.border-azul:hover { border-color: #2196F3; }
         .module-card-large.border-ticket:hover { border-color: #1976D2; }
         .module-card-large.border-ocorrencia:hover { border-color: #c62828; }
+        .module-card-large.border-ean:hover { border-color: #2E7D32; }
         .module-card-large.border-inativo {
             opacity: 0.7;
             cursor: not-allowed;
@@ -200,9 +199,64 @@
             border-color: #f44336 !important;
             box-shadow: 0 0 20px rgba(244, 67, 54, 0.2);
         }
+        
+        /* Logo EAN - Código de barras com K dentro de círculo verde */
+        .ean-logo-wrapper {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+        .ean-barcode {
+            background: white;
+            padding: 10px 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            height: 60px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .ean-bar {
+            width: 4px;
+            background: #1a1a1a;
+            height: 100%;
+            border-radius: 1px;
+        }
+        .ean-bar.thin { width: 2px; }
+        .ean-bar.thick { width: 6px; }
+        .ean-bar.medium { width: 4px; }
+        .ean-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 38px;
+            height: 38px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.4);
+        }
+        .ean-circle span {
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+        }
+        body.dark-mode .ean-barcode { background: #2d2d44; }
+        body.dark-mode .ean-bar { background: #eee; }
+        .module-card-large.border-ean .module-icon-large { display: none; }
+
         .btn-logout-module { margin-top: 30px; padding: 12px 30px; background: var(--gray-200); color: var(--gray-600); border: none; border-radius: var(--border-radius-sm); cursor: pointer; transition: all 0.2s; }
         .btn-logout-module:hover { background: var(--gray-500); color: white; }
 
+        /* ============================================================
+           HEADER E NAVEGAÇÃO
+           ============================================================ */
         .app-header {
             background: white;
             padding: 15px 30px;
@@ -237,6 +291,9 @@
         .btn-darkmode { background: var(--gray-500); color: white; }
         .btn-logout:hover, .btn-modules:hover, .btn-darkmode:hover { transform: translateY(-2px); filter: brightness(1.05); }
 
+        /* ============================================================
+           NAVEGAÇÃO PRINCIPAL
+           ============================================================ */
         .nav-menu {
             background: white;
             padding: 15px;
@@ -260,6 +317,20 @@
         .nav-item:hover { background: var(--primary-light); color: var(--primary-dark); }
         .nav-item.active { background: var(--primary); color: white; }
 
+        /* ============================================================
+           ESTILOS DO MÓDULO EAN SCAN (INATIVO - Apenas visual)
+           ============================================================ */
+        .ean-container {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+        }
+        body.dark-mode .ean-container { background: #2d2d44; color: #eee; }
+
+        /* ============================================================
+           BOTÕES E BADGES
+           ============================================================ */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
@@ -385,74 +456,6 @@
             gap: 10px;
         }
         .card-title { font-size: 20px; font-weight: 600; color: var(--primary-dark); }
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
-        .dashboard-card {
-            background: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .main-layout {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 25px;
-        }
-        @media (max-width: 1024px) { .main-layout { grid-template-columns: 1fr; } }
-
-        .sidebar {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--shadow-sm);
-        }
-        .filter-section { margin-top: 16px; }
-        .filter-group { margin-bottom: 15px; }
-        .filter-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 13px; }
-        .filter-group select, .filter-group input {
-            width: 100%;
-            padding: 8px 10px;
-            border-radius: 4px;
-            border: 1px solid var(--gray-200);
-            transition: all 0.2s;
-        }
-        .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--primary); }
-
-        .tempos-fases-container, .status-detalhado-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .fase-card, .status-card {
-            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            border-left: 4px solid;
-            transition: transform 0.3s ease;
-            cursor: pointer;
-        }
-        body.dark-mode .fase-card, body.dark-mode .status-card { background: linear-gradient(135deg, #2d2d44 0%, #38385a 100%); }
-        .fase-card:hover, .status-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
-        .fase-card.rh { border-left-color: #4CAF50; }
-        .fase-card.cg { border-left-color: #FF9800; }
-        .fase-card.dg { border-left-color: #f44336; }
-        .fase-card.recrutamento { border-left-color: #2196F3; }
-        .fase-header, .status-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .fase-titulo, .status-titulo { font-size: 18px; font-weight: 600; }
-        .fase-tempo, .status-quantidade { font-size: 24px; font-weight: 700; }
-        .fase-detalhes, .status-detalhes { margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0; }
-        .detalhe-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
-        .detalhe-label { color: var(--gray-500); font-size: 13px; }
-        .detalhe-valor { font-weight: 600; color: var(--gray-600); }
-        .grafico-barra { background: #e0e0e0; border-radius: 10px; overflow: hidden; margin: 10px 0; }
-        .grafico-barra-fill { background: var(--primary); height: 30px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-size: 12px; transition: width 0.5s ease; }
 
         .modal {
             display: none;
@@ -502,8 +505,6 @@
         }
         .form-control:focus { outline: none; border-color: var(--primary); }
         .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
 
         .dropzone {
             border: 2px dashed var(--gray-200);
@@ -528,7 +529,6 @@
         .file-item .file-info { display: flex; align-items: center; gap: 10px; }
         .file-item .file-size { font-size: 11px; color: var(--gray-500); }
         .file-remove { color: var(--danger); cursor: pointer; }
-        .file-remove:hover { transform: scale(1.1); }
 
         .paginacao { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
         .pagina-btn {
@@ -541,45 +541,6 @@
         }
         .pagina-btn:hover:not(:disabled) { background: var(--primary); color: white; border-color: var(--primary); }
         .pagina-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .notification-bell { position: relative; cursor: pointer; }
-        .notification-bell i { font-size: 24px; color: var(--gray-500); transition: all 0.2s; }
-        .notification-bell i:hover { color: var(--primary); }
-        .notification-bell .badge-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--danger);
-            color: white;
-            border-radius: 50%;
-            padding: 2px 6px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-        .notification-panel {
-            display: none;
-            position: absolute;
-            top: 50px;
-            right: 0;
-            width: 350px;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            z-index: 1000;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        body.dark-mode .notification-panel { background: #2d2d44; }
-        .notification-panel.show { display: block; }
-        .notification-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--gray-200);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .notification-item:hover { background: var(--gray-100); }
-        .notification-item.unread { background: var(--primary-light); }
-        body.dark-mode .notification-item.unread { background: #4a4a6a; }
 
         .loading-overlay {
             position: fixed;
@@ -619,477 +580,50 @@
         .notificacao-error { background: #f44336; }
         .notificacao-warning { background: #ff9800; }
         .notificacao-info { background: #2196F3; }
-
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
-        .container-avaliacao {
-            max-width: 1200px;
-            width: 100%;
-            margin: auto;
-            background: #ffffff;
-            padding: 30px 35px;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 60, 30, 0.12);
-        }
-        body.dark-mode .container-avaliacao { background: #2d2d44; color: #eee; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .hidden { display: none !important; }
 
-        .pesquisa-area {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-            background: var(--verde-suave);
-            padding: 12px 20px;
-            border-radius: 12px;
-            border: 2px solid var(--verde-borda);
-            margin-bottom: 20px;
-        }
-        body.dark-mode .pesquisa-area { background: #38385a; border-color: #4a4a6a; }
-        .pesquisa-area label { font-weight: 600; color: var(--verde-escuro); font-size: 14px; }
-        body.dark-mode .pesquisa-area label { color: #eee; }
-        .pesquisa-area input {
-            padding: 10px 16px;
-            border: 2px solid var(--verde-borda);
-            border-radius: 8px;
-            font-size: 14px;
-            width: 150px;
-            background: white;
-            transition: border 0.3s;
-        }
-        body.dark-mode .pesquisa-area input { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .pesquisa-area input:focus { border-color: var(--verde-medio); outline: none; }
-        .pesquisa-area .btn-buscar {
-            background: var(--verde-medio);
+        .notification-bell { position: relative; cursor: pointer; }
+        .notification-bell i { font-size: 24px; color: var(--gray-500); transition: all 0.2s; }
+        .notification-bell i:hover { color: var(--primary); }
+        .notification-bell .badge-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
             color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .pesquisa-area .btn-buscar:hover { background: var(--verde-escuro); transform: scale(1.02); }
-        .pesquisa-area .avaliador-nome {
-            font-weight: 500;
-            color: var(--verde-escuro);
-            padding: 6px 14px;
-            background: white;
-            border-radius: 20px;
-            border: 1px solid var(--verde-borda);
-            font-size: 14px;
-            margin-left: auto;
-        }
-        body.dark-mode .pesquisa-area .avaliador-nome { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .msg-pesquisa { font-size: 13px; font-weight: 500; padding: 4px 12px; border-radius: 6px; min-width: 150px; }
-        .msg-pesquisa.erro { color: #b33; }
-        .msg-pesquisa.sucesso { color: var(--verde-escuro); }
-        .msg-pesquisa.aviso { color: var(--laranja); }
-        
-        .progress-container { width: 100%; background: #e0ece0; border-radius: 10px; height: 8px; margin-bottom: 20px; overflow: hidden; }
-        .progress-fill { width: 33.33%; height: 8px; background: var(--verde-medio); border-radius: 10px; transition: width 0.4s ease; }
-        
-        .steps {
-            display: flex;
-            justify-content: center;
-            gap: 0;
-            margin-bottom: 25px;
-            background: var(--verde-suave);
-            border-radius: 50px;
-            padding: 6px;
-            border: 2px solid var(--verde-borda);
-        }
-        body.dark-mode .steps { background: #38385a; border-color: #4a4a6a; }
-        .step-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            background: transparent;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 15px;
-            color: #5a7a6a;
-            cursor: pointer;
-            transition: all 0.3s;
-            max-width: 220px;
-        }
-        body.dark-mode .step-btn { color: #aaa; }
-        .step-btn:hover { background: rgba(42, 122, 74, 0.1); }
-        .step-btn.active {
-            background: var(--verde-medio);
-            color: white;
-            box-shadow: 0 4px 12px rgba(26, 92, 58, 0.3);
-        }
-        .step-btn .num {
-            display: inline-block;
-            background: rgba(255,255,255,0.3);
             border-radius: 50%;
-            width: 26px;
-            height: 26px;
-            line-height: 26px;
-            text-align: center;
-            font-size: 13px;
-            margin-right: 8px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
         }
-        .step-btn.active .num { background: rgba(255,255,255,0.25); }
-        
-        .page { display: none; animation: fadeIn 0.4s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .intro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 20px 0; }
-        .intro-card {
-            background: var(--verde-suave);
-            padding: 25px;
-            border-radius: 12px;
-            border-left: 5px solid var(--verde-medio);
-        }
-        body.dark-mode .intro-card { background: #38385a; }
-        .intro-card h3 { color: var(--verde-escuro); margin-bottom: 12px; font-size: 18px; }
-        body.dark-mode .intro-card h3 { color: #eee; }
-        .intro-card ul { list-style: none; padding: 0; }
-        .intro-card ul li { padding: 6px 0; padding-left: 24px; position: relative; color: #2a4a3a; font-size: 14px; }
-        body.dark-mode .intro-card ul li { color: #ccc; }
-        .intro-card ul li::before { content: "✅"; position: absolute; left: 0; color: var(--verde-medio); }
-        .intro-card p { color: #2a4a3a; font-size: 14px; line-height: 1.6; }
-        body.dark-mode .intro-card p { color: #ccc; }
-        
-        .dicionario-item {
-            background: white;
-            border-radius: 8px;
-            padding: 14px 18px;
-            margin-bottom: 10px;
-            border: 1px solid var(--verde-borda);
-        }
-        body.dark-mode .dicionario-item { background: #38385a; border-color: #4a4a6a; }
-        .dicionario-item strong { color: var(--verde-escuro); display: block; margin-bottom: 4px; }
-        body.dark-mode .dicionario-item strong { color: #eee; }
-        .dicionario-item p { margin: 0; font-size: 13px; color: #3a5a4a; }
-        body.dark-mode .dicionario-item p { color: #ccc; }
-        
-        .avaliacao-header {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            background: var(--verde-suave);
-            padding: 18px 22px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid var(--verde-borda);
-        }
-        body.dark-mode .avaliacao-header { background: #38385a; border-color: #4a4a6a; }
-        .avaliacao-header .campo { flex: 1; min-width: 140px; }
-        .avaliacao-header .campo label { font-size: 12px; text-transform: uppercase; color: #4a7a5a; font-weight: 700; display: block; }
-        body.dark-mode .avaliacao-header .campo label { color: #aaa; }
-        .avaliacao-header .campo .valor { font-weight: 600; color: var(--verde-escuro); font-size: 15px; }
-        body.dark-mode .avaliacao-header .campo .valor { color: #eee; }
-        
-        .competencias-grupo { margin-bottom: 25px; }
-        .competencias-grupo h3 {
-            color: var(--verde-escuro);
-            padding: 10px 16px;
-            background: var(--verde-suave);
-            border-radius: 8px;
-            border-left: 4px solid var(--verde-medio);
-            margin-bottom: 12px;
-            font-size: 16px;
-        }
-        body.dark-mode .competencias-grupo h3 { background: #38385a; color: #eee; }
-        .competencia-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            padding: 14px 16px;
-            border-bottom: 1px solid #e8f0e8;
-            gap: 10px 20px;
-            transition: background 0.2s;
-        }
-        body.dark-mode .competencia-row { border-bottom-color: #4a4a6a; }
-        .competencia-row:hover { background: #f8fcf8; }
-        body.dark-mode .competencia-row:hover { background: #3a3a5a; }
-        .competencia-row .nome { flex: 2; min-width: 200px; font-weight: 500; color: #1a3a2a; font-size: 14px; }
-        body.dark-mode .competencia-row .nome { color: #ddd; }
-        .competencia-row .peso { color: #5a7a6a; font-size: 13px; min-width: 70px; }
-        body.dark-mode .competencia-row .peso { color: #aaa; }
-        .competencia-row select {
-            padding: 8px 12px;
-            border: 2px solid var(--verde-borda);
-            border-radius: 8px;
-            background: white;
-            font-size: 14px;
-            min-width: 180px;
-            cursor: pointer;
-            transition: border 0.2s;
-        }
-        body.dark-mode .competencia-row select { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .competencia-row select:focus { border-color: var(--verde-medio); outline: none; }
-        .competencia-row select:disabled { opacity: 0.6; cursor: not-allowed; }
-        .competencia-row .resultado { min-width: 70px; font-weight: 600; color: var(--verde-escuro); text-align: center; }
-        body.dark-mode .competencia-row .resultado { color: #eee; }
-        .competencia-row .status-indicator { font-size: 18px; min-width: 30px; text-align: center; }
-        
-        .btn-calcular {
-            background: var(--verde-medio);
-            color: white;
-            border: none;
-            padding: 14px 35px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 20px 0;
-        }
-        .btn-calcular:hover { background: var(--verde-escuro); transform: scale(1.02); box-shadow: 0 4px 15px rgba(26, 92, 58, 0.3); }
-        .btn-calcular:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-        
-        .resultado-box {
-            background: var(--verde-destaque);
-            padding: 20px 25px;
-            border-radius: 12px;
-            border: 2px solid var(--verde-borda);
-            margin: 15px 0;
+        .notification-panel {
             display: none;
-        }
-        body.dark-mode .resultado-box { background: #38385a; border-color: #4a4a6a; }
-        .resultado-box.visible { display: block; }
-        .resultado-box .nota-final { font-size: 2.2rem; font-weight: 700; color: var(--verde-escuro); }
-        body.dark-mode .resultado-box .nota-final { color: #eee; }
-        .resultado-box .classif { font-size: 1.2rem; font-weight: 600; }
-        .resultado-box .classif.acima { color: #1a7a3a; }
-        .resultado-box .classif.deacordo { color: #2a6a8a; }
-        .resultado-box .classif.abaixo { color: #b33; }
-        
-        .feedback-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin: 15px 0; }
-        .feedback-grid textarea {
-            width: 100%;
-            min-height: 100px;
-            padding: 12px 15px;
-            border: 2px solid var(--verde-borda);
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 14px;
-            resize: vertical;
-            transition: border 0.2s;
-        }
-        body.dark-mode .feedback-grid textarea { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .feedback-grid textarea:focus { border-color: var(--verde-medio); outline: none; }
-        .feedback-grid textarea:disabled { opacity: 0.6; cursor: not-allowed; }
-        .feedback-grid label { font-weight: 600; color: var(--verde-escuro); display: block; margin-bottom: 6px; font-size: 14px; }
-        body.dark-mode .feedback-grid label { color: #eee; }
-        
-        .feedback-full { margin: 15px 0; }
-        .feedback-full textarea {
-            width: 100%;
-            min-height: 80px;
-            padding: 12px 15px;
-            border: 2px solid var(--verde-borda);
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 14px;
-            resize: vertical;
-            transition: border 0.2s;
-        }
-        body.dark-mode .feedback-full textarea { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .feedback-full textarea:focus { border-color: var(--verde-medio); outline: none; }
-        .feedback-full textarea:disabled { opacity: 0.6; cursor: not-allowed; }
-        .feedback-full label { font-weight: 600; color: var(--verde-escuro); display: block; margin-bottom: 6px; font-size: 14px; }
-        body.dark-mode .feedback-full label { color: #eee; }
-        
-        .classificacao-select {
-            padding: 12px 20px;
-            border: 2px solid var(--verde-borda);
-            border-radius: 10px;
-            font-size: 15px;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 350px;
             background: white;
-            min-width: 250px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        body.dark-mode .notification-panel { background: #2d2d44; }
+        .notification-panel.show { display: block; }
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray-200);
             cursor: pointer;
+            transition: all 0.2s;
         }
-        body.dark-mode .classificacao-select { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .classificacao-select:focus { border-color: var(--verde-medio); outline: none; }
-        .classificacao-select:disabled { opacity: 0.6; cursor: not-allowed; }
-        
-        .assinatura-area {
-            background: var(--verde-suave);
-            padding: 25px;
-            border-radius: 12px;
-            border: 2px solid var(--verde-borda);
-            margin: 20px 0;
-        }
-        body.dark-mode .assinatura-area { background: #38385a; border-color: #4a4a6a; }
-        .assinatura-area h4 { color: var(--verde-escuro); margin-bottom: 15px; }
-        body.dark-mode .assinatura-area h4 { color: #eee; }
-        .assinatura-opcoes {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .assinatura-opcoes label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 500;
-            color: #1a3a2a;
-            cursor: pointer;
-        }
-        body.dark-mode .assinatura-opcoes label { color: #ddd; }
-        .assinatura-opcoes input[type="radio"] { width: 18px; height: 18px; accent-color: var(--verde-medio); cursor: pointer; }
-        .assinatura-opcoes input[type="radio"]:disabled { cursor: not-allowed; }
-        .assinatura-opcoes input[type="text"] {
-            padding: 10px 16px;
-            border: 2px solid var(--verde-borda);
-            border-radius: 8px;
-            font-size: 14px;
-            min-width: 200px;
-            flex: 1;
-            transition: border 0.3s;
-        }
-        body.dark-mode .assinatura-opcoes input[type="text"] { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .assinatura-opcoes input[type="text"]:focus { border-color: var(--verde-medio); outline: none; }
-        .assinatura-opcoes input[type="text"]:disabled { opacity: 0.6; cursor: not-allowed; }
-        .data-assinatura { font-size: 14px; color: #4a6a5a; }
-        body.dark-mode .data-assinatura { color: #aaa; }
-        
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 2px solid var(--verde-borda);
-        }
-        body.dark-mode .btn-group { border-top-color: #4a4a6a; }
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 30px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary { background: var(--verde-medio); color: white; }
-        .btn-primary:hover { background: var(--verde-escuro); transform: scale(1.02); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-        .btn-secondary { background: #e0ece0; color: var(--verde-escuro); }
-        body.dark-mode .btn-secondary { background: #4a4a6a; color: #eee; }
-        .btn-secondary:hover { background: #c8dcc8; }
-        body.dark-mode .btn-secondary:hover { background: #5a5a7a; }
-        .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-success { background: #1a7a3a; color: white; }
-        .btn-success:hover { background: #0f5a2a; transform: scale(1.02); }
-        .btn-success:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-        .btn-pdf { background: #c0392b; color: white; }
-        .btn-pdf:hover { background: #a93226; transform: scale(1.02); }
-        .btn-pdf:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-        .btn-outline { background: transparent; color: var(--verde-escuro); border: 2px solid var(--verde-borda); }
-        body.dark-mode .btn-outline { color: #eee; border-color: #4a4a6a; }
-        .btn-outline:hover { background: var(--verde-suave); }
-        body.dark-mode .btn-outline:hover { background: #4a4a6a; }
-        
-        .status-msg {
-            padding: 12px 18px;
-            border-radius: 10px;
-            margin-top: 12px;
-            font-weight: 500;
-        }
-        .status-success { background: #d4edda; color: #0b5e3a; border: 1px solid #a3cfb0; }
-        body.dark-mode .status-success { background: #1a4a2a; color: #8fdfa0; border-color: #2a6a3a; }
-        .status-error { background: #f8d7da; color: #7a2a2a; border: 1px solid #f0b8b8; }
-        body.dark-mode .status-error { background: #4a1a1a; color: #ef9a9a; border-color: #6a2a2a; }
-        .status-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-        body.dark-mode .status-info { background: #1a3a4a; color: #8fdfd0; border-color: #2a5a6a; }
-        .status-warning { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
-        body.dark-mode .status-warning { background: #4a3a1a; color: #efd08f; border-color: #6a5a2a; }
-        
-        .medidas-container { margin: 15px 0; }
-        .medida-item {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            background: #f8fcf8;
-            border-radius: 8px;
-            border: 1px solid var(--verde-borda);
-            margin-bottom: 10px;
-        }
-        body.dark-mode .medida-item { background: #38385a; border-color: #4a4a6a; }
-        .medida-item textarea {
-            flex: 1;
-            min-width: 200px;
-            min-height: 40px;
-            padding: 8px 12px;
-            border: 2px solid var(--verde-borda);
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 14px;
-            resize: vertical;
-            transition: border 0.2s;
-        }
-        body.dark-mode .medida-item textarea { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .medida-item textarea:focus { border-color: var(--verde-medio); outline: none; }
-        .medida-item textarea:disabled { opacity: 0.6; cursor: not-allowed; }
-        .medida-item .prioridade-label { font-size: 12px; font-weight: 600; color: #5a7a6a; }
-        body.dark-mode .medida-item .prioridade-label { color: #aaa; }
-        .medida-item select {
-            padding: 8px 12px;
-            border: 2px solid var(--verde-borda);
-            border-radius: 8px;
-            font-size: 13px;
-            background: white;
-            min-width: 110px;
-            cursor: pointer;
-        }
-        body.dark-mode .medida-item select { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .medida-item select:focus { border-color: var(--verde-medio); outline: none; }
-        .medida-item select:disabled { opacity: 0.6; cursor: not-allowed; }
-        .medida-item .btn-remover { background: transparent; border: none; color: #b33; font-size: 18px; cursor: pointer; padding: 0 8px; }
-        .medida-item .btn-remover:hover { color: #8a2a2a; }
-        .medida-item .btn-remover:disabled { opacity: 0.3; cursor: not-allowed; }
-        .prioridade-baixa { border-left: 4px solid #2ecc71 !important; }
-        .prioridade-media { border-left: 4px solid #f39c12 !important; }
-        .prioridade-alta { border-left: 4px solid #e74c3c !important; }
-        .btn-add-medida {
-            background: var(--verde-claro);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-add-medida:hover { background: var(--verde-medio); }
-        .btn-add-medida:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .rh-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .rh-stat-card { background: var(--verde-suave); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--verde-borda); }
-        body.dark-mode .rh-stat-card { background: #38385a; border-color: #4a4a6a; }
-        .rh-stat-card .numero { font-size: 28px; font-weight: 700; color: var(--verde-escuro); }
-        body.dark-mode .rh-stat-card .numero { color: #eee; }
-        .rh-stat-card .label { font-size: 13px; color: #5a7a6a; }
-        body.dark-mode .rh-stat-card .label { color: #aaa; }
-        .rh-tabela-wrapper { overflow-x: auto; max-height: 500px; overflow-y: auto; border-radius: 12px; border: 1px solid var(--verde-borda); }
-        body.dark-mode .rh-tabela-wrapper { border-color: #4a4a6a; }
-        .rh-tabela { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .rh-tabela th { background: var(--verde-escuro); color: white; padding: 10px 12px; text-align: left; position: sticky; top: 0; z-index: 10; white-space: nowrap; }
-        .rh-tabela td { padding: 8px 12px; border-bottom: 1px solid #e8f0e8; vertical-align: top; }
-        body.dark-mode .rh-tabela td { border-bottom-color: #4a4a6a; }
-        .rh-tabela tr:hover { background: #f8fcf8; }
-        body.dark-mode .rh-tabela tr:hover { background: #3a3a5a; }
-        .sp-config-area { background: var(--verde-suave); padding: 20px; border-radius: 12px; border: 1px solid var(--verde-borda); margin: 15px 0; }
-        body.dark-mode .sp-config-area { background: #38385a; border-color: #4a4a6a; }
-        .sp-config-area label { font-weight: 600; color: var(--verde-escuro); display: block; margin-bottom: 5px; font-size: 14px; }
-        body.dark-mode .sp-config-area label { color: #eee; }
-        .sp-config-area input { width: 100%; padding: 10px 16px; border: 2px solid var(--verde-borda); border-radius: 8px; font-size: 14px; margin-bottom: 10px; }
-        body.dark-mode .sp-config-area input { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .sp-config-area input:focus { border-color: var(--verde-medio); outline: none; }
+        .notification-item:hover { background: var(--gray-100); }
+        .notification-item.unread { background: var(--primary-light); }
 
         /* ============================================================
            ESTILOS MANUTENÇÃO
@@ -1208,8 +742,6 @@
         .manutencao-container .priority-alta { background: #ffebee; color: #c62828; }
         .manutencao-container .priority-media { background: #fff3e0; color: #E65100; }
         .manutencao-container .priority-baixa { background: #e8f5e9; color: #2E7D32; }
-        .manutencao-container .expense-summary { background: #fff3e0; padding: 16px 20px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; line-height: 1.8; border-left: 4px solid #FF9800; }
-        body.dark-mode .manutencao-container .expense-summary { background: #4a3a1a; border-color: #FF9800; }
         .manutencao-container .activity-list { max-height: 350px; overflow-y: auto; }
         .manutencao-container .activity-item { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 14px; transition: all 0.3s; border-radius: 8px; }
         body.dark-mode .manutencao-container .activity-item { border-bottom-color: #4a4a6a; }
@@ -1258,22 +790,7 @@
         .manutencao-container .btn-manutencao-secondary:hover { background: #FF9800; color: white; transform: translateY(-1px); }
         .manutencao-container .sidebar-filters { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(230, 81, 0, 0.12); border-left: 4px solid #FF9800; }
         body.dark-mode .manutencao-container .sidebar-filters { background: #2d2d44; color: #eee; }
-        .manutencao-container .item-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; }
-        .manutencao-container .item-row input { flex: 1; min-width: 80px; }
 
-        .manutencao-container #notaDespesaManutencao {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            z-index: 20000;
-            overflow-y: auto;
-            padding: 30px;
-        }
-        body.dark-mode .manutencao-container #notaDespesaManutencao { background: rgba(0,0,0,0.95); }
         .manutencao-container .nota-despesa-container {
             background: white;
             padding: 40px;
@@ -1310,289 +827,6 @@
         }
         .manutencao-container .btn-imprimir:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(255, 152, 0, 0.4); }
 
-        @media (max-width: 900px) {
-            .manutencao-container .app-container { flex-direction: column; }
-            .manutencao-container .sidebar-manutencao { width: 100%; border-radius: var(--border-radius) var(--border-radius) 0 0; }
-            .manutencao-container .content-manutencao { padding: 16px; }
-        }
-        @media (max-width: 480px) { .manutencao-container .kpi-grid-manutencao { grid-template-columns: 1fr 1fr; } }
-        @media print {
-            body * { visibility: hidden; }
-            .manutencao-container #notaDespesaManutencao, .manutencao-container #notaDespesaManutencao * { visibility: visible; }
-            .manutencao-container #notaDespesaManutencao { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; }
-            .no-print { display: none !important; }
-        }
-
-        @media (max-width: 768px) {
-            .app-header { flex-direction: column; gap: 10px; text-align: center; }
-            .user-info { flex-wrap: wrap; justify-content: center; }
-            .intro-grid { grid-template-columns: 1fr; }
-            .feedback-grid { grid-template-columns: 1fr; }
-            .steps { flex-direction: column; border-radius: 16px; gap: 4px; }
-            .step-btn { max-width: 100%; text-align: center; padding: 10px; }
-            .competencia-row { flex-direction: column; align-items: stretch; }
-            .competencia-row select { width: 100%; }
-            .pesquisa-area { flex-direction: column; align-items: stretch; }
-            .pesquisa-area input { width: 100%; }
-            .pesquisa-area .avaliador-nome { margin-left: 0; text-align: center; }
-            .medida-item { flex-direction: column; align-items: stretch; }
-            .medida-item select { width: 100%; }
-            .module-grid { grid-template-columns: repeat(2, 1fr); }
-            .login-box { padding: 30px 20px; margin: 0 15px; }
-            .module-selection-container { padding: 30px 20px; }
-        }
-        @media (max-width: 480px) { .module-grid { grid-template-columns: 1fr; } }
-        @media print {
-            .btn-group, .steps, .btn-calcular, .pesquisa-area, .progress-container,
-            .app-header, .user-info { display: none !important; }
-        }
-
-        .edit-badge { display: inline-block; width: 8px; height: 8px; background-color: #2196F3; border-radius: 50%; margin-left: 5px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
-        .anexo-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background-color: #e8f5e9;
-            padding: 2px 6px;
-            border-radius: 12px;
-            gap: 3px;
-        }
-        .anexo-icon i { font-size: 11px; color: var(--sharepoint); }
-        .anexo-icon span { font-size: 10px; font-weight: bold; color: var(--primary-dark); }
-        .anexo-icon:hover { transform: scale(1.05); background-color: var(--primary-light); }
-        .anexo-icon:hover i { color: var(--primary); }
-        .codigo-container { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
-        .direcoes-list { margin-top: 20px; }
-        .direcao-item { background: #f8f9fa; border: 1px solid #e0f2e0; border-radius: 8px; margin-bottom: 15px; padding: 15px; transition: all 0.2s; }
-        body.dark-mode .direcao-item { background: #38385a; border-color: #4a4a6a; }
-        .direcao-item:hover { box-shadow: var(--shadow-sm); }
-        .direcao-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #c8e6c9; }
-        .direcao-nome { font-weight: 700; color: var(--primary-dark); }
-        .direcao-categorias { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .categoria-tag {
-            background: white;
-            border: 1px solid var(--primary);
-            color: var(--primary-dark);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            transition: all 0.2s;
-        }
-        body.dark-mode .categoria-tag { background: #2d2d44; }
-        .categoria-tag:hover { background: var(--primary-light); transform: scale(1.02); }
-        [data-tooltip] { position: relative; cursor: help; }
-        [data-tooltip]:before {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 5px 10px;
-            background: #333;
-            color: white;
-            font-size: 11px;
-            border-radius: 4px;
-            white-space: nowrap;
-            display: none;
-            z-index: 1000;
-        }
-        [data-tooltip]:hover:before { display: block; }
-        .report-actions { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .btn-report {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-        .btn-report:hover { transform: translateY(-1px); filter: brightness(1.05); }
-        .btn-report-excel { background-color: #217346; }
-        .btn-report-pdf { background-color: #f40f02; }
-        .btn-report-csv { background-color: #666; }
-        .historico-item {
-            border-left: 4px solid;
-            padding: 12px;
-            margin-bottom: 12px;
-            background: white;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.2s;
-        }
-        body.dark-mode .historico-item { background: #38385a; }
-        .historico-item:hover { transform: translateX(5px); }
-        .historico-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-        .historico-comentario { margin-top: 8px; padding: 8px; background: #f5f5f5; border-radius: 4px; }
-        body.dark-mode .historico-comentario { background: #2a2a40; }
-        .ficheiros-section { margin-top: 25px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
-        .ficheiros-section h4 { margin-bottom: 15px; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
-        .ficheiros-tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px; flex-wrap: wrap; }
-        .ficheiro-tab {
-            padding: 8px 16px;
-            background: #f5f5f5;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-        .ficheiro-tab:hover { background: var(--primary-light); border-color: var(--primary); }
-        .ficheiro-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .ficheiro-tab i { font-size: 14px; }
-        .ficheiro-viewer-container {
-            background: #f9f9f9;
-            border-radius: 8px;
-            padding: 15px;
-            min-height: 400px;
-            margin-bottom: 15px;
-            border: 1px solid #e0e0e0;
-        }
-        body.dark-mode .ficheiro-viewer-container { background: #2a2a40; border-color: #4a4a6a; }
-        .ficheiro-viewer { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-        .ficheiro-preview-image { text-align: center; }
-        .ficheiro-preview-image img { max-width: 100%; max-height: 500px; border-radius: 4px; box-shadow: var(--shadow-sm); }
-        .ficheiro-preview-pdf { width: 100%; height: 600px; border: none; }
-        .ficheiro-preview-office { width: 100%; height: 600px; border: none; }
-        .ficheiro-preview-text { width: 100%; height: 500px; border: 1px solid #ddd; background: white; }
-        body.dark-mode .ficheiro-preview-text { background: #2a2a40; border-color: #4a4a6a; }
-        .ficheiro-preview-unavailable { text-align: center; padding: 50px; color: #999; }
-        .ficheiro-preview-unavailable i { font-size: 64px; margin-bottom: 20px; opacity: 0.5; }
-        .ficheiro-info-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: #f0f0f0;
-            border-radius: 8px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        body.dark-mode .ficheiro-info-bar { background: #2a2a40; }
-        .ficheiro-details { display: flex; flex-direction: column; }
-        .ficheiro-details .ficheiro-nome { font-weight: 600; color: var(--gray-600); }
-        body.dark-mode .ficheiro-details .ficheiro-nome { color: #eee; }
-        .ficheiro-details .ficheiro-meta { font-size: 12px; color: var(--gray-500); margin-top: 3px; }
-        .ficheiro-actions { display: flex; gap: 10px; }
-        .btn-download, .btn-sharepoint {
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            transition: all 0.2s;
-            border: none;
-        }
-        .btn-download { background: var(--primary); color: white; }
-        .btn-sharepoint { background: var(--sharepoint); color: white; }
-        .btn-download:hover, .btn-sharepoint:hover { transform: translateY(-1px); filter: brightness(1.05); }
-        .section { display: none; }
-        .section.active { display: block; }
-        .hidden { display: none !important; }
-        .tipo-opcao {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
-            margin: 20px 0;
-            border: 2px solid #e0f2e0;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .tipo-opcao:hover { border-color: var(--primary); background: #f1f8e9; transform: translateY(-5px); }
-        .tipo-opcao i { font-size: 48px; margin-bottom: 15px; color: var(--primary); }
-        .anexo-tag {
-            display: inline-block;
-            background: #e3f2fd;
-            border: 1px solid #90caf9;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 11px;
-            color: #1565c0;
-            margin: 2px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .anexo-tag:hover { background: #bbdefb; transform: scale(1.05); }
-        .signature-area { margin: 16px 0; }
-        .signature-area h4 { color: var(--primary-dark); margin-bottom: 8px; }
-        .btn-warning { background: #ff9800; color: white; }
-        .btn-warning:hover { background: #fb8c00; }
-        .priority-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .priority-baixa { background: #e8f5e9; color: #2E7D32; }
-        .priority-media { background: #fff3e0; color: #E65100; }
-        .priority-alta { background: #ffebee; color: #c62828; }
-        .type-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .type-corretiva { background: #ffebee; color: #c62828; }
-        .type-preventiva { background: #e8f5e9; color: #2E7D32; }
-        .req-detalhes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
-        .req-detalhes-grid .label { font-size: 12px; color: #888; text-transform: uppercase; }
-        .req-detalhes-grid .value { font-size: 14px; font-weight: 500; margin-top: 2px; }
-        .h-data { font-size: 12px; color: #888; }
-
-        .avaliacao-bloqueada {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 40px;
-            text-align: center;
-            min-height: 400px;
-        }
-        .avaliacao-bloqueada i {
-            font-size: 80px;
-            color: var(--danger);
-            margin-bottom: 20px;
-        }
-        .avaliacao-bloqueada h2 {
-            color: var(--danger);
-            font-size: 28px;
-            margin-bottom: 15px;
-        }
-        .avaliacao-bloqueada p {
-            color: var(--gray-500);
-            font-size: 16px;
-            max-width: 500px;
-            line-height: 1.6;
-        }
-        .avaliacao-bloqueada .btn {
-            margin-top: 25px;
-            padding: 12px 30px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .avaliacao-bloqueada .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
-        
         .stock-table-wrapper { overflow-x: auto; max-height: 600px; overflow-y: auto; border-radius: 12px; border: 1px solid #e0e0e0; }
         body.dark-mode .stock-table-wrapper { border-color: #4a4a6a; }
         .stock-table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -1605,7 +839,7 @@
         .stock-qtd.alta { color: #2E7D32; }
         .stock-qtd.media { color: #E65100; }
         .stock-qtd.baixa { color: #c62828; }
-        
+
         .sidebar-actions {
             padding: 0 20px 20px 20px;
             display: flex;
@@ -1633,115 +867,48 @@
         .sidebar-actions .btn-sidebar.btn-stock { background: linear-gradient(135deg, #2196F3, #0d47a1); }
         .sidebar-actions .btn-sidebar.btn-stock:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4); }
 
-        .avaliacao-relatorio-container {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 25px;
-            box-shadow: var(--shadow-sm);
-        }
-        body.dark-mode .avaliacao-relatorio-container { background: #2d2d44; color: #eee; }
-        .avaliacao-relatorio-container .relatorio-kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        @media (max-width: 768px) {
-            .avaliacao-relatorio-container .relatorio-kpi-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        .avaliacao-relatorio-container .relatorio-kpi-card {
-            background: var(--verde-suave);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            border-left: 4px solid var(--verde-medio);
-        }
-        body.dark-mode .avaliacao-relatorio-container .relatorio-kpi-card { background: #38385a; }
-        .avaliacao-relatorio-container .relatorio-kpi-card .numero {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--verde-escuro);
-        }
-        body.dark-mode .avaliacao-relatorio-container .relatorio-kpi-card .numero { color: #eee; }
-        .avaliacao-relatorio-container .relatorio-kpi-card .label {
-            font-size: 13px;
-            color: #5a7a6a;
-        }
-        body.dark-mode .avaliacao-relatorio-container .relatorio-kpi-card .label { color: #aaa; }
-        .avaliacao-relatorio-container .relatorio-filtros {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-        .avaliacao-relatorio-container .relatorio-filtros input,
-        .avaliacao-relatorio-container .relatorio-filtros select {
-            padding: 8px 12px;
-            border-radius: var(--border-radius-sm);
-            border: 1px solid var(--gray-200);
-            font-size: 14px;
-        }
-        body.dark-mode .avaliacao-relatorio-container .relatorio-filtros input,
-        body.dark-mode .avaliacao-relatorio-container .relatorio-filtros select { background: #2d2d44; color: #eee; border-color: #4a4a6a; }
-        .avaliacao-relatorio-container .avaliacao-relatorio-tabela-wrapper {
-            overflow-x: auto;
-            max-height: 500px;
-            overflow-y: auto;
-            border-radius: var(--border-radius-sm);
-            border: 1px solid var(--gray-200);
-        }
-        body.dark-mode .avaliacao-relatorio-container .avaliacao-relatorio-tabela-wrapper { border-color: #4a4a6a; }
-        .avaliacao-relatorio-container .avaliacao-relatorio-tabela {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        .avaliacao-relatorio-container .avaliacao-relatorio-tabela th {
-            background: var(--verde-escuro);
+        .btn-report {
+            background-color: var(--primary);
             color: white;
-            padding: 10px 12px;
-            text-align: left;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            white-space: nowrap;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
         }
-        .avaliacao-relatorio-container .avaliacao-relatorio-tabela td {
-            padding: 8px 12px;
-            border-bottom: 1px solid #e8f0e8;
-            vertical-align: top;
-        }
-        body.dark-mode .avaliacao-relatorio-container .avaliacao-relatorio-tabela td { border-bottom-color: #4a4a6a; }
-        .avaliacao-relatorio-container .avaliacao-relatorio-tabela tr:hover { background: #f8fcf8; }
-        body.dark-mode .avaliacao-relatorio-container .avaliacao-relatorio-tabela tr:hover { background: #3a3a5a; }
+        .btn-report:hover { transform: translateY(-1px); filter: brightness(1.05); }
+        .btn-report-excel { background-color: #217346; }
+        .btn-report-pdf { background-color: #f40f02; }
+        .btn-report-csv { background-color: #666; }
 
-        .modal-avaliacao-detalhes .competencias-avaliadas {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px 30px;
-            margin: 15px 0;
+        @media (max-width: 900px) {
+            .manutencao-container .app-container { flex-direction: column; }
+            .manutencao-container .sidebar-manutencao { width: 100%; border-radius: var(--border-radius) var(--border-radius) 0 0; }
+            .manutencao-container .content-manutencao { padding: 16px; }
         }
-        .modal-avaliacao-detalhes .competencia-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px solid #f0f0f0;
+        @media (max-width: 480px) { .manutencao-container .kpi-grid-manutencao { grid-template-columns: 1fr 1fr; } }
+        @media print {
+            body * { visibility: hidden; }
+            .manutencao-container #notaDespesaManutencao, .manutencao-container #notaDespesaManutencao * { visibility: visible; }
+            .manutencao-container #notaDespesaManutencao { position: absolute; top: 0; left: 0; width: 100%; padding: 20px; }
+            .no-print { display: none !important; }
         }
-        body.dark-mode .modal-avaliacao-detalhes .competencia-item { border-bottom-color: #4a4a6a; }
-        .modal-avaliacao-detalhes .competencia-item .nota {
-            font-weight: 700;
-            color: var(--verde-medio);
+
+        @media (max-width: 768px) {
+            .app-header { flex-direction: column; gap: 10px; text-align: center; }
+            .user-info { flex-wrap: wrap; justify-content: center; }
+            .module-grid { grid-template-columns: repeat(2, 1fr); }
+            .login-box { padding: 30px 20px; margin: 0 15px; }
+            .module-selection-container { padding: 30px 20px; }
         }
-        .modal-avaliacao-detalhes .assinatura-status {
-            display: flex;
-            gap: 20px;
-            margin-top: 15px;
-            padding: 15px;
-            background: var(--verde-suave);
-            border-radius: 8px;
+        @media (max-width: 480px) { .module-grid { grid-template-columns: 1fr; } }
+        @media print {
+            .btn-group, .steps, .btn-calcular, .pesquisa-area, .progress-container,
+            .app-header, .user-info { display: none !important; }
         }
-        body.dark-mode .modal-avaliacao-detalhes .assinatura-status { background: #38385a; }
     </style>
 </head>
 <body>
@@ -1759,7 +926,7 @@
         </div>
     </div>
 
-    <!-- SELEÇÃO DE MÓDULOS -->
+    <!-- SELEÇÃO DE MÓDULOS - 6 MÓDULOS (2 linhas x 3 colunas) -->
     <div id="moduleSelectionScreen" class="module-selection-screen" style="display: none;">
         <div class="module-selection-container">
             <div class="module-selection-title">
@@ -1771,34 +938,86 @@
                 </div>
             </div>
             <div class="module-grid">
+                <!-- Módulo Recrutamento - Verde (ATIVO) -->
                 <div class="module-card-large border-verde" onclick="selecionarModulo('recrutamento')">
                     <div class="module-icon-large icone-verde"><i class="fas fa-user-plus"></i></div>
                     <h2 class="cor-verde">Recrutamento</h2>
                     <p>Gestão de requisições de vagas, aprovações e recrutamento.</p>
                     <span class="module-badge badge-ativo">Ativo</span>
                 </div>
-                <div class="module-card-large border-laranja" onclick="selecionarModulo('manutencao')">
-                    <div class="module-icon-large icone-laranja"><i class="fas fa-tools"></i></div>
-                    <h2 class="cor-laranja">Manutenção</h2>
-                    <p>Requisições de manutenção, equipamentos e serviços.</p>
-                    <span class="module-badge badge-ativo">Ativo</span>
-                </div>
+                <!-- Módulo Avaliação - Azul (ATIVO) -->
                 <div class="module-card-large border-azul" onclick="selecionarModulo('avaliacao')">
                     <div class="module-icon-large icone-azul"><i class="fas fa-star"></i></div>
                     <h2 class="cor-azul">Avaliação</h2>
                     <p>Avaliação de desempenho dos colaboradores.</p>
                     <span class="module-badge badge-ativo">Ativo</span>
                 </div>
+                <!-- Módulo Manutenção - Laranja (ATIVO) -->
+                <div class="module-card-large border-laranja" onclick="selecionarModulo('manutencao')">
+                    <div class="module-icon-large icone-laranja"><i class="fas fa-tools"></i></div>
+                    <h2 class="cor-laranja">Manutenção</h2>
+                    <p>Requisições de manutenção, equipamentos e serviços.</p>
+                    <span class="module-badge badge-ativo">Ativo</span>
+                </div>
+                <!-- Módulo Ticket - INATIVO -->
                 <div class="module-card-large border-ticket border-inativo" onclick="abrirModuloIndisponivel('ticket')">
                     <div class="module-icon-large icone-ticket"><i class="fas fa-ticket-alt"></i></div>
                     <h2 class="cor-ticket">Ticket IT</h2>
                     <p>Gestão de tickets e chamados de suporte.</p>
                     <span class="module-badge badge-inativo">⛔ Inativo</span>
                 </div>
+                <!-- Módulo Ocorrência/Segurança - INATIVO -->
                 <div class="module-card-large border-ocorrencia border-inativo" onclick="abrirModuloIndisponivel('ocorrencia')">
                     <div class="module-icon-large icone-ocorrencia"><i class="fas fa-exclamation-triangle"></i></div>
                     <h2 class="cor-ocorrencia">Ocorrência Segurança</h2>
                     <p>Registo e gestão de ocorrências de segurança.</p>
+                    <span class="module-badge badge-inativo">⛔ Inativo</span>
+                </div>
+                <!-- Módulo EAN SCAN - INATIVO (com logotipo personalizado) -->
+                <div class="module-card-large border-ean border-inativo" onclick="abrirModuloIndisponivel('ean')">
+                    <div class="ean-logo-wrapper">
+                        <div class="ean-barcode">
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                            <div class="ean-bar thin"></div>
+                            <div class="ean-bar medium"></div>
+                            <div class="ean-bar thick"></div>
+                        </div>
+                        <div class="ean-circle"><span>K</span></div>
+                    </div>
+                    <h2 class="cor-ean">EAN SCAN</h2>
+                    <p>Leitura e gestão de códigos de barras EAN.</p>
                     <span class="module-badge badge-inativo">⛔ Inativo</span>
                 </div>
             </div>
@@ -1848,7 +1067,9 @@
                 <div class="nav-item" onclick="mudarAba('configuracoes', this)"><i class="fas fa-cog"></i> Configurações</div>
             </div>
 
-            <!-- MÓDULO RECRUTAMENTO -->
+            <!-- ============================================================
+            MÓDULO RECRUTAMENTO
+            ============================================================ -->
             <div id="recrutamentoSection">
                 <div class="kpi-grid">
                     <div class="kpi-card" onclick="filtrarPorStatus('all')"><div class="kpi-info"><h4>Requisições</h4><span id="totalRequisicoes">0</span></div><div class="kpi-icon"><i class="fas fa-file-alt"></i></div></div>
@@ -1912,7 +1133,9 @@
                 </div>
             </div>
 
-            <!-- MÓDULO MANUTENÇÃO -->
+            <!-- ============================================================
+            MÓDULO MANUTENÇÃO
+            ============================================================ -->
             <div id="manutencaoSection" style="display: none;">
                 <div class="manutencao-container">
                     <div class="app-container">
@@ -2103,178 +1326,219 @@
                 </div>
             </div>
 
-            <!-- MÓDULO AVALIAÇÃO -->
+            <!-- ============================================================
+            MÓDULO AVALIAÇÃO
+            ============================================================ -->
             <div id="avaliacaoSection" style="display: none;">
                 <div class="container-avaliacao">
-                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 2px solid var(--verde-borda); padding-bottom: 10px;">
-                        <button class="btn btn-secondary" id="btnAvaliacaoSubmenuAvaliar" onclick="avaliacaoApp.mudarSubmenu('avaliar')" style="background: var(--verde-medio); color: white;">
-                            <i class="fas fa-edit"></i> Avaliar
-                        </button>
-                        <button class="btn btn-secondary" id="btnAvaliacaoSubmenuRelatorio" onclick="avaliacaoApp.mudarSubmenu('relatorio')">
-                            <i class="fas fa-chart-bar"></i> Relatório de Avaliações
-                        </button>
+                    <!-- Aviso de acesso restrito -->
+                    <div id="avaliacaoAcessoNegado" style="display: none;">
+                        <div class="avaliacao-bloqueada">
+                            <i class="fas fa-lock"></i>
+                            <h2>⛔ Acesso Restrito</h2>
+                            <p>O módulo de Avaliação é restrito a <strong>Administradores, RH e Director Geral</strong>.</p>
+                            <p>Contacte o administrador para obter acesso.</p>
+                            <button class="btn" onclick="voltarParaModulos()">Voltar aos Módulos</button>
+                        </div>
                     </div>
-                    <div id="avaliacaoSubmenuAvaliar">
-                        <div class="pesquisa-area">
-                            <label>👤 Avaliador:</label>
-                            <span class="avaliador-nome" id="avaliadorNomeDisplay">-</span>
-                            <label style="margin-left:15px;">🔍 ID do Colaborador:</label>
-                            <input type="number" id="pesquisaID" placeholder="Ex: 101" min="1" />
-                            <button class="btn-buscar" onclick="avaliacaoApp.buscarColaborador()">🔍 Buscar</button>
-                            <button class="btn-buscar" style="background:#6a8a7a;" onclick="avaliacaoApp.limparBusca()">✖ Limpar</button>
-                            <span class="msg-pesquisa" id="msgPesquisa"></span>
+
+                    <!-- Conteúdo do módulo Avaliação (visível apenas para usuários autorizados) -->
+                    <div id="avaliacaoConteudo">
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 2px solid var(--verde-borda); padding-bottom: 10px;">
+                            <button class="btn btn-secondary" id="btnAvaliacaoSubmenuAvaliar" onclick="avaliacaoApp.mudarSubmenu('avaliar')" style="background: var(--verde-medio); color: white;">
+                                <i class="fas fa-edit"></i> Avaliar
+                            </button>
+                            <button class="btn btn-secondary" id="btnAvaliacaoSubmenuRelatorio" onclick="avaliacaoApp.mudarSubmenu('relatorio')">
+                                <i class="fas fa-chart-bar"></i> Relatório de Avaliações
+                            </button>
                         </div>
-                        <div class="progress-container"><div class="progress-fill" id="progressFill"></div></div>
-                        <div class="steps">
-                            <button class="step-btn active" onclick="avaliacaoApp.mudarPagina(1)" id="step1"><span class="num">1</span> Introdução</button>
-                            <button class="step-btn" onclick="avaliacaoApp.mudarPagina(2)" id="step2"><span class="num">2</span> Avaliação</button>
-                            <button class="step-btn" onclick="avaliacaoApp.mudarPagina(3)" id="step3"><span class="num">3</span> Feedback</button>
-                        </div>
-                        <div class="page active" id="page1">
-                            <h2 style="color:var(--verde-escuro);">📖 Introdução à Avaliação de Desempenho</h2>
-                            <div class="intro-grid">
-                                <div class="intro-card"><h3>🎯 Objetivo</h3><ul><li>Monitorizar a performance do colaborador de forma objetiva</li><li>Identificar e propor áreas de melhoria de desenvolvimento</li><li>Acompanhar o crescimento profissional do colaborador</li><li>Dar e receber feedback construtivo sobre a performance</li></ul></div>
-                                <div class="intro-card"><h3>👥 Público Alvo</h3><ul><li>Todos os colaboradores contratados há mais de 3 meses</li><li>Todas as categorias de Operador, exceto Operadores Principais</li><li>Operadores Principais são avaliados como Chefias</li></ul></div>
+
+                        <div id="avaliacaoSubmenuAvaliar">
+                            <div class="pesquisa-area">
+                                <label>👤 Avaliador:</label>
+                                <span class="avaliador-nome" id="avaliadorNomeDisplay">-</span>
+                                <label style="margin-left:15px;">🔍 ID do Colaborador:</label>
+                                <input type="number" id="pesquisaID" placeholder="Ex: 101" min="1" />
+                                <button class="btn-buscar" onclick="avaliacaoApp.buscarColaborador()">🔍 Buscar</button>
+                                <button class="btn-buscar" style="background:#6a8a7a;" onclick="avaliacaoApp.limparBusca()">✖ Limpar</button>
+                                <span class="msg-pesquisa" id="msgPesquisa"></span>
                             </div>
-                            <div class="intro-card" style="border-left-color:var(--verde-claro);">
-                                <h3>📋 Metodologia</h3>
-                                <p>A ferramenta de avaliação é constituída por dois momentos distintos:</p>
-                                <ul style="margin-top:10px;"><li><strong>1. Ficha de Avaliação</strong> — Avaliação das competências atribuídas a cada função, de acordo com a escala predefinida.</li><li><strong>2. Sessão de Feedback</strong> — Análise e discussão da performance. Momento para dar e receber feedback.</li></ul>
+
+                            <div class="progress-container"><div class="progress-fill" id="progressFill"></div></div>
+
+                            <div class="steps">
+                                <button class="step-btn active" onclick="avaliacaoApp.mudarPagina(1)" id="step1"><span class="num">1</span> Introdução</button>
+                                <button class="step-btn" onclick="avaliacaoApp.mudarPagina(2)" id="step2"><span class="num">2</span> Avaliação</button>
+                                <button class="step-btn" onclick="avaliacaoApp.mudarPagina(3)" id="step3"><span class="num">3</span> Feedback</button>
                             </div>
-                            <h3 style="color:var(--verde-escuro); margin-top:25px;">📚 Dicionário de Competências</h3>
-                            <p style="color:#3a5a4a; margin-bottom:12px;">As competências são comportamentos observáveis que permitem avaliar a performance do colaborador.</p>
-                            <div class="dicionario-item"><strong>🎯 Foco no Cliente</strong><p>Proatividade com o cliente, satisfazendo as suas necessidades com compreensão, respeito e disponibilidade.</p></div>
-                            <div class="dicionario-item"><strong>🤝 Compromisso com a Equipa</strong><p>Facilidade de integração, espírito aberto para diálogo, partilha de conhecimento e experiências.</p></div>
-                            <div class="dicionario-item"><strong>📚 Vontade de Aprender</strong><p>Aplica os conhecimentos da empresa na sua função. Procura informação sobre produtos, serviços e boas práticas.</p></div>
-                            <div class="dicionario-item"><strong>🏆 Orientação para Resultados</strong><p>Atinge objetivos com rigor e eficácia. Identifica e procura soluções para problemas.</p></div>
-                            <div class="dicionario-item"><strong>🧠 Análise e Resolução de Problemas</strong><p>Analisa o problema identificando a informação mais relevante. Toma decisões adequadas.</p></div>
-                            <div class="dicionario-item"><strong>🧹 Organização do Local de Trabalho</strong><p>Garante arrumação, limpeza, higiene e manutenção da área de trabalho.</p></div>
-                            <div class="dicionario-item"><strong>📦 Conhecimento do Produto</strong><p>Conhecimento das características específicas dos produtos e sua localização.</p></div>
-                            <div class="dicionario-item"><strong>💼 Dinâmica Comercial</strong><p>Iniciativa para se dirigir e estabelecer contacto com o cliente. Orienta a venda.</p></div>
-                            <div class="dicionario-item"><strong>⚙️ Conhecimento dos Processos de Trabalho</strong><p>Detém e aplica o conhecimento técnico exigido para a sua área de trabalho.</p></div>
-                            <div style="margin-top:25px; text-align:right;">
-                                <button class="btn btn-primary" id="btnAvancar1" onclick="avaliacaoApp.mudarPagina(2)" disabled>⚠️ Selecione um colaborador</button>
+
+                            <div class="page active" id="page1">
+                                <h2 style="color:var(--verde-escuro);">📖 Introdução à Avaliação de Desempenho</h2>
+                                <div class="intro-grid">
+                                    <div class="intro-card"><h3>🎯 Objetivo</h3><ul><li>Monitorizar a performance do colaborador de forma objetiva</li><li>Identificar e propor áreas de melhoria de desenvolvimento</li><li>Acompanhar o crescimento profissional do colaborador</li><li>Dar e receber feedback construtivo sobre a performance</li></ul></div>
+                                    <div class="intro-card"><h3>👥 Público Alvo</h3><ul><li>Todos os colaboradores contratados há mais de 3 meses</li><li>Todas as categorias de Operador, exceto Operadores Principais</li><li>Operadores Principais são avaliados como Chefias</li></ul></div>
+                                </div>
+                                <div class="intro-card" style="border-left-color:var(--verde-claro);">
+                                    <h3>📋 Metodologia</h3>
+                                    <p>A ferramenta de avaliação é constituída por dois momentos distintos:</p>
+                                    <ul style="margin-top:10px;"><li><strong>1. Ficha de Avaliação</strong> — Avaliação das competências atribuídas a cada função, de acordo com a escala predefinida.</li><li><strong>2. Sessão de Feedback</strong> — Análise e discussão da performance. Momento para dar e receber feedback.</li></ul>
+                                </div>
+                                <h3 style="color:var(--verde-escuro); margin-top:25px;">📚 Dicionário de Competências</h3>
+                                <p style="color:#3a5a4a; margin-bottom:12px;">As competências são comportamentos observáveis que permitem avaliar a performance do colaborador.</p>
+                                <div class="dicionario-item"><strong>🎯 Foco no Cliente</strong><p>Proatividade com o cliente, satisfazendo as suas necessidades com compreensão, respeito e disponibilidade.</p></div>
+                                <div class="dicionario-item"><strong>🤝 Compromisso com a Equipa</strong><p>Facilidade de integração, espírito aberto para diálogo, partilha de conhecimento e experiências.</p></div>
+                                <div class="dicionario-item"><strong>📚 Vontade de Aprender</strong><p>Aplica os conhecimentos da empresa na sua função. Procura informação sobre produtos, serviços e boas práticas.</p></div>
+                                <div class="dicionario-item"><strong>🏆 Orientação para Resultados</strong><p>Atinge objetivos com rigor e eficácia. Identifica e procura soluções para problemas.</p></div>
+                                <div class="dicionario-item"><strong>🧠 Análise e Resolução de Problemas</strong><p>Analisa o problema identificando a informação mais relevante. Toma decisões adequadas.</p></div>
+                                <div class="dicionario-item"><strong>🧹 Organização do Local de Trabalho</strong><p>Garante arrumação, limpeza, higiene e manutenção da área de trabalho.</p></div>
+                                <div class="dicionario-item"><strong>📦 Conhecimento do Produto</strong><p>Conhecimento das características específicas dos produtos e sua localização.</p></div>
+                                <div class="dicionario-item"><strong>💼 Dinâmica Comercial</strong><p>Iniciativa para se dirigir e estabelecer contacto com o cliente. Orienta a venda.</p></div>
+                                <div class="dicionario-item"><strong>⚙️ Conhecimento dos Processos de Trabalho</strong><p>Detém e aplica o conhecimento técnico exigido para a sua área de trabalho.</p></div>
+                                <div style="margin-top:25px; text-align:right;">
+                                    <button class="btn btn-primary" id="btnAvancar1" onclick="avaliacaoApp.mudarPagina(2)" disabled>⚠️ Selecione um colaborador</button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="page" id="page2">
-                            <h2 style="color:var(--verde-escuro);">📊 Ficha de Avaliação</h2>
-                            <div class="avaliacao-header">
-                                <div class="campo"><label>ID</label><span class="valor" id="avaliacaoID">-</span></div>
-                                <div class="campo"><label>Funcionário</label><span class="valor" id="avaliacaoNome">-</span></div>
-                                <div class="campo"><label>Direcção</label><span class="valor" id="avaliacaoDirecao">-</span></div>
-                                <div class="campo"><label>Departamento</label><span class="valor" id="avaliacaoDepartamento">-</span></div>
-                                <div class="campo"><label>Função</label><span class="valor" id="avaliacaoFuncao">-</span></div>
-                                <div class="campo"><label>Admissão</label><span class="valor" id="avaliacaoAdmissao">-</span></div>
+
+                            <div class="page" id="page2">
+                                <h2 style="color:var(--verde-escuro);">📊 Ficha de Avaliação</h2>
+                                <div class="avaliacao-header">
+                                    <div class="campo"><label>ID</label><span class="valor" id="avaliacaoID">-</span></div>
+                                    <div class="campo"><label>Funcionário</label><span class="valor" id="avaliacaoNome">-</span></div>
+                                    <div class="campo"><label>Direcção</label><span class="valor" id="avaliacaoDirecao">-</span></div>
+                                    <div class="campo"><label>Departamento</label><span class="valor" id="avaliacaoDepartamento">-</span></div>
+                                    <div class="campo"><label>Função</label><span class="valor" id="avaliacaoFuncao">-</span></div>
+                                    <div class="campo"><label>Admissão</label><span class="valor" id="avaliacaoAdmissao">-</span></div>
+                                </div>
+                                <div id="competenciasComportamentais" class="competencias-grupo">
+                                    <h3>🧠 Competências Comportamentais</h3>
+                                    <div id="competenciasComportamentaisContainer"></div>
+                                </div>
+                                <div id="competenciasTecnicas" class="competencias-grupo">
+                                    <h3>⚙️ Competências Técnicas</h3>
+                                    <div id="competenciasTecnicasContainer"></div>
+                                </div>
+                                <div style="background:var(--verde-suave); padding:15px 20px; border-radius:10px; margin:15px 0; border:1px solid var(--verde-borda);">
+                                    <strong style="color:var(--verde-escuro);">📊 Escala:</strong>
+                                    <span style="margin-left:10px;">1-Insuficiente</span>
+                                    <span style="margin-left:10px;">2-Parcial</span>
+                                    <span style="margin-left:10px;">3-Atende</span>
+                                    <span style="margin-left:10px;">4-Supera</span>
+                                    <span style="margin-left:10px;">5-Excepcional</span>
+                                </div>
+                                <button class="btn btn-calcular" id="btnCalcular" onclick="avaliacaoApp.calcularResultado()" disabled>📈 Calcular</button>
+                                <div id="resultadoFinal" class="resultado-box"></div>
+                                <div style="margin-top:15px;">
+                                    <label style="font-weight:600; color:var(--verde-escuro);">Comentário Adicional</label>
+                                    <textarea id="comentarioAdicional" style="width:100%; min-height:70px; padding:12px; border:2px solid var(--verde-borda); border-radius:10px; font-family:inherit; font-size:14px; resize:vertical;"></textarea>
+                                </div>
+                                <div style="margin-top:25px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+                                    <button class="btn btn-secondary" onclick="avaliacaoApp.mudarPagina(1)">← Voltar</button>
+                                    <button class="btn btn-primary" id="btnAvancar2" onclick="avaliacaoApp.validarEAvançar()" disabled>⚠️ Selecione um colaborador</button>
+                                </div>
                             </div>
-                            <div id="competenciasComportamentais" class="competencias-grupo">
-                                <h3>🧠 Competências Comportamentais</h3>
-                                <div id="competenciasComportamentaisContainer"></div>
-                            </div>
-                            <div id="competenciasTecnicas" class="competencias-grupo">
-                                <h3>⚙️ Competências Técnicas</h3>
-                                <div id="competenciasTecnicasContainer"></div>
-                            </div>
-                            <div style="background:var(--verde-suave); padding:15px 20px; border-radius:10px; margin:15px 0; border:1px solid var(--verde-borda);">
-                                <strong style="color:var(--verde-escuro);">📊 Escala:</strong>
-                                <span style="margin-left:10px;">1-Insuficiente</span>
-                                <span style="margin-left:10px;">2-Parcial</span>
-                                <span style="margin-left:10px;">3-Atende</span>
-                                <span style="margin-left:10px;">4-Supera</span>
-                                <span style="margin-left:10px;">5-Excepcional</span>
-                            </div>
-                            <button class="btn btn-calcular" id="btnCalcular" onclick="avaliacaoApp.calcularResultado()" disabled>📈 Calcular</button>
-                            <div id="resultadoFinal" class="resultado-box"></div>
-                            <div style="margin-top:15px;">
-                                <label style="font-weight:600; color:var(--verde-escuro);">Comentário Adicional</label>
-                                <textarea id="comentarioAdicional" style="width:100%; min-height:70px; padding:12px; border:2px solid var(--verde-borda); border-radius:10px; font-family:inherit; font-size:14px; resize:vertical;" disabled></textarea>
-                            </div>
-                            <div style="margin-top:25px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-                                <button class="btn btn-secondary" onclick="avaliacaoApp.mudarPagina(1)">← Voltar</button>
-                                <button class="btn btn-primary" id="btnAvancar2" onclick="avaliacaoApp.validarEAvançar()" disabled>⚠️ Selecione um colaborador</button>
-                            </div>
-                        </div>
-                        <div class="page" id="page3">
-                            <h2 style="color:var(--verde-escuro);">💬 Sessão de Feedback</h2>
-                            <div class="avaliacao-header" style="background:#f0f8f0;">
-                                <div class="campo"><label>Colaborador</label><span class="valor" id="feedbackNome">-</span></div>
-                                <div class="campo"><label>Função</label><span class="valor" id="feedbackFuncao">-</span></div>
-                                <div class="campo"><label>Data</label><span class="valor" id="feedbackData">-</span></div>
-                            </div>
-                            <h3 style="color:var(--verde-escuro); margin-top:20px;">1. Análise</h3>
-                            <div class="feedback-grid">
-                                <div><label>✅ Pontos Fortes</label><textarea id="feedbackFortes" placeholder="Descreva os pontos fortes..." disabled></textarea></div>
-                                <div><label>🔄 Pontos Fracos</label><textarea id="feedbackMelhorar" placeholder="Descreva os pontos a desenvolver..." disabled></textarea></div>
-                            </div>
-                            <h3 style="color:var(--verde-escuro); margin-top:25px;">2. Avaliação Global</h3>
-                            <div class="feedback-full"><label>📝 Feedback</label><textarea id="feedbackGlobal" placeholder="Análise geral..." disabled></textarea></div>
-                            <div class="feedback-full"><label>🚀 Desenvolvimento</label><textarea id="feedbackCarreira" placeholder="Sugestões..." disabled></textarea></div>
-                            <h3 style="color:var(--verde-escuro); margin-top:25px;">📋 Medidas / Ações a Realizar</h3>
-                            <div class="feedback-full">
-                                <div class="medidas-container" id="medidasContainer">
-                                    <div id="medidasList"></div>
-                                    <div style="margin-top:10px;">
-                                        <button class="btn-add-medida" id="btnAddMedida" onclick="avaliacaoApp.adicionarMedida()" disabled>➕ Adicionar Medida/Ação</button>
+
+                            <div class="page" id="page3">
+                                <h2 style="color:var(--verde-escuro);">💬 Sessão de Feedback</h2>
+                                <div class="avaliacao-header" style="background:#f0f8f0;">
+                                    <div class="campo"><label>Colaborador</label><span class="valor" id="feedbackNome">-</span></div>
+                                    <div class="campo"><label>Função</label><span class="valor" id="feedbackFuncao">-</span></div>
+                                    <div class="campo"><label>Data</label><span class="valor" id="feedbackData">-</span></div>
+                                </div>
+                                <h3 style="color:var(--verde-escuro); margin-top:20px;">1. Análise</h3>
+                                <div class="feedback-grid">
+                                    <div><label>✅ Pontos Fortes</label><textarea id="feedbackFortes" placeholder="Descreva os pontos fortes..."></textarea></div>
+                                    <div><label>🔄 Pontos Fracos</label><textarea id="feedbackMelhorar" placeholder="Descreva os pontos a desenvolver..."></textarea></div>
+                                </div>
+                                <h3 style="color:var(--verde-escuro); margin-top:25px;">2. Avaliação Global</h3>
+                                <div class="feedback-full"><label>📝 Feedback</label><textarea id="feedbackGlobal" placeholder="Análise geral..."></textarea></div>
+                                <div class="feedback-full"><label>🚀 Desenvolvimento</label><textarea id="feedbackCarreira" placeholder="Sugestões..."></textarea></div>
+                                <h3 style="color:var(--verde-escuro); margin-top:25px;">📋 Medidas / Ações a Realizar</h3>
+                                <div class="feedback-full">
+                                    <div class="medidas-container" id="medidasContainer">
+                                        <div id="medidasList"></div>
+                                        <div style="margin-top:10px;">
+                                            <button class="btn-add-medida" id="btnAddMedida" onclick="avaliacaoApp.adicionarMedida()">➕ Adicionar Medida/Ação</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <h3 style="color:var(--verde-escuro); margin-top:25px;">🏷️ Classificação Final</h3>
-                            <select id="classificacaoFinal" class="classificacao-select" disabled>
-                                <option value="1">1 - Abaixo</option>
-                                <option value="2" selected>2 - De acordo</option>
-                                <option value="3">3 - Acima</option>
-                            </select>
-                            <div class="assinatura-area">
-                                <h4>✍️ Assinatura</h4>
-                                <div class="assinatura-opcoes">
-                                    <label><input type="radio" name="concordancia" value="concordo" checked disabled /> ✅ Concordo</label>
-                                    <label><input type="radio" name="concordancia" value="naoconcordo" disabled /> ❌ Não concordo</label>
-                                    <label style="flex:1; min-width:150px;">Nome: <input type="text" id="nomeAssinatura" placeholder="Nome completo" disabled /></label>
-                                    <span class="data-assinatura" id="dataAssinatura"></span>
+                                <h3 style="color:var(--verde-escuro); margin-top:25px;">🏷️ Classificação Final</h3>
+                                <select id="classificacaoFinal" class="classificacao-select">
+                                    <option value="1">1 - Abaixo</option>
+                                    <option value="2" selected>2 - De acordo</option>
+                                    <option value="3">3 - Acima</option>
+                                </select>
+                                <div class="assinatura-area">
+                                    <h4>✍️ Assinatura</h4>
+                                    <div class="assinatura-opcoes">
+                                        <label><input type="radio" name="concordancia" value="concordo" checked /> ✅ Concordo</label>
+                                        <label><input type="radio" name="concordancia" value="naoconcordo" /> ❌ Não concordo</label>
+                                        <label style="flex:1; min-width:150px;">Nome: <input type="text" id="nomeAssinatura" placeholder="Nome completo" /></label>
+                                        <span class="data-assinatura" id="dataAssinatura"></span>
+                                    </div>
+                                </div>
+                                <div class="status-msg" id="statusFeedback"></div>
+                                <div class="btn-group">
+                                    <button class="btn btn-secondary" onclick="avaliacaoApp.mudarPagina(2)" id="btnVoltar2">← Voltar</button>
+                                    <button class="btn btn-success" id="btnSalvar" onclick="avaliacaoApp.salvarAvaliacao()">💾 Salvar</button>
+                                    <button class="btn btn-pdf" id="btnPDF" onclick="avaliacaoApp.exportarPDF()">📄 PDF</button>
+                                    <button class="btn btn-outline" id="btnNova" onclick="avaliacaoApp.novaAvaliacao()">🔄 Nova</button>
                                 </div>
                             </div>
-                            <div class="status-msg" id="statusFeedback"></div>
-                            <div class="btn-group">
-                                <button class="btn btn-secondary" onclick="avaliacaoApp.mudarPagina(2)" id="btnVoltar2" disabled>← Voltar</button>
-                                <button class="btn btn-success" id="btnSalvar" onclick="avaliacaoApp.salvarAvaliacao()" disabled>💾 Salvar</button>
-                                <button class="btn btn-pdf" id="btnPDF" onclick="avaliacaoApp.exportarPDF()" disabled>📄 PDF</button>
-                                <button class="btn btn-outline" id="btnNova" onclick="avaliacaoApp.novaAvaliacao()" disabled>🔄 Nova</button>
-                            </div>
                         </div>
-                    </div>
-                    <div id="avaliacaoSubmenuRelatorio" style="display: none;">
-                        <div class="avaliacao-relatorio-container">
-                            <h2 style="color:var(--verde-escuro); margin-bottom:20px;"><i class="fas fa-chart-bar"></i> Relatório de Avaliações</h2>
-                            <div class="relatorio-kpi-grid" id="relatorioKPIs">
-                                <div class="relatorio-kpi-card"><div class="numero" id="relatorioTotalAvaliacoes">0</div><div class="label">Total Avaliações</div></div>
-                                <div class="relatorio-kpi-card"><div class="numero" id="relatorioMediaGeral">0.0</div><div class="label">Média Geral</div></div>
-                                <div class="relatorio-kpi-card"><div class="numero" id="relatorioAcima">0</div><div class="label">Acima das Expectativas</div></div>
-                                <div class="relatorio-kpi-card"><div class="numero" id="relatorioAbaixo">0</div><div class="label">Abaixo das Expectativas</div></div>
-                            </div>
-                            <div class="relatorio-filtros">
-                                <input type="text" id="relatorioAvaliacaoPesquisa" placeholder="Pesquisar colaborador..." onkeyup="avaliacaoApp.filtrarRelatorio()">
-                                <select id="relatorioAvaliacaoFiltroClassif" onchange="avaliacaoApp.filtrarRelatorio()">
-                                    <option value="all">Todas Classificações</option>
-                                    <option value="3">Acima</option>
-                                    <option value="2">De acordo</option>
-                                    <option value="1">Abaixo</option>
-                                </select>
-                                <button class="btn btn-primary" onclick="avaliacaoApp.exportarRelatorioPDF()" style="width:auto; padding:8px 20px; margin:0;"><i class="fas fa-file-pdf"></i> PDF</button>
-                                <button class="btn btn-report-excel" onclick="avaliacaoApp.exportarRelatorioExcel()" style="width:auto; padding:8px 20px; margin:0; background:#217346; color:white; border:none; border-radius:6px; cursor:pointer;"><i class="fas fa-file-excel"></i> Excel</button>
-                            </div>
-                            <div class="avaliacao-relatorio-tabela-wrapper">
-                                <table class="avaliacao-relatorio-tabela">
-                                    <thead><tr><th>Colaborador</th><th>Função</th><th>Direção</th><th>Data</th><th>Nota Final</th><th>Classificação</th><th>Ações</th></tr></thead>
-                                    <tbody id="relatorioAvaliacoesBody"><tr><td colspan="7" style="text-align:center; padding:30px; color:#999;">Carregando avaliações...</td></tr></tbody>
-                                </table>
+
+                        <div id="avaliacaoSubmenuRelatorio" style="display: none;">
+                            <div class="avaliacao-relatorio-container">
+                                <h2 style="color:var(--verde-escuro); margin-bottom:20px;"><i class="fas fa-chart-bar"></i> Relatório de Avaliações</h2>
+                                <div class="relatorio-kpi-grid" id="relatorioKPIs">
+                                    <div class="relatorio-kpi-card"><div class="numero" id="relatorioTotalAvaliacoes">0</div><div class="label">Total Avaliações</div></div>
+                                    <div class="relatorio-kpi-card"><div class="numero" id="relatorioMediaGeral">0.0</div><div class="label">Média Geral</div></div>
+                                    <div class="relatorio-kpi-card"><div class="numero" id="relatorioAcima">0</div><div class="label">Acima das Expectativas</div></div>
+                                    <div class="relatorio-kpi-card"><div class="numero" id="relatorioAbaixo">0</div><div class="label">Abaixo das Expectativas</div></div>
+                                </div>
+                                <div class="relatorio-filtros">
+                                    <input type="text" id="relatorioAvaliacaoPesquisa" placeholder="Pesquisar colaborador..." onkeyup="avaliacaoApp.filtrarRelatorio()">
+                                    <select id="relatorioAvaliacaoFiltroClassif" onchange="avaliacaoApp.filtrarRelatorio()">
+                                        <option value="all">Todas Classificações</option>
+                                        <option value="3">Acima</option>
+                                        <option value="2">De acordo</option>
+                                        <option value="1">Abaixo</option>
+                                    </select>
+                                    <button class="btn btn-primary" onclick="avaliacaoApp.exportarRelatorioPDF()" style="width:auto; padding:8px 20px; margin:0;"><i class="fas fa-file-pdf"></i> PDF</button>
+                                    <button class="btn btn-report-excel" onclick="avaliacaoApp.exportarRelatorioExcel()" style="width:auto; padding:8px 20px; margin:0; background:#217346; color:white; border:none; border-radius:6px; cursor:pointer;"><i class="fas fa-file-excel"></i> Excel</button>
+                                </div>
+                                <div class="avaliacao-relatorio-tabela-wrapper">
+                                    <table class="avaliacao-relatorio-tabela">
+                                        <thead><tr><th>Colaborador</th><th>Função</th><th>Direção</th><th>Data</th><th>Nota Final</th><th>Classificação</th><th>Ações</th></tr></thead>
+                                        <tbody id="relatorioAvaliacoesBody"><tr><td colspan="7" style="text-align:center; padding:30px; color:#999;">Carregando avaliações...</td></tr></tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- ============================================================
+            MÓDULO EAN SCAN (INATIVO - Apenas mensagem)
+            ============================================================ -->
+            <div id="eanSection" style="display: none;">
+                <div class="ean-container">
+                    <div class="avaliacao-bloqueada">
+                        <i class="fas fa-barcode"></i>
+                        <h2>📦 Módulo EAN SCAN</h2>
+                        <p>O módulo de <strong>Leitura de Códigos de Barras EAN</strong> está em desenvolvimento.</p>
+                        <p>Em breve estará disponível para gestão de produtos e inventário.</p>
+                        <button class="btn" onclick="voltarParaModulos()">Voltar aos Módulos</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- MODAIS -->
+    <!-- ============================================================
+    MODAIS
+    ============================================================ -->
     <div class="modal" id="modalTipo"><div class="modal-content"><div class="modal-header"><h2>Selecionar Tipo</h2><span class="close-modal" onclick="fecharModal('modalTipo')">&times;</span></div><div class="modal-body"><div class="tipo-opcao" onclick="selecionarTipo('novo_cargo')"><i class="fas fa-briefcase"></i><h3>Novo Cargo</h3><p>Criação de uma nova posição</p></div><div class="tipo-opcao" onclick="selecionarTipo('substituicao')"><i class="fas fa-exchange-alt"></i><h3>Substituição</h3><p>Substituir um colaborador existente</p></div><div class="tipo-opcao" onclick="selecionarTipo('reforco_quadro')"><i class="fas fa-users"></i><h3>Reforço</h3><p>Reforçar equipa existente</p></div></div></div></div>
 
     <div class="modal" id="modalNovaRequisicao"><div class="modal-content"><div class="modal-header"><h2>Nova Requisição</h2><span class="close-modal" onclick="fecharModal('modalNovaRequisicao')">&times;</span></div><div class="modal-body"><form id="formNovaRequisicao"><input type="hidden" id="tipoRequisicao"><div id="campoSubstituicao" style="display:none;"><div style="background:var(--primary-light);padding:15px;margin-bottom:15px;border-radius:8px;"><h4>Dados da Substituição</h4><div class="form-group"><label>Colaborador a Substituir</label><input type="text" id="colaboradorSubstituir" class="form-control"></div><div class="form-group"><label>Motivo</label><select id="motivoSubstituicao" class="form-control"><option value="">Selecione</option><option value="Demissão">Demissão</option><option value="Pedido de Demissão">Pedido de Demissão</option><option value="Aposentadoria">Aposentadoria</option><option value="Transferência">Transferência</option></select></div></div></div><div id="campoReforco" style="display:none;"><div style="background:var(--primary-light);padding:15px;margin-bottom:15px;border-radius:8px;"><h4>Dados do Reforço</h4><div class="form-group"><label>Justificativa</label><textarea id="justificativaReforco" class="form-control" rows="3"></textarea></div></div></div><div class="form-group"><label>Função *</label><input type="text" id="funcao" class="form-control" required></div><div class="form-group"><label>Direção *</label><select id="direcao" class="form-control" required></select></div><div class="form-group"><label>Categoria *</label><select id="area" class="form-control" required></select></div><div class="form-group"><label>Quantidade *</label><input type="number" id="quantidade" class="form-control" min="1" value="1" required></div><div class="form-group"><label>Data Início *</label><input type="date" id="dataInicio" class="form-control" required></div><div class="form-group"><label>Observações</label><textarea id="observacoes" class="form-control" rows="3"></textarea></div><div class="form-group"><label>Ficheiros</label><div class="dropzone" onclick="document.getElementById('fileInput').click()"><i class="fas fa-cloud-upload-alt"></i><p>Arraste arquivos ou clique para anexar</p><p style="font-size:12px;color:#999;">Até 5 arquivos, 100MB cada</p><input type="file" id="fileInput" style="display:none;" multiple onchange="handleFileSelect(this.files)"></div><div id="fileList" class="file-list"></div></div><div class="form-actions"><button type="button" class="btn-small" onclick="fecharModal('modalNovaRequisicao')">Cancelar</button><button type="submit" class="btn-small btn-approve">Enviar</button></div></form></div></div></div>
@@ -2366,8 +1630,8 @@
             listName: "RequisicoesRH",
             pastaAnexos: "Requisicoes_Anexos",
             bibliotecaDocumentos: "Documentos Partilhados",
-            listaAvaliacoes: "Avaliacoes",
-            listaManutencoes: "Manutecoes"
+            listaAvaliacoes: "avaliacoes",
+            listaManutencoes: "manutencoes"
         };
 
         let msalInstance = null, account = null, usuarioAtual = null, requisicoes = [], notificacoes = [], arquivosUpload = [];
@@ -2375,8 +1639,11 @@
         let requisicoesFiltradas = [], graficos = {}, configuracoes = { emailAdmin: 'marcio.carlos@accordgrouplda.com', emailNotif: true, teamsNotif: true, teamsWebhook: '' };
         let moduloAtual = null, requisicaoVisualizarAtual = null, requisicaoSelecionadaAtual = null;
 
+        // ============================================================
+        // FUNÇÕES GLOBAIS
+        // ============================================================
         function abrirModuloIndisponivel(modulo) {
-            const nomesModulos = { 'ticket': 'Ticket', 'ocorrencia': 'Ocorrência/Segurança' };
+            const nomesModulos = { 'ticket': 'Ticket IT', 'ocorrencia': 'Ocorrência/Segurança', 'ean': 'EAN SCAN' };
             const nomeModulo = nomesModulos[modulo] || modulo;
             mostrarNotificacao(`⛔ O módulo "${nomeModulo}" está em desenvolvimento e será disponibilizado em breve!`, 'warning');
         }
@@ -2401,80 +1668,6 @@
         function getTipoBadge(t) { const m = { 'novo_cargo': 'Novo Cargo', 'substituicao': 'Substituição', 'reforco_quadro': 'Reforço' }; return m[t] || t; }
         function getIconePorTipo(tipo) { if (tipo && tipo.startsWith('image/')) return 'fa-image'; if (tipo === 'application/pdf') return 'fa-file-pdf'; if (tipo && tipo.includes('word')) return 'fa-file-word'; if (tipo && tipo.includes('excel')) return 'fa-file-excel'; if (tipo && tipo.includes('powerpoint')) return 'fa-file-powerpoint'; if (tipo && tipo.startsWith('text/')) return 'fa-file-alt'; return 'fa-file'; }
         function isEmailBlocked(email) { return BLOCKED_EMAILS.includes(email?.toLowerCase()); }
-
-        async function enviarEmail(destinatario, assunto, corpoHtml) {
-            if (!configuracoes.emailNotif) return false;
-            if (isEmailBlocked(destinatario)) return false;
-            try {
-                const token = await getAccessToken(["Mail.Send"]);
-                const email = { message: { subject: assunto, body: { contentType: "HTML", content: corpoHtml }, toRecipients: [{ emailAddress: { address: destinatario } }] }, saveToSentItems: "true" };
-                const adminEmail = configuracoes.emailAdmin;
-                if (adminEmail && adminEmail.trim() !== "" && adminEmail !== destinatario && !isEmailBlocked(adminEmail)) email.message.ccRecipients = [{ emailAddress: { address: adminEmail } }];
-                const response = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(email) });
-                return response.ok;
-            } catch (error) { console.error('Erro ao enviar email:', error); return false; }
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDark);
-            const textSpan = document.getElementById('darkModeText');
-            if (textSpan) textSpan.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
-        }
-
-        function carregarDarkMode() {
-            const isDark = localStorage.getItem('darkMode') === 'true';
-            if (isDark) { document.body.classList.add('dark-mode'); const textSpan = document.getElementById('darkModeText'); if (textSpan) textSpan.textContent = 'Modo Claro'; }
-        }
-
-        function isAprovador() { if (!usuarioAtual) return false; return PERFIS_QUE_APROVAM.includes(usuarioAtual.perfil); }
-        function podeFinalizarRecrutamento(req) { if (!usuarioAtual) return false; if (req.status !== 'em_recrutamento') return false; return (usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Administrador'); }
-        function podeConfirmarAtendimento(req) { if (!usuarioAtual) return false; if (req.status !== 'aguardando_confirmacao_solicitante') return false; return (usuarioAtual.email === req.criadoPorEmail || usuarioAtual.perfil === 'Administrador'); }
-        function podeVerRequisicao(req) { if (!usuarioAtual) return false; if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return true; if (isAprovador() && req.status === 'em_recrutamento') return true; return req.criadoPorEmail === usuarioAtual.email; }
-        function filtrarRequisicoesVisiveis(lista) { if (!usuarioAtual) return []; if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return lista; if (isAprovador()) return lista.filter(req => req.criadoPorEmail === usuarioAtual.email || req.status === 'em_recrutamento'); return lista.filter(req => req.criadoPorEmail === usuarioAtual.email); }
-        function utilizadorJaAprovou(req) { if (!req.historicoComentarios) return false; return req.historicoComentarios.some(reg => reg.acao === 'aprovar' && reg.usuario === usuarioAtual.nome && reg.perfil === usuarioAtual.perfil); }
-        function podeAprovarStatus(req) { if (usuarioAtual.perfil === 'Administrador') return (req.status === 'em_validacao_rh' || req.status === 'em_validacao_financas' || req.status === 'em_validacao_director'); else if (usuarioAtual.perfil === 'RH') return (req.status === 'em_validacao_rh'); else if (usuarioAtual.perfil === 'Controlo de Gestão') return (req.status === 'em_validacao_financas'); else if (usuarioAtual.perfil === 'Director Geral') return (req.status === 'em_validacao_director'); return false; }
-        function podeEditarRequisicao(req) { if (!usuarioAtual) return false; if (usuarioAtual.perfil === 'Administrador') return true; if (req.status === 'devolvida_solicitante' && usuarioAtual.email === req.criadoPorEmail) return true; if (usuarioAtual.perfil === 'RH' && req.status === 'em_validacao_rh') return true; if (usuarioAtual.perfil === 'Controlo de Gestão' && req.status === 'em_validacao_financas') return true; if (usuarioAtual.perfil === 'Director Geral' && req.status === 'em_validacao_director') return true; if (utilizadorJaAprovou(req)) return false; return false; }
-        function podeDevolverRequisicao(req) { if (!usuarioAtual) return false; if (!isAprovador()) return false; if (utilizadorJaAprovou(req)) return false; if (req.criadoPorEmail === usuarioAtual.email) return false; if (!podeAprovarStatus(req)) return false; return true; }
-
-        function inicializarBotoesPorPerfil() {
-            const btnNova = document.getElementById('btnNovaRequisicao');
-            if (!btnNova) return;
-            const podeCriar = PERFIS_QUE_PODEM_CRIAR.includes(usuarioAtual.perfil);
-            btnNova.style.display = podeCriar ? 'block' : 'none';
-            if (podeCriar) btnNova.setAttribute('data-tooltip', 'Criar nova requisição de vaga');
-            atualizarBotaoPastaRequisicao();
-        }
-
-        function getProximoStatus(statusAtual) { const proximo = { 'em_validacao_rh': 'em_validacao_financas', 'em_validacao_financas': 'em_validacao_director', 'em_validacao_director': 'em_recrutamento' }; return proximo[statusAtual] || statusAtual; }
-        function calcularTempoEmMilissegundos(dataInicio, dataFim) { if (!dataInicio) return null; const inicio = new Date(dataInicio); const fim = dataFim ? new Date(dataFim) : new Date(); return Math.abs(fim - inicio); }
-        function calcularTempoRecrutamento(req) { if (!req.dataInicioRecrutamento) return null; return calcularTempoEmMilissegundos(req.dataInicioRecrutamento, req.dataFimRecrutamento); }
-        function getStatusAprovacaoPorPerfil(req, perfil) { if (!req.historicoComentarios) return null; return req.historicoComentarios.find(h => h.acao === 'aprovar' && h.perfil === perfil); }
-
-        function adicionarAoHistorico(req, acao, comentario) {
-            if (!req.historicoComentarios) req.historicoComentarios = [];
-            req.historicoComentarios.unshift({ id: Date.now().toString(), acao: acao, usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: comentario, data: new Date().toISOString(), statusAnterior: req.status, statusNovo: acao === 'aprovar' ? getProximoStatus(req.status) : acao === 'rejeitar' ? 'rejeitada' : (acao === 'devolver' ? (req.status === 'em_validacao_rh' ? 'devolvida_solicitante' : (req.status === 'em_validacao_financas' ? 'em_validacao_rh' : 'em_validacao_financas')) : req.status) });
-        }
-
-        function adicionarNotificacao(titulo, mensagem, tipo, requisicaoId) {
-            notificacoes.unshift({ id: Date.now(), titulo, mensagem, tipo, requisicaoId, data: new Date().toISOString(), lida: false });
-            if (notificacoes.length > 50) notificacoes.pop();
-            atualizarPainelNotificacoes();
-        }
-
-        function atualizarPainelNotificacoes() {
-            const list = document.getElementById('notificationList');
-            const count = document.getElementById('notificationCount');
-            const naoLidas = notificacoes.filter(n => !n.lida).length;
-            if (count) count.textContent = naoLidas;
-            if (!list) return;
-            if (notificacoes.length === 0) { list.innerHTML = '<div style="padding:20px;text-align:center;">Sem notificações</div>'; return; }
-            list.innerHTML = notificacoes.slice(0, 20).map(n => `<div class="notification-item ${!n.lida ? 'unread' : ''}" onclick="marcarNotificacaoLida(${n.id})"><div class="notification-title">${n.titulo}</div><div class="notification-message" style="font-size:12px;color:#666;">${n.mensagem}</div><div class="notification-time">${formatarDataHora(n.data)}</div></div>`).join('');
-        }
-
-        function marcarNotificacaoLida(id) { const notif = notificacoes.find(n => n.id === id); if (notif) notif.lida = true; atualizarPainelNotificacoes(); }
-        function toggleNotifications() { const panel = document.getElementById('notificationPanel'); if (panel) panel.classList.toggle('show'); }
 
         // ============================================================
         // MSAL / AUTENTICAÇÃO
@@ -2580,6 +1773,7 @@
             document.getElementById('recrutamentoSection').style.display = 'none';
             document.getElementById('manutencaoSection').style.display = 'none';
             document.getElementById('avaliacaoSection').style.display = 'none';
+            document.getElementById('eanSection').style.display = 'none';
 
             if (mod === 'recrutamento') {
                 document.getElementById('recrutamentoSection').style.display = 'block';
@@ -2609,12 +1803,22 @@
                 atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
                 manutencaoApp.inicializar();
             } else if (mod === 'avaliacao') {
+                // Verifica permissão de acesso
                 if (!PERFIS_AVALIACAO.includes(usuarioAtual.perfil)) {
-                    mostrarNotificacao('⛔ Acesso negado! Não tem autorização para aceder este modulo.', 'error');
-                    voltarParaModulos();
+                    document.getElementById('avaliacaoSection').style.display = 'block';
+                    document.getElementById('avaliacaoAcessoNegado').style.display = 'block';
+                    document.getElementById('avaliacaoConteudo').style.display = 'none';
+                    document.getElementById('systemTitle').textContent = 'Kero Avaliação';
+                    document.getElementById('systemSubtitle').textContent = 'Sistema de Avaliação de Desempenho';
+                    document.getElementById('navMenu').style.display = 'none';
+                    document.getElementById('currentUserName').textContent = usuarioAtual.nome;
+                    document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
+                    atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
                     return;
                 }
                 document.getElementById('avaliacaoSection').style.display = 'block';
+                document.getElementById('avaliacaoAcessoNegado').style.display = 'none';
+                document.getElementById('avaliacaoConteudo').style.display = 'block';
                 document.getElementById('systemTitle').textContent = 'Kero Avaliação';
                 document.getElementById('systemSubtitle').textContent = 'Sistema de Avaliação de Desempenho';
                 document.getElementById('navMenu').style.display = 'none';
@@ -2622,11 +1826,19 @@
                 document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
                 atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
                 avaliacaoApp.inicializar();
+            } else if (mod === 'ean') {
+                document.getElementById('eanSection').style.display = 'block';
+                document.getElementById('systemTitle').textContent = 'Kero EAN SCAN';
+                document.getElementById('systemSubtitle').textContent = 'Leitura de Códigos de Barras';
+                document.getElementById('navMenu').style.display = 'none';
+                document.getElementById('currentUserName').textContent = usuarioAtual.nome;
+                document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
+                atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
             }
         }
 
         // ============================================================
-        // FUNÇÕES DO RECRUTAMENTO
+        // FUNÇÕES DO RECRUTAMENTO (resumidas para espaço)
         // ============================================================
         function inicializarDirecoes() {
             const sel = document.getElementById('direcao');
@@ -2741,66 +1953,6 @@
                 visiveis.filter(r => r.status === 'concluida').length
             ];
             graficos.status.update();
-        }
-
-        function carregarDashboardTempos() {
-            const container = document.getElementById('temposDashboard');
-            if (!container) return;
-            const todasRequisicoes = requisicoes;
-            const aprovadasSemRecrutamento = todasRequisicoes.filter(r => r.status === 'aprovada' && !r.dataInicioRecrutamento);
-            let totalTempoRH = 0, totalTempoCG = 0, totalTempoDir = 0, totalTempoRecrutamento = 0;
-            let countRH = 0, countCG = 0, countDir = 0, countRecrutamento = 0;
-            let requisicoesEmAprovacaoRH = 0, requisicoesEmAprovacaoCG = 0, requisicoesEmAprovacaoDir = 0, requisicoesEmRecrutamento = 0;
-            todasRequisicoes.forEach(req => {
-                const tempos = calcularTempoPorFaseDetalhado(req);
-                if (tempos.tempoRH !== null) { totalTempoRH += tempos.tempoRH; countRH++; }
-                if (tempos.tempoCG !== null) { totalTempoCG += tempos.tempoCG; countCG++; }
-                if (tempos.tempoDir !== null) { totalTempoDir += tempos.tempoDir; countDir++; }
-                if (tempos.tempoRecrutamento !== null) { totalTempoRecrutamento += tempos.tempoRecrutamento; countRecrutamento++; }
-                if (req.status === 'em_validacao_rh') requisicoesEmAprovacaoRH++;
-                if (req.status === 'em_validacao_financas') requisicoesEmAprovacaoCG++;
-                if (req.status === 'em_validacao_director') requisicoesEmAprovacaoDir++;
-                if (req.status === 'em_recrutamento') requisicoesEmRecrutamento++;
-            });
-            const mediaRH = countRH > 0 ? totalTempoRH / countRH : 0;
-            const mediaCG = countCG > 0 ? totalTempoCG / countCG : 0;
-            const mediaDir = countDir > 0 ? totalTempoDir / countDir : 0;
-            const mediaRecrutamento = countRecrutamento > 0 ? totalTempoRecrutamento / countRecrutamento : 0;
-            const maxTempo = Math.max(mediaRH, mediaCG, mediaDir, mediaRecrutamento, 1);
-            let alertaHTML = '';
-            if (aprovadasSemRecrutamento.length > 0 && usuarioAtual && usuarioAtual.perfil === 'Administrador') {
-                alertaHTML = `<div style="background:#fff3e0;border-left:4px solid #ff9800;padding:15px;margin-bottom:20px;border-radius:8px;"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;"><div><i class="fas fa-exclamation-triangle" style="color:#ff9800;font-size:20px;"></i><strong style="margin-left:10px;">Atenção!</strong><span style="margin-left:10px;">${aprovadasSemRecrutamento.length} requisição(ões) aprovada(s) aguardando início de recrutamento.</span></div><button onclick="filtrarPorStatus('aprovada')" class="btn-small btn-approve" style="background-color:#ff9800;"><i class="fas fa-eye"></i> Ver</button></div></div>`;
-            }
-            container.innerHTML = alertaHTML + `<div class="tempos-fases-container"><div class="fase-card rh" onclick="filtrarPorStatus('em_validacao_rh')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-tie"></i> Fase RH</div><div class="fase-tempo">${formatarTempo(mediaRH)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(mediaRH/maxTempo)*100}%;background:#4CAF50;">${mediaRH>0?formatarTempo(mediaRH):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Tempo médio:</span><span class="detalhe-valor">${formatarTempo(mediaRH)}</span></div><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${countRH}</span></div><div class="detalhe-item"><span class="detalhe-label">Pendentes:</span><span class="detalhe-valor">${requisicoesEmAprovacaoRH}</span></div></div></div><div class="fase-card cg" onclick="filtrarPorStatus('em_validacao_financas')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-chart-line"></i> Fase CG</div><div class="fase-tempo">${formatarTempo(mediaCG)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(mediaCG/maxTempo)*100}%;background:#FF9800;">${mediaCG>0?formatarTempo(mediaCG):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Tempo médio:</span><span class="detalhe-valor">${formatarTempo(mediaCG)}</span></div><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${countCG}</span></div><div class="detalhe-item"><span class="detalhe-label">Pendentes:</span><span class="detalhe-valor">${requisicoesEmAprovacaoCG}</span></div></div></div><div class="fase-card dg" onclick="filtrarPorStatus('em_validacao_director')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-tie"></i> Fase Director</div><div class="fase-tempo">${formatarTempo(mediaDir)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(mediaDir/maxTempo)*100}%;background:#f44336;">${mediaDir>0?formatarTempo(mediaDir):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Tempo médio:</span><span class="detalhe-valor">${formatarTempo(mediaDir)}</span></div><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${countDir}</span></div><div class="detalhe-item"><span class="detalhe-label">Pendentes:</span><span class="detalhe-valor">${requisicoesEmAprovacaoDir}</span></div></div></div><div class="fase-card recrutamento" onclick="filtrarPorStatus('em_recrutamento')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-graduate"></i> Recrutamento</div><div class="fase-tempo">${formatarTempo(mediaRecrutamento)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(mediaRecrutamento/maxTempo)*100}%;background:#2196F3;">${mediaRecrutamento>0?formatarTempo(mediaRecrutamento):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Tempo médio:</span><span class="detalhe-valor">${formatarTempo(mediaRecrutamento)}</span></div><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${countRecrutamento}</span></div><div class="detalhe-item"><span class="detalhe-label">Ativas:</span><span class="detalhe-valor">${requisicoesEmRecrutamento}</span></div></div></div></div>`;
-        }
-
-        function carregarDashboardStatus() {
-            const container = document.getElementById('statusDashboard');
-            if (!container) return;
-            const todasRequisicoes = requisicoes;
-            const total = todasRequisicoes.length;
-            const statusCounts = { 'em_validacao_rh': todasRequisicoes.filter(r => r.status === 'em_validacao_rh').length, 'em_validacao_financas': todasRequisicoes.filter(r => r.status === 'em_validacao_financas').length, 'em_validacao_director': todasRequisicoes.filter(r => r.status === 'em_validacao_director').length, 'aprovada': todasRequisicoes.filter(r => r.status === 'aprovada').length, 'rejeitada': todasRequisicoes.filter(r => r.status === 'rejeitada').length, 'em_recrutamento': todasRequisicoes.filter(r => r.status === 'em_recrutamento').length, 'aguardando_confirmacao_solicitante': todasRequisicoes.filter(r => r.status === 'aguardando_confirmacao_solicitante').length, 'concluida': todasRequisicoes.filter(r => r.status === 'concluida').length, 'devolvida_solicitante': todasRequisicoes.filter(r => r.status === 'devolvida_solicitante').length };
-            const maxCount = Math.max(...Object.values(statusCounts), 1);
-            container.innerHTML = `<div class="status-detalhado-container"><div class="status-card rh" onclick="filtrarPorStatus('em_validacao_rh')"><div class="status-header"><div class="status-titulo"><i class="fas fa-user-tie"></i> RH</div><div class="status-quantidade" style="color:#4CAF50;">${statusCounts.em_validacao_rh}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.em_validacao_rh/maxCount)*100}%;background:#4CAF50;">${statusCounts.em_validacao_rh||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.em_validacao_rh/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card cg" onclick="filtrarPorStatus('em_validacao_financas')"><div class="status-header"><div class="status-titulo"><i class="fas fa-chart-line"></i> CG</div><div class="status-quantidade" style="color:#FF9800;">${statusCounts.em_validacao_financas}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.em_validacao_financas/maxCount)*100}%;background:#FF9800;">${statusCounts.em_validacao_financas||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.em_validacao_financas/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card dg" onclick="filtrarPorStatus('em_validacao_director')"><div class="status-header"><div class="status-titulo"><i class="fas fa-user-tie"></i> Director</div><div class="status-quantidade" style="color:#f44336;">${statusCounts.em_validacao_director}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.em_validacao_director/maxCount)*100}%;background:#f44336;">${statusCounts.em_validacao_director||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.em_validacao_director/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card aprovada" onclick="filtrarPorStatus('aprovada')"><div class="status-header"><div class="status-titulo"><i class="fas fa-check-circle"></i> Aprovadas</div><div class="status-quantidade" style="color:#4CAF50;">${statusCounts.aprovada}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.aprovada/maxCount)*100}%;background:#4CAF50;">${statusCounts.aprovada||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.aprovada/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card recrutamento" onclick="filtrarPorStatus('em_recrutamento')"><div class="status-header"><div class="status-titulo"><i class="fas fa-user-graduate"></i> Recrutamento</div><div class="status-quantidade" style="color:#2196F3;">${statusCounts.em_recrutamento}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.em_recrutamento/maxCount)*100}%;background:#2196F3;">${statusCounts.em_recrutamento||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.em_recrutamento/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card" style="border-left-color:#9c27b0;" onclick="filtrarPorStatus('aguardando_confirmacao_solicitante')"><div class="status-header"><div class="status-titulo"><i class="fas fa-envelope-open-text"></i> Confirmação</div><div class="status-quantidade" style="color:#9c27b0;">${statusCounts.aguardando_confirmacao_solicitante}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.aguardando_confirmacao_solicitante/maxCount)*100}%;background:#9c27b0;">${statusCounts.aguardando_confirmacao_solicitante||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.aguardando_confirmacao_solicitante/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card concluida" onclick="filtrarPorStatus('concluida')"><div class="status-header"><div class="status-titulo"><i class="fas fa-check-double"></i> Concluídas</div><div class="status-quantidade" style="color:#607d8b;">${statusCounts.concluida}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.concluida/maxCount)*100}%;background:#607d8b;">${statusCounts.concluida||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.concluida/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card rejeitada" onclick="filtrarPorStatus('rejeitada')"><div class="status-header"><div class="status-titulo"><i class="fas fa-times-circle"></i> Rejeitadas</div><div class="status-quantidade" style="color:#f44336;">${statusCounts.rejeitada}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.rejeitada/maxCount)*100}%;background:#f44336;">${statusCounts.rejeitada||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.rejeitada/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card devolvida" onclick="filtrarPorStatus('devolvida_solicitante')"><div class="status-header"><div class="status-titulo"><i class="fas fa-undo-alt"></i> Devolvidas</div><div class="status-quantidade" style="color:#ff9800;">${statusCounts.devolvida_solicitante}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.devolvida_solicitante/maxCount)*100}%;background:#ff9800;">${statusCounts.devolvida_solicitante||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.devolvida_solicitante/total)*100).toFixed(1):0}%</span></div></div></div></div>`;
-        }
-
-        function calcularTempoPorFaseDetalhado(req) {
-            const aprovRH = getStatusAprovacaoPorPerfil(req, 'RH');
-            const aprovCG = getStatusAprovacaoPorPerfil(req, 'Controlo de Gestão');
-            const aprovDir = getStatusAprovacaoPorPerfil(req, 'Director Geral');
-            let tempoRH = null, tempoCG = null, tempoDir = null, tempoRecrutamento = null;
-            if (aprovRH) tempoRH = calcularTempoEmMilissegundos(req.dataCriacao, aprovRH.data);
-            else if (req.status === 'em_validacao_rh' || (req.status !== 'em_validacao_rh' && !aprovRH && (aprovCG || aprovDir))) tempoRH = calcularTempoEmMilissegundos(req.dataCriacao, null);
-            if (aprovCG && aprovRH) tempoCG = calcularTempoEmMilissegundos(aprovRH.data, aprovCG.data);
-            else if (aprovCG && !aprovRH) tempoCG = calcularTempoEmMilissegundos(req.dataCriacao, aprovCG.data);
-            else if ((req.status === 'em_validacao_financas' || req.status === 'em_validacao_director' || req.status === 'em_recrutamento') && aprovRH && !aprovCG) tempoCG = calcularTempoEmMilissegundos(aprovRH.data, null);
-            if (aprovDir && aprovCG) tempoDir = calcularTempoEmMilissegundos(aprovCG.data, aprovDir.data);
-            else if (aprovDir && !aprovCG && aprovRH) tempoDir = calcularTempoEmMilissegundos(aprovRH.data, aprovDir.data);
-            else if (aprovDir && !aprovCG && !aprovRH) tempoDir = calcularTempoEmMilissegundos(req.dataCriacao, aprovDir.data);
-            else if (req.status === 'em_validacao_director' && aprovCG && !aprovDir) tempoDir = calcularTempoEmMilissegundos(aprovCG.data, null);
-            else if (req.status === 'em_validacao_director' && !aprovCG && aprovRH) tempoDir = calcularTempoEmMilissegundos(aprovRH.data, null);
-            if (req.dataInicioRecrutamento) { if (req.dataFimRecrutamento) tempoRecrutamento = calcularTempoEmMilissegundos(req.dataInicioRecrutamento, req.dataFimRecrutamento); else if (req.status === 'em_recrutamento') tempoRecrutamento = calcularTempoEmMilissegundos(req.dataInicioRecrutamento, null); }
-            return { tempoRH, tempoCG, tempoDir, tempoRecrutamento };
         }
 
         // ============================================================
@@ -3452,7 +2604,144 @@
         function templateFimRecrutamento(req) { return `<div style="font-family:Arial,sans-serif;max-width:600px;"><h2 style="color:#2196F3;">Recrutamento Concluído</h2><p><strong>Requisição:</strong> ${req.codigo} - ${req.funcao}</p><p><strong>Concluído por:</strong> ${usuarioAtual.nome}</p><p><strong>Período:</strong> ${formatarTempo(calcularTempoRecrutamento(req))}</p><p>Aguardando confirmação do solicitante.</p><hr><p style="color:#666;font-size:12px;">Email automático do Kero SIR.</p></div>`; }
 
         // ============================================================
-        // MÓDULO MANUTENÇÃO - APP COMPLETA
+        // FUNÇÕES DE PERMISSÃO E UTILITÁRIOS
+        // ============================================================
+        function isAprovador() { if (!usuarioAtual) return false; return PERFIS_QUE_APROVAM.includes(usuarioAtual.perfil); }
+        function podeFinalizarRecrutamento(req) { if (!usuarioAtual) return false; if (req.status !== 'em_recrutamento') return false; return (usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Administrador'); }
+        function podeConfirmarAtendimento(req) { if (!usuarioAtual) return false; if (req.status !== 'aguardando_confirmacao_solicitante') return false; return (usuarioAtual.email === req.criadoPorEmail || usuarioAtual.perfil === 'Administrador'); }
+        function podeVerRequisicao(req) { if (!usuarioAtual) return false; if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return true; if (isAprovador() && req.status === 'em_recrutamento') return true; return req.criadoPorEmail === usuarioAtual.email; }
+        function filtrarRequisicoesVisiveis(lista) { if (!usuarioAtual) return []; if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return lista; if (isAprovador()) return lista.filter(req => req.criadoPorEmail === usuarioAtual.email || req.status === 'em_recrutamento'); return lista.filter(req => req.criadoPorEmail === usuarioAtual.email); }
+        function utilizadorJaAprovou(req) { if (!req.historicoComentarios) return false; return req.historicoComentarios.some(reg => reg.acao === 'aprovar' && reg.usuario === usuarioAtual.nome && reg.perfil === usuarioAtual.perfil); }
+        function podeAprovarStatus(req) { if (usuarioAtual.perfil === 'Administrador') return (req.status === 'em_validacao_rh' || req.status === 'em_validacao_financas' || req.status === 'em_validacao_director'); else if (usuarioAtual.perfil === 'RH') return (req.status === 'em_validacao_rh'); else if (usuarioAtual.perfil === 'Controlo de Gestão') return (req.status === 'em_validacao_financas'); else if (usuarioAtual.perfil === 'Director Geral') return (req.status === 'em_validacao_director'); return false; }
+        function podeEditarRequisicao(req) { if (!usuarioAtual) return false; if (usuarioAtual.perfil === 'Administrador') return true; if (req.status === 'devolvida_solicitante' && usuarioAtual.email === req.criadoPorEmail) return true; if (usuarioAtual.perfil === 'RH' && req.status === 'em_validacao_rh') return true; if (usuarioAtual.perfil === 'Controlo de Gestão' && req.status === 'em_validacao_financas') return true; if (usuarioAtual.perfil === 'Director Geral' && req.status === 'em_validacao_director') return true; if (utilizadorJaAprovou(req)) return false; return false; }
+        function podeDevolverRequisicao(req) { if (!usuarioAtual) return false; if (!isAprovador()) return false; if (utilizadorJaAprovou(req)) return false; if (req.criadoPorEmail === usuarioAtual.email) return false; if (!podeAprovarStatus(req)) return false; return true; }
+
+        function inicializarBotoesPorPerfil() {
+            const btnNova = document.getElementById('btnNovaRequisicao');
+            if (!btnNova) return;
+            const podeCriar = PERFIS_QUE_PODEM_CRIAR.includes(usuarioAtual.perfil);
+            btnNova.style.display = podeCriar ? 'block' : 'none';
+            if (podeCriar) btnNova.setAttribute('data-tooltip', 'Criar nova requisição de vaga');
+            atualizarBotaoPastaRequisicao();
+        }
+
+        function getProximoStatus(statusAtual) { const proximo = { 'em_validacao_rh': 'em_validacao_financas', 'em_validacao_financas': 'em_validacao_director', 'em_validacao_director': 'em_recrutamento' }; return proximo[statusAtual] || statusAtual; }
+        function calcularTempoEmMilissegundos(dataInicio, dataFim) { if (!dataInicio) return null; const inicio = new Date(dataInicio); const fim = dataFim ? new Date(dataFim) : new Date(); return Math.abs(fim - inicio); }
+        function calcularTempoRecrutamento(req) { if (!req.dataInicioRecrutamento) return null; return calcularTempoEmMilissegundos(req.dataInicioRecrutamento, req.dataFimRecrutamento); }
+        function getStatusAprovacaoPorPerfil(req, perfil) { if (!req.historicoComentarios) return null; return req.historicoComentarios.find(h => h.acao === 'aprovar' && h.perfil === perfil); }
+
+        function adicionarAoHistorico(req, acao, comentario) {
+            if (!req.historicoComentarios) req.historicoComentarios = [];
+            req.historicoComentarios.unshift({ id: Date.now().toString(), acao: acao, usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: comentario, data: new Date().toISOString(), statusAnterior: req.status, statusNovo: acao === 'aprovar' ? getProximoStatus(req.status) : acao === 'rejeitar' ? 'rejeitada' : (acao === 'devolver' ? (req.status === 'em_validacao_rh' ? 'devolvida_solicitante' : (req.status === 'em_validacao_financas' ? 'em_validacao_rh' : 'em_validacao_financas')) : req.status) });
+        }
+
+        function adicionarNotificacao(titulo, mensagem, tipo, requisicaoId) {
+            notificacoes.unshift({ id: Date.now(), titulo, mensagem, tipo, requisicaoId, data: new Date().toISOString(), lida: false });
+            if (notificacoes.length > 50) notificacoes.pop();
+            atualizarPainelNotificacoes();
+        }
+
+        function atualizarPainelNotificacoes() {
+            const list = document.getElementById('notificationList');
+            const count = document.getElementById('notificationCount');
+            const naoLidas = notificacoes.filter(n => !n.lida).length;
+            if (count) count.textContent = naoLidas;
+            if (!list) return;
+            if (notificacoes.length === 0) { list.innerHTML = '<div style="padding:20px;text-align:center;">Sem notificações</div>'; return; }
+            list.innerHTML = notificacoes.slice(0, 20).map(n => `<div class="notification-item ${!n.lida ? 'unread' : ''}" onclick="marcarNotificacaoLida(${n.id})"><div class="notification-title">${n.titulo}</div><div class="notification-message" style="font-size:12px;color:#666;">${n.mensagem}</div><div class="notification-time">${formatarDataHora(n.data)}</div></div>`).join('');
+        }
+
+        function marcarNotificacaoLida(id) { const notif = notificacoes.find(n => n.id === id); if (notif) notif.lida = true; atualizarPainelNotificacoes(); }
+        function toggleNotifications() { const panel = document.getElementById('notificationPanel'); if (panel) panel.classList.toggle('show'); }
+
+        async function enviarEmail(destinatario, assunto, corpoHtml) {
+            if (!configuracoes.emailNotif) return false;
+            if (isEmailBlocked(destinatario)) return false;
+            try {
+                const token = await getAccessToken(["Mail.Send"]);
+                const email = { message: { subject: assunto, body: { contentType: "HTML", content: corpoHtml }, toRecipients: [{ emailAddress: { address: destinatario } }] }, saveToSentItems: "true" };
+                const adminEmail = configuracoes.emailAdmin;
+                if (adminEmail && adminEmail.trim() !== "" && adminEmail !== destinatario && !isEmailBlocked(adminEmail)) email.message.ccRecipients = [{ emailAddress: { address: adminEmail } }];
+                const response = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(email) });
+                return response.ok;
+            } catch (error) { console.error('Erro ao enviar email:', error); return false; }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            const textSpan = document.getElementById('darkModeText');
+            if (textSpan) textSpan.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
+        }
+
+        function carregarDarkMode() {
+            const isDark = localStorage.getItem('darkMode') === 'true';
+            if (isDark) { document.body.classList.add('dark-mode'); const textSpan = document.getElementById('darkModeText'); if (textSpan) textSpan.textContent = 'Modo Claro'; }
+        }
+
+        function carregarDashboardTempos() {
+            const container = document.getElementById('temposDashboard');
+            if (!container) return;
+            const todasRequisicoes = requisicoes;
+            const aprovadasSemRecrutamento = todasRequisicoes.filter(r => r.status === 'aprovada' && !r.dataInicioRecrutamento);
+            let totalTempoRH = 0, totalTempoCG = 0, totalTempoDir = 0, totalTempoRecrutamento = 0;
+            let countRH = 0, countCG = 0, countDir = 0, countRecrutamento = 0;
+            let requisicoesEmAprovacaoRH = 0, requisicoesEmAprovacaoCG = 0, requisicoesEmAprovacaoDir = 0, requisicoesEmRecrutamento = 0;
+            todasRequisicoes.forEach(req => {
+                const tempos = calcularTempoPorFaseDetalhado(req);
+                if (tempos.tempoRH !== null) { totalTempoRH += tempos.tempoRH; countRH++; }
+                if (tempos.tempoCG !== null) { totalTempoCG += tempos.tempoCG; countCG++; }
+                if (tempos.tempoDir !== null) { totalTempoDir += tempos.tempoDir; countDir++; }
+                if (tempos.tempoRecrutamento !== null) { totalTempoRecrutamento += tempos.tempoRecrutamento; countRecrutamento++; }
+                if (req.status === 'em_validacao_rh') requisicoesEmAprovacaoRH++;
+                if (req.status === 'em_validacao_financas') requisicoesEmAprovacaoCG++;
+                if (req.status === 'em_validacao_director') requisicoesEmAprovacaoDir++;
+                if (req.status === 'em_recrutamento') requisicoesEmRecrutamento++;
+            });
+            const mediaRH = countRH > 0 ? totalTempoRH / countRH : 0;
+            const mediaCG = countCG > 0 ? totalTempoCG / countCG : 0;
+            const mediaDir = countDir > 0 ? totalTempoDir / countDir : 0;
+            const mediaRecrutamento = countRecrutamento > 0 ? totalTempoRecrutamento / countRecrutamento : 0;
+            const maxTempo = Math.max(mediaRH, mediaCG, mediaDir, mediaRecrutamento, 1);
+            let alertaHTML = '';
+            if (aprovadasSemRecrutamento.length > 0 && usuarioAtual && usuarioAtual.perfil === 'Administrador') {
+                alertaHTML = `<div style="background:#fff3e0;border-left:4px solid #ff9800;padding:15px;margin-bottom:20px;border-radius:8px;"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;"><div><i class="fas fa-exclamation-triangle" style="color:#ff9800;font-size:20px;"></i><strong style="margin-left:10px;">Atenção!</strong><span style="margin-left:10px;">${aprovadasSemRecrutamento.length} requisição(ões) aprovada(s) aguardando início de recrutamento.</span></div><button onclick="filtrarPorStatus('aprovada')" class="btn-small btn-approve" style="background-color:#ff9800;"><i class="fas fa-eye"></i> Ver</button></div></div>`;
+            }
+            container.innerHTML = alertaHTML + `<div class="tempos-fases-container"><div class="fase-card rh" onclick="filtrarPorStatus('em_validacao_rh')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-tie"></i> Fase RH</div><div class="fase-tempo">${formatarTempo(mediaRH)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(mediaRH/maxTempo)*100}%;background:#4CAF50;">${mediaRH>0?formatarTempo(mediaRH):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Tempo médio:</span><span class="detalhe-valor">${formatarTempo(mediaRH)}</span></div><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${countRH}</span></div><div class="detalhe-item"><span class="detalhe-label">Pendentes:</span><span class="detalhe-valor">${requisicoesEmAprovacaoRH}</span></div></div></div><div class="fase-card cg" onclick="filtrarPorStatus('em_validacao_financas')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-chart-line"></i> Fase CG</div><div class="fase-tempo">${formatarTempo(mediaCG)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(mediaCG/maxTempo)*100}%;background:#FF9800;">${mediaCG>0?formatarTempo(mediaCG):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Tempo médio:</span><span class="detalhe-valor">${formatarTempo(mediaCG)}</span></div><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${countCG}</span></div><div class="detalhe-item"><span class="detalhe-label">Pendentes:</span><span class="detalhe-valor">${requisicoesEmAprovacaoCG}</span></div></div></div><div class="fase-card dg" onclick="filtrarPorStatus('em_validacao_director')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-tie"></i> Fase Director</div><div class="fase-tempo">${formatarTempo(mediaDir)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(mediaDir/maxTempo)*100}%;background:#f44336;">${mediaDir>0?formatarTempo(mediaDir):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Tempo médio:</span><span class="detalhe-valor">${formatarTempo(mediaDir)}</span></div><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${countDir}</span></div><div class="detalhe-item"><span class="detalhe-label">Pendentes:</span><span class="detalhe-valor">${requisicoesEmAprovacaoDir}</span></div></div></div><div class="fase-card recrutamento" onclick="filtrarPorStatus('em_recrutamento')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-graduate"></i> Recrutamento</div><div class="fase-tempo">${formatarTempo(mediaRecrutamento)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(mediaRecrutamento/maxTempo)*100}%;background:#2196F3;">${mediaRecrutamento>0?formatarTempo(mediaRecrutamento):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Tempo médio:</span><span class="detalhe-valor">${formatarTempo(mediaRecrutamento)}</span></div><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${countRecrutamento}</span></div><div class="detalhe-item"><span class="detalhe-label">Ativas:</span><span class="detalhe-valor">${requisicoesEmRecrutamento}</span></div></div></div></div>`;
+        }
+
+        function carregarDashboardStatus() {
+            const container = document.getElementById('statusDashboard');
+            if (!container) return;
+            const todasRequisicoes = requisicoes;
+            const total = todasRequisicoes.length;
+            const statusCounts = { 'em_validacao_rh': todasRequisicoes.filter(r => r.status === 'em_validacao_rh').length, 'em_validacao_financas': todasRequisicoes.filter(r => r.status === 'em_validacao_financas').length, 'em_validacao_director': todasRequisicoes.filter(r => r.status === 'em_validacao_director').length, 'aprovada': todasRequisicoes.filter(r => r.status === 'aprovada').length, 'rejeitada': todasRequisicoes.filter(r => r.status === 'rejeitada').length, 'em_recrutamento': todasRequisicoes.filter(r => r.status === 'em_recrutamento').length, 'aguardando_confirmacao_solicitante': todasRequisicoes.filter(r => r.status === 'aguardando_confirmacao_solicitante').length, 'concluida': todasRequisicoes.filter(r => r.status === 'concluida').length, 'devolvida_solicitante': todasRequisicoes.filter(r => r.status === 'devolvida_solicitante').length };
+            const maxCount = Math.max(...Object.values(statusCounts), 1);
+            container.innerHTML = `<div class="status-detalhado-container"><div class="status-card rh" onclick="filtrarPorStatus('em_validacao_rh')"><div class="status-header"><div class="status-titulo"><i class="fas fa-user-tie"></i> RH</div><div class="status-quantidade" style="color:#4CAF50;">${statusCounts.em_validacao_rh}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.em_validacao_rh/maxCount)*100}%;background:#4CAF50;">${statusCounts.em_validacao_rh||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.em_validacao_rh/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card cg" onclick="filtrarPorStatus('em_validacao_financas')"><div class="status-header"><div class="status-titulo"><i class="fas fa-chart-line"></i> CG</div><div class="status-quantidade" style="color:#FF9800;">${statusCounts.em_validacao_financas}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.em_validacao_financas/maxCount)*100}%;background:#FF9800;">${statusCounts.em_validacao_financas||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.em_validacao_financas/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card dg" onclick="filtrarPorStatus('em_validacao_director')"><div class="status-header"><div class="status-titulo"><i class="fas fa-user-tie"></i> Director</div><div class="status-quantidade" style="color:#f44336;">${statusCounts.em_validacao_director}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.em_validacao_director/maxCount)*100}%;background:#f44336;">${statusCounts.em_validacao_director||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.em_validacao_director/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card aprovada" onclick="filtrarPorStatus('aprovada')"><div class="status-header"><div class="status-titulo"><i class="fas fa-check-circle"></i> Aprovadas</div><div class="status-quantidade" style="color:#4CAF50;">${statusCounts.aprovada}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.aprovada/maxCount)*100}%;background:#4CAF50;">${statusCounts.aprovada||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.aprovada/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card recrutamento" onclick="filtrarPorStatus('em_recrutamento')"><div class="status-header"><div class="status-titulo"><i class="fas fa-user-graduate"></i> Recrutamento</div><div class="status-quantidade" style="color:#2196F3;">${statusCounts.em_recrutamento}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.em_recrutamento/maxCount)*100}%;background:#2196F3;">${statusCounts.em_recrutamento||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.em_recrutamento/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card" style="border-left-color:#9c27b0;" onclick="filtrarPorStatus('aguardando_confirmacao_solicitante')"><div class="status-header"><div class="status-titulo"><i class="fas fa-envelope-open-text"></i> Confirmação</div><div class="status-quantidade" style="color:#9c27b0;">${statusCounts.aguardando_confirmacao_solicitante}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.aguardando_confirmacao_solicitante/maxCount)*100}%;background:#9c27b0;">${statusCounts.aguardando_confirmacao_solicitante||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.aguardando_confirmacao_solicitante/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card concluida" onclick="filtrarPorStatus('concluida')"><div class="status-header"><div class="status-titulo"><i class="fas fa-check-double"></i> Concluídas</div><div class="status-quantidade" style="color:#607d8b;">${statusCounts.concluida}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.concluida/maxCount)*100}%;background:#607d8b;">${statusCounts.concluida||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.concluida/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card rejeitada" onclick="filtrarPorStatus('rejeitada')"><div class="status-header"><div class="status-titulo"><i class="fas fa-times-circle"></i> Rejeitadas</div><div class="status-quantidade" style="color:#f44336;">${statusCounts.rejeitada}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.rejeitada/maxCount)*100}%;background:#f44336;">${statusCounts.rejeitada||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.rejeitada/total)*100).toFixed(1):0}%</span></div></div></div><div class="status-card devolvida" onclick="filtrarPorStatus('devolvida_solicitante')"><div class="status-header"><div class="status-titulo"><i class="fas fa-undo-alt"></i> Devolvidas</div><div class="status-quantidade" style="color:#ff9800;">${statusCounts.devolvida_solicitante}</div></div><div class="grafico-barra"><div class="grafico-barra-fill" style="width:${(statusCounts.devolvida_solicitante/maxCount)*100}%;background:#ff9800;">${statusCounts.devolvida_solicitante||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((statusCounts.devolvida_solicitante/total)*100).toFixed(1):0}%</span></div></div></div></div>`;
+        }
+
+        function calcularTempoPorFaseDetalhado(req) {
+            const aprovRH = getStatusAprovacaoPorPerfil(req, 'RH');
+            const aprovCG = getStatusAprovacaoPorPerfil(req, 'Controlo de Gestão');
+            const aprovDir = getStatusAprovacaoPorPerfil(req, 'Director Geral');
+            let tempoRH = null, tempoCG = null, tempoDir = null, tempoRecrutamento = null;
+            if (aprovRH) tempoRH = calcularTempoEmMilissegundos(req.dataCriacao, aprovRH.data);
+            else if (req.status === 'em_validacao_rh' || (req.status !== 'em_validacao_rh' && !aprovRH && (aprovCG || aprovDir))) tempoRH = calcularTempoEmMilissegundos(req.dataCriacao, null);
+            if (aprovCG && aprovRH) tempoCG = calcularTempoEmMilissegundos(aprovRH.data, aprovCG.data);
+            else if (aprovCG && !aprovRH) tempoCG = calcularTempoEmMilissegundos(req.dataCriacao, aprovCG.data);
+            else if ((req.status === 'em_validacao_financas' || req.status === 'em_validacao_director' || req.status === 'em_recrutamento') && aprovRH && !aprovCG) tempoCG = calcularTempoEmMilissegundos(aprovRH.data, null);
+            if (aprovDir && aprovCG) tempoDir = calcularTempoEmMilissegundos(aprovCG.data, aprovDir.data);
+            else if (aprovDir && !aprovCG && aprovRH) tempoDir = calcularTempoEmMilissegundos(aprovRH.data, aprovDir.data);
+            else if (aprovDir && !aprovCG && !aprovRH) tempoDir = calcularTempoEmMilissegundos(req.dataCriacao, aprovDir.data);
+            else if (req.status === 'em_validacao_director' && aprovCG && !aprovDir) tempoDir = calcularTempoEmMilissegundos(aprovCG.data, null);
+            else if (req.status === 'em_validacao_director' && !aprovCG && aprovRH) tempoDir = calcularTempoEmMilissegundos(aprovRH.data, null);
+            if (req.dataInicioRecrutamento) { if (req.dataFimRecrutamento) tempoRecrutamento = calcularTempoEmMilissegundos(req.dataInicioRecrutamento, req.dataFimRecrutamento); else if (req.status === 'em_recrutamento') tempoRecrutamento = calcularTempoEmMilissegundos(req.dataInicioRecrutamento, null); }
+            return { tempoRH, tempoCG, tempoDir, tempoRecrutamento };
+        }
+
+        // ============================================================
+        // MÓDULO MANUTENÇÃO - APP
         // ============================================================
         const manutencaoApp = (function() {
             let reqs = [];
@@ -3733,6 +3022,62 @@
                 salvarManutencaoNoSharePoint(nova);
             }
 
+            async function salvarManutencaoNoSharePoint(req) {
+                try {
+                    const token = await getSharePointToken();
+                    const siteId = await getSiteId();
+                    const fields = { "Title": req.codigo, "Codigo": req.codigo, "Equipamento": req.equipamento, "Local": req.local || "", "Typo": req.tipo, "Prioridade": req.prioridade, "Descricao": req.descricao, "Status": req.status, "Solicitante": req.solicitante, "SolicitanteEmail": req.email || "", "DataCriacao": req.data || new Date().toISOString(), "Diagnostico": req.diagnostico || "", "OpcaoResolucao": req.opcaoResolucao || "", "OrigemRecurso": req.origemRecurso || "", "DetalhesTransferencia": req.detalhesTransferencia || "", "ValorTransferencia": req.valorTransferencia || 0, "DetalhesConsumo": req.detalhesConsumo || "", "ValorConsumo": req.valorConsumo || 0, "Fornecedor": req.fornecedor || "", "DescricaoCompra": req.descricaoCompra || "", "ValorCompra": req.valorCompra || 0, "ValorTotal": req.valorTotal || 0, "RelatorioExecucao": req.relatorioExecucao || "", "DataExecucao": req.dataExecucao || null, "TecnicoResponsavel": req.tecnicoResponsavel || "", "DataConclusao": req.dataConclusao || null, "Anexoss": req.anexos ? JSON.stringify(req.anexos) : "", "Historico": req.historico ? JSON.stringify(req.historico) : "", "NotaDespesa": req.notaDespesa ? JSON.stringify(req.notaDespesa) : "" };
+                    const listUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items?expand=fields&$filter=fields/Title eq '${req.codigo}'`;
+                    const checkResponse = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                    let existingItem = null;
+                    if (checkResponse.ok) { const data = await checkResponse.json(); if (data.value && data.value.length > 0) { existingItem = data.value[0]; } }
+                    if (existingItem) {
+                        const updateResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items/${existingItem.id}/fields`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(fields) });
+                        return updateResponse.ok;
+                    } else {
+                        const createResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ fields: fields }) });
+                        if (createResponse.ok) { const newItem = await createResponse.json(); req.id = newItem.id; return true; }
+                        return false;
+                    }
+                } catch (error) { console.error('Erro ao salvar manutenção no SharePoint:', error); return false; }
+            }
+
+            function setupDropzoneM(dropId, inputId, listId, setter) {
+                const drop = document.getElementById(dropId);
+                const input = document.getElementById(inputId);
+                const list = document.getElementById(listId);
+                if (!drop || !input) return;
+                drop.addEventListener('click', () => input.click());
+                drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.borderColor = '#FF9800'; drop.style.background = '#fff3e0'; });
+                drop.addEventListener('dragleave', () => { drop.style.borderColor = '#ffe0b2'; drop.style.background = '#fffcf8'; });
+                drop.addEventListener('drop', e => {
+                    e.preventDefault();
+                    drop.style.borderColor = '#ffe0b2';
+                    drop.style.background = '#fffcf8';
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = ev => {
+                            setter({ name: file.name, data: ev.target.result });
+                            if (list) list.innerHTML = `<div class="file-item"><span class="file-name"><i class="fas fa-file"></i> ${file.name}</span><span class="file-remove" onclick="this.parentElement.remove();setter(null);">✕</span></div>`;
+                            notificarM(`📎 Ficheiro "${file.name}" anexado!`, 'success');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+                input.addEventListener('change', e => {
+                    if (e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = ev => {
+                            setter({ name: e.target.files[0].name, data: ev.target.result });
+                            if (list) list.innerHTML = `<div class="file-item"><span class="file-name"><i class="fas fa-file"></i> ${e.target.files[0].name}</span><span class="file-remove" onclick="this.parentElement.remove();setter(null);">✕</span></div>`;
+                            notificarM('📎 Ficheiro anexado!', 'success');
+                        };
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                });
+            }
+
             function abrirAvaliacaoM(id) {
                 const diagnostico = prompt('Digite o diagnóstico da avaria:'); if (!diagnostico) return;
                 const req = reqs.find(r => r.id === id); if (!req) return;
@@ -3742,7 +3087,7 @@
                 const opcaoSelecionada = opcaoMap[opcao]; if (!opcaoSelecionada) { notificarM('Opção inválida!', 'error'); return; }
                 req.diagnostico = diagnostico; req.opcaoResolucao = opcaoSelecionada;
                 if (opcaoSelecionada === 'com_material') { req.status = 'em_execucao'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Técnico tem material, irá executar o serviço directamente' }); notificarM('✅ Técnico irá executar o serviço directamente.', 'info'); } else if (opcaoSelecionada === 'transferencia') { req.origemRecurso = prompt('Digite a origem do recurso:') || 'N/A'; req.detalhesTransferencia = prompt('Digite os detalhes da transferência:') || 'N/A'; req.valorTransferencia = parseFloat(prompt('Digite o valor estimado:') || 0); req.status = 'aguardando_consumiveis'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Solicitação de transferência de recurso. Aguardando autorização dos Consumíveis.' }); notificarM('📦 Solicitação enviada para autorização.', 'info'); } else if (opcaoSelecionada === 'consumo') { req.detalhesConsumo = prompt('Digite os detalhes do consumo:') || 'N/A'; req.valorConsumo = parseFloat(prompt('Digite o valor estimado:') || 0); req.status = 'aguardando_cg'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Solicitação de consumo de stock interno. Aguardando aprovação do Controlo Gestão.' }); notificarM('📊 Solicitação enviada para Controlo Gestão.', 'info'); } else if (opcaoSelecionada === 'precisa_comprar') { req.fornecedorCompra = prompt('Digite o fornecedor:') || 'N/A'; req.descricaoCompra = prompt('Digite a descrição do material a comprar:') || 'N/A'; req.valorCompra = parseFloat(prompt('Digite o valor estimado:') || 0); req.status = 'aguardando_consumiveis'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Solicitação de compra. Aguardando Consumíveis registar despesas.' }); notificarM('📦 Solicitação enviada para Consumíveis.', 'info'); }
-                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM(); atualizarManutencaoNoSharePoint(req);
+                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
 
             function abrirConsumiveisAutorizacaoM(id) {
@@ -3750,7 +3095,7 @@
                 const decisao = confirm(`Autorizar a transferência de recurso para a requisição ${req.codigo}?`);
                 const comentario = prompt('Digite um comentário (opcional):') || 'Autorizado';
                 if (decisao) { req.status = 'em_execucao'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Consumíveis autorizou: ${comentario}` }); notificarM('✅ Autorização concedida! Manutenção pode executar o serviço.', 'success'); } else { req.status = 'reprovada'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Consumíveis reprovou: ${comentario}` }); notificarM('❌ Requisição reprovada.', 'error'); }
-                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM(); atualizarManutencaoNoSharePoint(req);
+                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
 
             function abrirConsumiveisDespesasM(id) {
@@ -3764,7 +3109,7 @@
                 req.fornecedor = fornecedor; req.valorTotal = total; req.status = 'aguardando_cg';
                 req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Registo de despesas: Fornecedor ${req.fornecedor}, Valor ${formatarMoedaM(req.valorTotal)}` });
                 notificarM('✅ Despesas registadas. Enviado para Controlo Gestão.', 'success');
-                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM(); atualizarManutencaoNoSharePoint(req);
+                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
 
             function abrirCGM(id) {
@@ -3772,7 +3117,7 @@
                 const decisao = confirm(`Aprovar a requisição ${req.codigo}?`);
                 const parecer = prompt('Digite um parecer:') || 'Aprovado';
                 if (decisao) { req.status = 'aguardando_diretor'; req.parecerCG = parecer; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Controlo Gestão aprovou. Enviado para Director Geral.' }); notificarM('✅ Controlo Gestão aprovou. Enviado para o Director Geral.', 'success'); } else { req.status = 'reprovada'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Controlo Gestão reprovou: ${parecer}` }); notificarM('❌ Requisição reprovada.', 'error'); }
-                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM(); atualizarManutencaoNoSharePoint(req);
+                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
 
             function abrirDiretorM(id) {
@@ -3780,7 +3125,7 @@
                 const decisao = confirm(`Aprovar a requisição ${req.codigo}?`);
                 const parecer = prompt('Digite um parecer:') || 'Aprovado';
                 if (decisao) { req.status = 'aguardando_financas'; req.parecerDiretor = parecer; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Director Geral aprovou. Aguardando pagamento.' }); notificarM('✅ Director Geral aprovou. Aguardando pagamento.', 'success'); } else { req.status = 'reprovada'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Director Geral reprovou: ${parecer}` }); notificarM('❌ Requisição reprovada.', 'error'); }
-                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM(); atualizarManutencaoNoSharePoint(req);
+                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
 
             function abrirFinancasM(id) {
@@ -3788,7 +3133,7 @@
                 const status = confirm(`Confirmar pagamento da requisição ${req.codigo}?`);
                 const comprovativo = prompt('Digite o número do comprovativo:') || 'N/A';
                 if (status) { req.status = 'em_execucao'; req.dataPagamento = new Date().toISOString().slice(0,10); req.comprovativo = comprovativo; if (req.notaDespesa) { req.notaDespesa.pagamentoStatus = 'Pago'; req.notaDespesa.comprovativo = comprovativo; req.notaDespesa.dataPagamento = new Date().toISOString().slice(0,10); } req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Pagamento confirmado. Comprovativo: ${comprovativo}` }); notificarM('✅ Pagamento confirmado! Serviço pode ser executado.', 'success'); } else { notificarM('⏳ Pagamento pendente.', 'warning'); }
-                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM(); atualizarManutencaoNoSharePoint(req);
+                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
 
             function abrirExecucaoM(id) {
@@ -3797,7 +3142,7 @@
                 req.relatorioExecucao = relatorio; req.dataExecucao = new Date().toISOString().slice(0,10); req.tecnicoResponsavel = usuarioAtual.nome; req.status = 'aguardando_material';
                 req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Serviço executado. Aguardando confirmação.' });
                 notificarM('✅ Serviço executado! Aguardando confirmação.', 'success');
-                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM(); atualizarManutencaoNoSharePoint(req);
+                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
 
             function abrirConfirmacaoM(id) {
@@ -3806,7 +3151,7 @@
                 const confirmExecucao = confirm(`A EXECUÇÃO do serviço foi realizada com sucesso para a requisição ${req.codigo}?`);
                 if (!confirmMaterial || !confirmExecucao) { req.status = 'reprovada'; notificarM('❌ Requisição reprovada.', 'error'); } else { req.status = 'concluida'; req.dataConclusao = new Date().toISOString(); notificarM('🎉 REQUISIÇÃO CONCLUÍDA COM SUCESSO!', 'success'); }
                 req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Confirmado: Material=${confirmMaterial ? 'OK' : 'NOK'}, Execução=${confirmExecucao ? 'OK' : 'NOK'}` });
-                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM(); atualizarManutencaoNoSharePoint(req);
+                salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
 
             function visualizarAnexoM(reqId, idx) {
@@ -3866,64 +3211,6 @@
 
             function exportarPDFM() { notificarM('📄 Relatório PDF gerado com sucesso!', 'success'); }
             function exportarExcelM() { notificarM('📊 Relatório Excel gerado com sucesso!', 'success'); }
-
-            async function salvarManutencaoNoSharePoint(req) {
-                try {
-                    const token = await getSharePointToken();
-                    const siteId = await getSiteId();
-                    const fields = { "Title": req.codigo, "Codigo": req.codigo, "Equipamento": req.equipamento, "Local": req.local || "", "Typo": req.tipo, "Prioridade": req.prioridade, "Descricao": req.descricao, "Status": req.status, "Solicitante": req.solicitante, "SolicitanteEmail": req.email || "", "DataCriacao": req.data || new Date().toISOString(), "Diagnostico": req.diagnostico || "", "OpcaoResolucao": req.opcaoResolucao || "", "OrigemRecurso": req.origemRecurso || "", "DetalhesTransferencia": req.detalhesTransferencia || "", "ValorTransferencia": req.valorTransferencia || 0, "DetalhesConsumo": req.detalhesConsumo || "", "ValorConsumo": req.valorConsumo || 0, "Fornecedor": req.fornecedor || "", "DescricaoCompra": req.descricaoCompra || "", "ValorCompra": req.valorCompra || 0, "ValorTotal": req.valorTotal || 0, "RelatorioExecucao": req.relatorioExecucao || "", "DataExecucao": req.dataExecucao || null, "TecnicoResponsavel": req.tecnicoResponsavel || "", "DataConclusao": req.dataConclusao || null, "Anexoss": req.anexos ? JSON.stringify(req.anexos) : "", "Historico": req.historico ? JSON.stringify(req.historico) : "", "NotaDespesa": req.notaDespesa ? JSON.stringify(req.notaDespesa) : "" };
-                    const listUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items?expand=fields&$filter=fields/Title eq '${req.codigo}'`;
-                    const checkResponse = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}` } });
-                    let existingItem = null;
-                    if (checkResponse.ok) { const data = await checkResponse.json(); if (data.value && data.value.length > 0) { existingItem = data.value[0]; } }
-                    if (existingItem) {
-                        const updateResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items/${existingItem.id}/fields`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(fields) });
-                        return updateResponse.ok;
-                    } else {
-                        const createResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ fields: fields }) });
-                        if (createResponse.ok) { const newItem = await createResponse.json(); req.id = newItem.id; return true; }
-                        return false;
-                    }
-                } catch (error) { console.error('Erro ao salvar manutenção no SharePoint:', error); return false; }
-            }
-
-            async function atualizarManutencaoNoSharePoint(req) { return await salvarManutencaoNoSharePoint(req); }
-
-            function setupDropzoneM(dropId, inputId, listId, setter) {
-                const drop = document.getElementById(dropId);
-                const input = document.getElementById(inputId);
-                const list = document.getElementById(listId);
-                if (!drop || !input) return;
-                drop.addEventListener('click', () => input.click());
-                drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.borderColor = '#FF9800'; drop.style.background = '#fff3e0'; });
-                drop.addEventListener('dragleave', () => { drop.style.borderColor = '#ffe0b2'; drop.style.background = '#fffcf8'; });
-                drop.addEventListener('drop', e => {
-                    e.preventDefault();
-                    drop.style.borderColor = '#ffe0b2';
-                    drop.style.background = '#fffcf8';
-                    const file = e.dataTransfer.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = ev => {
-                            setter({ name: file.name, data: ev.target.result });
-                            if (list) list.innerHTML = `<div class="file-item"><span class="file-name"><i class="fas fa-file"></i> ${file.name}</span><span class="file-remove" onclick="this.parentElement.remove();setter(null);">✕</span></div>`;
-                            notificarM(`📎 Ficheiro "${file.name}" anexado!`, 'success');
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-                input.addEventListener('change', e => {
-                    if (e.target.files[0]) {
-                        const reader = new FileReader();
-                        reader.onload = ev => {
-                            setter({ name: e.target.files[0].name, data: ev.target.result });
-                            if (list) list.innerHTML = `<div class="file-item"><span class="file-name"><i class="fas fa-file"></i> ${e.target.files[0].name}</span><span class="file-remove" onclick="this.parentElement.remove();setter(null);">✕</span></div>`;
-                            notificarM('📎 Ficheiro anexado!', 'success');
-                        };
-                        reader.readAsDataURL(e.target.files[0]);
-                    }
-                });
-            }
 
             function inicializarM() {
                 console.log('Inicializando módulo Manutenção...');
@@ -4000,9 +3287,7 @@
         // MÓDULO AVALIAÇÃO - APP
         // ============================================================
         const avaliacaoApp = (function() {
-            // Lista de colaboradores (versão reduzida para demonstração)
             const mockColaboradores = {
-                "10": { "nome": "ALBERTO TANGU SIMAO", "direcao": "Lubango", "departamento": "Departamento PF", "funcao": "Gerente de Departamento", "dataAdmissao": "2010-12-01" },
                 "101": { "nome": "ANA AUGUSTO PASCOAL MONTEIRO", "direcao": "Kilamba", "departamento": "Gastronomia", "funcao": "Operador de Loja", "dataAdmissao": "2012-06-04" },
                 "102": { "nome": "CARLOS MANUEL SANTOS", "direcao": "Nova Vida", "departamento": "Frente de Loja", "funcao": "Operador de Caixa", "dataAdmissao": "2015-03-10" },
                 "103": { "nome": "MARIA FERREIRA SOUZA", "direcao": "Talatona", "departamento": "RH", "funcao": "Técnico RH", "dataAdmissao": "2018-07-01" },
@@ -4125,6 +3410,27 @@
                 statusDiv.textContent = '✅ Avaliação salva com sucesso!';
                 statusDiv.className = 'status-msg status-success';
                 mostrarNotificacao('Avaliação salva com sucesso!', 'success');
+                // Salvar no SharePoint
+                salvarAvaliacaoNoSharePoint(feedback);
+            }
+
+            async function salvarAvaliacaoNoSharePoint(feedback) {
+                try {
+                    const token = await getSharePointToken();
+                    const siteId = await getSiteId();
+                    const fields = { "Title": `Avaliação - ${feedback.colaborador.nome}`, "ColaboradorID": feedback.colaborador.id, "ColaboradorNome": feedback.colaborador.nome, "ColaboradorDirecao": feedback.colaborador.direcao || "", "ColaboradorDepartamento": feedback.colaborador.departamento || "", "ColaboradorFuncao": feedback.colaborador.funcao || "", "ColaboradorAdmissao": feedback.colaborador.admissao || "", "AvaliadorNome": feedback.avaliador || usuarioAtual.nome, "AvaliadorEmail": feedback.avaliadorEmail || usuarioAtual.email, "DataAvaliacao": feedback.data || new Date().toISOString(), "Competencias": JSON.stringify(feedback.competencias || []), "PontosFortes": feedback.pontosFortes || "", "PontosMelhorar": feedback.pontosMelhorar || "", "FeedbackGlobal": feedback.feedbackGlobal || "", "Desenvolvimento": feedback.desenvolvimento || "", "Medidas": (feedback.medidas || []).map(m => `${m.descricao} (${m.prioridade})`).join('\n') || "", "ClassificacaoFinal": feedback.classificacao || "2", "NotaFinal": feedback.notaFinal || 0, "Assinatura": feedback.assinatura || "", "Concordancia": feedback.concordancia || "concordo", "ComentarioAdicional": feedback.comentarioAdicional || "", "Status": "Concluída" };
+                    const listUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaAvaliacoes}/items?expand=fields&$filter=fields/ColaboradorID eq ${feedback.colaborador.id}`;
+                    const checkResponse = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                    let existingItem = null;
+                    if (checkResponse.ok) { const data = await checkResponse.json(); if (data.value && data.value.length > 0) { existingItem = data.value[0]; } }
+                    if (existingItem) {
+                        const updateResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaAvaliacoes}/items/${existingItem.id}/fields`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(fields) });
+                        return updateResponse.ok;
+                    } else {
+                        const createResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaAvaliacoes}/items`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ fields: fields }) });
+                        return createResponse.ok;
+                    }
+                } catch (error) { console.error('Erro ao salvar avaliação no SharePoint:', error); return false; }
             }
 
             function exportarPDF() {
@@ -4141,6 +3447,36 @@
                 doc.text(`Nota Final: ${data.notaFinal ? data.notaFinal.toFixed(1) : 'N/A'}`, 14, 64);
                 const classifMap = { '1': 'Abaixo', '2': 'De acordo', '3': 'Acima' };
                 doc.text(`Classificação: ${classifMap[data.classificacao] || 'N/A'}`, 14, 70);
+                // Incluir competências no PDF
+                if (data.competencias && data.competencias.length > 0) {
+                    doc.text('Competências Avaliadas:', 14, 80);
+                    let yPos = 88;
+                    data.competencias.forEach(c => {
+                        const notaText = ['', 'Insuficiente', 'Parcial', 'Atende', 'Supera', 'Excepcional'][c.nota] || c.nota;
+                        doc.text(`- ${c.nome}: ${c.nota} - ${notaText}`, 18, yPos);
+                        yPos += 6;
+                    });
+                }
+                // Incluir feedback
+                doc.text('Feedback:', 14, yPos + 8);
+                yPos += 16;
+                doc.text(`Pontos Fortes: ${data.pontosFortes || 'N/A'}`, 18, yPos);
+                yPos += 6;
+                doc.text(`Pontos a Melhorar: ${data.pontosMelhorar || 'N/A'}`, 18, yPos);
+                yPos += 6;
+                doc.text(`Feedback Global: ${data.feedbackGlobal || 'N/A'}`, 18, yPos);
+                yPos += 6;
+                doc.text(`Desenvolvimento: ${data.desenvolvimento || 'N/A'}`, 18, yPos);
+                yPos += 8;
+                // Incluir medidas
+                if (data.medidas && data.medidas.length > 0) {
+                    doc.text('Medidas/Ações:', 14, yPos);
+                    yPos += 6;
+                    data.medidas.forEach(m => {
+                        doc.text(`- ${m.descricao} (${m.prioridade})`, 18, yPos);
+                        yPos += 6;
+                    });
+                }
                 doc.save(`avaliacao_${data.colaborador.nome.replace(/\s/g, '_')}.pdf`);
                 mostrarNotificacao('PDF exportado com sucesso!', 'success');
             }
@@ -4309,8 +3645,8 @@
         });
 
         console.log('✅ Kero SIR - Sistema Integrado de Requisições carregado!');
-        console.log('📋 Módulos disponíveis: Recrutamento, Manutenção, Avaliação');
-        console.log('⛔ Módulos inativos: Ticket, Ocorrência/Segurança (em desenvolvimento)');
+        console.log('📋 Módulos disponíveis: Recrutamento, Avaliação, Manutenção');
+        console.log('⛔ Módulos inativos: Ticket, Ocorrência/Segurança, EAN SCAN');
         console.log('🔒 Módulo Avaliação: Acesso restrito a Administrador, RH e Director Geral');
     </script>
 </body>
