@@ -1824,10 +1824,11 @@
                     <p>Registo e gestão de ocorrências de segurança.</p>
                     <span class="module-badge badge-inativo">⛔ Inativo</span>
                 </div>
-             <!-- Módulo EAN SCAN - INATIVO (novo design) -->
-<div class="module-card-large border-ean border-inativo" onclick="abrirModuloIndisponivel('ean')">
-    <div class="ean-logo-wrapper" style="width:100%; display:flex; justify-content:center; margin-bottom:15px;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 180" width="280" height="126">
+            <!-- Módulo EAN SCAN - INATIVO (com SVG centralizado) -->
+<div class="module-card-large border-ean border-inativo" onclick="abrirModuloIndisponivel('ean')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+    <!-- SVG do código de barras com K centralizado -->
+    <div style="width: 100%; display: flex; justify-content: center; margin-bottom: 10px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 180" style="max-width: 100%; height: auto; width: 280px;">
             <defs>
                 <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
                     <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
