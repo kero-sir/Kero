@@ -1761,13 +1761,13 @@
                     <p>Requisições de manutenção, equipamentos e serviços.</p>
                     <span class="module-badge badge-ativo">Ativo</span>
                 </div>
-                <!-- Ticket (ATIVO) -->
-                <div class="module-card-large border-ticket" onclick="window.location.href='http://kero.accord.local/kerodesk/login.php'">
-                    <div class="module-icon-large icone-ticket"><i class="fas fa-ticket-alt"></i></div>
-                    <h2 class="cor-ticket">Ticket IT</h2>
-                    <p>Gestão de tickets e chamados de suporte.</p>
-                    <span class="module-badge badge-ativo">Ativo</span>
-                </div>
+           <!-- Módulo Ticket - INATIVO -->
+<div class="module-card-large border-ticket border-inativo" onclick="abrirModuloIndisponivel('ticket')">
+    <div class="module-icon-large icone-ticket"><i class="fas fa-ticket-alt"></i></div>
+    <h2 class="cor-ticket">Ticket IT</h2>
+    <p>Gestão de tickets e chamados de suporte.</p>
+    <span class="module-badge badge-inativo">⛔ Inativo</span>
+</div>
                 <!-- Ocorrência (inativo) -->
                 <div class="module-card-large border-ocorrencia border-inativo" onclick="abrirModuloIndisponivel('ocorrencia')">
                     <div class="module-icon-large icone-ocorrencia"><i class="fas fa-exclamation-triangle"></i></div>
