@@ -5086,7 +5086,7 @@
                     const token = await getSharePointToken(), siteId = await getSiteId();
                     const fields = {
                         "Title": req.codigo, "Codigo": req.codigo, "Colaborador": req.colaborador,
-                        "Tipo": req.tipo, "FuncaoAtual": req.funcaoAtual || "",
+                        "Typo": req.tipo, "FuncaoAtual": req.funcaoAtual || "",
                         "NovaFuncao": req.novaFuncao || "", "AreaAtual": req.areaAtual || "",
                         "NovaArea": req.novaArea || "", "SalarioAtual": req.salarioAtual || 0,
                         "NovoSalario": req.novoSalario || 0, "Justificativa": req.justificativa || "",
@@ -5137,7 +5137,7 @@
                                 try { hist = JSON.parse(f.Historico || '[]'); } catch(e) {}
                                 return {
                                     id: item.id, codigo: f.Title || f.Codigo || '',
-                                    tipo: f.Tipo || '', colaborador: f.Colaborador || '',
+                                    tipo: f.Typo || '', colaborador: f.Colaborador || '',
                                     funcaoAtual: f.FuncaoAtual || '', novaFuncao: f.NovaFuncao || '',
                                     areaAtual: f.AreaAtual || '', novaArea: f.NovaArea || '',
                                     salarioAtual: f.SalarioAtual || 0, novoSalario: f.NovoSalario || 0,
