@@ -10,6 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <!-- QuaggaJS para leitura de código de barras -->
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.2/dist/quagga.min.js"></script>
     <style>
         /* ============================================================
            ESTILOS COMPLETOS - KERO SIR
@@ -1805,12 +1807,12 @@
                     <p>Registo e gestão de ocorrências de segurança.</p>
                     <span class="module-badge badge-inativo">⛔ Inativo</span>
                 </div>
-                <!-- 7. EAN SCAN (INATIVO) -->
-                <div class="module-card-large border-ean border-inativo" onclick="mostrarNotificacao('Módulo EAN SCAN em desenvolvimento.','warning')">
+                <!-- 7. EAN SCAN (ATIVO) -->
+                <div class="module-card-large border-ean" onclick="selecionarModulo('ean')">
                     <div class="module-icon-large icone-ean"><i class="fas fa-barcode"></i></div>
                     <h2 class="cor-ean">EAN SCAN</h2>
                     <p>Leitura e gestão de códigos de barras EAN.</p>
-                    <span class="module-badge badge-inativo">⛔ Inativo</span>
+                    <span class="module-badge badge-ativo">Ativo</span>
                 </div>
             </div>
             <div style="text-align: center;">
@@ -2346,16 +2348,120 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO EAN SCAN (INATIVO)
+            MÓDULO EAN SCAN (ATIVO)
             ============================================================ -->
             <div id="eanSection" style="display: none;">
-                <div class="container" style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
-                    <div class="card" style="text-align: center; padding: 60px 40px;">
-                        <i class="fas fa-barcode" style="font-size: 80px; color: var(--gray-200); margin-bottom: 30px;"></i>
-                        <h2 style="color: var(--primary-dark);">📦 Módulo EAN SCAN</h2>
-                        <p style="font-size: 18px; color: var(--gray-500); margin: 20px 0;">O módulo de <strong>Leitura de Códigos de Barras EAN</strong> está em desenvolvimento.</p>
-                        <p style="color: var(--gray-500);">Em breve estará disponível para gestão de produtos e inventário.</p>
-                        <button class="btn" style="margin-top: 30px; background: var(--primary); color: white; padding: 12px 30px; border: none; border-radius: var(--border-radius-sm); cursor: pointer;" onclick="voltarParaModulos()">Voltar aos Módulos</button>
+                <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+                    <div class="app-header" style="margin-bottom: 20px;">
+                        <div class="logo-area">
+                            <h2 style="color: var(--primary-dark);"><i class="fas fa-barcode" style="color: var(--primary);"></i> EAN Scan</h2>
+                            <p style="font-size: 14px; color: #666;">Gestão de preços, stock e concorrência</p>
+                        </div>
+                        <div class="user-info">
+                            <button class="btn-modules" onclick="voltarParaModulos()"><i class="fas fa-th-large"></i> Módulos</button>
+                            <button class="btn-darkmode" onclick="toggleDarkMode()"><i class="fas fa-moon"></i> <span id="darkModeTextEan">Modo Escuro</span></button>
+                            <div class="user-badge">
+                                <div id="userAvatarEan"></div>
+                                <div><strong id="currentUserNameEan">Carregando...</strong><span id="currentUserRoleEan" class="user-role"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Área de pesquisa -->
+                    <div class="search-area" style="background: var(--verde-suave); border: 2px solid var(--verde-borda); border-radius: 12px; padding: 18px 22px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 15px; position: relative;">
+                        <label style="font-weight: 600; color: var(--verde-escuro);"><i class="fas fa-search"></i> Pesquisar:</label>
+                        <input type="text" id="eanInput" placeholder="Digite nome ou EAN..." style="flex:1; min-width:200px; padding:10px 16px; border:2px solid var(--verde-borda); border-radius:8px; font-size:16px;">
+                        <button id="btnBuscarEan" class="btn-small" style="background: var(--verde-medio); color: white; padding: 10px 20px; border: none; border-radius: 8px;"><i class="fas fa-arrow-right"></i> Buscar</button>
+                        <button id="btnLimparEan" class="btn-small" style="background: #78909c; color: white; padding: 10px 20px; border: none; border-radius: 8px;"><i class="fas fa-times"></i> Limpar</button>
+                        <button id="btnListarTodosEan" class="btn-small" style="background: #1976D2; color: white; padding: 10px 20px; border: none; border-radius: 8px;"><i class="fas fa-list"></i> Todos</button>
+                        <button id="btnUploadImageEan" class="btn-small" style="background: #8e24aa; color: white; padding: 10px 20px; border: none; border-radius: 8px;"><i class="fas fa-image"></i> Carregar Imagem</button>
+                        <input type="file" id="fileInputEan" accept="image/*" style="display:none;">
+                        <div id="suggestionsBoxEan" class="suggestions-box" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid var(--verde-borda); border-top: none; border-radius: 0 0 8px 8px; max-height: 300px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 8px 16px rgba(0,0,0,0.1);"></div>
+                    </div>
+
+                    <!-- Histórico -->
+                    <div id="historyAreaEan" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; display: none;">
+                        <span style="font-weight: 600; color: var(--verde-escuro);"><i class="fas fa-clock"></i> Últimas pesquisas:</span>
+                        <div id="historyButtonsEan"></div>
+                    </div>
+
+                    <!-- Lista todos -->
+                    <div id="allProductsEan" style="display: none; margin-bottom: 20px;">
+                        <h3 style="color: var(--verde-escuro);"><i class="fas fa-boxes"></i> Todos os Produtos</h3>
+                        <div id="productGridEan" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;"></div>
+                    </div>
+
+                    <!-- Resultado do produto -->
+                    <div id="resultContainerEan" style="display: none; animation: fadeIn 0.4s ease;">
+                        <div class="product-header" style="display: flex; flex-wrap: wrap; justify-content: space-between; background: var(--verde-suave); padding: 18px 24px; border-radius: 12px; border-left: 6px solid var(--verde-medio); margin-bottom: 20px;">
+                            <span class="name" id="prodNomeEan" style="font-size: 22px; font-weight: 700; color: var(--verde-escuro);">Produto</span>
+                            <span class="ean" id="prodEanEan" style="font-size: 16px; color: #2a4a3a; background: white; padding: 4px 16px; border-radius: 30px; font-weight: 600;">EAN: --</span>
+                        </div>
+
+                        <div class="product-pricing" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #fafafa; padding: 18px 20px; border-radius: 12px; border: 1px solid #e0e0e0; margin-bottom: 20px;">
+                            <div class="pricing-item"><span class="label" style="font-size: 12px; text-transform: uppercase; color: #777; font-weight: 600;">Preço Kero</span>
+                                <div class="value" id="prodPrecoKeroDisplayEan" style="font-size: 22px; font-weight: 700; color: #1a2a2a;">-- Kz</div>
+                                <input type="number" step="0.01" id="prodPrecoKeroInputEan" placeholder="0.00" style="display:none; padding:6px 10px; border:2px solid var(--verde-borda); border-radius:8px; font-size:18px; width:100%; max-width:150px;">
+                            </div>
+                            <div class="pricing-item"><span class="label" style="font-size: 12px; text-transform: uppercase; color: #777; font-weight: 600;">Preço Custo</span>
+                                <div class="value" id="prodPrecoCustoDisplayEan" style="font-size: 22px; font-weight: 700; color: #1a2a2a;">-- Kz</div>
+                                <input type="number" step="0.01" id="prodPrecoCustoInputEan" placeholder="0.00" style="display:none; padding:6px 10px; border:2px solid var(--verde-borda); border-radius:8px; font-size:18px; width:100%; max-width:150px;">
+                            </div>
+                            <div class="pricing-item"><span class="label" style="font-size: 12px; text-transform: uppercase; color: #777; font-weight: 600;">Margem</span>
+                                <span class="value margem" id="prodMargemEan" style="font-size: 22px; font-weight: 700; color: var(--verde-medio);">-- Kz</span>
+                            </div>
+                            <div class="pricing-item"><span class="label" style="font-size: 12px; text-transform: uppercase; color: #777; font-weight: 600;">% Margem</span>
+                                <span class="value margem" id="prodPercentMargemEan" style="font-size: 22px; font-weight: 700; color: var(--verde-medio);">-- %</span>
+                            </div>
+                            <div class="pricing-actions" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin-top: 5px;">
+                                <button class="btn-save-prices" id="btnEditarPrecosEan" style="background: var(--verde-medio); color: white; border: none; padding: 8px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;"><i class="fas fa-edit"></i> Editar Preços</button>
+                                <button class="btn-save-prices" id="btnGuardarPrecosEan" style="display:none; background: #1976D2; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;"><i class="fas fa-save"></i> Guardar Preços</button>
+                            </div>
+                        </div>
+
+                        <h3 style="color: var(--verde-escuro); margin: 15px 0 8px 0;"><i class="fas fa-warehouse"></i> Stock por Loja Kero</h3>
+                        <div class="table-wrapper" style="overflow-x: auto; margin: 20px 0; border-radius: 12px; border: 1px solid #e0e0e0;">
+                            <table style="width:100%; border-collapse: collapse; font-size:14px;">
+                                <thead id="stockHeadEan"></thead>
+                                <tbody id="stockBodyEan"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="concorrentes-area" style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+                            <h3 style="color: var(--verde-escuro); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><i class="fas fa-store-alt"></i> Preços da Concorrência</h3>
+                            <div id="concorrentesGridEan" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #f9fbf9; padding: 18px 20px; border-radius: 12px; border: 1px solid #d0e0d0;"></div>
+                            <button class="btn-save-concorrentes" id="btnGuardarConcorrentesEan" disabled style="margin-top:15px; background: #1976D2; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-save"></i> Guardar Preços
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Vazio -->
+                    <div id="emptyStateEan" class="empty-state" style="text-align: center; padding: 60px 20px; color: #888;">
+                        <i class="fas fa-barcode" style="font-size: 72px; color: var(--verde-borda); margin-bottom: 15px;"></i>
+                        <h2 style="color: #2a4a3a;">Nenhum produto selecionado</h2>
+                        <p>Pesquise por nome ou EAN, clique em "Todos" ou carregue uma imagem do código de barras.</p>
+                    </div>
+
+                    <!-- Área para adicionar produtos -->
+                    <div class="add-product-area" style="margin-top: 30px; padding: 20px; background: var(--verde-suave); border-radius: 12px; border: 2px solid var(--verde-borda);">
+                        <h3 style="color: var(--verde-escuro); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;"><i class="fas fa-plus-circle"></i> Adicionar Novo Produto</h3>
+                        <div class="add-product-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            <div class="form-group"><label style="font-weight:600; color:var(--verde-escuro);">Nome</label><input type="text" id="addNomeEan" placeholder="Ex: Água Classic 1,6L" class="form-control"></div>
+                            <div class="form-group"><label style="font-weight:600; color:var(--verde-escuro);">EAN</label><input type="text" id="addEanEan" placeholder="Código de barras (8-13 dígitos)" class="form-control"></div>
+                            <div class="form-group"><label style="font-weight:600; color:var(--verde-escuro);">Preço Custo (Kz)</label><input type="number" step="0.01" id="addPrecoCustoEan" placeholder="0.00" class="form-control"></div>
+                            <div class="form-group"><label style="font-weight:600; color:var(--verde-escuro);">Preço Kero (Kz)</label><input type="number" step="0.01" id="addPrecoKeroEan" placeholder="0.00" class="form-control"></div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label style="font-weight:600; color:var(--verde-escuro);">Stock por Loja (separado por vírgula, 14 lojas)</label>
+                                <input type="text" id="addStockEan" placeholder="Ex: 10,20,15,..." class="form-control">
+                                <span style="font-size: 12px; color: #555;">Ordem: Talatona, Kilamba, Morro Bento, Nova Vida, Lubango, Huambo, Lobito, Benguela, Viana, Saurimo, Gika, Mártires, Combatentes, Cacuaco</span>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label style="font-weight:600; color:var(--verde-escuro);">Preços Concorrentes (Angomart, Maxi, Shoprite) separados por vírgula</label>
+                                <input type="text" id="addConcorrentesEan" placeholder="Ex: 600,620,650" class="form-control">
+                            </div>
+                            <button class="btn-add" id="btnAddProductEan" style="grid-column: 1 / -1; background: var(--verde-medio); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px;"><i class="fas fa-save"></i> Adicionar Produto</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2364,7 +2470,7 @@
     </div>
 
     <!-- ============================================================
-    MODAIS (mantidos do original, mas com todos os IDs necessários)
+    MODAIS (mantidos do original)
     ============================================================ -->
     <div class="modal" id="modalTipo">
         <div class="modal-content">
@@ -2798,9 +2904,10 @@
                 document.getElementById('systemTitle').textContent = 'Kero EAN SCAN';
                 document.getElementById('systemSubtitle').textContent = 'Leitura de Códigos de Barras';
                 document.getElementById('navMenu').style.display = 'none';
-                document.getElementById('currentUserName').textContent = usuarioAtual.nome;
-                document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
-                atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
+                document.getElementById('currentUserNameEan').textContent = usuarioAtual.nome;
+                document.getElementById('currentUserRoleEan').textContent = usuarioAtual.perfil;
+                atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatarEan');
+                eanApp.inicializar();
             }
         }
 
@@ -3597,11 +3704,13 @@
             localStorage.setItem('darkMode', isDark);
             const textSpan = document.getElementById('darkModeText');
             if (textSpan) textSpan.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
+            const textSpanEan = document.getElementById('darkModeTextEan');
+            if (textSpanEan) textSpanEan.textContent = isDark ? 'Modo Claro' : 'Modo Escuro';
         }
 
         function carregarDarkMode() {
             const isDark = localStorage.getItem('darkMode') === 'true';
-            if (isDark) { document.body.classList.add('dark-mode'); const textSpan = document.getElementById('darkModeText'); if (textSpan) textSpan.textContent = 'Modo Claro'; }
+            if (isDark) { document.body.classList.add('dark-mode'); const textSpan = document.getElementById('darkModeText'); if (textSpan) textSpan.textContent = 'Modo Claro'; const textSpanEan = document.getElementById('darkModeTextEan'); if (textSpanEan) textSpanEan.textContent = 'Modo Claro'; }
         }
 
         function carregarDashboardTempos() {
@@ -5717,6 +5826,558 @@
                     renderizarRequisicoes();
                 },
                 renderizarAprovacoes
+            };
+        })();
+
+        // ============================================================
+        // MÓDULO EAN SCAN - eanApp
+        // ============================================================
+        const eanApp = (function() {
+            const LOJAS_KERO = [
+                "Kero Loja Talatona", "Kero Loja Kilamba", "Kero Loja Morro Bento",
+                "Kero Loja Nova Vida", "Kero Loja Lubango", "Kero Loja Huambo",
+                "Kero Loja Lobito", "Kero Loja Benguela", "Kero Loja Viana",
+                "Kero Loja Saurimo", "Kero Loja Gika", "Kero Loja Mártires",
+                "Kero Loja Combatentes", "Kero Loja Cacuaco"
+            ];
+            const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
+
+            let produtos = [];
+            let produtoAtual = null;
+            let historicoPesquisas = [];
+            let editandoPrecos = false;
+
+            function atualizarBadgeTotal() {
+                const badge = document.getElementById('totalProdutosBadge');
+                if (badge) badge.textContent = `${produtos.length} produtos`;
+            }
+
+            function renderizarHistorico() {
+                const area = document.getElementById('historyAreaEan');
+                const container = document.getElementById('historyButtonsEan');
+                if (!area || !container) return;
+                container.innerHTML = '';
+                if (historicoPesquisas.length === 0) { area.style.display = 'none'; return; }
+                area.style.display = 'flex';
+                historicoPesquisas.forEach(ean => {
+                    const prod = produtos.find(p => p.ean === ean);
+                    const label = prod ? `${prod.nome} (${ean})` : ean;
+                    const btn = document.createElement('button');
+                    btn.className = 'history-btn';
+                    btn.textContent = label;
+                    btn.addEventListener('click', () => {
+                        document.getElementById('eanInput').value = ean;
+                        buscarProduto(ean);
+                    });
+                    container.appendChild(btn);
+                });
+            }
+
+            function renderizarProduto(prod) {
+                if (!prod) {
+                    document.getElementById('resultContainerEan').style.display = 'none';
+                    document.getElementById('emptyStateEan').style.display = 'block';
+                    produtoAtual = null;
+                    document.getElementById('btnGuardarConcorrentesEan').disabled = true;
+                    document.getElementById('allProductsEan').style.display = 'none';
+                    return;
+                }
+                produtoAtual = prod;
+                document.getElementById('emptyStateEan').style.display = 'none';
+                document.getElementById('resultContainerEan').style.display = 'block';
+                document.getElementById('btnGuardarConcorrentesEan').disabled = false;
+                document.getElementById('allProductsEan').style.display = 'none';
+
+                document.getElementById('prodNomeEan').textContent = prod.nome;
+                document.getElementById('prodEanEan').textContent = `EAN: ${prod.ean}`;
+                atualizarPrecos(prod);
+                renderizarStock(prod);
+                renderizarConcorrentes(prod);
+
+                sessionStorage.setItem('ean_ultimo_produto', prod.ean);
+                document.getElementById('lastSearchInfo').textContent = `Última pesquisa: ${prod.nome} (${prod.ean})`;
+            }
+
+            function atualizarPrecos(prod) {
+                const precoKero = prod.preco_kero || 0;
+                const precoCusto = prod.preco_custo || 0;
+                const margem = precoKero - precoCusto;
+                const percentMargem = precoCusto > 0 ? (margem / precoCusto) * 100 : 0;
+
+                document.getElementById('prodPrecoKeroDisplayEan').textContent = precoKero.toFixed(2) + ' Kz';
+                document.getElementById('prodPrecoCustoDisplayEan').textContent = precoCusto.toFixed(2) + ' Kz';
+                document.getElementById('prodPrecoKeroInputEan').value = precoKero.toFixed(2);
+                document.getElementById('prodPrecoCustoInputEan').value = precoCusto.toFixed(2);
+
+                const margemEl = document.getElementById('prodMargemEan');
+                margemEl.textContent = margem.toFixed(2) + ' Kz';
+                margemEl.className = 'value margem' + (margem < 0 ? ' negativa' : '');
+                const percEl = document.getElementById('prodPercentMargemEan');
+                percEl.textContent = percentMargem.toFixed(1) + ' %';
+                percEl.className = 'value margem' + (percentMargem < 0 ? ' negativa' : '');
+            }
+
+            function renderizarStock(prod) {
+                const head = document.getElementById('stockHeadEan');
+                const body = document.getElementById('stockBodyEan');
+                if (!head || !body) return;
+                let theadHtml = '<tr><th>Loja</th>';
+                LOJAS_KERO.forEach(loja => { theadHtml += `<th>${loja.replace('Kero ', '')}</th>`; });
+                theadHtml += '<th style="background:#1b5e20;">Total</th></tr>';
+                head.innerHTML = theadHtml;
+
+                let totalGeral = 0;
+                let rowHtml = '<tr><td><strong>Quantidade</strong></td>';
+                LOJAS_KERO.forEach(loja => {
+                    const qtd = prod.stock[loja] || 0;
+                    totalGeral += qtd;
+                    rowHtml += `<td>${qtd}</td>`;
+                });
+                rowHtml += `<td style="font-weight:700;background:var(--verde-suave);">${totalGeral}</td></tr>`;
+                body.innerHTML = rowHtml;
+            }
+
+            function renderizarConcorrentes(prod) {
+                const grid = document.getElementById('concorrentesGridEan');
+                if (!grid) return;
+                let html = '';
+                CONCORRENTES.forEach(nome => {
+                    const valor = prod.concorrentes[nome] || 0;
+                    html += `<div class="concorrente-item"><span class="label">${nome}</span>
+                        <input type="number" step="0.01" class="concorrente-input" data-concorrente="${nome}" value="${valor}" placeholder="0.00" style="padding:8px 12px; border:2px solid var(--verde-borda); border-radius:8px; width:100%; margin-top:4px;"></div>`;
+                });
+                grid.innerHTML = html;
+            }
+
+            function renderizarTodosProdutos() {
+                const container = document.getElementById('productGridEan');
+                if (!container) return;
+                container.innerHTML = '';
+                produtos.forEach(prod => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `<div class="card-name">${prod.nome}</div><div class="card-ean">EAN: ${prod.ean}</div><div class="card-price">${prod.preco_kero.toFixed(2)} Kz</div>`;
+                    card.addEventListener('click', () => {
+                        renderizarProduto(prod);
+                        document.getElementById('eanInput').value = prod.ean;
+                        document.getElementById('allProductsEan').style.display = 'none';
+                    });
+                    container.appendChild(card);
+                });
+                document.getElementById('allProductsEan').style.display = 'block';
+            }
+
+            function atualizarSugestoes(termo) {
+                const box = document.getElementById('suggestionsBoxEan');
+                if (!box) return;
+                if (termo.length < 1) { box.classList.remove('active'); return; }
+                const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()) || p.ean.includes(termo));
+                if (filtrados.length === 0) { box.classList.remove('active'); return; }
+                box.innerHTML = '';
+                filtrados.slice(0, 8).forEach(p => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">${p.ean}</span>`;
+                    item.addEventListener('click', () => {
+                        renderizarProduto(p);
+                        document.getElementById('eanInput').value = p.ean;
+                        box.classList.remove('active');
+                        adicionarHistorico(p.ean);
+                    });
+                    box.appendChild(item);
+                });
+                box.classList.add('active');
+            }
+
+            function buscarProduto(termo) {
+                termo = termo.trim();
+                if (!termo) { mostrarNotificacao('Digite um nome ou EAN.', 'error'); return; }
+                let prod = produtos.find(p => p.ean === termo);
+                if (!prod) {
+                    const matches = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()));
+                    if (matches.length === 1) prod = matches[0];
+                    else if (matches.length > 1) {
+                        mostrarNotificacao(`Encontrados ${matches.length} produtos. Use as sugestões.`, 'info');
+                        atualizarSugestoes(termo);
+                        return;
+                    } else {
+                        mostrarNotificacao(`Nenhum produto encontrado para "${termo}".`, 'error');
+                        return;
+                    }
+                }
+                if (prod) {
+                    renderizarProduto(prod);
+                    document.getElementById('eanInput').value = prod.ean;
+                    adicionarHistorico(prod.ean);
+                }
+            }
+
+            function adicionarHistorico(ean) {
+                historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
+                historicoPesquisas.unshift(ean);
+                if (historicoPesquisas.length > 5) historicoPesquisas.pop();
+                renderizarHistorico();
+            }
+
+            function limparPesquisa() {
+                document.getElementById('eanInput').value = '';
+                document.getElementById('resultContainerEan').style.display = 'none';
+                document.getElementById('emptyStateEan').style.display = 'block';
+                document.getElementById('allProductsEan').style.display = 'none';
+                produtoAtual = null;
+                document.getElementById('btnGuardarConcorrentesEan').disabled = true;
+                document.getElementById('lastSearchInfo').textContent = '';
+                sessionStorage.removeItem('ean_ultimo_produto');
+                document.getElementById('prodPrecoKeroInputEan').style.display = 'none';
+                document.getElementById('prodPrecoCustoInputEan').style.display = 'none';
+                document.getElementById('prodPrecoKeroDisplayEan').style.display = 'block';
+                document.getElementById('prodPrecoCustoDisplayEan').style.display = 'block';
+                document.getElementById('btnEditarPrecosEan').style.display = 'inline-block';
+                document.getElementById('btnGuardarPrecosEan').style.display = 'none';
+                editandoPrecos = false;
+                document.getElementById('eanInput').focus();
+            }
+
+            function toggleEdicaoPrecos() {
+                if (!produtoAtual) return;
+                editandoPrecos = !editandoPrecos;
+                const displayKero = document.getElementById('prodPrecoKeroDisplayEan');
+                const inputKero = document.getElementById('prodPrecoKeroInputEan');
+                const displayCusto = document.getElementById('prodPrecoCustoDisplayEan');
+                const inputCusto = document.getElementById('prodPrecoCustoInputEan');
+                const btnEditar = document.getElementById('btnEditarPrecosEan');
+                const btnGuardar = document.getElementById('btnGuardarPrecosEan');
+
+                if (editandoPrecos) {
+                    displayKero.style.display = 'none'; inputKero.style.display = 'block';
+                    displayCusto.style.display = 'none'; inputCusto.style.display = 'block';
+                    btnEditar.textContent = 'Cancelar Edição';
+                    btnGuardar.style.display = 'inline-block';
+                } else {
+                    displayKero.style.display = 'block'; inputKero.style.display = 'none';
+                    displayCusto.style.display = 'block'; inputCusto.style.display = 'none';
+                    btnEditar.textContent = 'Editar Preços';
+                    btnGuardar.style.display = 'none';
+                    atualizarPrecos(produtoAtual);
+                }
+            }
+
+            async function guardarPrecosKero() {
+                if (!produtoAtual) return;
+                const inputKero = document.getElementById('prodPrecoKeroInputEan');
+                const inputCusto = document.getElementById('prodPrecoCustoInputEan');
+                const novoKero = parseFloat(inputKero.value);
+                const novoCusto = parseFloat(inputCusto.value);
+                if (isNaN(novoKero) || novoKero < 0 || isNaN(novoCusto) || novoCusto < 0) {
+                    mostrarNotificacao('Valores inválidos. Use números positivos.', 'error');
+                    return;
+                }
+                produtoAtual.preco_kero = novoKero;
+                produtoAtual.preco_custo = novoCusto;
+                const ok = await salvarProdutoNoSharePoint(produtoAtual);
+                if (ok) { mostrarNotificacao('✅ Preços Kero atualizados!', 'success'); }
+                else { mostrarNotificacao('⚠️ Erro ao guardar no SharePoint. Dados locais atualizados.', 'warning'); }
+                atualizarPrecos(produtoAtual);
+                toggleEdicaoPrecos();
+                const idx = produtos.findIndex(p => p.ean === produtoAtual.ean);
+                if (idx >= 0) produtos[idx] = produtoAtual;
+            }
+
+            async function guardarPrecosConcorrentes() {
+                if (!produtoAtual) { mostrarNotificacao('Nenhum produto selecionado.', 'error'); return; }
+                const inputs = document.querySelectorAll('#concorrentesGridEan .concorrente-input');
+                let valido = true;
+                inputs.forEach(input => {
+                    const concorrente = input.dataset.concorrente;
+                    const valor = parseFloat(input.value);
+                    if (isNaN(valor) || valor < 0) {
+                        mostrarNotificacao(`Valor inválido para ${concorrente}. Use número positivo.`, 'error');
+                        valido = false;
+                        return;
+                    }
+                    produtoAtual.concorrentes[concorrente] = valor;
+                });
+                if (!valido) return;
+                const ok = await salvarProdutoNoSharePoint(produtoAtual);
+                if (ok) { mostrarNotificacao('✅ Preços da concorrência guardados!', 'success'); }
+                else { mostrarNotificacao('⚠️ Erro ao guardar no SharePoint. Dados locais atualizados.', 'warning'); }
+                const idx = produtos.findIndex(p => p.ean === produtoAtual.ean);
+                if (idx >= 0) produtos[idx] = produtoAtual;
+            }
+
+            function processarImagem(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    decodificarImagem(imageData);
+                };
+                reader.readAsDataURL(file);
+                document.getElementById('fileInputEan').value = '';
+            }
+
+            function decodificarImagem(imageData, tentativas = 0) {
+                if (tentativas === 0) mostrarNotificacao('A ler código da imagem...', 'info');
+                const config = {
+                    src: imageData,
+                    numOfWorkers: 4,
+                    inputStream: { size: 800, singleChannel: true },
+                    decoder: { readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"], multiple: false, tryHarder: true },
+                    locate: true,
+                    patchSize: "large"
+                };
+                if (typeof Quagga === 'undefined') {
+                    mostrarNotificacao('Leitor não disponível. Carregue a biblioteca Quagga.', 'error');
+                    return;
+                }
+                Quagga.decodeSingle(config, function(result) {
+                    if (result && result.codeResult) {
+                        const code = result.codeResult.code.replace(/\s/g, '');
+                        mostrarNotificacao('Código lido da imagem: ' + code, 'success');
+                        document.getElementById('eanInput').value = code;
+                        buscarProduto(code);
+                        return;
+                    }
+                    if (tentativas < 4) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            canvas.width = img.height;
+                            canvas.height = img.width;
+                            ctx.translate(canvas.width/2, canvas.height/2);
+                            ctx.rotate(Math.PI/2);
+                            ctx.drawImage(img, -img.width/2, -img.height/2);
+                            const novaImagem = canvas.toDataURL('image/png');
+                            decodificarImagem(novaImagem, tentativas + 1);
+                        };
+                        img.onerror = function() { mostrarNotificacao('Erro ao processar imagem.', 'error'); };
+                        img.src = imageData;
+                    } else {
+                        mostrarNotificacao('Não foi possível ler o código na imagem.', 'error');
+                    }
+                });
+            }
+
+            async function salvarProdutoNoSharePoint(prod) {
+                try {
+                    const token = await getSharePointToken();
+                    const siteId = await getSiteId();
+                    const fields = {
+                        "Title": prod.nome,
+                        "EAN": prod.ean,
+                        "PrecoCusto": prod.preco_custo,
+                        "PrecoKero": prod.preco_kero,
+                        "Stock": JSON.stringify(prod.stock),
+                        "Concorrentes": JSON.stringify(prod.concorrentes),
+                        "CriadoPor": usuarioAtual.nome,
+                        "CriadoPorEmail": usuarioAtual.email,
+                        "DataCriacao": new Date().toISOString()
+                    };
+                    const filterUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/ProdutosEAN/items?expand=fields&$filter=fields/EAN eq '${prod.ean}'`;
+                    const check = await fetch(filterUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (check.ok) {
+                        const data = await check.json();
+                        if (data.value && data.value.length > 0) {
+                            const existing = data.value[0];
+                            const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/ProdutosEAN/items/${existing.id}/fields`;
+                            const resp = await fetch(updateUrl, {
+                                method: 'PATCH',
+                                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                                body: JSON.stringify(fields)
+                            });
+                            if (resp.ok) { prod.id = existing.id; return true; }
+                        }
+                    }
+                    const createUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/ProdutosEAN/items`;
+                    const resp = await fetch(createUrl, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fields })
+                    });
+                    if (resp.ok) { const newItem = await resp.json(); prod.id = newItem.id; return true; }
+                    return false;
+                } catch (e) {
+                    console.error('Erro ao salvar produto EAN:', e);
+                    return false;
+                }
+            }
+
+            async function carregarProdutosDoSharePoint() {
+                try {
+                    const token = await getSharePointToken();
+                    const siteId = await getSiteId();
+                    const listUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/ProdutosEAN/items?expand=fields&$top=500`;
+                    const response = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.value && data.value.length > 0) {
+                            produtos = data.value.map(item => {
+                                const f = item.fields;
+                                let stock = {}, concorrentes = {};
+                                try { stock = JSON.parse(f.Stock || '{}'); } catch(e) {}
+                                try { concorrentes = JSON.parse(f.Concorrentes || '{}'); } catch(e) {}
+                                return {
+                                    id: item.id,
+                                    ean: f.EAN || f.Title || '',
+                                    nome: f.Title || f.Nome || '',
+                                    preco_custo: f.PrecoCusto || 0,
+                                    preco_kero: f.PrecoKero || 0,
+                                    stock: stock,
+                                    concorrentes: concorrentes,
+                                    dataCriacao: f.DataCriacao || new Date().toISOString(),
+                                    criadoPor: f.CriadoPor || '',
+                                    criadoPorEmail: f.CriadoPorEmail || ''
+                                };
+                            });
+                            produtos = produtos.map(p => {
+                                LOJAS_KERO.forEach(loja => { if (!(loja in p.stock)) p.stock[loja] = 0; });
+                                CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
+                                return p;
+                            });
+                            atualizarBadgeTotal();
+                            renderizarHistorico();
+                            return true;
+                        }
+                    }
+                    return false;
+                } catch (e) {
+                    console.error('Erro ao carregar produtos EAN:', e);
+                    return false;
+                }
+            }
+
+            async function adicionarProduto() {
+                const nome = document.getElementById('addNomeEan').value.trim();
+                const ean = document.getElementById('addEanEan').value.trim();
+                const precoCusto = parseFloat(document.getElementById('addPrecoCustoEan').value);
+                const precoKero = parseFloat(document.getElementById('addPrecoKeroEan').value);
+                const stockStr = document.getElementById('addStockEan').value.trim();
+                const concStr = document.getElementById('addConcorrentesEan').value.trim();
+
+                if (!nome || !ean) { mostrarNotificacao('Nome e EAN são obrigatórios.', 'error'); return; }
+                if (!/^\d{8,13}$/.test(ean)) { mostrarNotificacao('EAN inválido. Deve ter 8 a 13 dígitos.', 'error'); return; }
+                if (isNaN(precoCusto) || precoCusto < 0 || isNaN(precoKero) || precoKero < 0) {
+                    mostrarNotificacao('Preços devem ser números positivos.', 'error');
+                    return;
+                }
+                if (produtos.find(p => p.ean === ean)) {
+                    mostrarNotificacao('Já existe um produto com este EAN.', 'error');
+                    return;
+                }
+
+                const stockArray = stockStr ? stockStr.split(',').map(s => parseFloat(s.trim())) : [];
+                const stock = {};
+                LOJAS_KERO.forEach((loja, index) => {
+                    stock[loja] = (stockArray[index] && !isNaN(stockArray[index])) ? stockArray[index] : 0;
+                });
+
+                const concArray = concStr ? concStr.split(',').map(s => parseFloat(s.trim())) : [];
+                const concorrentes = {};
+                CONCORRENTES.forEach((nomeConc, index) => {
+                    concorrentes[nomeConc] = (concArray[index] && !isNaN(concArray[index])) ? concArray[index] : 0;
+                });
+
+                const novoProduto = {
+                    ean: ean,
+                    nome: nome,
+                    preco_custo: precoCusto,
+                    preco_kero: precoKero,
+                    stock: stock,
+                    concorrentes: concorrentes,
+                    criadoPor: usuarioAtual.nome,
+                    criadoPorEmail: usuarioAtual.email,
+                    dataCriacao: new Date().toISOString()
+                };
+
+                const ok = await salvarProdutoNoSharePoint(novoProduto);
+                if (ok) {
+                    produtos.push(novoProduto);
+                    mostrarNotificacao(`✅ Produto "${nome}" adicionado!`, 'success');
+                } else {
+                    produtos.push(novoProduto);
+                    mostrarNotificacao(`⚠️ Produto adicionado localmente (erro SharePoint).`, 'warning');
+                }
+                document.getElementById('addNomeEan').value = '';
+                document.getElementById('addEanEan').value = '';
+                document.getElementById('addPrecoCustoEan').value = '';
+                document.getElementById('addPrecoKeroEan').value = '';
+                document.getElementById('addStockEan').value = '';
+                document.getElementById('addConcorrentesEan').value = '';
+                atualizarBadgeTotal();
+                renderizarHistorico();
+            }
+
+            async function inicializar() {
+                document.getElementById('currentUserNameEan').textContent = usuarioAtual.nome;
+                document.getElementById('currentUserRoleEan').textContent = usuarioAtual.perfil;
+                atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatarEan');
+
+                await carregarProdutosDoSharePoint();
+
+                document.getElementById('btnBuscarEan').addEventListener('click', () => {
+                    buscarProduto(document.getElementById('eanInput').value);
+                });
+                document.getElementById('eanInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        buscarProduto(document.getElementById('eanInput').value);
+                    }
+                });
+                document.getElementById('btnLimparEan').addEventListener('click', limparPesquisa);
+                document.getElementById('btnListarTodosEan').addEventListener('click', renderizarTodosProdutos);
+                document.getElementById('btnEditarPrecosEan').addEventListener('click', toggleEdicaoPrecos);
+                document.getElementById('btnGuardarPrecosEan').addEventListener('click', guardarPrecosKero);
+                document.getElementById('btnGuardarConcorrentesEan').addEventListener('click', guardarPrecosConcorrentes);
+                document.getElementById('btnAddProductEan').addEventListener('click', adicionarProduto);
+
+                document.getElementById('btnUploadImageEan').addEventListener('click', () => {
+                    document.getElementById('fileInputEan').click();
+                });
+                document.getElementById('fileInputEan').addEventListener('change', function(e) {
+                    if (this.files.length > 0) {
+                        processarImagem(this.files[0]);
+                    }
+                    this.value = '';
+                });
+
+                document.getElementById('eanInput').addEventListener('input', (e) => {
+                    const val = e.target.value.trim();
+                    if (val.length >= 2) {
+                        atualizarSugestoes(val);
+                    } else {
+                        document.getElementById('suggestionsBoxEan').classList.remove('active');
+                    }
+                });
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.search-area')) {
+                        document.getElementById('suggestionsBoxEan').classList.remove('active');
+                    }
+                });
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const eanParam = urlParams.get('ean');
+                if (eanParam) {
+                    document.getElementById('eanInput').value = eanParam;
+                    buscarProduto(eanParam);
+                }
+
+                if (produtos.length === 0) {
+                    document.getElementById('emptyStateEan').style.display = 'block';
+                } else {
+                    if (!produtoAtual) {
+                        document.getElementById('emptyStateEan').style.display = 'block';
+                    }
+                }
+            }
+
+            return {
+                inicializar,
+                buscarProduto,
+                renderizarProduto,
+                adicionarProduto,
+                limparPesquisa,
+                processarImagem
             };
         })();
 
