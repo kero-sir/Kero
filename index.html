@@ -12,9 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.2/dist/quagga.min.js"></script>
     <style>
-        /* ============================================================
-           ESTILOS COMPLETOS - KERO SIR (incluindo EAN)
-           ============================================================ */
+        /* ===== ESTILOS COMPLETOS ===== */
         * {
             margin: 0;
             padding: 0;
@@ -3396,6 +3394,12 @@
         .btn-upload:hover {
             background: #6a1b9a;
         }
+        .btn-import {
+            background: #217346;
+        }
+        .btn-import:hover {
+            background: #1e6a3b;
+        }
         .btn-editar-precos {
             background: #2E7D32;
             margin-top: 5px;
@@ -4673,7 +4677,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO EAN SCAN (COMPLETO - integrado com SharePoint)
+            MÓDULO EAN SCAN (COMPLETO - com importação restrita e sincronização SharePoint)
             ============================================================ -->
             <div id="eanSection" style="display: none;">
                 <div class="container-ean">
@@ -4696,6 +4700,8 @@
                         <button class="btn-ean btn-camera" id="btnCamera"><i class="fas fa-camera"></i> Ler Código</button>
                         <button class="btn-ean btn-upload" id="btnUploadImage"><i class="fas fa-image"></i> Carregar Imagem</button>
                         <input type="file" id="fileInput" accept="image/*" style="display:none;">
+                        <button class="btn-ean btn-import" id="btnImportExcel"><i class="fas fa-file-excel"></i> Importar Excel</button>
+                        <input type="file" id="fileInputExcel" accept=".xlsx,.xls" style="display:none;">
                         <div class="suggestions-box" id="suggestionsBox"></div>
                     </section>
 
@@ -5055,14 +5061,17 @@
             'aleixo.francisco@accordgrouplda.com': 'Confirmante',
             'luzia.cauica@accordgrouplda.com': 'Recrutador',
             'norma.melo@accordgrouplda.com': 'Recrutador',
-            'erikson.silva@accordgrouplda.com': 'Administrador' // Adicionado Erikson como Administrador
+            'erikson.silva@accordgrouplda.com': 'Administrador' // Erikson como Administrador
         };
 
-        const PERFIS_AVALIACAO = ['Administrador', 'RH', 'Director Geral'];
         // Emails com acesso total na mobilidade
         const EMAILS_ACESSO_TOTAL_MOB = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com',
             'paulo.silva@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'
         ];
+
+        // Emails com permissão para importar EAN
+        const EMAILS_IMPORTACAO_EAN = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
+
         const BLOCKED_EMAILS = ['paulo.silva@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'dircg@accordgrouplda.com'];
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador'];
         const PERFIS_QUE_APROVAM = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
@@ -5086,7 +5095,8 @@
             listaAvaliacoes: "avaliacoes",
             listaManutencoes: "manutencoes",
             listaMobilidade: "MobilidadePromocoes",
-            listaProdutosEAN: "ProdutosEAN"
+            listaProdutosEAN: "ProdutosEAN",
+            listaColaboradores: "Colaboradores" // Lista para buscar colaboradores na avaliação
         };
 
         let msalInstance = null,
@@ -6812,15 +6822,46 @@
         // MÓDULO AVALIAÇÃO (COMPLETO)
         // ============================================================
         const avaliacaoApp = (function() {
-            const mockColaboradores = {
-                "10": { "nome": "ALBERTO TANGU SIMAO", "direcao": "Lubango", "departamento": "Departamento PF",
-                    "funcao": "Gerente de Departamento", "dataAdmissao": "2010-12-01" },
-                "101": { "nome": "ANA AUGUSTO PASCOAL MONTEIRO", "direcao": "Kilamba", "departamento": "Gastronomia",
-                    "funcao": "Operador de Loja", "dataAdmissao": "2012-06-04" }
-            };
             let colaboradorSelecionado = null,
                 avaliacaoData = null,
                 avaliacoesSalvas = [];
+
+            // Função para buscar colaborador no SharePoint
+            async function buscarColaboradorNoSharePoint(id) {
+                try {
+                    const token = await getSharePointToken();
+                    const siteId = await getSiteId();
+                    const listUrl =
+                        `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaColaboradores}/items?expand=fields&$filter=fields/ID eq '${id}'`;
+                    const response = await fetch(listUrl, {
+                        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.value && data.value.length > 0) {
+                            const f = data.value[0].fields;
+                            return {
+                                id: f.ID || id,
+                                nome: f.Nome || '',
+                                direcao: f.Direcao || '',
+                                departamento: f.Departamento || '',
+                                funcao: f.Funcao || '',
+                                admissao: f.DataAdmissao || ''
+                            };
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Erro ao buscar colaborador no SharePoint, usando mock:', error);
+                }
+                // Fallback mock
+                const mockColaboradores = {
+                    "10": { "nome": "ALBERTO TANGU SIMAO", "direcao": "Lubango", "departamento": "Departamento PF",
+                        "funcao": "Gerente de Departamento", "dataAdmissao": "2010-12-01" },
+                    "101": { "nome": "ANA AUGUSTO PASCOAL MONTEIRO", "direcao": "Kilamba",
+                        "departamento": "Gastronomia", "funcao": "Operador de Loja", "dataAdmissao": "2012-06-04" }
+                };
+                return mockColaboradores[id] || null;
+            }
 
             function mudarSubmenu(submenu) {
                 document.getElementById('avaliacaoSubmenuAvaliar').style.display = submenu === 'avaliar' ? 'block' :
@@ -6838,16 +6879,16 @@
                 if (submenu === 'relatorio') carregarRelatorioAvaliacoes();
             }
 
-            function buscarColaborador() {
+            async function buscarColaborador() {
                 const id = document.getElementById('pesquisaID').value,
                     msg = document.getElementById('msgPesquisa');
                 if (!id) { msg.textContent = '⚠️ Digite um ID';
                     msg.className = 'msg-pesquisa aviso'; return; }
-                const colaborador = mockColaboradores[id];
+                const colaborador = await buscarColaboradorNoSharePoint(id);
                 if (colaborador) {
                     colaboradorSelecionado = { id: parseInt(id), nome: colaborador.nome, direcao: colaborador
                             .direcao, departamento: colaborador.departamento, funcao: colaborador.funcao,
-                        admissao: colaborador.dataAdmissao };
+                        admissao: colaborador.admissao };
                     msg.textContent = `✅ Colaborador encontrado: ${colaborador.nome}`;
                     msg.className = 'msg-pesquisa sucesso';
                     document.getElementById('avaliacaoID').textContent = id;
@@ -6855,7 +6896,7 @@
                     document.getElementById('avaliacaoDirecao').textContent = colaborador.direcao;
                     document.getElementById('avaliacaoDepartamento').textContent = colaborador.departamento;
                     document.getElementById('avaliacaoFuncao').textContent = colaborador.funcao;
-                    document.getElementById('avaliacaoAdmissao').textContent = colaborador.dataAdmissao;
+                    document.getElementById('avaliacaoAdmissao').textContent = colaborador.admissao;
                     document.getElementById('feedbackNome').textContent = colaborador.nome;
                     document.getElementById('feedbackFuncao').textContent = colaborador.funcao;
                     document.getElementById('feedbackData').textContent = new Date().toLocaleDateString(
@@ -7425,7 +7466,7 @@
         })();
 
         // ============================================================
-        // MÓDULO MANUTENÇÃO (COMPLETO)
+        // MÓDULO MANUTENÇÃO (COMPLETO - mantido do original)
         // ============================================================
         const manutencaoApp = (function() {
             let reqs = [],
@@ -9327,33 +9368,187 @@
             ];
             const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
 
-            const PRODUTOS_MOCK = [
-                { ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14,
-                    fornecedor: "Arrozal SA", venda_media_mensal: 120, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 100); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {}) },
-                { ean: "5601234567891", nome: "Óleo Fula 1L", preco_custo: 720, preco_kero: 980, iva: 14,
-                    fornecedor: "Óleos do Norte", venda_media_mensal: 85, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 50); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 950 + Math.floor(Math.random() * 100); return acc; }, {}) },
-                { ean: "5601234567892", nome: "Farinha Trigo 1kg", preco_custo: 220, preco_kero: 340, iva: 14,
-                    fornecedor: "Moinhos Central", venda_media_mensal: 200, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 120); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 320 + Math.floor(Math.random() * 40); return acc; }, {}) },
-                { ean: "5601234567893", nome: "Açúcar Amarelo 1kg", preco_custo: 180, preco_kero: 290, iva: 14,
-                    fornecedor: "Açucareira Nacional", venda_media_mensal: 150, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 80); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 275 + Math.floor(Math.random() * 30); return acc; }, {}) },
-                { ean: "5601234567894", nome: "Leite Mimosa 1L", preco_custo: 310, preco_kero: 480, iva: 14,
-                    fornecedor: "Lacticínios Mimosa", venda_media_mensal: 95, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 60); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 460 + Math.floor(Math.random() * 40); return acc; }, {}) },
-                { ean: "5060678294427", nome: "Água Classic 1,6L", preco_custo: 100, preco_kero: 120, iva: 14,
-                    fornecedor: "Águas do Kero", venda_media_mensal: 300, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 150); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 115 + Math.floor(Math.random() * 15); return acc; }, {}) }
-            ];
+            // Função importarExcel com verificação de permissão
+            async function importarExcel(file) {
+                // Verificar permissão
+                const email = usuarioAtual?.email;
+                if (!EMAILS_IMPORTACAO_EAN.includes(email)) {
+                    notificar('❌ Apenas o Administrador e o Erikson podem importar dados EAN.', 'error');
+                    return;
+                }
 
+                if (!confirm(`Importar dados do ficheiro "${file.name}"?`)) return;
+
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const rows = XLSX.utils.sheet_to_json(sheet, { header: 0, defval: '' });
+
+                        if (rows.length === 0) {
+                            notificar('Ficheiro vazio ou sem dados.', 'error');
+                            return;
+                        }
+
+                        // --- Processamento do Excel (extração de cabeçalho, stock, etc.) ---
+                        let headerRowIndex = 0;
+                        let found = false;
+                        for (let i = 0; i < Math.min(5, rows.length); i++) {
+                            const row = rows[i];
+                            if (row && typeof row === 'object') {
+                                const keys = Object.keys(row);
+                                if (keys.some(k => k.trim().toUpperCase() === 'EAN') &&
+                                    keys.some(k => k.trim().toUpperCase() === 'DESCRIÇÃO' || k.trim().toUpperCase() === 'DESCRICAO')) {
+                                    headerRowIndex = i;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!found) {
+                            notificar('Não foi possível encontrar a linha de cabeçalho (EAN e Descrição).', 'error');
+                            return;
+                        }
+
+                        const headers = Object.keys(rows[headerRowIndex]);
+                        console.log('🔍 Cabeçalho detectado:', headers);
+
+                        let stockStartIdx = -1;
+                        for (let i = 0; i < headers.length; i++) {
+                            if (headers[i].trim().toUpperCase() === 'STOCK QTD. TTL') {
+                                stockStartIdx = i + 1;
+                                break;
+                            }
+                        }
+                        if (stockStartIdx === -1) {
+                            for (let i = 0; i < headers.length; i++) {
+                                const header = headers[i].trim().toUpperCase();
+                                if (LOJAS_KERO.some(nome => header.includes(nome.replace('Kero Loja ', '')) || nome.replace('Kero Loja ', '').includes(header))) {
+                                    stockStartIdx = i;
+                                    break;
+                                }
+                            }
+                        }
+                        if (stockStartIdx === -1) {
+                            stockStartIdx = Math.max(0, headers.length - 15);
+                            console.warn('⚠️ Usando as últimas 15 colunas como stock.');
+                        }
+
+                        const colunasStock = [];
+                        for (let i = stockStartIdx; i < Math.min(stockStartIdx + 15, headers.length); i++) {
+                            colunasStock.push(headers[i]);
+                        }
+                        console.log('🔍 Colunas de stock identificadas:', colunasStock);
+
+                        const stockMapping = {};
+                        for (const col of colunasStock) {
+                            const colUpper = col.trim().toUpperCase();
+                            let matched = false;
+                            for (const nome of LOJAS_KERO) {
+                                const nomeCurto = nome.replace('Kero Loja ', '');
+                                if (colUpper.includes(nomeCurto) || nomeCurto.includes(colUpper)) {
+                                    stockMapping[col] = nome;
+                                    matched = true;
+                                    break;
+                                }
+                            }
+                            if (!matched) {
+                                stockMapping[col] = `Kero Loja ${col.trim()}`;
+                            }
+                        }
+                        console.log('📦 Mapeamento stock:', stockMapping);
+
+                        function extrairNumero(valor) {
+                            if (valor === undefined || valor === null || valor === '') return 0;
+                            if (typeof valor === 'number') return valor;
+                            const str = String(valor).replace(/[^0-9,.]/g, '');
+                            const numStr = str.replace(',', '.');
+                            const num = parseFloat(numStr);
+                            return isNaN(num) ? 0 : num;
+                        }
+
+                        const dados = rows.slice(headerRowIndex + 1);
+                        let processados = 0,
+                            erros = 0;
+
+                        for (let i = 0; i < dados.length; i++) {
+                            const row = dados[i];
+                            try {
+                                const ean = String(row['EAN'] || '').trim();
+                                if (!ean) { erros++; continue; }
+
+                                const stock = {};
+                                for (const [colNome, spNome] of Object.entries(stockMapping)) {
+                                    const valor = row[colNome];
+                                    stock[spNome] = extrairNumero(valor);
+                                }
+
+                                const concorrentes = {
+                                    'Angomart': extrairNumero(row['Angomart']),
+                                    'Maxi': extrairNumero(row['Maxi']),
+                                    'Shoprite': extrairNumero(row['Shoprite'])
+                                };
+
+                                const produto = {
+                                    ean: ean,
+                                    nome: String(row['Descrição'] || row['DESCRIÇÃO'] || '').trim(),
+                                    preco_custo: extrairNumero(row['PMM'] || row['PrecoCusto']),
+                                    preco_kero: extrairNumero(row['PVP'] || row['PrecoKero']),
+                                    iva: extrairNumero(row['IVA %'] || row['IYA %'] || row['IVA']),
+                                    fornecedor: String(row['Nome Fornecedor'] || '').trim(),
+                                    venda_media_mensal: extrairNumero(row['VENDA Media Mensal'] || row['VEN'] || row['VendaMedia']),
+                                    stock: stock,
+                                    concorrentes: concorrentes
+                                };
+
+                                const existente = produtos.find(p => p.ean === ean);
+                                if (existente) {
+                                    Object.assign(existente, produto);
+                                } else {
+                                    produtos.push(produto);
+                                }
+                                processados++;
+                            } catch (err) {
+                                erros++;
+                                console.error('Erro na linha', i, row, err);
+                            }
+
+                            if (i % 50 === 0) {
+                                const pct = Math.round((i / dados.length) * 100);
+                                notificar(`Importando... ${pct}% (${processados} ok, ${erros} erros)`, 'info');
+                                await new Promise(r => setTimeout(r, 50));
+                            }
+                        }
+
+                        // Guardar no SharePoint
+                        let salvos = 0,
+                            falhas = 0;
+                        for (const produto of produtos) {
+                            const sucesso = await salvarProdutoNoSharePoint(produto);
+                            if (sucesso) salvos++;
+                            else falhas++;
+                        }
+
+                        // Recarregar do SharePoint para sincronizar
+                        await carregarProdutosDoSharePoint();
+
+                        guardarLocal();
+                        renderizarTodosProdutos();
+                        renderizarHistorico();
+                        atualizarBadgeTotal();
+                        notificar(`✅ Importação concluída! ${processados} produtos processados, ${salvos} salvos no SharePoint, ${falhas} falhas.`,
+                            'success');
+                    } catch (error) {
+                        console.error('Erro:', error);
+                        notificar('Erro ao processar o Excel: ' + error.message, 'error');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            // --- Funções existentes (carregarLocal, guardarLocal, etc.) ---
             function carregarLocal() {
                 const saved = localStorage.getItem('ean_produtos');
                 if (saved) {
@@ -9361,8 +9556,7 @@
                         produtos = JSON.parse(saved);
                         produtos = produtos.map(p => {
                             LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; });
-                            CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[
-                                c] = 0; });
+                            CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
                             if (p.iva === undefined) p.iva = 0;
                             if (p.fornecedor === undefined) p.fornecedor = '';
                             if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0;
@@ -9505,6 +9699,7 @@
                 document.getElementById('totalProdutosBadge').textContent = `${produtos.length} produtos`;
             }
 
+            // --- Funções de UI (renderização, pesquisa, câmara, etc.) ---
             function adicionarHistorico(ean) {
                 historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
                 historicoPesquisas.unshift(ean);
@@ -10050,6 +10245,21 @@
 
             async function inicializar() {
                 if (!carregarLocal()) {
+                    // Inicializar com mock se não houver dados locais
+                    const PRODUTOS_MOCK = [
+                        { ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14,
+                            fornecedor: "Arrozal SA", venda_media_mensal: 120, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {}) },
+                        { ean: "5601234567891", nome: "Óleo Fula 1L", preco_custo: 720, preco_kero: 980, iva: 14,
+                            fornecedor: "Óleos do Norte", venda_media_mensal: 85, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 50); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 950 + Math.floor(Math.random() * 100); return acc; }, {}) },
+                        { ean: "5601234567892", nome: "Farinha Trigo 1kg", preco_custo: 220, preco_kero: 340, iva: 14,
+                            fornecedor: "Moinhos Central", venda_media_mensal: 200, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 120); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 320 + Math.floor(Math.random() * 40); return acc; }, {}) },
+                        { ean: "5601234567893", nome: "Açúcar Amarelo 1kg", preco_custo: 180, preco_kero: 290, iva: 14,
+                            fornecedor: "Açucareira Nacional", venda_media_mensal: 150, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 80); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 275 + Math.floor(Math.random() * 30); return acc; }, {}) },
+                        { ean: "5601234567894", nome: "Leite Mimosa 1L", preco_custo: 310, preco_kero: 480, iva: 14,
+                            fornecedor: "Lacticínios Mimosa", venda_media_mensal: 95, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 60); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 460 + Math.floor(Math.random() * 40); return acc; }, {}) },
+                        { ean: "5060678294427", nome: "Água Classic 1,6L", preco_custo: 100, preco_kero: 120, iva: 14,
+                            fornecedor: "Águas do Kero", venda_media_mensal: 300, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 150); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 115 + Math.floor(Math.random() * 15); return acc; }, {}) }
+                    ];
                     produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
                     guardarLocal();
                 }
@@ -10070,6 +10280,16 @@
                 document.getElementById('btnEditarPrecos').addEventListener('click', toggleEdicaoPrecos);
                 document.getElementById('btnGuardarPrecos').addEventListener('click', guardarPrecosKero);
                 document.getElementById('btnAddProduct').addEventListener('click', adicionarProduto);
+
+                // Importar Excel
+                document.getElementById('btnImportExcel').addEventListener('click', () => document.getElementById(
+                    'fileInputExcel').click());
+                document.getElementById('fileInputExcel').addEventListener('change', function(e) {
+                    if (this.files.length > 0) {
+                        importarExcel(this.files[0]);
+                    }
+                    this.value = '';
+                });
 
                 document.getElementById('btnCamera').addEventListener('click', abrirCamera);
                 document.getElementById('btnCloseCamera').addEventListener('click', fecharCamera);
@@ -10110,13 +10330,6 @@
 
                 document.getElementById('eanInput').focus();
 
-                const urlParams = new URLSearchParams(window.location.search);
-                const eanParam = urlParams.get('ean');
-                if (eanParam) {
-                    document.getElementById('eanInput').value = eanParam;
-                    buscarProduto(eanParam);
-                }
-
                 if (produtos.length === 0) {
                     document.getElementById('emptyStateEAN').style.display = 'block';
                 } else {
@@ -10133,7 +10346,8 @@
                 buscarProduto,
                 limparPesquisa,
                 renderizarTodosProdutos,
-                adicionarProduto
+                adicionarProduto,
+                importarExcel // exposto para o evento
             };
         })();
 
@@ -10191,8 +10405,7 @@
             setInterval(() => { localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes)); }, 5000);
         });
 
-        console.log('✅ Kero SIR - Sistema Integrado de Requisições carregado!');
-        console.log('📋 Módulos disponíveis: Recrutamento, Avaliação, Manutenção, Mobilidade, Ticket IT, Ocorrência, EAN');
+        console.log('✅ Kero SIR - Sistema Integrado com EAN e importação restrita carregado!');
     </script>
 </body>
 </html>
