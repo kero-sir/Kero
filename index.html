@@ -4255,7 +4255,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO AVALIAÇÃO (COMPLETO - mantido do original)
+            MÓDULO AVALIAÇÃO (COMPLETO - com restrições de acesso)
             ============================================================ -->
             <div id="avaliacaoSection" style="display: none;">
                 <div class="container-avaliacao">
@@ -4263,7 +4263,7 @@
                         <div class="avaliacao-bloqueada">
                             <i class="fas fa-lock"></i>
                             <h2>⛔ Acesso Restrito</h2>
-                            <p>O módulo de Avaliação é restrito a <strong>Administradores, RH e Director Geral</strong>.</p>
+                            <p>O módulo de Avaliação é restrito a <strong>Administrador, Mário Arão e Director Geral</strong>.</p>
                             <p>Contacte o administrador para obter acesso.</p>
                             <button class="btn" onclick="voltarParaModulos()">Voltar aos Módulos</button>
                         </div>
@@ -4599,7 +4599,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO MOBILIDADE & PROMOÇÕES (COMPLETO - mantido do original)
+            MÓDULO MOBILIDADE & PROMOÇÕES (COMPLETO - com restrições de visualização)
             ============================================================ -->
             <div id="mobilidadeSection" style="display: none;">
                 <div class="nav-menu roxo-nav" id="navMobilidade">
@@ -4673,7 +4673,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO EAN SCAN (COMPLETO)
+            MÓDULO EAN SCAN (COMPLETO - integrado com SharePoint)
             ============================================================ -->
             <div id="eanSection" style="display: none;">
                 <div class="container-ean">
@@ -5053,12 +5053,16 @@
             'paulo.silva@accordgrouplda.com': 'Director Geral',
             'dircg@accordgrouplda.com': 'Controlo de Gestão',
             'aleixo.francisco@accordgrouplda.com': 'Confirmante',
-             'aleixo.francisco@accordgrouplda.com': 'Recrutador',
             'luzia.cauica@accordgrouplda.com': 'Recrutador',
-            'norma.melo@accordgrouplda.com': 'Recrutador'
+            'norma.melo@accordgrouplda.com': 'Recrutador',
+            'erikson.silva@accordgrouplda.com': 'Administrador' // Adicionado Erikson como Administrador
         };
 
         const PERFIS_AVALIACAO = ['Administrador', 'RH', 'Director Geral'];
+        // Emails com acesso total na mobilidade
+        const EMAILS_ACESSO_TOTAL_MOB = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com',
+            'paulo.silva@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'
+        ];
         const BLOCKED_EMAILS = ['paulo.silva@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'dircg@accordgrouplda.com'];
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador'];
         const PERFIS_QUE_APROVAM = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
@@ -5288,14 +5292,32 @@
                 inicializarBotoesPorPerfil();
                 carregarUtilizadores();
             } else if (mod === 'avaliacao') {
-                document.getElementById('avaliacaoSection').style.display = 'block';
-                document.getElementById('systemTitle').textContent = 'Kero Avaliação';
-                document.getElementById('systemSubtitle').textContent = 'Sistema de Avaliação de Desempenho';
-                document.getElementById('navMenu').style.display = 'none';
-                document.getElementById('currentUserName').textContent = usuarioAtual.nome;
-                document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
-                atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
-                avaliacaoApp.inicializar();
+                // Verificar permissão de acesso
+                const email = usuarioAtual.email;
+                const perfil = usuarioAtual.perfil;
+                const permitidos = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'paulo.silva@accordgrouplda.com'];
+                if (perfil === 'Administrador' || permitidos.includes(email)) {
+                    document.getElementById('avaliacaoAcessoNegado').style.display = 'none';
+                    document.getElementById('avaliacaoConteudo').style.display = 'block';
+                    document.getElementById('avaliacaoSection').style.display = 'block';
+                    document.getElementById('systemTitle').textContent = 'Kero Avaliação';
+                    document.getElementById('systemSubtitle').textContent = 'Sistema de Avaliação de Desempenho';
+                    document.getElementById('navMenu').style.display = 'none';
+                    document.getElementById('currentUserName').textContent = usuarioAtual.nome;
+                    document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
+                    atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
+                    avaliacaoApp.inicializar();
+                } else {
+                    document.getElementById('avaliacaoAcessoNegado').style.display = 'block';
+                    document.getElementById('avaliacaoConteudo').style.display = 'none';
+                    document.getElementById('avaliacaoSection').style.display = 'block';
+                    document.getElementById('systemTitle').textContent = 'Kero Avaliação';
+                    document.getElementById('systemSubtitle').textContent = 'Acesso Restrito';
+                    document.getElementById('navMenu').style.display = 'none';
+                    document.getElementById('currentUserName').textContent = usuarioAtual.nome;
+                    document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
+                    atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
+                }
             } else if (mod === 'manutencao') {
                 document.getElementById('manutencaoSection').style.display = 'block';
                 document.getElementById('systemTitle').textContent = 'Kero Manutenção';
@@ -5446,7 +5468,7 @@
             if (!cont) return;
             cont.innerHTML = todasDirecoes.map(d =>
                     `<div class="direcao-item"><div class="direcao-header"><span class="direcao-nome"><i class="fas fa-building"></i> ${d}</span></div><div class="direcao-categorias">${todasCategorias.map(c => `<span class="categoria-tag">${c}</span>`).join('')}</div></div>`
-                    )
+                )
                 .join('');
         }
 
@@ -5479,7 +5501,7 @@
                     utilizadoresUnicos.push(u); } }
             tbody.innerHTML = utilizadoresUnicos.map(u =>
                     `<tr><td>${u.nome || 'N/A'}</td><td>${u.email}</td><td><span class="status-badge" style="background:var(--primary);color:white;">${u.perfil}</span></td></tr>`
-                    )
+                )
                 .join('');
         }
 
@@ -5517,7 +5539,7 @@
             if (arquivosUpload.length === 0) { list.innerHTML = ''; return; }
             list.innerHTML = arquivosUpload.map((f, i) =>
                     `<div class="file-item"><div class="file-info"><i class="fas ${getIconePorTipo(f.type)}"></i><div><div>${f.name}</div><div class="file-size">${formatarTamanho(f.size)}</div></div></div><i class="fas fa-times file-remove" onclick="removerFicheiro(${i})"></i></div>`
-                    )
+                )
                 .join('');
         }
 
@@ -5958,7 +5980,7 @@
             const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
             if (!podeFinalizarRecrutamento(req)) { mostrarNotificacao('Apenas o Recrutador pode finalizar!',
-                'error'); return; }
+                    'error'); return; }
             showLoading();
             try {
                 req.status = 'aguardando_confirmacao_solicitante';
@@ -6380,7 +6402,7 @@
                 utilizadorJaAprovou(req)) return false; return false; }
 
         function podeDevolverRequisicao(req) { if (!usuarioAtual) return false; if (!isAprovador()) return false; if (
-                utilizadorJaAprovou(req)) return false; if (req.criadoPorEmail === usuarioAtual.email) return false; if (!
+                utilizadorJaAprovou(req)) return false; if (req.criadoPorEmail === usuarioAtual.email) return false; if (! 
                 podeAprovarStatus(req)) return false; return true; }
 
         function inicializarBotoesPorPerfil() {
@@ -6432,7 +6454,7 @@
                     '<div style="padding:20px;text-align:center;">Sem notificações</div>'; return; }
             list.innerHTML = notificacoes.slice(0, 20).map(n =>
                     `<div class="notification-item ${!n.lida ? 'unread' : ''}" onclick="marcarNotificacaoLida(${n.id})"><div class="notification-title">${n.titulo}</div><div class="notification-message" style="font-size:12px;color:#666;">${n.mensagem}</div><div class="notification-time">${formatarDataHora(n.data)}</div></div>`
-                    )
+                )
                 .join('');
         }
 
@@ -6929,11 +6951,11 @@
                 if (!colaboradorSelecionado) { mostrarNotificacao('Selecione um colaborador!', 'error'); return; }
                 let total = 0,
                     count = 0;
-                for (let i = 0; i < 5; i++) { const sel = document.getElementById(`avaliacao_compC_${i}`); if (sel &&
-                        sel.value) { total += parseInt(sel.value);
+                for (let i = 0; i < 5; i++) { const sel = document.getElementById(`avaliacao_compC_${i}`); if (sel && sel
+                        .value) { total += parseInt(sel.value);
                         count++; } }
-                for (let i = 0; i < 4; i++) { const sel = document.getElementById(`avaliacao_compT_${i}`); if (sel &&
-                        sel.value) { total += parseInt(sel.value);
+                for (let i = 0; i < 4; i++) { const sel = document.getElementById(`avaliacao_compT_${i}`); if (sel && sel
+                        .value) { total += parseInt(sel.value);
                         count++; } }
                 if (count === 0) { mostrarNotificacao('Selecione pelo menos uma competência!', 'warning'); return; }
                 const media = total / count;
@@ -6984,14 +7006,14 @@
                 };
                 let total = 0,
                     count = 0;
-                for (let i = 0; i < 5; i++) { const sel = document.getElementById(`avaliacao_compC_${i}`); if (sel &&
-                        sel.value) { const nome = document.querySelector(`#compC_${i} .nome`)?.textContent ||
+                for (let i = 0; i < 5; i++) { const sel = document.getElementById(`avaliacao_compC_${i}`); if (sel && sel
+                        .value) { const nome = document.querySelector(`#compC_${i} .nome`)?.textContent ||
                             `Competência ${i+1}`;
                         feedback.competencias.push({ nome: nome.trim(), nota: parseInt(sel.value) });
                         total += parseInt(sel.value);
                         count++; } }
-                for (let i = 0; i < 4; i++) { const sel = document.getElementById(`avaliacao_compT_${i}`); if (sel &&
-                        sel.value) { const nome = document.querySelector(`#compT_${i} .nome`)?.textContent ||
+                for (let i = 0; i < 4; i++) { const sel = document.getElementById(`avaliacao_compT_${i}`); if (sel && sel
+                        .value) { const nome = document.querySelector(`#compT_${i} .nome`)?.textContent ||
                             `Competência ${i+6}`;
                         feedback.competencias.push({ nome: nome.trim(), nota: parseInt(sel.value) });
                         total += parseInt(sel.value);
@@ -8377,7 +8399,7 @@
         })();
 
         // ============================================================
-        // MÓDULO MOBILIDADE & PROMOÇÕES (COMPLETO)
+        // MÓDULO MOBILIDADE & PROMOÇÕES (COMPLETO) - com restrições de visualização
         // ============================================================
         const mobApp = (function() {
             let reqs = [],
@@ -8527,6 +8549,7 @@
                     mostrarNotificacao('⚠️ Erro ao sincronizar com SharePoint. Dados locais carregados.',
                         'warning');
                 }
+                // Aplicar filtros de visualização (apenas próprias requisições, exceto para administradores/emails permitidos)
                 filtrarRequisicoes();
                 atualizarKPIs();
                 carregarDashboardTempos();
@@ -8535,8 +8558,20 @@
                 renderizarAprovacoes();
             }
 
+            function podeVerTodas() {
+                if (!usuarioAtual) return false;
+                // Administrador ou emails com acesso total
+                if (usuarioAtual.perfil === 'Administrador') return true;
+                if (EMAILS_ACESSO_TOTAL_MOB.includes(usuarioAtual.email)) return true;
+                return false;
+            }
+
             function filtrarRequisicoes() {
                 let lista = [...reqs];
+                // Filtrar por visibilidade: se não pode ver todas, mostra apenas as suas próprias
+                if (!podeVerTodas()) {
+                    lista = lista.filter(r => r.criadoPorEmail === usuarioAtual.email);
+                }
                 if (filtroSearch) {
                     const s = filtroSearch.toLowerCase();
                     lista = lista.filter(r => r.codigo.toLowerCase().includes(s) || r.colaborador.toLowerCase()
@@ -8634,18 +8669,27 @@
 
             function renderizarAprovacoes() {
                 let pendentes = [];
-                if (usuarioAtual.perfil === 'Administrador') {
+                if (podeVerTodas()) {
                     pendentes = reqs.filter(r => ['em_validacao_rh', 'em_validacao_financas',
                         'em_validacao_director', 'aprovada', 'aguardando_confirmacao'
                     ].includes(r.status));
-                } else if (usuarioAtual.perfil === 'RH') {
-                    pendentes = reqs.filter(r => r.status === 'em_validacao_rh');
-                } else if (usuarioAtual.perfil === 'Controlo de Gestão') {
-                    pendentes = reqs.filter(r => r.status === 'em_validacao_financas');
-                } else if (usuarioAtual.perfil === 'Director Geral') {
-                    pendentes = reqs.filter(r => r.status === 'em_validacao_director');
-                } else if (usuarioAtual.perfil === 'Confirmante') {
-                    pendentes = reqs.filter(r => r.status === 'aprovada');
+                } else {
+                    // Apenas as próprias requisições que estão em estado de pendência para o seu perfil
+                    if (usuarioAtual.perfil === 'RH') {
+                        pendentes = reqs.filter(r => r.status === 'em_validacao_rh' && r.criadoPorEmail !== usuarioAtual
+                            .email);
+                    } else if (usuarioAtual.perfil === 'Controlo de Gestão') {
+                        pendentes = reqs.filter(r => r.status === 'em_validacao_financas' && r.criadoPorEmail !== usuarioAtual
+                            .email);
+                    } else if (usuarioAtual.perfil === 'Director Geral') {
+                        pendentes = reqs.filter(r => r.status === 'em_validacao_director' && r.criadoPorEmail !== usuarioAtual
+                            .email);
+                    } else if (usuarioAtual.perfil === 'Confirmante') {
+                        pendentes = reqs.filter(r => r.status === 'aprovada' && r.criadoPorEmail !== usuarioAtual
+                        .email);
+                    } else {
+                        pendentes = [];
+                    }
                 }
                 const tbody = document.getElementById('mobCorpoAprovacoes');
                 if (!tbody) return;
@@ -8686,6 +8730,8 @@
             function carregarDashboardTempos() {
                 const container = document.getElementById('mobTemposDashboard');
                 if (!container) return;
+                // Aplicar filtro de visibilidade
+                const lista = filtrarRequisicoes();
                 let tRH = 0,
                     cRH = 0,
                     tCG = 0,
@@ -8694,7 +8740,7 @@
                     cDir = 0,
                     tConf = 0,
                     cConf = 0;
-                reqs.forEach(r => {
+                lista.forEach(r => {
                     const aRH = r.historicoComentarios?.find(h => h.acao === 'aprovar' && h.perfil === 'RH');
                     const aCG = r.historicoComentarios?.find(h => h.acao === 'aprovar' && h.perfil ===
                         'Controlo de Gestão');
@@ -8754,15 +8800,16 @@
             function carregarDashboardStatus() {
                 const container = document.getElementById('mobStatusDashboard');
                 if (!container) return;
-                const total = reqs.length;
+                const lista = filtrarRequisicoes();
+                const total = lista.length;
                 const counts = {
-                    'em_validacao_rh': reqs.filter(r => r.status === 'em_validacao_rh').length,
-                    'em_validacao_financas': reqs.filter(r => r.status === 'em_validacao_financas').length,
-                    'em_validacao_director': reqs.filter(r => r.status === 'em_validacao_director').length,
-                    'aprovada': reqs.filter(r => r.status === 'aprovada').length,
-                    'aguardando_confirmacao': reqs.filter(r => r.status === 'aguardando_confirmacao').length,
-                    'concluida': reqs.filter(r => r.status === 'concluida').length,
-                    'rejeitada': reqs.filter(r => r.status === 'rejeitada').length,
+                    'em_validacao_rh': lista.filter(r => r.status === 'em_validacao_rh').length,
+                    'em_validacao_financas': lista.filter(r => r.status === 'em_validacao_financas').length,
+                    'em_validacao_director': lista.filter(r => r.status === 'em_validacao_director').length,
+                    'aprovada': lista.filter(r => r.status === 'aprovada').length,
+                    'aguardando_confirmacao': lista.filter(r => r.status === 'aguardando_confirmacao').length,
+                    'concluida': lista.filter(r => r.status === 'concluida').length,
+                    'rejeitada': lista.filter(r => r.status === 'rejeitada').length,
                 };
                 const max = Math.max(...Object.values(counts), 1);
                 container.innerHTML =
@@ -8826,6 +8873,11 @@
             function visualizar(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
+                // Verificar permissão de visualização
+                if (!podeVerTodas() && req.criadoPorEmail !== usuarioAtual.email) {
+                    mostrarNotificacao('Sem permissão para visualizar esta requisição.', 'error');
+                    return;
+                }
                 window.mobRequisicaoVisualizarAtual = req;
                 const html =
                     `
@@ -9061,7 +9113,7 @@
                 const dataInicio = document.getElementById('mobRelatorioDataInicio').value;
                 const dataFim = document.getElementById('mobRelatorioDataFim').value;
                 const status = document.getElementById('mobRelatorioStatus').value;
-                let dados = [...reqs];
+                let dados = filtrarRequisicoes(); // já aplica visibilidade
                 if (dataInicio) dados = dados.filter(r => new Date(r.dataCriacao) >= new Date(dataInicio));
                 if (dataFim) dados = dados.filter(r => new Date(r.dataCriacao) <= new Date(dataFim + 'T23:59:59'));
                 if (status !== 'all') dados = dados.filter(r => r.status === status);
