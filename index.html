@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <title>Kero SIR - Sistema Integrado</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -101,6 +101,463 @@
             margin: 0 auto;
             padding: 20px;
         }
+
+        /* ===== RESPONSIVIDADE GLOBAL ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .app-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 12px 15px;
+            }
+            .logo-area {
+                justify-content: center;
+            }
+            .user-info {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+            }
+            .user-badge {
+                padding: 4px 10px;
+                font-size: 13px;
+            }
+            .nav-menu {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                gap: 4px;
+                padding: 8px 10px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .nav-item {
+                padding: 6px 12px;
+                font-size: 13px;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            .nav-item i {
+                margin-right: 4px;
+            }
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .kpi-card {
+                padding: 12px 10px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .kpi-card .kpi-info span {
+                font-size: 20px;
+            }
+            .kpi-card .kpi-icon i {
+                font-size: 24px;
+            }
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                order: -1;
+                padding: 12px;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .module-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .module-card-large {
+                padding: 20px 12px;
+                min-height: 160px;
+            }
+            .module-card-large .module-icon-large {
+                font-size: 40px;
+            }
+            .module-card-large h2 {
+                font-size: 16px;
+            }
+            .tempos-fases-container,
+            .status-detalhado-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .fase-card,
+            .status-card {
+                padding: 14px;
+            }
+            .fase-titulo {
+                font-size: 14px;
+            }
+            .fase-tempo {
+                font-size: 18px;
+            }
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            table {
+                font-size: 12px;
+                min-width: 600px;
+            }
+            th,
+            td {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+            .btn-small {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+            .modal-content {
+                width: 95%;
+                margin: 10px auto;
+                max-height: 95vh;
+            }
+            .modal-header h2 {
+                font-size: 16px;
+            }
+            .modal-body {
+                padding: 12px;
+            }
+            .login-box {
+                padding: 20px 15px;
+                margin: 0 10px;
+            }
+            .module-selection-container {
+                padding: 20px 15px;
+            }
+            .module-selection-title h1 {
+                font-size: 24px;
+            }
+            .container-avaliacao {
+                padding: 15px 12px;
+            }
+            .steps {
+                flex-direction: row;
+                flex-wrap: wrap;
+                border-radius: 30px;
+                padding: 4px;
+                gap: 2px;
+            }
+            .step-btn {
+                font-size: 12px;
+                padding: 6px 10px;
+                flex: 1 1 auto;
+                max-width: 100%;
+            }
+            .step-btn .num {
+                width: 20px;
+                height: 20px;
+                line-height: 20px;
+                font-size: 11px;
+                margin-right: 4px;
+            }
+            .intro-grid {
+                grid-template-columns: 1fr;
+            }
+            .feedback-grid {
+                grid-template-columns: 1fr;
+            }
+            .pesquisa-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .pesquisa-area input {
+                width: 100%;
+            }
+            .pesquisa-area .avaliador-nome {
+                margin-left: 0;
+                text-align: center;
+            }
+            .competencia-row {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 10px;
+            }
+            .competencia-row select {
+                width: 100%;
+            }
+            .medida-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .medida-item select {
+                width: 100%;
+            }
+            .assinatura-opcoes {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .assinatura-opcoes input[type="text"] {
+                width: 100%;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn-group .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            /* Manutenção */
+            .manutencao-container .app-container {
+                flex-direction: column;
+            }
+            .manutencao-container .sidebar-manutencao {
+                width: 100%;
+                border-radius: var(--border-radius) var(--border-radius) 0 0;
+                padding: 10px 0;
+            }
+            .manutencao-container .sidebar-manutencao .brand {
+                padding: 0 15px 15px 15px;
+                flex-wrap: wrap;
+            }
+            .manutencao-container .sidebar-manutencao .menu li {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            .manutencao-container .content-manutencao {
+                padding: 12px;
+            }
+            .manutencao-container .kpi-grid-manutencao {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .manutencao-container .kpi-card-manutencao {
+                padding: 12px;
+            }
+            .manutencao-container .kpi-card-manutencao .kpi-info span {
+                font-size: 20px;
+            }
+            .manutencao-container .sidebar-actions {
+                flex-direction: row;
+                padding: 0 15px 10px 15px;
+                flex-wrap: wrap;
+            }
+            .manutencao-container .sidebar-actions .btn-sidebar {
+                flex: 1;
+                min-width: 120px;
+                padding: 10px;
+                font-size: 13px;
+            }
+            .manutencao-container .nota-despesa-container {
+                padding: 20px;
+            }
+            .manutencao-container .nota-itens th,
+            .manutencao-container .nota-itens td {
+                padding: 4px 6px;
+                font-size: 11px;
+            }
+            .manutencao-container .nota-assinaturas {
+                flex-direction: column;
+                align-items: center;
+            }
+            /* EAN */
+            .container-ean .search-area-ean {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 12px 16px;
+            }
+            .container-ean .search-area-ean input {
+                width: 100%;
+            }
+            .container-ean .product-pricing {
+                grid-template-columns: 1fr 1fr;
+            }
+            .container-ean .concorrentes-grid {
+                grid-template-columns: 1fr;
+            }
+            .container-ean .product-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .container-ean .add-product-form {
+                grid-template-columns: 1fr;
+            }
+            .container-ean .add-product-form .form-group[style*="grid-column"] {
+                grid-column: 1 !important;
+            }
+            .camera-modal-ean video {
+                max-width: 100%;
+                max-height: 50%;
+            }
+            .container-ean .product-header-ean {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 12px 16px;
+            }
+            .container-ean .product-header-ean .name {
+                font-size: 18px;
+            }
+            .container-ean .ean-header h1 {
+                font-size: 22px;
+            }
+            .container-ean .subtitle-ean {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            .history-area-ean {
+                flex-wrap: wrap;
+            }
+            .history-btn {
+                font-size: 12px;
+                padding: 3px 10px;
+            }
+            .container-ean .pricing-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .container-ean .pricing-actions button {
+                width: 100%;
+            }
+            .container-ean .stock-table-wrapper {
+                max-height: 400px;
+            }
+            .container-ean .stock-table th,
+            .container-ean .stock-table td {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+            /* Avaliação relatório */
+            .avaliacao-relatorio-container .relatorio-kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .avaliacao-relatorio-container .relatorio-filtros {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .avaliacao-relatorio-container .relatorio-filtros input,
+            .avaliacao-relatorio-container .relatorio-filtros select,
+            .avaliacao-relatorio-container .relatorio-filtros button {
+                width: 100%;
+            }
+            .avaliacao-relatorio-container .avaliacao-relatorio-tabela-wrapper {
+                max-height: 300px;
+            }
+            .avaliacao-relatorio-container .avaliacao-relatorio-tabela {
+                font-size: 12px;
+                min-width: 600px;
+            }
+            /* Login */
+            .login-box h2 {
+                font-size: 20px;
+            }
+            .login-box p {
+                font-size: 13px;
+            }
+            /* Notificações */
+            .notification-panel {
+                width: 280px;
+                right: -10px;
+            }
+            /* Tooltip */
+            [data-tooltip]:before {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .module-grid {
+                grid-template-columns: 1fr;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .manutencao-container .kpi-grid-manutencao {
+                grid-template-columns: 1fr 1fr;
+            }
+            .tempos-fases-container,
+            .status-detalhado-container {
+                grid-template-columns: 1fr;
+            }
+            .container-ean .product-grid {
+                grid-template-columns: 1fr;
+            }
+            .container-ean .product-pricing {
+                grid-template-columns: 1fr;
+            }
+            .modal-content {
+                width: 100%;
+                margin: 0;
+                border-radius: 0;
+                max-height: 100vh;
+            }
+            .modal-header {
+                padding: 12px 16px;
+            }
+            .modal-body {
+                padding: 12px;
+            }
+            .container {
+                padding: 6px;
+            }
+            .app-header {
+                padding: 8px 10px;
+            }
+            .logo-kero {
+                width: 40px;
+                height: 40px;
+            }
+            .logo-kero span {
+                font-size: 24px;
+            }
+            .user-badge {
+                font-size: 12px;
+                padding: 2px 8px;
+            }
+            .user-role {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+            .btn-logout,
+            .btn-modules,
+            .btn-darkmode {
+                padding: 4px 12px;
+                font-size: 12px;
+            }
+            .nav-item {
+                font-size: 12px;
+                padding: 4px 10px;
+            }
+            .fase-card,
+            .status-card {
+                padding: 10px;
+            }
+            .fase-titulo {
+                font-size: 13px;
+            }
+            .fase-tempo {
+                font-size: 16px;
+            }
+            .kpi-card .kpi-info h4 {
+                font-size: 11px;
+            }
+            .kpi-card .kpi-info span {
+                font-size: 18px;
+            }
+            .btn-small {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+            .container-ean .product-header-ean .name {
+                font-size: 16px;
+            }
+        }
+
+        /* Restante do CSS original (mantido) */
+        /* ... (todo o CSS que já existia, mas com as media queries adicionadas acima) ... */
+
+        /* ============================================================
+           A partir daqui, mantenha todo o CSS original que já existia.
+           As regras acima já foram melhoradas para mobile.
+           ============================================================ */
 
         .login-container {
             display: flex;
@@ -10136,10 +10593,30 @@
             });
 
             setInterval(() => { localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes)); }, 5000);
+
+            // ============================================================
+            // LINK DIRETO PARA O MÓDULO EAN (parâmetro ?modulo=ean)
+            // ============================================================
+            const urlParams = new URLSearchParams(window.location.search);
+            const moduloParam = urlParams.get('modulo');
+            if (moduloParam === 'ean') {
+                // Aguarda o login e a seleção de módulos para então entrar direto no EAN
+                const checkInterval = setInterval(() => {
+                    if (usuarioAtual && document.getElementById('moduleSelectionScreen').style.display ===
+                        'flex') {
+                        clearInterval(checkInterval);
+                        // Força a seleção do módulo EAN
+                        selecionarModulo('ean');
+                    }
+                }, 500);
+                // Timeout para evitar loop infinito
+                setTimeout(() => clearInterval(checkInterval), 10000);
+            }
         });
 
         console.log('✅ Kero SIR - Sistema Integrado de Requisições carregado!');
         console.log('📋 Módulos disponíveis: Recrutamento, Avaliação, Manutenção, Mobilidade, Ticket IT, Ocorrência, EAN');
+        console.log('🔗 Para aceder diretamente ao EAN, use: ?modulo=ean');
     </script>
 </body>
 </html>
