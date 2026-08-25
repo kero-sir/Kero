@@ -12,7 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.2/dist/quagga.min.js"></script>
     <style>
-        /* ===== ESTILOS COMPLETOS ===== */
+        /* ===== ESTILOS COMPLETOS (mantidos do original) ===== */
         * {
             margin: 0;
             padding: 0;
@@ -3409,6 +3409,12 @@
         .btn-import:hover {
             background: #1e6a3b;
         }
+        .btn-sync {
+            background: #0078d4;
+        }
+        .btn-sync:hover {
+            background: #005a9e;
+        }
         .btn-editar-precos {
             background: #2E7D32;
             margin-top: 5px;
@@ -4738,7 +4744,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO EAN SCAN (COMPLETO - com importação restrita e sincronização SharePoint)
+            MÓDULO EAN SCAN (COMPLETO - com correções)
             ============================================================ -->
             <div id="eanSection" style="display: none;">
                 <!-- Banner para modo público -->
@@ -4770,6 +4776,7 @@
                         <input type="file" id="fileInput" accept="image/*" style="display:none;">
                         <button class="btn-ean btn-import" id="btnImportExcel"><i class="fas fa-file-excel"></i> Importar Excel</button>
                         <input type="file" id="fileInputExcel" accept=".xlsx,.xls" style="display:none;">
+                        <button class="btn-ean btn-sync" id="btnSyncSharePoint"><i class="fas fa-sync-alt"></i> Sincronizar</button>
                         <div class="suggestions-box" id="suggestionsBox"></div>
                     </section>
 
@@ -4854,6 +4861,7 @@
                     <div class="camera-modal-ean" id="cameraModal">
                         <div class="status" id="cameraStatus">Aguardando...</div>
                         <video id="cameraVideo" autoplay playsinline></video>
+                        <canvas id="cameraCanvas" style="display:none;"></canvas>
                         <div class="controls">
                             <button id="btnCapture"><i class="fas fa-camera"></i> Capturar</button>
                             <button class="upload-from-camera" id="btnUploadFromCamera"><i class="fas fa-image"></i> Carregar Imagem</button>
@@ -5101,7 +5109,7 @@
     </div>
 
     <!-- ============================================================
-    SCRIPT COMPLETO
+    SCRIPT COMPLETO (com correções)
     ============================================================ -->
     <script>
         // ============================================================
@@ -5164,7 +5172,7 @@
             listaManutencoes: "manutencoes",
             listaMobilidade: "MobilidadePromocoes",
             listaProdutosEAN: "ProdutosEAN",
-            listaColaboradores: "Colaboradores" // Lista para buscar colaboradores na avaliação
+            listaColaboradores: "Colaboradores"
         };
 
         let msalInstance = null,
@@ -5180,7 +5188,7 @@
         let moduloAtual = null,
             requisicaoVisualizarAtual = null,
             requisicaoSelecionadaAtual = null;
-        let modoPublico = false; // Flag para modo convidado
+        let modoPublico = false;
 
         // ============================================================
         // FUNÇÕES GLOBAIS
@@ -5304,9 +5312,7 @@
             document.getElementById('mainSystem').style.display = 'none';
             document.getElementById('moduleSelectionScreen').style.display = 'flex';
             moduloAtual = null;
-            // Se estiver em modo público, voltar para a tela de login? Não, redirecionar para a página normal?
             if (modoPublico) {
-                // Remove o parâmetro public da URL e recarrega
                 const url = new URL(window.location);
                 url.searchParams.delete('public');
                 window.location.href = url.toString();
@@ -5341,7 +5347,6 @@
             usuarioAtual = null;
             moduloAtual = null;
             if (modoPublico) {
-                // Se estava em modo público, apenas redireciona para a página sem parâmetro
                 const url = new URL(window.location);
                 url.searchParams.delete('public');
                 window.location.href = url.toString();
@@ -5358,45 +5363,36 @@
         // ============================================================
         function iniciarModoPublico() {
             modoPublico = true;
-            // Define um usuário convidado
             usuarioAtual = { id: 'guest', nome: 'Convidado', email: 'guest@public.com', perfil: 'Convidado' };
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('moduleSelectionScreen').style.display = 'none';
             document.getElementById('mainSystem').style.display = 'block';
-
-            // Esconde a navegação principal e o header (apenas o necessário)
             document.getElementById('navMenu').style.display = 'none';
             document.getElementById('currentUserName').textContent = 'Convidado';
             document.getElementById('currentUserRole').textContent = 'Público';
             document.getElementById('systemTitle').textContent = 'Kero EAN Scan - Público';
             document.getElementById('systemSubtitle').textContent = 'Visualização de Preços e Stock';
-            // Oculta o botão "Sair" e outros elementos desnecessários
             document.querySelector('.user-info .btn-logout').style.display = 'none';
             document.querySelector('.user-info .btn-modules').style.display = 'none';
-            // Adiciona um banner informativo
             document.getElementById('guestBanner').style.display = 'flex';
-            // Carrega apenas o módulo EAN
             document.getElementById('recrutamentoSection').style.display = 'none';
             document.getElementById('avaliacaoSection').style.display = 'none';
             document.getElementById('manutencaoSection').style.display = 'none';
             document.getElementById('mobilidadeSection').style.display = 'none';
             document.getElementById('eanSection').style.display = 'block';
-            // Oculta a área de adição de produtos e botões de edição/importação
             document.getElementById('addProductArea').style.display = 'none';
             document.getElementById('btnImportExcel').style.display = 'none';
             document.getElementById('btnEditarPrecos').style.display = 'none';
             document.getElementById('btnGuardarPrecos').style.display = 'none';
             document.getElementById('btnGuardarConcorrentes').style.display = 'none';
-            // Inicializa o módulo EAN sem autenticação (usa dados locais)
+            document.getElementById('btnSyncSharePoint').style.display = 'none';
             eanApp.inicializarPublico();
-            // Desabilita edição de preços
             document.querySelectorAll('.pricing-item input').forEach(inp => inp.disabled = true);
             document.querySelectorAll('.concorrente-item input').forEach(inp => inp.disabled = true);
             mostrarNotificacao('🔓 Modo Público ativado. Visualização de preços e stock.', 'info');
         }
 
         function fecharModoPublico() {
-            // Remove o parâmetro public e recarrega a página
             const url = new URL(window.location);
             url.searchParams.delete('public');
             window.location.href = url.toString();
@@ -5406,12 +5402,9 @@
         // SELEÇÃO DE MÓDULO
         // ============================================================
         function selecionarModulo(mod) {
-            if (modoPublico) {
-                // Em modo público, só é permitido o EAN
-                if (mod !== 'ean') {
-                    mostrarNotificacao('Modo público apenas permite visualização do EAN Scan.', 'warning');
-                    return;
-                }
+            if (modoPublico && mod !== 'ean') {
+                mostrarNotificacao('Modo público apenas permite visualização do EAN Scan.', 'warning');
+                return;
             }
             moduloAtual = mod;
             document.getElementById('moduleSelectionScreen').style.display = 'none';
@@ -5441,7 +5434,6 @@
                 inicializarBotoesPorPerfil();
                 carregarUtilizadores();
             } else if (mod === 'avaliacao') {
-                // Verificar permissão de acesso
                 const email = usuarioAtual.email;
                 const perfil = usuarioAtual.perfil;
                 const permitidos = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'paulo.silva@accordgrouplda.com'];
@@ -5592,7 +5584,7 @@
         }
 
         // ============================================================
-        // FUNÇÕES DO RECRUTAMENTO (COMPLETAS)
+        // FUNÇÕES DO RECRUTAMENTO (COMPLETAS - mantidas)
         // ============================================================
         function inicializarDirecoes() {
             const sel = document.getElementById('direcao');
@@ -5789,8 +5781,8 @@
             const req = requisicoes.find(r => r.id == id);
             if (req) { requisicaoSelecionadaAtual = req;
                 atualizarBotaoPastaRequisicao();
-                document.querySelectorAll('#corpoTabela tr').forEach(row => row.style.backgroundColor = '');
-                if (event && event.currentTarget) event.currentTarget.style.backgroundColor = 'var(--primary-light)'; }
+                document.querySelectorAll('#corpoTabela tr').forEach(row => row.style.backgroundColor = ''); if (event &&
+                    event.currentTarget) event.currentTarget.style.backgroundColor = 'var(--primary-light)'; }
         }
 
         function getBotoesAcao(req) {
@@ -6958,14 +6950,13 @@
         }
 
         // ============================================================
-        // MÓDULO AVALIAÇÃO (COMPLETO)
+        // MÓDULO AVALIAÇÃO (COMPLETO - mantido)
         // ============================================================
         const avaliacaoApp = (function() {
             let colaboradorSelecionado = null,
                 avaliacaoData = null,
                 avaliacoesSalvas = [];
 
-            // Função para buscar colaborador no SharePoint
             async function buscarColaboradorNoSharePoint(id) {
                 try {
                     const token = await getSharePointToken();
@@ -6992,7 +6983,6 @@
                 } catch (error) {
                     console.warn('Erro ao buscar colaborador no SharePoint, usando mock:', error);
                 }
-                // Fallback mock
                 const mockColaboradores = {
                     "10": { "nome": "ALBERTO TANGU SIMAO", "direcao": "Lubango", "departamento": "Departamento PF",
                         "funcao": "Gerente de Departamento", "dataAdmissao": "2010-12-01" },
@@ -7605,7 +7595,7 @@
         })();
 
         // ============================================================
-        // MÓDULO MANUTENÇÃO (COMPLETO - mantido do original)
+        // MÓDULO MANUTENÇÃO (mantido do original)
         // ============================================================
         const manutencaoApp = (function() {
             let reqs = [],
@@ -8579,7 +8569,7 @@
         })();
 
         // ============================================================
-        // MÓDULO MOBILIDADE & PROMOÇÕES (COMPLETO) - com restrições de visualização
+        // MÓDULO MOBILIDADE (mantido)
         // ============================================================
         const mobApp = (function() {
             let reqs = [],
@@ -8729,7 +8719,6 @@
                     mostrarNotificacao('⚠️ Erro ao sincronizar com SharePoint. Dados locais carregados.',
                         'warning');
                 }
-                // Aplicar filtros de visualização (apenas próprias requisições, exceto para administradores/emails permitidos)
                 filtrarRequisicoes();
                 atualizarKPIs();
                 carregarDashboardTempos();
@@ -8740,7 +8729,6 @@
 
             function podeVerTodas() {
                 if (!usuarioAtual) return false;
-                // Administrador ou emails com acesso total
                 if (usuarioAtual.perfil === 'Administrador') return true;
                 if (EMAILS_ACESSO_TOTAL_MOB.includes(usuarioAtual.email)) return true;
                 return false;
@@ -8748,7 +8736,6 @@
 
             function filtrarRequisicoes() {
                 let lista = [...reqs];
-                // Filtrar por visibilidade: se não pode ver todas, mostra apenas as suas próprias
                 if (!podeVerTodas()) {
                     lista = lista.filter(r => r.criadoPorEmail === usuarioAtual.email);
                 }
@@ -8854,7 +8841,6 @@
                         'em_validacao_director', 'aprovada', 'aguardando_confirmacao'
                     ].includes(r.status));
                 } else {
-                    // Apenas as próprias requisições que estão em estado de pendência para o seu perfil
                     if (usuarioAtual.perfil === 'RH') {
                         pendentes = reqs.filter(r => r.status === 'em_validacao_rh' && r.criadoPorEmail !== usuarioAtual
                             .email);
@@ -8910,7 +8896,6 @@
             function carregarDashboardTempos() {
                 const container = document.getElementById('mobTemposDashboard');
                 if (!container) return;
-                // Aplicar filtro de visibilidade
                 const lista = filtrarRequisicoes();
                 let tRH = 0,
                     cRH = 0,
@@ -9053,7 +9038,6 @@
             function visualizar(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
-                // Verificar permissão de visualização
                 if (!podeVerTodas() && req.criadoPorEmail !== usuarioAtual.email) {
                     mostrarNotificacao('Sem permissão para visualizar esta requisição.', 'error');
                     return;
@@ -9293,7 +9277,7 @@
                 const dataInicio = document.getElementById('mobRelatorioDataInicio').value;
                 const dataFim = document.getElementById('mobRelatorioDataFim').value;
                 const status = document.getElementById('mobRelatorioStatus').value;
-                let dados = filtrarRequisicoes(); // já aplica visibilidade
+                let dados = filtrarRequisicoes();
                 if (dataInicio) dados = dados.filter(r => new Date(r.dataCriacao) >= new Date(dataInicio));
                 if (dataFim) dados = dados.filter(r => new Date(r.dataCriacao) <= new Date(dataFim + 'T23:59:59'));
                 if (status !== 'all') dados = dados.filter(r => r.status === status);
@@ -9414,7 +9398,7 @@
                     pagina = 1;
                     renderizarRequisicoes();
                 });
-                document.getElementById('mobPaginaAnterior').addEventListener('click', () => { if (pagina > 1) { pagina--;
+                                document.getElementById('mobPaginaAnterior').addEventListener('click', () => { if (pagina > 1) { pagina--;
                         renderizarRequisicoes(); } });
                 document.getElementById('mobPaginaProxima').addEventListener('click', () => { pagina++;
                     renderizarRequisicoes(); });
@@ -9489,7 +9473,7 @@
         function exportarRequisicaoIndividualMob() { mobApp.exportarIndividual(); }
 
         // ============================================================
-        // MÓDULO EAN SCAN (COMPLETO) - INTEGRADO COM SHAREPOINT
+        // MÓDULO EAN SCAN (COMPLETO) - COM CORREÇÕES
         // ============================================================
         const eanApp = (function() {
             const SHAREPOINT_LIST = SHAREPOINT_CONFIG.listaProdutosEAN || "ProdutosEAN";
@@ -9498,6 +9482,7 @@
             let historicoPesquisas = [];
             let editandoPrecos = false;
             let quaggaInitialized = false;
+            let cameraStream = null;
             const LOJAS_KERO = [
                 "Kero Loja Talatona", "Kero Loja Kilamba", "Kero Loja Morro Bento",
                 "Kero Loja Nova Vida", "Kero Loja Lubango", "Kero Loja Huambo",
@@ -9507,7 +9492,7 @@
             ];
             const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
 
-            // Função importarExcel com verificação de permissão
+            // --------------------- FUNÇÕES DE IMPORT/EXPORT ---------------------
             async function importarExcel(file) {
                 // Verificar permissão
                 const email = usuarioAtual?.email;
@@ -9687,7 +9672,7 @@
                 reader.readAsArrayBuffer(file);
             }
 
-            // --- Funções existentes (carregarLocal, guardarLocal, etc.) ---
+            // --------------------- FUNÇÕES DE PERSISTÊNCIA ---------------------
             function carregarLocal() {
                 const saved = localStorage.getItem('ean_produtos');
                 if (saved) {
@@ -9727,6 +9712,7 @@
                 localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas));
             }
 
+            // --------------------- SHAREPOINT ---------------------
             async function carregarProdutosDoSharePoint() {
                 try {
                     const token = await getSharePointToken();
@@ -9776,25 +9762,22 @@
                 return false;
             }
 
-           async function salvarProdutoNoSharePoint(produto) {
-    console.log('📤 A salvar produto:', produto.ean, produto.nome);
-    try {
-        const token = await getSharePointToken();
-        console.log('✅ Token obtido');
-        const siteId = await getSiteId();
-        console.log('✅ Site ID:', siteId);
-        
-        const fields = {
-            "Title": produto.ean,
-            "Nome": produto.nome,
-            "PrecoCusto": produto.preco_custo || 0,
-            "PrecoKero": produto.preco_kero || 0,
-            "Iva": produto.iva || 0,
-            "Fornecedor": produto.fornecedor || '',
-            "VendaMediaMensal": produto.venda_media_mensal || 0,
-            "Stock": JSON.stringify(produto.stock || {}),
-            "Concorrentes": JSON.stringify(produto.concorrentes || {})
-        };
+            async function salvarProdutoNoSharePoint(produto) {
+                console.log('📤 A salvar produto:', produto.ean, produto.nome);
+                try {
+                    const token = await getSharePointToken();
+                    const siteId = await getSiteId();
+                    const fields = {
+                        "Title": produto.ean,
+                        "Nome": produto.nome,
+                        "PrecoCusto": produto.preco_custo || 0,
+                        "PrecoKero": produto.preco_kero || 0,
+                        "Iva": produto.iva || 0,
+                        "Fornecedor": produto.fornecedor || '',
+                        "VendaMediaMensal": produto.venda_media_mensal || 0,
+                        "Stock": JSON.stringify(produto.stock || {}),
+                        "Concorrentes": JSON.stringify(produto.concorrentes || {})
+                    };
                     const filterUrl =
                         `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_LIST}/items?expand=fields&$filter=fields/Title eq '${produto.ean}'`;
                     const check = await fetch(filterUrl, {
@@ -9834,6 +9817,7 @@
                 }
             }
 
+            // --------------------- FUNÇÕES DE UI ---------------------
             function notificar(msg, tipo = 'success') {
                 mostrarNotificacao(msg, tipo);
             }
@@ -9842,7 +9826,6 @@
                 document.getElementById('totalProdutosBadge').textContent = `${produtos.length} produtos`;
             }
 
-            // --- Funções de UI (renderização, pesquisa, câmara, etc.) ---
             function adicionarHistorico(ean) {
                 historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
                 historicoPesquisas.unshift(ean);
@@ -10135,77 +10118,92 @@
                 toggleEdicaoPrecos();
             }
 
-            // CÂMERA
+            // --------------------- CÂMARA (CORRIGIDA) ---------------------
             function abrirCamera() {
                 const modal = document.getElementById('cameraModal');
                 modal.classList.add('active');
                 document.getElementById('cameraStatus').textContent = 'A iniciar câmera...';
 
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    document.getElementById('cameraStatus').textContent =
-                        'Navegador não suporta câmara. Use "Carregar Imagem".';
-                    notificar('Câmara não suportada. Use upload de imagem.', 'error');
-                    return;
+                // Se já houver uma stream ativa, parar
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(t => t.stop());
+                    cameraStream = null;
                 }
 
-                if (quaggaInitialized) {
-                    Quagga.start();
-                    document.getElementById('cameraStatus').textContent =
-                        'Câmera reiniciada. Aponte para o código.';
-                    return;
-                }
+                // Tentar primeiro com Quagga (live stream)
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    try {
+                        // Inicializar Quagga
+                        Quagga.init({
+                            inputStream: {
+                                name: "Live",
+                                type: "LiveStream",
+                                target: document.getElementById('cameraVideo'),
+                                constraints: {
+                                    facingMode: "environment",
+                                    width: { ideal: 640 },
+                                    height: { ideal: 480 }
+                                }
+                            },
+                            decoder: {
+                                readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"]
+                            },
+                            locate: true
+                        }, function(err) {
+                            if (err) {
+                                console.error('Quagga.init error:', err);
+                                document.getElementById('cameraStatus').textContent =
+                                    'Erro ao iniciar câmera. A tentar modo alternativo...';
+                                // Fallback: getUserMedia direto + captura manual
+                                iniciarCameraFallback();
+                                return;
+                            }
+                            Quagga.start();
+                            quaggaInitialized = true;
+                            document.getElementById('cameraStatus').textContent =
+                                'Câmera ativa (Quagga). Aponte para o código.';
+                        });
 
-                Quagga.init({
-                    inputStream: {
-                        name: "Live",
-                        type: "LiveStream",
-                        target: document.getElementById('cameraVideo'),
-                        constraints: {
-                            facingMode: "environment",
-                            width: { ideal: 640 },
-                            height: { ideal: 480 }
-                        }
-                    },
-                    decoder: {
-                        readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"]
-                    },
-                    locate: true
-                }, function(err) {
-                    if (err) {
-                        console.error('Quagga.init error:', err);
-                        document.getElementById('cameraStatus').textContent =
-                            'Erro ao iniciar câmara. Use "Carregar Imagem".';
-                        notificar('Câmara indisponível. Use o botão "Carregar Imagem".', 'error');
-                        tryFallbackCamera();
-                        return;
+                        Quagga.onDetected(function(data) {
+                            const code = data.codeResult.code.replace(/\s/g, '');
+                            document.getElementById('cameraStatus').textContent = 'Código lido: ' + code;
+                            notificar('Código lido: ' + code, 'info');
+                            fecharCamera();
+                            document.getElementById('eanInput').value = code;
+                            buscarProduto(code);
+                        });
+
+                        // Fallback se Quagga não detetar em 15 segundos
+                        setTimeout(() => {
+                            if (quaggaInitialized && document.querySelector('#cameraModal.active')) {
+                                document.getElementById('cameraStatus').textContent +=
+                                    ' (se não ler, use "Capturar")';
+                            }
+                        }, 15000);
+
+                    } catch (e) {
+                        console.error('Erro ao iniciar Quagga:', e);
+                        iniciarCameraFallback();
                     }
-                    Quagga.start();
-                    quaggaInitialized = true;
-                    document.getElementById('cameraStatus').textContent =
-                        'Câmera ativa. Aponte para o código.';
-                });
-
-                Quagga.onDetected(function(data) {
-                    const code = data.codeResult.code.replace(/\s/g, '');
-                    document.getElementById('cameraStatus').textContent = 'Código lido: ' + code;
-                    notificar('Código lido: ' + code, 'info');
-                    fecharCamera();
-                    document.getElementById('eanInput').value = code;
-                    buscarProduto(code);
-                });
+                } else {
+                    notificar('Câmara não suportada. Use "Carregar Imagem".', 'error');
+                    document.getElementById('cameraStatus').textContent = 'Navegador não suporta câmara.';
+                }
             }
 
-            function tryFallbackCamera() {
+            function iniciarCameraFallback() {
+                // Fallback: getUserMedia + canvas + Quagga.decodeSingle
                 navigator.mediaDevices.getUserMedia({
                     video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } }
                 })
                     .then(stream => {
+                        cameraStream = stream;
                         const video = document.getElementById('cameraVideo');
                         video.srcObject = stream;
                         video.play();
                         document.getElementById('cameraStatus').textContent =
-                            'Câmera ativa (modo manual). Use "Capturar" ou "Carregar Imagem".';
-                        notificar('Câmera em modo manual. Clique em "Capturar" para ler código.', 'info');
+                            'Câmera ativa (modo manual). Clique em "Capturar" para ler código.';
+                        notificar('Câmera em modo manual. Clique em "Capturar" para ler o código.', 'info');
                     })
                     .catch(err => {
                         console.error('Fallback getUserMedia error:', err);
@@ -10218,10 +10216,14 @@
             function fecharCamera() {
                 if (quaggaInitialized) {
                     Quagga.stop();
+                    quaggaInitialized = false;
+                }
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(t => t.stop());
+                    cameraStream = null;
                 }
                 const video = document.getElementById('cameraVideo');
                 if (video.srcObject) {
-                    video.srcObject.getTracks().forEach(track => track.stop());
                     video.srcObject = null;
                 }
                 document.getElementById('cameraModal').classList.remove('active');
@@ -10234,20 +10236,24 @@
                     notificar('A câmera não está ativa. Clique em "Ler Código" primeiro.', 'error');
                     return;
                 }
-                const canvas = document.createElement('canvas');
+                // Capturar frame do vídeo
+                const canvas = document.getElementById('cameraCanvas');
                 canvas.width = video.videoWidth || 640;
                 canvas.height = video.videoHeight || 480;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const imageData = canvas.toDataURL('image/png');
+                // Tentar decodificar
                 decodificarImagem(imageData);
             }
 
+            // --------------------- LEITURA DE IMAGENS (CORRIGIDA) ---------------------
             function decodificarImagem(imageData, tentativas = 0) {
                 if (tentativas === 0) {
                     notificar('A ler código da imagem...', 'info');
                 }
 
+                // Configuração otimizada para deteção
                 const config = {
                     src: imageData,
                     numOfWorkers: 4,
@@ -10274,11 +10280,13 @@
                         return;
                     }
 
+                    // Se falhar, tentar com a imagem rodada (para códigos verticais)
                     if (tentativas < 4) {
                         const img = new Image();
                         img.onload = function() {
                             const canvas = document.createElement('canvas');
                             const ctx = canvas.getContext('2d');
+                            // Rodar 90 graus
                             canvas.width = img.height;
                             canvas.height = img.width;
                             ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -10292,7 +10300,25 @@
                         };
                         img.src = imageData;
                     } else {
-                        notificar('Não foi possível ler o código na imagem.', 'error');
+                        // Tentar com outra rotação (180 graus)
+                        if (tentativas === 4) {
+                            const img = new Image();
+                            img.onload = function() {
+                                const canvas = document.createElement('canvas');
+                                const ctx = canvas.getContext('2d');
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                ctx.translate(img.width / 2, img.height / 2);
+                                ctx.rotate(Math.PI);
+                                ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                                const novaImagem = canvas.toDataURL('image/png');
+                                decodificarImagem(novaImagem, tentativas + 1);
+                            };
+                            img.onerror = function() { notificar('Erro ao processar imagem.', 'error'); };
+                            img.src = imageData;
+                        } else {
+                            notificar('Não foi possível ler o código na imagem.', 'error');
+                        }
                     }
                 });
             }
@@ -10307,6 +10333,7 @@
                 reader.readAsDataURL(file);
             }
 
+            // --------------------- ADICIONAR PRODUTO ---------------------
             function adicionarProduto() {
                 const nome = document.getElementById('addNome').value.trim();
                 const ean = document.getElementById('addEan').value.trim();
@@ -10386,6 +10413,7 @@
                 atualizarBadgeTotal();
             }
 
+            // --------------------- INICIALIZAÇÃO PÚBLICA (MODO CONVIDADO) ---------------------
             function inicializarPublico() {
                 // Carregar dados locais (sem SharePoint)
                 if (!carregarLocal()) {
@@ -10429,6 +10457,7 @@
                 console.log('✅ Módulo EAN em modo público inicializado com sucesso!');
             }
 
+            // --------------------- CONFIGURAÇÃO DE EVENTOS ---------------------
             function configurarEventos() {
                 document.getElementById('btnBuscar').addEventListener('click', () => buscarProduto(document.getElementById(
                     'eanInput').value));
@@ -10452,6 +10481,22 @@
                     this.value = '';
                 });
 
+                // Sincronizar SharePoint (apenas para utilizadores com permissão)
+                document.getElementById('btnSyncSharePoint').addEventListener('click', async function() {
+                    if (!usuarioAtual || !EMAILS_IMPORTACAO_EAN.includes(usuarioAtual.email)) {
+                        notificar('Sem permissão para sincronizar.', 'error');
+                        return;
+                    }
+                    showLoading();
+                    await carregarProdutosDoSharePoint();
+                    renderizarTodosProdutos();
+                    renderizarHistorico();
+                    atualizarBadgeTotal();
+                    hideLoading();
+                    notificar('Sincronização concluída!', 'success');
+                });
+
+                // Câmara e imagem
                 document.getElementById('btnCamera').addEventListener('click', abrirCamera);
                 document.getElementById('btnCloseCamera').addEventListener('click', fecharCamera);
                 document.getElementById('btnCapture').addEventListener('click', capturarEscanear);
@@ -10466,6 +10511,7 @@
                     this.value = '';
                 });
 
+                // Sugestões
                 document.getElementById('eanInput').addEventListener('input', (e) => {
                     const val = e.target.value.trim();
                     if (val.length >= 2) {
@@ -10481,6 +10527,7 @@
                 });
             }
 
+            // --------------------- INICIALIZAÇÃO PRINCIPAL ---------------------
             async function inicializar() {
                 if (!carregarLocal()) {
                     // Inicializar com mock se não houver dados locais
@@ -10538,7 +10585,7 @@
                 limparPesquisa,
                 renderizarTodosProdutos,
                 adicionarProduto,
-                importarExcel // exposto para o evento
+                importarExcel
             };
         })();
 
@@ -10555,7 +10602,6 @@
             // Verificar se deve iniciar em modo público
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('public')) {
-                // Iniciar diretamente no modo público (EAN)
                 await initializeMicrosoft(); // necessário para algumas funções, mas não usamos token
                 iniciarModoPublico();
                 return;
