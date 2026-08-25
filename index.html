@@ -12,9 +12,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.2/dist/quagga.min.js"></script>
     <style>
-        /* ============================================================
-           ESTILOS COMPLETOS - KERO SIR (incluindo EAN)
-           ============================================================ */
+        /* ===== ESTILOS COMPLETOS ===== */
         * {
             margin: 0;
             padding: 0;
@@ -53,6 +51,8 @@
         body {
             background-color: var(--gray-100);
             color: var(--gray-600);
+            height: 100%;
+            overflow-y: auto;
         }
         body.dark-mode {
             --gray-100: #1a1a2e;
@@ -101,463 +101,6 @@
             margin: 0 auto;
             padding: 20px;
         }
-
-        /* ===== RESPONSIVIDADE GLOBAL ===== */
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            .app-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-                padding: 12px 15px;
-            }
-            .logo-area {
-                justify-content: center;
-            }
-            .user-info {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 8px;
-            }
-            .user-badge {
-                padding: 4px 10px;
-                font-size: 13px;
-            }
-            .nav-menu {
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                gap: 4px;
-                padding: 8px 10px;
-                -webkit-overflow-scrolling: touch;
-            }
-            .nav-item {
-                padding: 6px 12px;
-                font-size: 13px;
-                white-space: nowrap;
-                flex-shrink: 0;
-            }
-            .nav-item i {
-                margin-right: 4px;
-            }
-            .kpi-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            .kpi-card {
-                padding: 12px 10px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .kpi-card .kpi-info span {
-                font-size: 20px;
-            }
-            .kpi-card .kpi-icon i {
-                font-size: 24px;
-            }
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-            .sidebar {
-                order: -1;
-                padding: 12px;
-            }
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            .module-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
-            .module-card-large {
-                padding: 20px 12px;
-                min-height: 160px;
-            }
-            .module-card-large .module-icon-large {
-                font-size: 40px;
-            }
-            .module-card-large h2 {
-                font-size: 16px;
-            }
-            .tempos-fases-container,
-            .status-detalhado-container {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-            .fase-card,
-            .status-card {
-                padding: 14px;
-            }
-            .fase-titulo {
-                font-size: 14px;
-            }
-            .fase-tempo {
-                font-size: 18px;
-            }
-            .table-container {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            table {
-                font-size: 12px;
-                min-width: 600px;
-            }
-            th,
-            td {
-                padding: 6px 8px;
-                font-size: 12px;
-            }
-            .btn-small {
-                font-size: 11px;
-                padding: 4px 8px;
-            }
-            .modal-content {
-                width: 95%;
-                margin: 10px auto;
-                max-height: 95vh;
-            }
-            .modal-header h2 {
-                font-size: 16px;
-            }
-            .modal-body {
-                padding: 12px;
-            }
-            .login-box {
-                padding: 20px 15px;
-                margin: 0 10px;
-            }
-            .module-selection-container {
-                padding: 20px 15px;
-            }
-            .module-selection-title h1 {
-                font-size: 24px;
-            }
-            .container-avaliacao {
-                padding: 15px 12px;
-            }
-            .steps {
-                flex-direction: row;
-                flex-wrap: wrap;
-                border-radius: 30px;
-                padding: 4px;
-                gap: 2px;
-            }
-            .step-btn {
-                font-size: 12px;
-                padding: 6px 10px;
-                flex: 1 1 auto;
-                max-width: 100%;
-            }
-            .step-btn .num {
-                width: 20px;
-                height: 20px;
-                line-height: 20px;
-                font-size: 11px;
-                margin-right: 4px;
-            }
-            .intro-grid {
-                grid-template-columns: 1fr;
-            }
-            .feedback-grid {
-                grid-template-columns: 1fr;
-            }
-            .pesquisa-area {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .pesquisa-area input {
-                width: 100%;
-            }
-            .pesquisa-area .avaliador-nome {
-                margin-left: 0;
-                text-align: center;
-            }
-            .competencia-row {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 10px;
-            }
-            .competencia-row select {
-                width: 100%;
-            }
-            .medida-item {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .medida-item select {
-                width: 100%;
-            }
-            .assinatura-opcoes {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .assinatura-opcoes input[type="text"] {
-                width: 100%;
-            }
-            .btn-group {
-                flex-direction: column;
-            }
-            .btn-group .btn {
-                width: 100%;
-                justify-content: center;
-            }
-            /* Manutenção */
-            .manutencao-container .app-container {
-                flex-direction: column;
-            }
-            .manutencao-container .sidebar-manutencao {
-                width: 100%;
-                border-radius: var(--border-radius) var(--border-radius) 0 0;
-                padding: 10px 0;
-            }
-            .manutencao-container .sidebar-manutencao .brand {
-                padding: 0 15px 15px 15px;
-                flex-wrap: wrap;
-            }
-            .manutencao-container .sidebar-manutencao .menu li {
-                padding: 8px 16px;
-                font-size: 14px;
-            }
-            .manutencao-container .content-manutencao {
-                padding: 12px;
-            }
-            .manutencao-container .kpi-grid-manutencao {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-            }
-            .manutencao-container .kpi-card-manutencao {
-                padding: 12px;
-            }
-            .manutencao-container .kpi-card-manutencao .kpi-info span {
-                font-size: 20px;
-            }
-            .manutencao-container .sidebar-actions {
-                flex-direction: row;
-                padding: 0 15px 10px 15px;
-                flex-wrap: wrap;
-            }
-            .manutencao-container .sidebar-actions .btn-sidebar {
-                flex: 1;
-                min-width: 120px;
-                padding: 10px;
-                font-size: 13px;
-            }
-            .manutencao-container .nota-despesa-container {
-                padding: 20px;
-            }
-            .manutencao-container .nota-itens th,
-            .manutencao-container .nota-itens td {
-                padding: 4px 6px;
-                font-size: 11px;
-            }
-            .manutencao-container .nota-assinaturas {
-                flex-direction: column;
-                align-items: center;
-            }
-            /* EAN */
-            .container-ean .search-area-ean {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 12px 16px;
-            }
-            .container-ean .search-area-ean input {
-                width: 100%;
-            }
-            .container-ean .product-pricing {
-                grid-template-columns: 1fr 1fr;
-            }
-            .container-ean .concorrentes-grid {
-                grid-template-columns: 1fr;
-            }
-            .container-ean .product-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .container-ean .add-product-form {
-                grid-template-columns: 1fr;
-            }
-            .container-ean .add-product-form .form-group[style*="grid-column"] {
-                grid-column: 1 !important;
-            }
-            .camera-modal-ean video {
-                max-width: 100%;
-                max-height: 50%;
-            }
-            .container-ean .product-header-ean {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-                padding: 12px 16px;
-            }
-            .container-ean .product-header-ean .name {
-                font-size: 18px;
-            }
-            .container-ean .ean-header h1 {
-                font-size: 22px;
-            }
-            .container-ean .subtitle-ean {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-            .history-area-ean {
-                flex-wrap: wrap;
-            }
-            .history-btn {
-                font-size: 12px;
-                padding: 3px 10px;
-            }
-            .container-ean .pricing-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .container-ean .pricing-actions button {
-                width: 100%;
-            }
-            .container-ean .stock-table-wrapper {
-                max-height: 400px;
-            }
-            .container-ean .stock-table th,
-            .container-ean .stock-table td {
-                padding: 6px 8px;
-                font-size: 12px;
-            }
-            /* Avaliação relatório */
-            .avaliacao-relatorio-container .relatorio-kpi-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .avaliacao-relatorio-container .relatorio-filtros {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .avaliacao-relatorio-container .relatorio-filtros input,
-            .avaliacao-relatorio-container .relatorio-filtros select,
-            .avaliacao-relatorio-container .relatorio-filtros button {
-                width: 100%;
-            }
-            .avaliacao-relatorio-container .avaliacao-relatorio-tabela-wrapper {
-                max-height: 300px;
-            }
-            .avaliacao-relatorio-container .avaliacao-relatorio-tabela {
-                font-size: 12px;
-                min-width: 600px;
-            }
-            /* Login */
-            .login-box h2 {
-                font-size: 20px;
-            }
-            .login-box p {
-                font-size: 13px;
-            }
-            /* Notificações */
-            .notification-panel {
-                width: 280px;
-                right: -10px;
-            }
-            /* Tooltip */
-            [data-tooltip]:before {
-                display: none !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .module-grid {
-                grid-template-columns: 1fr;
-            }
-            .kpi-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .manutencao-container .kpi-grid-manutencao {
-                grid-template-columns: 1fr 1fr;
-            }
-            .tempos-fases-container,
-            .status-detalhado-container {
-                grid-template-columns: 1fr;
-            }
-            .container-ean .product-grid {
-                grid-template-columns: 1fr;
-            }
-            .container-ean .product-pricing {
-                grid-template-columns: 1fr;
-            }
-            .modal-content {
-                width: 100%;
-                margin: 0;
-                border-radius: 0;
-                max-height: 100vh;
-            }
-            .modal-header {
-                padding: 12px 16px;
-            }
-            .modal-body {
-                padding: 12px;
-            }
-            .container {
-                padding: 6px;
-            }
-            .app-header {
-                padding: 8px 10px;
-            }
-            .logo-kero {
-                width: 40px;
-                height: 40px;
-            }
-            .logo-kero span {
-                font-size: 24px;
-            }
-            .user-badge {
-                font-size: 12px;
-                padding: 2px 8px;
-            }
-            .user-role {
-                font-size: 10px;
-                padding: 2px 6px;
-            }
-            .btn-logout,
-            .btn-modules,
-            .btn-darkmode {
-                padding: 4px 12px;
-                font-size: 12px;
-            }
-            .nav-item {
-                font-size: 12px;
-                padding: 4px 10px;
-            }
-            .fase-card,
-            .status-card {
-                padding: 10px;
-            }
-            .fase-titulo {
-                font-size: 13px;
-            }
-            .fase-tempo {
-                font-size: 16px;
-            }
-            .kpi-card .kpi-info h4 {
-                font-size: 11px;
-            }
-            .kpi-card .kpi-info span {
-                font-size: 18px;
-            }
-            .btn-small {
-                font-size: 10px;
-                padding: 3px 6px;
-            }
-            .container-ean .product-header-ean .name {
-                font-size: 16px;
-            }
-        }
-
-        /* Restante do CSS original (mantido) */
-        /* ... (todo o CSS que já existia, mas com as media queries adicionadas acima) ... */
-
-        /* ============================================================
-           A partir daqui, mantenha todo o CSS original que já existia.
-           As regras acima já foram melhoradas para mobile.
-           ============================================================ */
 
         .login-container {
             display: flex;
@@ -632,23 +175,28 @@
         .module-selection-screen {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             background: linear-gradient(145deg, #2E7D32, #4CAF50);
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
+            height: 100vh;
+            overflow-y: auto;
             z-index: 9998;
-            padding: 20px;
+            padding: 20px 10px;
         }
         .module-selection-container {
             background: white;
-            padding: 50px;
+            padding: 30px 25px 40px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-md);
             max-width: 1100px;
             width: 100%;
+            margin: auto;
+            max-height: 100vh;
+            overflow-y: auto;
         }
         body.dark-mode .module-selection-container {
             background: #2d2d44;
@@ -656,11 +204,11 @@
         }
         .module-selection-title {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         .module-selection-title h1 {
             color: var(--primary-dark);
-            font-size: 32px;
+            font-size: 28px;
             margin-bottom: 10px;
         }
         .module-selection-title .user-welcome {
@@ -694,13 +242,13 @@
         .module-card-large {
             background: white;
             border-radius: var(--border-radius);
-            padding: 30px 20px;
+            padding: 25px 15px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: var(--shadow-md);
             border: 2px solid transparent;
-            min-height: 220px;
+            min-height: 200px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -711,17 +259,17 @@
             color: #eee;
         }
         .module-card-large:hover {
-            transform: translateY(-10px);
+            transform: translateY(-8px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
             border-color: var(--primary);
         }
         .module-card-large .module-icon-large {
-            font-size: 60px;
-            margin-bottom: 15px;
+            font-size: 48px;
+            margin-bottom: 12px;
         }
         .module-card-large h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-size: 18px;
+            margin-bottom: 8px;
         }
         .module-card-large p {
             color: var(--gray-500);
@@ -1324,7 +872,7 @@
         .tempos-fases-container,
         .status-detalhado-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -1440,6 +988,7 @@
             max-height: 90vh;
             overflow-y: auto;
             animation: modalSlideIn 0.3s ease;
+            margin: 20px;
         }
         body.dark-mode .modal-content {
             background: #2d2d44;
@@ -1676,6 +1225,7 @@
             z-index: 100000;
             animation: slideIn 0.3s ease;
             box-shadow: var(--shadow-md);
+            max-width: 90vw;
         }
         .notificacao-success {
             background: #4CAF50;
@@ -3853,6 +3403,12 @@
         .btn-upload:hover {
             background: #6a1b9a;
         }
+        .btn-import {
+            background: #217346;
+        }
+        .btn-import:hover {
+            background: #1e6a3b;
+        }
         .btn-editar-precos {
             background: #2E7D32;
             margin-top: 5px;
@@ -4385,7 +3941,7 @@
                 margin: 0 15px;
             }
             .module-selection-container {
-                padding: 30px 20px;
+                padding: 20px 15px 30px;
             }
             .manutencao-container .kpi-grid-manutencao {
                 grid-template-columns: repeat(2, 1fr);
@@ -4454,6 +4010,12 @@
                 max-width: 100%;
                 max-height: 50%;
             }
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .kpi-card .kpi-info span {
+                font-size: 20px;
+            }
         }
         @media (max-width: 480px) {
             .module-grid {
@@ -4513,6 +4075,52 @@
         }
         [data-tooltip]:hover:before {
             display: block;
+        }
+
+        /* Estilos para modo público (guest) */
+        .guest-banner {
+            background: #fff3cd;
+            color: #856404;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .guest-banner i {
+            font-size: 20px;
+        }
+        .guest-banner .btn-close-guest {
+            margin-left: auto;
+            background: transparent;
+            border: none;
+            color: #856404;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .guest-banner .btn-close-guest:hover {
+            text-decoration: underline;
+        }
+        body.dark-mode .guest-banner {
+            background: #4a3a1a;
+            color: #efd08f;
+        }
+        body.dark-mode .guest-banner .btn-close-guest {
+            color: #efd08f;
+        }
+        .guest-only {
+            border: 2px dashed #ffc107;
+            padding: 12px;
+            border-radius: 8px;
+            background: #fff8e1;
+            margin: 10px 0;
+        }
+        body.dark-mode .guest-only {
+            background: #4a3a1a;
+            border-color: #6a5a2a;
         }
     </style>
 </head>
@@ -4712,7 +4320,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO AVALIAÇÃO (COMPLETO - mantido do original)
+            MÓDULO AVALIAÇÃO (COMPLETO - com restrições de acesso)
             ============================================================ -->
             <div id="avaliacaoSection" style="display: none;">
                 <div class="container-avaliacao">
@@ -4720,7 +4328,7 @@
                         <div class="avaliacao-bloqueada">
                             <i class="fas fa-lock"></i>
                             <h2>⛔ Acesso Restrito</h2>
-                            <p>O módulo de Avaliação é restrito a <strong>Administradores, RH e Director Geral</strong>.</p>
+                            <p>O módulo de Avaliação é restrito a <strong>Administrador, Mário Arão e Director Geral</strong>.</p>
                             <p>Contacte o administrador para obter acesso.</p>
                             <button class="btn" onclick="voltarParaModulos()">Voltar aos Módulos</button>
                         </div>
@@ -5056,7 +4664,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO MOBILIDADE & PROMOÇÕES (COMPLETO - mantido do original)
+            MÓDULO MOBILIDADE & PROMOÇÕES (COMPLETO - com restrições de visualização)
             ============================================================ -->
             <div id="mobilidadeSection" style="display: none;">
                 <div class="nav-menu roxo-nav" id="navMobilidade">
@@ -5130,9 +4738,16 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO EAN SCAN (COMPLETO)
+            MÓDULO EAN SCAN (COMPLETO - com importação restrita e sincronização SharePoint)
             ============================================================ -->
             <div id="eanSection" style="display: none;">
+                <!-- Banner para modo público -->
+                <div id="guestBanner" class="guest-banner" style="display: none;">
+                    <i class="fas fa-globe"></i>
+                    <span><strong>Modo Convidado</strong> – Visualização pública de preços e stock. Edições e importações estão desativadas.</span>
+                    <button class="btn-close-guest" onclick="fecharModoPublico()">✕</button>
+                </div>
+
                 <div class="container-ean">
                     <header class="ean-header">
                         <h1><i class="fas fa-barcode"></i> Kero EAN Scan</h1>
@@ -5153,6 +4768,8 @@
                         <button class="btn-ean btn-camera" id="btnCamera"><i class="fas fa-camera"></i> Ler Código</button>
                         <button class="btn-ean btn-upload" id="btnUploadImage"><i class="fas fa-image"></i> Carregar Imagem</button>
                         <input type="file" id="fileInput" accept="image/*" style="display:none;">
+                        <button class="btn-ean btn-import" id="btnImportExcel"><i class="fas fa-file-excel"></i> Importar Excel</button>
+                        <input type="file" id="fileInputExcel" accept=".xlsx,.xls" style="display:none;">
                         <div class="suggestions-box" id="suggestionsBox"></div>
                     </section>
 
@@ -5244,8 +4861,8 @@
                         </div>
                     </div>
 
-                    <!-- Adicionar produto -->
-                    <section class="add-product-area-ean">
+                    <!-- Adicionar produto (oculto em modo público) -->
+                    <section id="addProductArea" class="add-product-area-ean">
                         <h3><i class="fas fa-plus-circle"></i> Adicionar Novo Produto</h3>
                         <div class="add-product-form">
                             <div class="form-group">
@@ -5511,10 +5128,18 @@
             'dircg@accordgrouplda.com': 'Controlo de Gestão',
             'aleixo.francisco@accordgrouplda.com': 'Confirmante',
             'luzia.cauica@accordgrouplda.com': 'Recrutador',
-            'norma.melo@accordgrouplda.com': 'Recrutador'
+            'norma.melo@accordgrouplda.com': 'Recrutador',
+            'erikson.silva@accordgrouplda.com': 'Administrador' // Erikson como Administrador
         };
 
-        const PERFIS_AVALIACAO = ['Administrador', 'RH', 'Director Geral'];
+        // Emails com acesso total na mobilidade
+        const EMAILS_ACESSO_TOTAL_MOB = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com',
+            'paulo.silva@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'
+        ];
+
+        // Emails com permissão para importar EAN
+        const EMAILS_IMPORTACAO_EAN = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
+
         const BLOCKED_EMAILS = ['paulo.silva@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'dircg@accordgrouplda.com'];
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador'];
         const PERFIS_QUE_APROVAM = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
@@ -5538,7 +5163,8 @@
             listaAvaliacoes: "avaliacoes",
             listaManutencoes: "manutencoes",
             listaMobilidade: "MobilidadePromocoes",
-            listaProdutosEAN: "ProdutosEAN"
+            listaProdutosEAN: "ProdutosEAN",
+            listaColaboradores: "Colaboradores" // Lista para buscar colaboradores na avaliação
         };
 
         let msalInstance = null,
@@ -5554,6 +5180,7 @@
         let moduloAtual = null,
             requisicaoVisualizarAtual = null,
             requisicaoSelecionadaAtual = null;
+        let modoPublico = false; // Flag para modo convidado
 
         // ============================================================
         // FUNÇÕES GLOBAIS
@@ -5677,6 +5304,13 @@
             document.getElementById('mainSystem').style.display = 'none';
             document.getElementById('moduleSelectionScreen').style.display = 'flex';
             moduloAtual = null;
+            // Se estiver em modo público, voltar para a tela de login? Não, redirecionar para a página normal?
+            if (modoPublico) {
+                // Remove o parâmetro public da URL e recarrega
+                const url = new URL(window.location);
+                url.searchParams.delete('public');
+                window.location.href = url.toString();
+            }
         }
 
         async function verificarSessao() {
@@ -5706,6 +5340,13 @@
             localStorage.removeItem('keroSessao');
             usuarioAtual = null;
             moduloAtual = null;
+            if (modoPublico) {
+                // Se estava em modo público, apenas redireciona para a página sem parâmetro
+                const url = new URL(window.location);
+                url.searchParams.delete('public');
+                window.location.href = url.toString();
+                return;
+            }
             document.getElementById('mainSystem').style.display = 'none';
             document.getElementById('moduleSelectionScreen').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'flex';
@@ -5713,9 +5354,65 @@
         }
 
         // ============================================================
+        // MODO PÚBLICO (GUEST) - EAN SCAN
+        // ============================================================
+        function iniciarModoPublico() {
+            modoPublico = true;
+            // Define um usuário convidado
+            usuarioAtual = { id: 'guest', nome: 'Convidado', email: 'guest@public.com', perfil: 'Convidado' };
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('moduleSelectionScreen').style.display = 'none';
+            document.getElementById('mainSystem').style.display = 'block';
+
+            // Esconde a navegação principal e o header (apenas o necessário)
+            document.getElementById('navMenu').style.display = 'none';
+            document.getElementById('currentUserName').textContent = 'Convidado';
+            document.getElementById('currentUserRole').textContent = 'Público';
+            document.getElementById('systemTitle').textContent = 'Kero EAN Scan - Público';
+            document.getElementById('systemSubtitle').textContent = 'Visualização de Preços e Stock';
+            // Oculta o botão "Sair" e outros elementos desnecessários
+            document.querySelector('.user-info .btn-logout').style.display = 'none';
+            document.querySelector('.user-info .btn-modules').style.display = 'none';
+            // Adiciona um banner informativo
+            document.getElementById('guestBanner').style.display = 'flex';
+            // Carrega apenas o módulo EAN
+            document.getElementById('recrutamentoSection').style.display = 'none';
+            document.getElementById('avaliacaoSection').style.display = 'none';
+            document.getElementById('manutencaoSection').style.display = 'none';
+            document.getElementById('mobilidadeSection').style.display = 'none';
+            document.getElementById('eanSection').style.display = 'block';
+            // Oculta a área de adição de produtos e botões de edição/importação
+            document.getElementById('addProductArea').style.display = 'none';
+            document.getElementById('btnImportExcel').style.display = 'none';
+            document.getElementById('btnEditarPrecos').style.display = 'none';
+            document.getElementById('btnGuardarPrecos').style.display = 'none';
+            document.getElementById('btnGuardarConcorrentes').style.display = 'none';
+            // Inicializa o módulo EAN sem autenticação (usa dados locais)
+            eanApp.inicializarPublico();
+            // Desabilita edição de preços
+            document.querySelectorAll('.pricing-item input').forEach(inp => inp.disabled = true);
+            document.querySelectorAll('.concorrente-item input').forEach(inp => inp.disabled = true);
+            mostrarNotificacao('🔓 Modo Público ativado. Visualização de preços e stock.', 'info');
+        }
+
+        function fecharModoPublico() {
+            // Remove o parâmetro public e recarrega a página
+            const url = new URL(window.location);
+            url.searchParams.delete('public');
+            window.location.href = url.toString();
+        }
+
+        // ============================================================
         // SELEÇÃO DE MÓDULO
         // ============================================================
         function selecionarModulo(mod) {
+            if (modoPublico) {
+                // Em modo público, só é permitido o EAN
+                if (mod !== 'ean') {
+                    mostrarNotificacao('Modo público apenas permite visualização do EAN Scan.', 'warning');
+                    return;
+                }
+            }
             moduloAtual = mod;
             document.getElementById('moduleSelectionScreen').style.display = 'none';
             document.getElementById('mainSystem').style.display = 'block';
@@ -5744,14 +5441,32 @@
                 inicializarBotoesPorPerfil();
                 carregarUtilizadores();
             } else if (mod === 'avaliacao') {
-                document.getElementById('avaliacaoSection').style.display = 'block';
-                document.getElementById('systemTitle').textContent = 'Kero Avaliação';
-                document.getElementById('systemSubtitle').textContent = 'Sistema de Avaliação de Desempenho';
-                document.getElementById('navMenu').style.display = 'none';
-                document.getElementById('currentUserName').textContent = usuarioAtual.nome;
-                document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
-                atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
-                avaliacaoApp.inicializar();
+                // Verificar permissão de acesso
+                const email = usuarioAtual.email;
+                const perfil = usuarioAtual.perfil;
+                const permitidos = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'paulo.silva@accordgrouplda.com'];
+                if (perfil === 'Administrador' || permitidos.includes(email)) {
+                    document.getElementById('avaliacaoAcessoNegado').style.display = 'none';
+                    document.getElementById('avaliacaoConteudo').style.display = 'block';
+                    document.getElementById('avaliacaoSection').style.display = 'block';
+                    document.getElementById('systemTitle').textContent = 'Kero Avaliação';
+                    document.getElementById('systemSubtitle').textContent = 'Sistema de Avaliação de Desempenho';
+                    document.getElementById('navMenu').style.display = 'none';
+                    document.getElementById('currentUserName').textContent = usuarioAtual.nome;
+                    document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
+                    atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
+                    avaliacaoApp.inicializar();
+                } else {
+                    document.getElementById('avaliacaoAcessoNegado').style.display = 'block';
+                    document.getElementById('avaliacaoConteudo').style.display = 'none';
+                    document.getElementById('avaliacaoSection').style.display = 'block';
+                    document.getElementById('systemTitle').textContent = 'Kero Avaliação';
+                    document.getElementById('systemSubtitle').textContent = 'Acesso Restrito';
+                    document.getElementById('navMenu').style.display = 'none';
+                    document.getElementById('currentUserName').textContent = usuarioAtual.nome;
+                    document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
+                    atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
+                }
             } else if (mod === 'manutencao') {
                 document.getElementById('manutencaoSection').style.display = 'block';
                 document.getElementById('systemTitle').textContent = 'Kero Manutenção';
@@ -5902,7 +5617,7 @@
             if (!cont) return;
             cont.innerHTML = todasDirecoes.map(d =>
                     `<div class="direcao-item"><div class="direcao-header"><span class="direcao-nome"><i class="fas fa-building"></i> ${d}</span></div><div class="direcao-categorias">${todasCategorias.map(c => `<span class="categoria-tag">${c}</span>`).join('')}</div></div>`
-                    )
+                )
                 .join('');
         }
 
@@ -5935,7 +5650,7 @@
                     utilizadoresUnicos.push(u); } }
             tbody.innerHTML = utilizadoresUnicos.map(u =>
                     `<tr><td>${u.nome || 'N/A'}</td><td>${u.email}</td><td><span class="status-badge" style="background:var(--primary);color:white;">${u.perfil}</span></td></tr>`
-                    )
+                )
                 .join('');
         }
 
@@ -5973,7 +5688,7 @@
             if (arquivosUpload.length === 0) { list.innerHTML = ''; return; }
             list.innerHTML = arquivosUpload.map((f, i) =>
                     `<div class="file-item"><div class="file-info"><i class="fas ${getIconePorTipo(f.type)}"></i><div><div>${f.name}</div><div class="file-size">${formatarTamanho(f.size)}</div></div></div><i class="fas fa-times file-remove" onclick="removerFicheiro(${i})"></i></div>`
-                    )
+                )
                 .join('');
         }
 
@@ -6414,7 +6129,7 @@
             const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
             if (!podeFinalizarRecrutamento(req)) { mostrarNotificacao('Apenas o Recrutador pode finalizar!',
-                'error'); return; }
+                    'error'); return; }
             showLoading();
             try {
                 req.status = 'aguardando_confirmacao_solicitante';
@@ -6836,7 +6551,7 @@
                 utilizadorJaAprovou(req)) return false; return false; }
 
         function podeDevolverRequisicao(req) { if (!usuarioAtual) return false; if (!isAprovador()) return false; if (
-                utilizadorJaAprovou(req)) return false; if (req.criadoPorEmail === usuarioAtual.email) return false; if (!
+                utilizadorJaAprovou(req)) return false; if (req.criadoPorEmail === usuarioAtual.email) return false; if (! 
                 podeAprovarStatus(req)) return false; return true; }
 
         function inicializarBotoesPorPerfil() {
@@ -6888,7 +6603,7 @@
                     '<div style="padding:20px;text-align:center;">Sem notificações</div>'; return; }
             list.innerHTML = notificacoes.slice(0, 20).map(n =>
                     `<div class="notification-item ${!n.lida ? 'unread' : ''}" onclick="marcarNotificacaoLida(${n.id})"><div class="notification-title">${n.titulo}</div><div class="notification-message" style="font-size:12px;color:#666;">${n.mensagem}</div><div class="notification-time">${formatarDataHora(n.data)}</div></div>`
-                    )
+                )
                 .join('');
         }
 
@@ -7246,15 +6961,46 @@
         // MÓDULO AVALIAÇÃO (COMPLETO)
         // ============================================================
         const avaliacaoApp = (function() {
-            const mockColaboradores = {
-                "10": { "nome": "ALBERTO TANGU SIMAO", "direcao": "Lubango", "departamento": "Departamento PF",
-                    "funcao": "Gerente de Departamento", "dataAdmissao": "2010-12-01" },
-                "101": { "nome": "ANA AUGUSTO PASCOAL MONTEIRO", "direcao": "Kilamba", "departamento": "Gastronomia",
-                    "funcao": "Operador de Loja", "dataAdmissao": "2012-06-04" }
-            };
             let colaboradorSelecionado = null,
                 avaliacaoData = null,
                 avaliacoesSalvas = [];
+
+            // Função para buscar colaborador no SharePoint
+            async function buscarColaboradorNoSharePoint(id) {
+                try {
+                    const token = await getSharePointToken();
+                    const siteId = await getSiteId();
+                    const listUrl =
+                        `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaColaboradores}/items?expand=fields&$filter=fields/ID eq '${id}'`;
+                    const response = await fetch(listUrl, {
+                        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.value && data.value.length > 0) {
+                            const f = data.value[0].fields;
+                            return {
+                                id: f.ID || id,
+                                nome: f.Nome || '',
+                                direcao: f.Direcao || '',
+                                departamento: f.Departamento || '',
+                                funcao: f.Funcao || '',
+                                admissao: f.DataAdmissao || ''
+                            };
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Erro ao buscar colaborador no SharePoint, usando mock:', error);
+                }
+                // Fallback mock
+                const mockColaboradores = {
+                    "10": { "nome": "ALBERTO TANGU SIMAO", "direcao": "Lubango", "departamento": "Departamento PF",
+                        "funcao": "Gerente de Departamento", "dataAdmissao": "2010-12-01" },
+                    "101": { "nome": "ANA AUGUSTO PASCOAL MONTEIRO", "direcao": "Kilamba",
+                        "departamento": "Gastronomia", "funcao": "Operador de Loja", "dataAdmissao": "2012-06-04" }
+                };
+                return mockColaboradores[id] || null;
+            }
 
             function mudarSubmenu(submenu) {
                 document.getElementById('avaliacaoSubmenuAvaliar').style.display = submenu === 'avaliar' ? 'block' :
@@ -7272,16 +7018,16 @@
                 if (submenu === 'relatorio') carregarRelatorioAvaliacoes();
             }
 
-            function buscarColaborador() {
+            async function buscarColaborador() {
                 const id = document.getElementById('pesquisaID').value,
                     msg = document.getElementById('msgPesquisa');
                 if (!id) { msg.textContent = '⚠️ Digite um ID';
                     msg.className = 'msg-pesquisa aviso'; return; }
-                const colaborador = mockColaboradores[id];
+                const colaborador = await buscarColaboradorNoSharePoint(id);
                 if (colaborador) {
                     colaboradorSelecionado = { id: parseInt(id), nome: colaborador.nome, direcao: colaborador
                             .direcao, departamento: colaborador.departamento, funcao: colaborador.funcao,
-                        admissao: colaborador.dataAdmissao };
+                        admissao: colaborador.admissao };
                     msg.textContent = `✅ Colaborador encontrado: ${colaborador.nome}`;
                     msg.className = 'msg-pesquisa sucesso';
                     document.getElementById('avaliacaoID').textContent = id;
@@ -7289,7 +7035,7 @@
                     document.getElementById('avaliacaoDirecao').textContent = colaborador.direcao;
                     document.getElementById('avaliacaoDepartamento').textContent = colaborador.departamento;
                     document.getElementById('avaliacaoFuncao').textContent = colaborador.funcao;
-                    document.getElementById('avaliacaoAdmissao').textContent = colaborador.dataAdmissao;
+                    document.getElementById('avaliacaoAdmissao').textContent = colaborador.admissao;
                     document.getElementById('feedbackNome').textContent = colaborador.nome;
                     document.getElementById('feedbackFuncao').textContent = colaborador.funcao;
                     document.getElementById('feedbackData').textContent = new Date().toLocaleDateString(
@@ -7385,11 +7131,11 @@
                 if (!colaboradorSelecionado) { mostrarNotificacao('Selecione um colaborador!', 'error'); return; }
                 let total = 0,
                     count = 0;
-                for (let i = 0; i < 5; i++) { const sel = document.getElementById(`avaliacao_compC_${i}`); if (sel &&
-                        sel.value) { total += parseInt(sel.value);
+                for (let i = 0; i < 5; i++) { const sel = document.getElementById(`avaliacao_compC_${i}`); if (sel && sel
+                        .value) { total += parseInt(sel.value);
                         count++; } }
-                for (let i = 0; i < 4; i++) { const sel = document.getElementById(`avaliacao_compT_${i}`); if (sel &&
-                        sel.value) { total += parseInt(sel.value);
+                for (let i = 0; i < 4; i++) { const sel = document.getElementById(`avaliacao_compT_${i}`); if (sel && sel
+                        .value) { total += parseInt(sel.value);
                         count++; } }
                 if (count === 0) { mostrarNotificacao('Selecione pelo menos uma competência!', 'warning'); return; }
                 const media = total / count;
@@ -7440,14 +7186,14 @@
                 };
                 let total = 0,
                     count = 0;
-                for (let i = 0; i < 5; i++) { const sel = document.getElementById(`avaliacao_compC_${i}`); if (sel &&
-                        sel.value) { const nome = document.querySelector(`#compC_${i} .nome`)?.textContent ||
+                for (let i = 0; i < 5; i++) { const sel = document.getElementById(`avaliacao_compC_${i}`); if (sel && sel
+                        .value) { const nome = document.querySelector(`#compC_${i} .nome`)?.textContent ||
                             `Competência ${i+1}`;
                         feedback.competencias.push({ nome: nome.trim(), nota: parseInt(sel.value) });
                         total += parseInt(sel.value);
                         count++; } }
-                for (let i = 0; i < 4; i++) { const sel = document.getElementById(`avaliacao_compT_${i}`); if (sel &&
-                        sel.value) { const nome = document.querySelector(`#compT_${i} .nome`)?.textContent ||
+                for (let i = 0; i < 4; i++) { const sel = document.getElementById(`avaliacao_compT_${i}`); if (sel && sel
+                        .value) { const nome = document.querySelector(`#compT_${i} .nome`)?.textContent ||
                             `Competência ${i+6}`;
                         feedback.competencias.push({ nome: nome.trim(), nota: parseInt(sel.value) });
                         total += parseInt(sel.value);
@@ -7859,7 +7605,7 @@
         })();
 
         // ============================================================
-        // MÓDULO MANUTENÇÃO (COMPLETO)
+        // MÓDULO MANUTENÇÃO (COMPLETO - mantido do original)
         // ============================================================
         const manutencaoApp = (function() {
             let reqs = [],
@@ -8833,7 +8579,7 @@
         })();
 
         // ============================================================
-        // MÓDULO MOBILIDADE & PROMOÇÕES (COMPLETO)
+        // MÓDULO MOBILIDADE & PROMOÇÕES (COMPLETO) - com restrições de visualização
         // ============================================================
         const mobApp = (function() {
             let reqs = [],
@@ -8983,6 +8729,7 @@
                     mostrarNotificacao('⚠️ Erro ao sincronizar com SharePoint. Dados locais carregados.',
                         'warning');
                 }
+                // Aplicar filtros de visualização (apenas próprias requisições, exceto para administradores/emails permitidos)
                 filtrarRequisicoes();
                 atualizarKPIs();
                 carregarDashboardTempos();
@@ -8991,8 +8738,20 @@
                 renderizarAprovacoes();
             }
 
+            function podeVerTodas() {
+                if (!usuarioAtual) return false;
+                // Administrador ou emails com acesso total
+                if (usuarioAtual.perfil === 'Administrador') return true;
+                if (EMAILS_ACESSO_TOTAL_MOB.includes(usuarioAtual.email)) return true;
+                return false;
+            }
+
             function filtrarRequisicoes() {
                 let lista = [...reqs];
+                // Filtrar por visibilidade: se não pode ver todas, mostra apenas as suas próprias
+                if (!podeVerTodas()) {
+                    lista = lista.filter(r => r.criadoPorEmail === usuarioAtual.email);
+                }
                 if (filtroSearch) {
                     const s = filtroSearch.toLowerCase();
                     lista = lista.filter(r => r.codigo.toLowerCase().includes(s) || r.colaborador.toLowerCase()
@@ -9090,18 +8849,27 @@
 
             function renderizarAprovacoes() {
                 let pendentes = [];
-                if (usuarioAtual.perfil === 'Administrador') {
+                if (podeVerTodas()) {
                     pendentes = reqs.filter(r => ['em_validacao_rh', 'em_validacao_financas',
                         'em_validacao_director', 'aprovada', 'aguardando_confirmacao'
                     ].includes(r.status));
-                } else if (usuarioAtual.perfil === 'RH') {
-                    pendentes = reqs.filter(r => r.status === 'em_validacao_rh');
-                } else if (usuarioAtual.perfil === 'Controlo de Gestão') {
-                    pendentes = reqs.filter(r => r.status === 'em_validacao_financas');
-                } else if (usuarioAtual.perfil === 'Director Geral') {
-                    pendentes = reqs.filter(r => r.status === 'em_validacao_director');
-                } else if (usuarioAtual.perfil === 'Confirmante') {
-                    pendentes = reqs.filter(r => r.status === 'aprovada');
+                } else {
+                    // Apenas as próprias requisições que estão em estado de pendência para o seu perfil
+                    if (usuarioAtual.perfil === 'RH') {
+                        pendentes = reqs.filter(r => r.status === 'em_validacao_rh' && r.criadoPorEmail !== usuarioAtual
+                            .email);
+                    } else if (usuarioAtual.perfil === 'Controlo de Gestão') {
+                        pendentes = reqs.filter(r => r.status === 'em_validacao_financas' && r.criadoPorEmail !== usuarioAtual
+                            .email);
+                    } else if (usuarioAtual.perfil === 'Director Geral') {
+                        pendentes = reqs.filter(r => r.status === 'em_validacao_director' && r.criadoPorEmail !== usuarioAtual
+                            .email);
+                    } else if (usuarioAtual.perfil === 'Confirmante') {
+                        pendentes = reqs.filter(r => r.status === 'aprovada' && r.criadoPorEmail !== usuarioAtual
+                        .email);
+                    } else {
+                        pendentes = [];
+                    }
                 }
                 const tbody = document.getElementById('mobCorpoAprovacoes');
                 if (!tbody) return;
@@ -9142,6 +8910,8 @@
             function carregarDashboardTempos() {
                 const container = document.getElementById('mobTemposDashboard');
                 if (!container) return;
+                // Aplicar filtro de visibilidade
+                const lista = filtrarRequisicoes();
                 let tRH = 0,
                     cRH = 0,
                     tCG = 0,
@@ -9150,7 +8920,7 @@
                     cDir = 0,
                     tConf = 0,
                     cConf = 0;
-                reqs.forEach(r => {
+                lista.forEach(r => {
                     const aRH = r.historicoComentarios?.find(h => h.acao === 'aprovar' && h.perfil === 'RH');
                     const aCG = r.historicoComentarios?.find(h => h.acao === 'aprovar' && h.perfil ===
                         'Controlo de Gestão');
@@ -9210,15 +8980,16 @@
             function carregarDashboardStatus() {
                 const container = document.getElementById('mobStatusDashboard');
                 if (!container) return;
-                const total = reqs.length;
+                const lista = filtrarRequisicoes();
+                const total = lista.length;
                 const counts = {
-                    'em_validacao_rh': reqs.filter(r => r.status === 'em_validacao_rh').length,
-                    'em_validacao_financas': reqs.filter(r => r.status === 'em_validacao_financas').length,
-                    'em_validacao_director': reqs.filter(r => r.status === 'em_validacao_director').length,
-                    'aprovada': reqs.filter(r => r.status === 'aprovada').length,
-                    'aguardando_confirmacao': reqs.filter(r => r.status === 'aguardando_confirmacao').length,
-                    'concluida': reqs.filter(r => r.status === 'concluida').length,
-                    'rejeitada': reqs.filter(r => r.status === 'rejeitada').length,
+                    'em_validacao_rh': lista.filter(r => r.status === 'em_validacao_rh').length,
+                    'em_validacao_financas': lista.filter(r => r.status === 'em_validacao_financas').length,
+                    'em_validacao_director': lista.filter(r => r.status === 'em_validacao_director').length,
+                    'aprovada': lista.filter(r => r.status === 'aprovada').length,
+                    'aguardando_confirmacao': lista.filter(r => r.status === 'aguardando_confirmacao').length,
+                    'concluida': lista.filter(r => r.status === 'concluida').length,
+                    'rejeitada': lista.filter(r => r.status === 'rejeitada').length,
                 };
                 const max = Math.max(...Object.values(counts), 1);
                 container.innerHTML =
@@ -9282,6 +9053,11 @@
             function visualizar(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
+                // Verificar permissão de visualização
+                if (!podeVerTodas() && req.criadoPorEmail !== usuarioAtual.email) {
+                    mostrarNotificacao('Sem permissão para visualizar esta requisição.', 'error');
+                    return;
+                }
                 window.mobRequisicaoVisualizarAtual = req;
                 const html =
                     `
@@ -9517,7 +9293,7 @@
                 const dataInicio = document.getElementById('mobRelatorioDataInicio').value;
                 const dataFim = document.getElementById('mobRelatorioDataFim').value;
                 const status = document.getElementById('mobRelatorioStatus').value;
-                let dados = [...reqs];
+                let dados = filtrarRequisicoes(); // já aplica visibilidade
                 if (dataInicio) dados = dados.filter(r => new Date(r.dataCriacao) >= new Date(dataInicio));
                 if (dataFim) dados = dados.filter(r => new Date(r.dataCriacao) <= new Date(dataFim + 'T23:59:59'));
                 if (status !== 'all') dados = dados.filter(r => r.status === status);
@@ -9731,33 +9507,187 @@
             ];
             const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
 
-            const PRODUTOS_MOCK = [
-                { ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14,
-                    fornecedor: "Arrozal SA", venda_media_mensal: 120, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 100); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {}) },
-                { ean: "5601234567891", nome: "Óleo Fula 1L", preco_custo: 720, preco_kero: 980, iva: 14,
-                    fornecedor: "Óleos do Norte", venda_media_mensal: 85, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 50); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 950 + Math.floor(Math.random() * 100); return acc; }, {}) },
-                { ean: "5601234567892", nome: "Farinha Trigo 1kg", preco_custo: 220, preco_kero: 340, iva: 14,
-                    fornecedor: "Moinhos Central", venda_media_mensal: 200, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 120); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 320 + Math.floor(Math.random() * 40); return acc; }, {}) },
-                { ean: "5601234567893", nome: "Açúcar Amarelo 1kg", preco_custo: 180, preco_kero: 290, iva: 14,
-                    fornecedor: "Açucareira Nacional", venda_media_mensal: 150, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 80); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 275 + Math.floor(Math.random() * 30); return acc; }, {}) },
-                { ean: "5601234567894", nome: "Leite Mimosa 1L", preco_custo: 310, preco_kero: 480, iva: 14,
-                    fornecedor: "Lacticínios Mimosa", venda_media_mensal: 95, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 60); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 460 + Math.floor(Math.random() * 40); return acc; }, {}) },
-                { ean: "5060678294427", nome: "Água Classic 1,6L", preco_custo: 100, preco_kero: 120, iva: 14,
-                    fornecedor: "Águas do Kero", venda_media_mensal: 300, stock: LOJAS_KERO.reduce((acc, l) => { acc[
-                            l] = Math.floor(Math.random() * 150); return acc; }, {}), concorrentes: CONCORRENTES
-                        .reduce((acc, c) => { acc[c] = 115 + Math.floor(Math.random() * 15); return acc; }, {}) }
-            ];
+            // Função importarExcel com verificação de permissão
+            async function importarExcel(file) {
+                // Verificar permissão
+                const email = usuarioAtual?.email;
+                if (!EMAILS_IMPORTACAO_EAN.includes(email)) {
+                    notificar('❌ Apenas o Administrador e o Erikson podem importar dados EAN.', 'error');
+                    return;
+                }
 
+                if (!confirm(`Importar dados do ficheiro "${file.name}"?`)) return;
+
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const rows = XLSX.utils.sheet_to_json(sheet, { header: 0, defval: '' });
+
+                        if (rows.length === 0) {
+                            notificar('Ficheiro vazio ou sem dados.', 'error');
+                            return;
+                        }
+
+                        // --- Processamento do Excel (extração de cabeçalho, stock, etc.) ---
+                        let headerRowIndex = 0;
+                        let found = false;
+                        for (let i = 0; i < Math.min(5, rows.length); i++) {
+                            const row = rows[i];
+                            if (row && typeof row === 'object') {
+                                const keys = Object.keys(row);
+                                if (keys.some(k => k.trim().toUpperCase() === 'EAN') &&
+                                    keys.some(k => k.trim().toUpperCase() === 'DESCRIÇÃO' || k.trim().toUpperCase() === 'DESCRICAO')) {
+                                    headerRowIndex = i;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!found) {
+                            notificar('Não foi possível encontrar a linha de cabeçalho (EAN e Descrição).', 'error');
+                            return;
+                        }
+
+                        const headers = Object.keys(rows[headerRowIndex]);
+                        console.log('🔍 Cabeçalho detectado:', headers);
+
+                        let stockStartIdx = -1;
+                        for (let i = 0; i < headers.length; i++) {
+                            if (headers[i].trim().toUpperCase() === 'STOCK QTD. TTL') {
+                                stockStartIdx = i + 1;
+                                break;
+                            }
+                        }
+                        if (stockStartIdx === -1) {
+                            for (let i = 0; i < headers.length; i++) {
+                                const header = headers[i].trim().toUpperCase();
+                                if (LOJAS_KERO.some(nome => header.includes(nome.replace('Kero Loja ', '')) || nome.replace('Kero Loja ', '').includes(header))) {
+                                    stockStartIdx = i;
+                                    break;
+                                }
+                            }
+                        }
+                        if (stockStartIdx === -1) {
+                            stockStartIdx = Math.max(0, headers.length - 15);
+                            console.warn('⚠️ Usando as últimas 15 colunas como stock.');
+                        }
+
+                        const colunasStock = [];
+                        for (let i = stockStartIdx; i < Math.min(stockStartIdx + 15, headers.length); i++) {
+                            colunasStock.push(headers[i]);
+                        }
+                        console.log('🔍 Colunas de stock identificadas:', colunasStock);
+
+                        const stockMapping = {};
+                        for (const col of colunasStock) {
+                            const colUpper = col.trim().toUpperCase();
+                            let matched = false;
+                            for (const nome of LOJAS_KERO) {
+                                const nomeCurto = nome.replace('Kero Loja ', '');
+                                if (colUpper.includes(nomeCurto) || nomeCurto.includes(colUpper)) {
+                                    stockMapping[col] = nome;
+                                    matched = true;
+                                    break;
+                                }
+                            }
+                            if (!matched) {
+                                stockMapping[col] = `Kero Loja ${col.trim()}`;
+                            }
+                        }
+                        console.log('📦 Mapeamento stock:', stockMapping);
+
+                        function extrairNumero(valor) {
+                            if (valor === undefined || valor === null || valor === '') return 0;
+                            if (typeof valor === 'number') return valor;
+                            const str = String(valor).replace(/[^0-9,.]/g, '');
+                            const numStr = str.replace(',', '.');
+                            const num = parseFloat(numStr);
+                            return isNaN(num) ? 0 : num;
+                        }
+
+                        const dados = rows.slice(headerRowIndex + 1);
+                        let processados = 0,
+                            erros = 0;
+
+                        for (let i = 0; i < dados.length; i++) {
+                            const row = dados[i];
+                            try {
+                                const ean = String(row['EAN'] || '').trim();
+                                if (!ean) { erros++; continue; }
+
+                                const stock = {};
+                                for (const [colNome, spNome] of Object.entries(stockMapping)) {
+                                    const valor = row[colNome];
+                                    stock[spNome] = extrairNumero(valor);
+                                }
+
+                                const concorrentes = {
+                                    'Angomart': extrairNumero(row['Angomart']),
+                                    'Maxi': extrairNumero(row['Maxi']),
+                                    'Shoprite': extrairNumero(row['Shoprite'])
+                                };
+
+                                const produto = {
+                                    ean: ean,
+                                    nome: String(row['Descrição'] || row['DESCRIÇÃO'] || '').trim(),
+                                    preco_custo: extrairNumero(row['PMM'] || row['PrecoCusto']),
+                                    preco_kero: extrairNumero(row['PVP'] || row['PrecoKero']),
+                                    iva: extrairNumero(row['IVA %'] || row['IYA %'] || row['IVA']),
+                                    fornecedor: String(row['Nome Fornecedor'] || '').trim(),
+                                    venda_media_mensal: extrairNumero(row['VENDA Media Mensal'] || row['VEN'] || row['VendaMedia']),
+                                    stock: stock,
+                                    concorrentes: concorrentes
+                                };
+
+                                const existente = produtos.find(p => p.ean === ean);
+                                if (existente) {
+                                    Object.assign(existente, produto);
+                                } else {
+                                    produtos.push(produto);
+                                }
+                                processados++;
+                            } catch (err) {
+                                erros++;
+                                console.error('Erro na linha', i, row, err);
+                            }
+
+                            if (i % 50 === 0) {
+                                const pct = Math.round((i / dados.length) * 100);
+                                notificar(`Importando... ${pct}% (${processados} ok, ${erros} erros)`, 'info');
+                                await new Promise(r => setTimeout(r, 50));
+                            }
+                        }
+
+                        // Guardar no SharePoint
+                        let salvos = 0,
+                            falhas = 0;
+                        for (const produto of produtos) {
+                            const sucesso = await salvarProdutoNoSharePoint(produto);
+                            if (sucesso) salvos++;
+                            else falhas++;
+                        }
+
+                        // Recarregar do SharePoint para sincronizar
+                        await carregarProdutosDoSharePoint();
+
+                        guardarLocal();
+                        renderizarTodosProdutos();
+                        renderizarHistorico();
+                        atualizarBadgeTotal();
+                        notificar(`✅ Importação concluída! ${processados} produtos processados, ${salvos} salvos no SharePoint, ${falhas} falhas.`,
+                            'success');
+                    } catch (error) {
+                        console.error('Erro:', error);
+                        notificar('Erro ao processar o Excel: ' + error.message, 'error');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            // --- Funções existentes (carregarLocal, guardarLocal, etc.) ---
             function carregarLocal() {
                 const saved = localStorage.getItem('ean_produtos');
                 if (saved) {
@@ -9765,8 +9695,7 @@
                         produtos = JSON.parse(saved);
                         produtos = produtos.map(p => {
                             LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; });
-                            CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[
-                                c] = 0; });
+                            CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
                             if (p.iva === undefined) p.iva = 0;
                             if (p.fornecedor === undefined) p.fornecedor = '';
                             if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0;
@@ -9909,6 +9838,7 @@
                 document.getElementById('totalProdutosBadge').textContent = `${produtos.length} produtos`;
             }
 
+            // --- Funções de UI (renderização, pesquisa, câmara, etc.) ---
             function adicionarHistorico(ean) {
                 historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
                 historicoPesquisas.unshift(ean);
@@ -10452,17 +10382,50 @@
                 atualizarBadgeTotal();
             }
 
-            async function inicializar() {
+            function inicializarPublico() {
+                // Carregar dados locais (sem SharePoint)
                 if (!carregarLocal()) {
+                    // Inicializar com mock se não houver dados locais
+                    const PRODUTOS_MOCK = [
+                        { ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14,
+                            fornecedor: "Arrozal SA", venda_media_mensal: 120, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {}) },
+                        { ean: "5601234567891", nome: "Óleo Fula 1L", preco_custo: 720, preco_kero: 980, iva: 14,
+                            fornecedor: "Óleos do Norte", venda_media_mensal: 85, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 50); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 950 + Math.floor(Math.random() * 100); return acc; }, {}) },
+                        { ean: "5601234567892", nome: "Farinha Trigo 1kg", preco_custo: 220, preco_kero: 340, iva: 14,
+                            fornecedor: "Moinhos Central", venda_media_mensal: 200, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 120); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 320 + Math.floor(Math.random() * 40); return acc; }, {}) },
+                        { ean: "5601234567893", nome: "Açúcar Amarelo 1kg", preco_custo: 180, preco_kero: 290, iva: 14,
+                            fornecedor: "Açucareira Nacional", venda_media_mensal: 150, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 80); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 275 + Math.floor(Math.random() * 30); return acc; }, {}) },
+                        { ean: "5601234567894", nome: "Leite Mimosa 1L", preco_custo: 310, preco_kero: 480, iva: 14,
+                            fornecedor: "Lacticínios Mimosa", venda_media_mensal: 95, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 60); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 460 + Math.floor(Math.random() * 40); return acc; }, {}) },
+                        { ean: "5060678294427", nome: "Água Classic 1,6L", preco_custo: 100, preco_kero: 120, iva: 14,
+                            fornecedor: "Águas do Kero", venda_media_mensal: 300, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 150); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 115 + Math.floor(Math.random() * 15); return acc; }, {}) }
+                    ];
                     produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
                     guardarLocal();
                 }
                 carregarHistoricoLocal();
                 atualizarBadgeTotal();
                 renderizarHistorico();
+                // Não carregar do SharePoint em modo público
+                // Configurar eventos
+                configurarEventos();
+                // Restaurar último produto
+                const lastEan = sessionStorage.getItem('ean_ultimo_produto');
+                if (lastEan) {
+                    const prod = produtos.find(p => p.ean === lastEan);
+                    if (prod) {
+                        renderizarProduto(prod);
+                        document.getElementById('eanInput').value = lastEan;
+                    }
+                }
+                document.getElementById('eanInput').focus();
+                if (produtos.length === 0 || !produtoAtual) {
+                    document.getElementById('emptyStateEAN').style.display = 'block';
+                }
+                console.log('✅ Módulo EAN em modo público inicializado com sucesso!');
+            }
 
-                await carregarProdutosDoSharePoint();
-
+            function configurarEventos() {
                 document.getElementById('btnBuscar').addEventListener('click', () => buscarProduto(document.getElementById(
                     'eanInput').value));
                 document.getElementById('eanInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') { e
@@ -10474,6 +10437,16 @@
                 document.getElementById('btnEditarPrecos').addEventListener('click', toggleEdicaoPrecos);
                 document.getElementById('btnGuardarPrecos').addEventListener('click', guardarPrecosKero);
                 document.getElementById('btnAddProduct').addEventListener('click', adicionarProduto);
+
+                // Importar Excel
+                document.getElementById('btnImportExcel').addEventListener('click', () => document.getElementById(
+                    'fileInputExcel').click());
+                document.getElementById('fileInputExcel').addEventListener('change', function(e) {
+                    if (this.files.length > 0) {
+                        importarExcel(this.files[0]);
+                    }
+                    this.value = '';
+                });
 
                 document.getElementById('btnCamera').addEventListener('click', abrirCamera);
                 document.getElementById('btnCloseCamera').addEventListener('click', fecharCamera);
@@ -10502,6 +10475,35 @@
                         document.getElementById('suggestionsBox').classList.remove('active');
                     }
                 });
+            }
+
+            async function inicializar() {
+                if (!carregarLocal()) {
+                    // Inicializar com mock se não houver dados locais
+                    const PRODUTOS_MOCK = [
+                        { ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14,
+                            fornecedor: "Arrozal SA", venda_media_mensal: 120, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {}) },
+                        { ean: "5601234567891", nome: "Óleo Fula 1L", preco_custo: 720, preco_kero: 980, iva: 14,
+                            fornecedor: "Óleos do Norte", venda_media_mensal: 85, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 50); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 950 + Math.floor(Math.random() * 100); return acc; }, {}) },
+                        { ean: "5601234567892", nome: "Farinha Trigo 1kg", preco_custo: 220, preco_kero: 340, iva: 14,
+                            fornecedor: "Moinhos Central", venda_media_mensal: 200, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 120); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 320 + Math.floor(Math.random() * 40); return acc; }, {}) },
+                        { ean: "5601234567893", nome: "Açúcar Amarelo 1kg", preco_custo: 180, preco_kero: 290, iva: 14,
+                            fornecedor: "Açucareira Nacional", venda_media_mensal: 150, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 80); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 275 + Math.floor(Math.random() * 30); return acc; }, {}) },
+                        { ean: "5601234567894", nome: "Leite Mimosa 1L", preco_custo: 310, preco_kero: 480, iva: 14,
+                            fornecedor: "Lacticínios Mimosa", venda_media_mensal: 95, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 60); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 460 + Math.floor(Math.random() * 40); return acc; }, {}) },
+                        { ean: "5060678294427", nome: "Água Classic 1,6L", preco_custo: 100, preco_kero: 120, iva: 14,
+                            fornecedor: "Águas do Kero", venda_media_mensal: 300, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 150); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 115 + Math.floor(Math.random() * 15); return acc; }, {}) }
+                    ];
+                    produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
+                    guardarLocal();
+                }
+                carregarHistoricoLocal();
+                atualizarBadgeTotal();
+                renderizarHistorico();
+
+                await carregarProdutosDoSharePoint();
+
+                configurarEventos();
 
                 const lastEan = sessionStorage.getItem('ean_ultimo_produto');
                 if (lastEan) {
@@ -10513,13 +10515,6 @@
                 }
 
                 document.getElementById('eanInput').focus();
-
-                const urlParams = new URLSearchParams(window.location.search);
-                const eanParam = urlParams.get('ean');
-                if (eanParam) {
-                    document.getElementById('eanInput').value = eanParam;
-                    buscarProduto(eanParam);
-                }
 
                 if (produtos.length === 0) {
                     document.getElementById('emptyStateEAN').style.display = 'block';
@@ -10534,10 +10529,12 @@
 
             return {
                 inicializar,
+                inicializarPublico,
                 buscarProduto,
                 limparPesquisa,
                 renderizarTodosProdutos,
-                adicionarProduto
+                adicionarProduto,
+                importarExcel // exposto para o evento
             };
         })();
 
@@ -10550,6 +10547,16 @@
             const savedNotificacoes = localStorage.getItem('keroNotificacoes');
             if (savedNotificacoes) { try { notificacoes = JSON.parse(savedNotificacoes); } catch (e) {} atualizarPainelNotificacoes(); }
             carregarDarkMode();
+
+            // Verificar se deve iniciar em modo público
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('public')) {
+                // Iniciar diretamente no modo público (EAN)
+                await initializeMicrosoft(); // necessário para algumas funções, mas não usamos token
+                iniciarModoPublico();
+                return;
+            }
+
             await initializeMicrosoft();
             await verificarSessao();
             inicializarDirecoes();
@@ -10593,30 +10600,9 @@
             });
 
             setInterval(() => { localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes)); }, 5000);
-
-            // ============================================================
-            // LINK DIRETO PARA O MÓDULO EAN (parâmetro ?modulo=ean)
-            // ============================================================
-            const urlParams = new URLSearchParams(window.location.search);
-            const moduloParam = urlParams.get('modulo');
-            if (moduloParam === 'ean') {
-                // Aguarda o login e a seleção de módulos para então entrar direto no EAN
-                const checkInterval = setInterval(() => {
-                    if (usuarioAtual && document.getElementById('moduleSelectionScreen').style.display ===
-                        'flex') {
-                        clearInterval(checkInterval);
-                        // Força a seleção do módulo EAN
-                        selecionarModulo('ean');
-                    }
-                }, 500);
-                // Timeout para evitar loop infinito
-                setTimeout(() => clearInterval(checkInterval), 10000);
-            }
         });
 
-        console.log('✅ Kero SIR - Sistema Integrado de Requisições carregado!');
-        console.log('📋 Módulos disponíveis: Recrutamento, Avaliação, Manutenção, Mobilidade, Ticket IT, Ocorrência, EAN');
-        console.log('🔗 Para aceder diretamente ao EAN, use: ?modulo=ean');
+        console.log('✅ Kero SIR - Sistema Integrado com EAN e importação restrita carregado!');
     </script>
 </body>
 </html>
