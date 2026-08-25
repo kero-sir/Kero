@@ -9776,21 +9776,25 @@
                 return false;
             }
 
-            async function salvarProdutoNoSharePoint(produto) {
-                try {
-                    const token = await getSharePointToken();
-                    const siteId = await getSiteId();
-                    const fields = {
-                        "Title": produto.ean,
-                        "Nome": produto.nome,
-                        "PrecoCusto": produto.preco_custo || 0,
-                        "PrecoKero": produto.preco_kero || 0,
-                        "Iva": produto.iva || 0,
-                        "Fornecedor": produto.fornecedor || '',
-                        "VendaMediaMensal": produto.venda_media_mensal || 0,
-                        "Stock": JSON.stringify(produto.stock || {}),
-                        "Concorrentes": JSON.stringify(produto.concorrentes || {})
-                    };
+           async function salvarProdutoNoSharePoint(produto) {
+    console.log('📤 A salvar produto:', produto.ean, produto.nome);
+    try {
+        const token = await getSharePointToken();
+        console.log('✅ Token obtido');
+        const siteId = await getSiteId();
+        console.log('✅ Site ID:', siteId);
+        
+        const fields = {
+            "Title": produto.ean,
+            "Nome": produto.nome,
+            "PrecoCusto": produto.preco_custo || 0,
+            "PrecoKero": produto.preco_kero || 0,
+            "Iva": produto.iva || 0,
+            "Fornecedor": produto.fornecedor || '',
+            "VendaMediaMensal": produto.venda_media_mensal || 0,
+            "Stock": JSON.stringify(produto.stock || {}),
+            "Concorrentes": JSON.stringify(produto.concorrentes || {})
+        };
                     const filterUrl =
                         `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_LIST}/items?expand=fields&$filter=fields/Title eq '${produto.ean}'`;
                     const check = await fetch(filterUrl, {
