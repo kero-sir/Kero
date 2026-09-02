@@ -9359,66 +9359,62 @@
             }
 
             // Função principal de carregamento: prioriza a lista, fallback para Excel
-            async function carregarProdutosDoSharePoint() {
-                showLoading();
-                try {
-                    let produtosLista = await carregarProdutosDaLista();
-                    if (produtosLista !== null && produtosLista.length > 0) {
-                        produtos = produtosLista;
-                        guardarLocal();
-                        atualizarBadgeTotal();
-                        renderizarHistorico();
-                        if (produtoAtual) {
-                            const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
-                            if (atualizado) renderizarProduto(atualizado);
-                        }
-                        notificar(`✅ ${produtos.length} produtos carregados da lista SharePoint.`, 'success');
-                        return true;
-                    }
-                    // Lista vazia ou não encontrada → importar do Excel
-                    notificar('Lista EAN vazia. A importar do Excel...', 'info');
-                    const buffer = await baixarExcelDoSharePoint();
-                    const produtosExcel = processarExcel(buffer);
-                    if (produtosExcel.length === 0) {
-                        notificar('Nenhum produto encontrado no Excel.', 'warning');
-                        return false;
-                    }
-                    let sucessos = 0;
-                    for (const prod of produtosExcel) {
-                        const ok = await salvarProdutoNoSharePoint(prod);
-                        if (ok) sucessos++;
-                    }
-                    produtos = produtosExcel;
-                    guardarLocal();
-                    atualizarBadgeTotal();
-                    renderizarHistorico();
-                    if (produtoAtual) {
-                        const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
-                        if (atualizado) renderizarProduto(atualizado);
-                    }
-                    notificar(`✅ ${produtos.length} produtos importados do Excel e guardados na lista (${sucessos} registos sincronizados).`, 'success');
-                    return true;
-                } catch (error) {
-                    console.error('Erro ao carregar produtos:', error);
-                    notificar('Erro ao carregar produtos: ' + error.message, 'error');
-                    if (produtos.length === 0) {
-                        const PRODUTOS_MOCK = [
-                            { ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14,
-                                fornecedor: "Arrozal SA", venda_media_mensal: 120,
-                                stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100); return acc; }, {}),
-                                concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {}) },
-                        ];
-                        produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
-                        guardarLocal();
-                        atualizarBadgeTotal();
-                        renderizarHistorico();
-                        notificar('⚠️ A usar dados locais (mock) porque o SharePoint falhou.', 'warning');
-                    }
-                    return false;
-                } finally {
-                    hideLoading();
-                }
+           async function carregarProdutosDoSharePoint() {
+    showLoading();
+    try {
+        // 1. Tenta carregar do cache local (para não baixar sempre)
+        if (carregarLocal()) {
+            atualizarBadgeTotal();
+            renderizarHistorico();
+            if (produtoAtual) {
+                const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
+                if (atualizado) renderizarProduto(atualizado);
             }
+            notificar(`📂 ${produtos.length} produtos carregados do cache local.`, 'info');
+        }
+
+        // 2. Baixa o Excel do SharePoint
+        notificar('A descarregar dados do SharePoint...', 'info');
+        const buffer = await baixarExcelDoSharePoint(); // usa o caminho atualizado
+        const produtosExcel = processarExcel(buffer);
+        if (produtosExcel.length === 0) {
+            notificar('Nenhum produto encontrado no Excel.', 'warning');
+            return false;
+        }
+
+        // 3. Substitui os dados locais pelos do Excel
+        produtos = produtosExcel;
+        guardarLocal();
+        atualizarBadgeTotal();
+        renderizarHistorico();
+        if (produtoAtual) {
+            const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
+            if (atualizado) renderizarProduto(atualizado);
+        }
+        notificar(`✅ ${produtos.length} produtos carregados do SharePoint.`, 'success');
+        return true;
+    } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
+        notificar('Erro ao carregar do SharePoint: ' + error.message, 'error');
+        // Se não houver dados locais, usa mock
+        if (produtos.length === 0) {
+            const PRODUTOS_MOCK = [
+                { ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14,
+                    fornecedor: "Arrozal SA", venda_media_mensal: 120,
+                    stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100); return acc; }, {}),
+                    concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {}) },
+            ];
+            produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
+            guardarLocal();
+            atualizarBadgeTotal();
+            renderizarHistorico();
+            notificar('⚠️ A usar dados locais (mock) porque o SharePoint falhou.', 'warning');
+        }
+        return false;
+    } finally {
+        hideLoading();
+    }
+}
 
             // ================= IMPORTAÇÃO MANUAL DE EXCEL =================
             async function importarExcel(file) {
