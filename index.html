@@ -10,9 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <!-- Quagga para fallback de leitura de imagens -->
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.2/dist/quagga.min.js"></script>
-    <!-- ZXing para leitura de imagens (fallback melhorado) -->
     <script src="https://unpkg.com/@zxing/library@0.19.2/umd/index.min.js"></script>
     <style>
         /* ===== ESTILOS COMPLETOS ===== */
@@ -3860,7 +3858,7 @@
             </div>
 
             <!-- ============================================================
-            MÓDULO EAN SCAN (completo com correções de câmara)
+            MÓDULO EAN SCAN (completo com JSON)
             ============================================================ -->
             <div id="eanSection" style="display: none;">
                 <!-- Banner para modo público -->
@@ -3973,7 +3971,7 @@
                         <p>Pesquise por nome ou EAN, clique em "Todos" ou carregue uma imagem do código de barras.</p>
                     </section>
 
-                    <!-- Modal da Câmera (CORRIGIDO) -->
+                    <!-- Modal da Câmera -->
                     <div class="camera-modal-ean" id="cameraModal">
                         <div class="status" id="cameraStatus">Aguardando...</div>
                         <video id="cameraVideo" autoplay playsinline style="width:100%; max-height:60vh; background:#000; border-radius:12px;"></video>
@@ -4019,8 +4017,8 @@
                             </div>
                             <div class="form-group" style="grid-column: span 2;">
                                 <label>Stock por Loja (separado por vírgula)</label>
-                                <input type="text" id="addStock" placeholder="Ex: 10,20,15,... (14 lojas)">
-                                <span class="helper-text">Ordem: Talatona, Kilamba, Morro Bento, Nova Vida, Lubango, Huambo, Lobito, Benguela, Viana, Saurimo, Gika, Mártires, Combatentes, Cacuaco</span>
+                                <input type="text" id="addStock" placeholder="Ex: 10,20,15,... (13 lojas)">
+                                <span class="helper-text">Ordem: Talatona, Kilamba, Morro Bento, Nova Vida, Lubango, Huambo, Lobito, Benguela, Viana, Gika, Mártires, Combatentes, Cacuaco</span>
                             </div>
                             <div class="form-group" style="grid-column: span 2;">
                                 <label>Preços Concorrentes (Angomart, Maxi, Shoprite) separados por vírgula</label>
@@ -4276,7 +4274,7 @@
         const todasDirecoes = ["Direção Geral", "Capital Humano", "Direção Comercial", "Direção Financeira", "Direção de Marketing", "Direção de Sistemas de Informação", "Direção de Manutenção", "Direção de Segurança", "Direção de HSA/HST", "Direção de Visual Merchandising", "Direção de Projetos Restauração", "Direção de Operações", "Direção de Controlo de Gestão", "Direção Jurídica", "Vendas Corporativas", "Loja Talatona", "Loja Kilamba", "Loja Morro Bento", "Loja Nova Vida", "Loja Lubango", "Loja Cacuaco", "Loja Huambo", "Loja Lobito", "Loja Mártires", "Loja Combatentes", "Loja Benguela", "Loja Viana", "Loja Saurimo", "Loja Gika", "Armazém ZEE", "Armazém SONIT"];
         const todasCategorias = ["Director Geral", "Director Executivo", "Director", "Gerente de Loja", "Gestor Sénior", "Gestor", "Técnico Sénior", "Técnico", "Chefe de Departamento", "Chefe de Secção", "Coordenador", "Analista", "Administrativo", "Operador"];
 
-        // CONFIGURAÇÃO ATUALIZADA COM CAMINHO DO EXCEL
+        // CONFIGURAÇÃO (mantida para compatibilidade, mas o EAN usa JSON)
         const SHAREPOINT_CONFIG = {
             siteUrl: "https://accordgroupslda.sharepoint.com/sites/SIR",
             listName: "RequisicoesRH",
@@ -4287,9 +4285,8 @@
             listaMobilidade: "MobilidadePromocoes",
             listaProdutosEAN: "ProdutosEAN",
             listaColaboradores: "Colaboradores",
-            // NOVO: caminho do Excel no SharePoint
             excelPath: "/sites/SIR/Documentos Partilhados/Master Base_EAN_20.08.2026.xlsb",
-            sheetName: 0   // 0 = primeira folha
+            sheetName: 0
         };
 
         let msalInstance = null,
@@ -4607,7 +4604,7 @@
         }
 
         // ============================================================
-        // SHAREPOINT - FUNÇÕES GLOBAIS
+        // SHAREPOINT - FUNÇÕES GLOBAIS (para recrutamento, etc.)
         // ============================================================
         async function getSharePointToken() {
             try {
@@ -5684,9 +5681,7 @@
             req.historicoComentarios.unshift({ id: Date.now().toString(), acao: acao, usuario: usuarioAtual.nome,
                 perfil: usuarioAtual.perfil, comentario: comentario, data: new Date().toISOString(),
                 statusAnterior: req.status, statusNovo: acao === 'aprovar' ? getProximoStatus(req.status) : acao ===
-                    'rejeitar' ? 'rejeitada' : (acao === 'devolver' ? (req.status === 'em_validacao_rh' ?
-                        'devolvida_solicitante' : (req.status === 'em_validacao_financas' ? 'em_validacao_rh' :
-                            'em_validacao_financas')) : req.status) });
+                    'rejeitar' ? 'rejeitada' : (acao === 'devolver' ? (req.status === 'em_validacao_rh' ? 'devolvida_solicitante' : (req.status === 'em_validacao_financas' ? 'em_validacao_rh' : 'em_validacao_financas')) : req.status) });
         }
 
         function adicionarNotificacao(titulo, mensagem, tipo, requisicaoId) {
@@ -8579,10 +8574,10 @@
         function exportarRequisicaoIndividualMob() { mobApp.exportarIndividual(); }
 
         // ============================================================
-        // MÓDULO EAN SCAN (VERSÃO CORRIGIDA - com BarcodeDetector e ZXing + LEITURA EXCEL)
+        // MÓDULO EAN SCAN (JSON) - CÓDIGO COMPLETO
         // ============================================================
         const eanApp = (function() {
-            // Lista de lojas (13 lojas, removidas CD ZEE e SONIT)
+            // Lista de lojas Kero
             const LOJAS_KERO = [
                 "Kero Loja Talatona",
                 "Kero Loja Kilamba",
@@ -8608,107 +8603,10 @@
             let barcodeDetector = null;
             let scanFrameId = null;
 
-            // ================== NOVAS FUNÇÕES PARA LER EXCEL ==================
-            async function baixarExcelDoSharePoint() {
-                const token = await getSharePointToken();
-                const siteId = await getSiteId();
-                const driveId = await getDriveId();
-                const path = SHAREPOINT_CONFIG.excelPath.replace(/^\/sites\/[^\/]+\//, '');
-                const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${path}:/content`;
-                const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-                if (!resp.ok) throw new Error(`Erro ao baixar: ${resp.status} - ${resp.statusText}`);
-                return await resp.arrayBuffer();
-            }
+            // URL do JSON (GitHub)
+            const JSON_URL = 'https://github.com/kero-sir/Kero/raw/refs/heads/main/produtos.json';
 
-            function processarExcel(arrayBuffer) {
-                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-                const sheetName = SHAREPOINT_CONFIG.sheetName;
-                const sheet = workbook.Sheets[sheetName] || workbook.Sheets[0];
-                if (!sheet) throw new Error('Folha não encontrada');
-                const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-                if (rows.length === 0) throw new Error('Ficheiro vazio');
-
-                // Mapeamento das colunas de stock (13 lojas)
-                const mapLoja = {
-                    'NOVA VIDA': 'Kero Loja Nova Vida',
-                    'KILAMBA': 'Kero Loja Kilamba',
-                    'LOBITO': 'Kero Loja Lobito',
-                    'VIANA': 'Kero Loja Viana',
-                    'CACUACO': 'Kero Loja Cacuaco',
-                    'TALATONA': 'Kero Loja Talatona',
-                    'BENGUELA': 'Kero Loja Benguela',
-                    'MORRO BENTO': 'Kero Loja Morro Bento',
-                    'LUBANGO': 'Kero Loja Lubango',
-                    'HUAMBO': 'Kero Loja Huambo',
-                    'COMB.': 'Kero Loja Combatentes',
-                    'MARTIRES': 'Kero Loja Mártires',
-                    'GIKA': 'Kero Loja Gika'
-                };
-                const lojasKeys = Object.keys(mapLoja);
-
-                const num = (v) => parseFloat(String(v).replace(',', '.')) || 0;
-
-                const produtos = rows.map(row => {
-                    const ean = String(row['EAN'] || '').trim();
-                    if (!ean) return null;
-                    return {
-                        ean: ean,
-                        nome: String(row['Descrição'] || '').trim(),
-                        preco_custo: num(row['PMM']),
-                        preco_kero: num(row['PVP']),
-                        iva: num(row['IVA %']),
-                        fornecedor: String(row['Nome Fornecedor'] || '').trim(),
-                        venda_media_mensal: num(row['VENDA Media Mensal']),
-                        stock: (() => {
-                            const stock = {};
-                            lojasKeys.forEach(col => {
-                                stock[mapLoja[col]] = num(row[col]);
-                            });
-                            return stock;
-                        })(),
-                        concorrentes: { 'Angomart': 0, 'Maxi': 0, 'Shoprite': 0 }
-                    };
-                }).filter(p => p !== null);
-
-                console.log(`✅ ${produtos.length} produtos processados.`);
-                return produtos;
-            }
-
-            // Substitui a função antiga carregarProdutosDoSharePoint
-            async function carregarProdutosDoSharePoint() {
-                try {
-                    showLoading();
-                    const buffer = await baixarExcelDoSharePoint();
-                    const produtosExcel = processarExcel(buffer);
-                    if (produtosExcel.length === 0) {
-                        notificar('Nenhum produto encontrado no Excel.', 'warning');
-                        return false;
-                    }
-                    // Substitui a lista atual (pode fazer merge se preferir)
-                    produtos = produtosExcel;
-                    guardarLocal();
-                    atualizarBadgeTotal();
-                    renderizarHistorico();
-                    if (produtoAtual) {
-                        const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
-                        if (atualizado) renderizarProduto(atualizado);
-                    }
-                    notificar(`✅ ${produtos.length} produtos importados do Excel.`, 'success');
-                    return true;
-                } catch (e) {
-                    console.error(e);
-                    notificar('Erro ao carregar Excel: ' + e.message, 'error');
-                    return false;
-                } finally {
-                    hideLoading();
-                }
-            }
-
-            // As funções antigas de importação de Excel (importarExcel) podem ser mantidas ou removidas.
-            // Vamos manter a função importarExcel mas redirecionar para a nova lógica se desejar,
-            // ou podemos mantê-la para upload manual de Excel. Vou mantê-la como estava.
-
-            // --------------------- PERSISTÊNCIA ---------------------
+            // --------------------- PERSISTÊNCIA LOCAL ---------------------
             function carregarLocal() {
                 const saved = localStorage.getItem('ean_produtos');
                 if (saved) {
@@ -8748,7 +8646,7 @@
                 localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas));
             }
 
-            // --------------------- UI (mantida) ---------------------
+            // --------------------- UI ---------------------
             function notificar(msg, tipo = 'success') {
                 mostrarNotificacao(msg, tipo);
             }
@@ -8789,6 +8687,7 @@
                 });
             }
 
+            // --------------------- RENDERIZAÇÃO ---------------------
             function renderizarProduto(prod) {
                 if (!prod) {
                     document.getElementById('resultContainer').classList.remove('active');
@@ -8885,6 +8784,7 @@
                 document.getElementById('allProducts').classList.toggle('active');
             }
 
+            // --------------------- PESQUISA E SUGESTÕES ---------------------
             function atualizarSugestoes(termo) {
                 const box = document.getElementById('suggestionsBox');
                 if (termo.length < 1) {
@@ -8963,6 +8863,7 @@
                 document.getElementById('eanInput').focus();
             }
 
+            // --------------------- EDIÇÃO DE PREÇOS ---------------------
             function guardarPrecosConcorrentes() {
                 if (!produtoAtual) {
                     notificar('Nenhum produto selecionado.', 'error');
@@ -8982,10 +8883,7 @@
                 });
                 if (!valido) return;
                 guardarLocal();
-                salvarProdutoNoSharePoint(produtoAtual).then(ok => {
-                    if (ok) notificar('✅ Preços da concorrência guardados no SharePoint!', 'success');
-                    else notificar('⚠️ Preços guardados localmente (erro no SharePoint).', 'warning');
-                });
+                notificar('✅ Preços da concorrência guardados localmente!', 'success');
             }
 
             function toggleEdicaoPrecos() {
@@ -9039,15 +8937,12 @@
                 produtoAtual.fornecedor = fornecedor;
                 produtoAtual.venda_media_mensal = vendaMedia;
                 guardarLocal();
-                salvarProdutoNoSharePoint(produtoAtual).then(ok => {
-                    if (ok) notificar('✅ Dados do produto atualizados no SharePoint!', 'success');
-                    else notificar('⚠️ Dados guardados localmente.', 'warning');
-                });
+                notificar('✅ Dados do produto atualizados localmente!', 'success');
                 atualizarPrecos(produtoAtual);
                 toggleEdicaoPrecos();
             }
 
-            // --------------------- REDIMENSIONAMENTO DE IMAGEM (mantido) ---------------------
+            // --------------------- CÂMARA E LEITURA ---------------------
             function redimensionarImagem(imageData, maxLargura = 1000) {
                 return new Promise((resolve) => {
                     const img = new Image();
@@ -9070,7 +8965,6 @@
                 });
             }
 
-            // --------------------- CÂMARA (CORRIGIDA) ---------------------
             function abrirCamera() {
                 const modal = document.getElementById('cameraModal');
                 modal.classList.add('active');
@@ -9342,10 +9236,7 @@
 
                 produtos.push(novoProduto);
                 guardarLocal();
-                salvarProdutoNoSharePoint(novoProduto).then(ok => {
-                    if (ok) notificar(`✅ Produto "${nome}" adicionado ao SharePoint!`, 'success');
-                    else notificar(`⚠️ Produto "${nome}" adicionado localmente (erro no SharePoint).`, 'warning');
-                });
+                notificar(`✅ Produto "${nome}" adicionado localmente!`, 'success');
 
                 document.getElementById('addNome').value = '';
                 document.getElementById('addEan').value = '';
@@ -9362,126 +9253,124 @@
                 atualizarBadgeTotal();
             }
 
-            // --------------------- SALVAR PRODUTO NO SHAREPOINT (LISTA) ---------------------
-            async function salvarProdutoNoSharePoint(produto) {
-                console.log('📤 A salvar produto:', produto.ean, produto.nome);
+            // --------------------- CARREGAR DO JSON (GITHUB) ---------------------
+            async function carregarProdutosDoJSON() {
                 try {
-                    const token = await getSharePointToken();
-                    const siteId = await getSiteId();
-                    const fields = {
-                        "Title": produto.ean,
-                        "Nome": produto.nome,
-                        "PrecoCusto": produto.preco_custo || 0,
-                        "PrecoKero": produto.preco_kero || 0,
-                        "Iva": produto.iva || 0,
-                        "Fornecedor": produto.fornecedor || '',
-                        "VendaMediaMensal": produto.venda_media_mensal || 0,
-                        "Stock": JSON.stringify(produto.stock || {}),
-                        "Concorrentes": JSON.stringify(produto.concorrentes || {})
-                    };
-                    const filterUrl =
-                        `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaProdutosEAN}/items?expand=fields&$filter=fields/Title eq '${produto.ean}'`;
-                    const check = await fetch(filterUrl, {
-                        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-                    });
-                    let existing = null;
-                    if (check.ok) {
-                        const data = await check.json();
-                        if (data.value && data.value.length > 0) existing = data.value[0];
+                    showLoading();
+                    const response = await fetch(JSON_URL);
+                    if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                    const data = await response.json();
+                    if (!Array.isArray(data) || data.length === 0) {
+                        throw new Error('JSON vazio ou inválido.');
                     }
-                    if (existing) {
-                        const updateUrl =
-                            `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaProdutosEAN}/items/${existing.id}/fields`;
-                        const resp = await fetch(updateUrl, {
-                            method: 'PATCH',
-                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify(fields)
-                        });
-                        return resp.ok;
-                    } else {
-                        const createUrl =
-                            `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaProdutosEAN}/items`;
-                        const resp = await fetch(createUrl, {
-                            method: 'POST',
-                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ fields })
-                        });
-                        if (resp.ok) {
-                            const newItem = await resp.json();
-                            produto.id = newItem.id;
-                        }
-                        return resp.ok;
+                    produtos = data.map(p => ({
+                        ean: String(p.ean || '').trim(),
+                        nome: String(p.nome || '').trim(),
+                        preco_custo: parseFloat(p.preco_custo) || 0,
+                        preco_kero: parseFloat(p.preco_kero) || 0,
+                        iva: parseFloat(p.iva) || 0,
+                        fornecedor: String(p.fornecedor || '').trim(),
+                        venda_media_mensal: parseFloat(p.venda_media_mensal) || 0,
+                        stock: p.stock || {},
+                        concorrentes: p.concorrentes || {}
+                    }));
+                    guardarLocal();
+                    atualizarBadgeTotal();
+                    renderizarHistorico();
+                    if (produtoAtual) {
+                        const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
+                        if (atualizado) renderizarProduto(atualizado);
                     }
+                    notificar(`✅ ${produtos.length} produtos carregados do GitHub.`, 'success');
+                    return true;
                 } catch (error) {
-                    console.error('Erro ao salvar produto no SharePoint:', error);
-                    return false;
+                    console.error('Erro ao carregar JSON:', error);
+                    if (carregarLocal()) {
+                        notificar('⚠️ Dados carregados do cache local (GitHub indisponível).', 'warning');
+                        return true;
+                    } else {
+                        notificar('❌ Erro ao carregar produtos: ' + error.message, 'error');
+                        return false;
+                    }
+                } finally {
+                    hideLoading();
                 }
             }
 
-            // --------------------- IMPORTAÇÃO EXCEL (MANUAL) - MANTIDA ---------------------
-            // Importa um ficheiro Excel carregado pelo utilizador (para compatibilidade)
-            async function importarExcel(file) {
-                const email = usuarioAtual?.email;
-                if (!EMAILS_IMPORTACAO_EAN.includes(email)) {
-                    notificar('❌ Apenas o Administrador e o Erikson podem importar dados EAN.', 'error');
-                    return;
-                }
-                if (!confirm(`Importar dados do ficheiro "${file.name}"?`)) return;
-
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    try {
-                        const data = new Uint8Array(e.target.result);
+            // --------------------- UTILITÁRIO: GERAR JSON DO EXCEL ---------------------
+            function exportarExcelParaJSON() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.xlsx,.xls,.xlsb';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        const data = new Uint8Array(ev.target.result);
                         const workbook = XLSX.read(data, { type: 'array' });
                         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const rows = XLSX.utils.sheet_to_json(sheet, { header: 0, defval: '' });
-                        // ... (lógica de importação manual - mantida, mas não essencial)
-                        // Vou omitir para não sobrecarregar, mas pode mantê-la se quiser.
-                        notificar('Importação manual de Excel: funcionalidade mantida.', 'info');
-                    } catch (error) {
-                        notificar('Erro ao importar Excel: ' + error.message, 'error');
-                    }
+                        const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+                        // Mapeamento das lojas
+                        const lojas = {
+                            'NOVA VIDA': 'Kero Loja Nova Vida',
+                            'KILAMBA': 'Kero Loja Kilamba',
+                            'LOBITO': 'Kero Loja Lobito',
+                            'VIANA': 'Kero Loja Viana',
+                            'CACUACO': 'Kero Loja Cacuaco',
+                            'TALATONA': 'Kero Loja Talatona',
+                            'BENGUELA': 'Kero Loja Benguela',
+                            'MORRO BENTO': 'Kero Loja Morro Bento',
+                            'LUBANGO': 'Kero Loja Lubango',
+                            'HUAMBO': 'Kero Loja Huambo',
+                            'COMB.': 'Kero Loja Combatentes',
+                            'MARTIRES': 'Kero Loja Mártires',
+                            'GIKA': 'Kero Loja Gika'
+                        };
+
+                        const produtos = rows.map(row => {
+                            const ean = String(row['EAN'] || '').trim();
+                            if (!ean) return null;
+
+                            const stock = {};
+                            Object.keys(lojas).forEach(colName => {
+                                const loja = lojas[colName];
+                                stock[loja] = parseFloat(row[colName]) || 0;
+                            });
+
+                            const concorrentes = {
+                                "Angomart": parseFloat(row['Angomart']) || 0,
+                                "Maxi": parseFloat(row['Maxi']) || 0,
+                                "Shoprite": parseFloat(row['Shoprite']) || 0
+                            };
+
+                            return {
+                                ean: ean,
+                                nome: String(row['Descrição'] || '').trim(),
+                                preco_custo: parseFloat(row['PMM']) || 0,
+                                preco_kero: parseFloat(row['PVP']) || 0,
+                                iva: parseFloat(row['IVA %']) || 0,
+                                fornecedor: String(row['Nome Fornecedor'] || '').trim(),
+                                venda_media_mensal: parseFloat(row['VENDA Media Mensal']) || 0,
+                                stock: stock,
+                                concorrentes: concorrentes
+                            };
+                        }).filter(p => p !== null);
+
+                        const json = JSON.stringify(produtos, null, 2);
+                        const blob = new Blob([json], { type: 'application/json' });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = 'produtos.json';
+                        link.click();
+                        alert(`✅ JSON gerado com ${produtos.length} produtos!`);
+                    };
+                    reader.readAsArrayBuffer(file);
                 };
-                reader.readAsArrayBuffer(file);
+                input.click();
             }
 
-            // --------------------- INICIALIZAÇÃO PÚBLICA (MODO CONVIDADO) ---------------------
-            function inicializarPublico() {
-                if (!carregarLocal()) {
-                    // Produtos mock
-                    const PRODUTOS_MOCK = [
-                        { ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650,
-                            iva: 14,
-                            fornecedor: "Arrozal SA", venda_media_mensal: 120,
-                            stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100);
-                                return acc; }, {}),
-                            concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math
-                                    .random() * 200);
-                                return acc; }, {}) },
-                    ];
-                    produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
-                    guardarLocal();
-                }
-                carregarHistoricoLocal();
-                atualizarBadgeTotal();
-                renderizarHistorico();
-                configurarEventos();
-                const lastEan = sessionStorage.getItem('ean_ultimo_produto');
-                if (lastEan) {
-                    const prod = produtos.find(p => p.ean === lastEan);
-                    if (prod) {
-                        renderizarProduto(prod);
-                        document.getElementById('eanInput').value = lastEan;
-                    }
-                }
-                document.getElementById('eanInput').focus();
-                if (produtos.length === 0 || !produtoAtual) {
-                    document.getElementById('emptyStateEAN').style.display = 'block';
-                }
-                console.log('✅ Módulo EAN em modo público inicializado com sucesso!');
-            }
-
-            // --------------------- CONFIGURAÇÃO DE EVENTOS ---------------------
+            // --------------------- CONFIGURAR EVENTOS ---------------------
             function configurarEventos() {
                 document.getElementById('btnBuscar').addEventListener('click', () => buscarProduto(document.getElementById(
                     'eanInput').value));
@@ -9495,27 +9384,6 @@
                 document.getElementById('btnGuardarPrecos').addEventListener('click', guardarPrecosKero);
                 document.getElementById('btnAddProduct').addEventListener('click', adicionarProduto);
 
-                document.getElementById('btnImportExcel').addEventListener('click', () => document.getElementById(
-                    'fileInputExcel').click());
-                document.getElementById('fileInputExcel').addEventListener('change', function(e) {
-                    if (this.files.length > 0) {
-                        importarExcel(this.files[0]);
-                    }
-                    this.value = '';
-                });
-
-                // Botão Sincronizar (agora com a nova função carregarProdutosDoSharePoint)
-                document.getElementById('btnSyncSharePoint').addEventListener('click', async function() {
-                    if (!usuarioAtual || !EMAILS_IMPORTACAO_EAN.includes(usuarioAtual.email)) {
-                        notificar('Sem permissão para sincronizar.', 'error');
-                        return;
-                    }
-                    await carregarProdutosDoSharePoint();
-                    if (document.getElementById('allProducts').classList.contains('active')) {
-                        renderizarTodosProdutos();
-                    }
-                });
-
                 document.getElementById('btnCamera').addEventListener('click', abrirCamera);
                 document.getElementById('btnCloseCamera').addEventListener('click', fecharCamera);
                 document.getElementById('btnCapture').addEventListener('click', capturarEscanear);
@@ -9528,6 +9396,18 @@
                         processarImagem(this.files[0]);
                     }
                     this.value = '';
+                });
+
+                // Botão Sincronizar (agora carrega do JSON)
+                document.getElementById('btnSyncSharePoint').addEventListener('click', async function() {
+                    if (!usuarioAtual || !EMAILS_IMPORTACAO_EAN.includes(usuarioAtual.email)) {
+                        notificar('Sem permissão para sincronizar.', 'error');
+                        return;
+                    }
+                    await carregarProdutosDoJSON();
+                    if (document.getElementById('allProducts').classList.contains('active')) {
+                        renderizarTodosProdutos();
+                    }
                 });
 
                 document.getElementById('eanInput').addEventListener('input', (e) => {
@@ -9545,29 +9425,37 @@
                 });
             }
 
-            // --------------------- INICIALIZAÇÃO PRINCIPAL ---------------------
+            // --------------------- INICIALIZAÇÃO ---------------------
             async function inicializar() {
+                // Tenta carregar do cache local primeiro
                 if (!carregarLocal()) {
-                    // Produtos mock
+                    // Se não houver cache, cria produtos mock (apenas para testes)
                     const PRODUTOS_MOCK = [
-                        { ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650,
+                        {
+                            ean: "5601234567890",
+                            nome: "Arroz Carolino 1kg",
+                            preco_custo: 450,
+                            preco_kero: 650,
                             iva: 14,
-                            fornecedor: "Arrozal SA", venda_media_mensal: 120,
+                            fornecedor: "Arrozal SA",
+                            venda_media_mensal: 120,
                             stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100);
                                 return acc; }, {}),
                             concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math
                                     .random() * 200);
-                                return acc; }, {}) },
+                                return acc; }, {})
+                        }
                     ];
                     produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
                     guardarLocal();
                 }
+
                 carregarHistoricoLocal();
                 atualizarBadgeTotal();
                 renderizarHistorico();
 
-                // Carrega dados do SharePoint (Excel) assim que o módulo é aberto
-                await carregarProdutosDoSharePoint();
+                // Carrega dados do GitHub (substitui o cache se disponível)
+                await carregarProdutosDoJSON();
 
                 configurarEventos();
 
@@ -9593,6 +9481,12 @@
                 console.log('✅ Módulo EAN inicializado com sucesso!');
             }
 
+            // --------------------- INICIALIZAÇÃO PÚBLICA (MODO CONVIDADO) ---------------------
+            function inicializarPublico() {
+                inicializar();
+            }
+
+            // --------------------- EXPORTAÇÃO PÚBLICA ---------------------
             return {
                 inicializar,
                 inicializarPublico,
@@ -9600,8 +9494,8 @@
                 limparPesquisa,
                 renderizarTodosProdutos,
                 adicionarProduto,
-                importarExcel,
-                carregarProdutosDoSharePoint // exposto para o botão
+                exportarExcelParaJSON,
+                carregarProdutosDoJSON
             };
         })();
 
@@ -9667,7 +9561,7 @@
             setInterval(() => { localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes)); }, 5000);
         });
 
-        console.log('✅ Kero SIR - Sistema Integrado com EAN corrigido (BarcodeDetector + ZXing + Excel) carregado!');
+        console.log('✅ Kero SIR - Sistema Integrado com EAN corrigido (JSON) carregado!');
     </script>
 </body>
 </html>
