@@ -9254,48 +9254,102 @@
             }
 
             // --------------------- CARREGAR DO JSON (GITHUB) ---------------------
-            async function carregarProdutosDoJSON() {
-                try {
-                    showLoading();
-                    const response = await fetch(JSON_URL);
-                    if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-                    const data = await response.json();
-                    if (!Array.isArray(data) || data.length === 0) {
-                        throw new Error('JSON vazio ou inválido.');
-                    }
-                    produtos = data.map(p => ({
-                        ean: String(p.ean || '').trim(),
-                        nome: String(p.nome || '').trim(),
-                        preco_custo: parseFloat(p.preco_custo) || 0,
-                        preco_kero: parseFloat(p.preco_kero) || 0,
-                        iva: parseFloat(p.iva) || 0,
-                        fornecedor: String(p.fornecedor || '').trim(),
-                        venda_media_mensal: parseFloat(p.venda_media_mensal) || 0,
-                        stock: p.stock || {},
-                        concorrentes: p.concorrentes || {}
-                    }));
-                    guardarLocal();
-                    atualizarBadgeTotal();
-                    renderizarHistorico();
-                    if (produtoAtual) {
-                        const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
-                        if (atualizado) renderizarProduto(atualizado);
-                    }
-                    notificar(`✅ ${produtos.length} produtos carregados do GitHub.`, 'success');
-                    return true;
-                } catch (error) {
-                    console.error('Erro ao carregar JSON:', error);
-                    if (carregarLocal()) {
-                        notificar('⚠️ Dados carregados do cache local (GitHub indisponível).', 'warning');
-                        return true;
-                    } else {
-                        notificar('❌ Erro ao carregar produtos: ' + error.message, 'error');
-                        return false;
-                    }
-                } finally {
-                    hideLoading();
-                }
+           async function carregarProdutosDoJSON() {
+    try {
+        showLoading();
+        
+        // Obter token e IDs (já existentes no sistema)
+        const token = await getSharePointToken();
+        const siteId = await getSiteId();
+        const driveId = await getDriveId();
+
+        // Caminho do ficheiro na biblioteca (usando o caminho que forneceu)
+        const filePath = 'Documentos Partilhados/EAN/produtos.json';
+        const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${filePath}:/content`;
+
+        console.log('📂 A carregar produtos de:', url);
+
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
             }
+        });
+
+        if (!response.ok) {
+            // Se der 404, tentar com codificação URL alternativa
+            if (response.status === 404) {
+                console.warn('⚠️ Caminho não encontrado, a tentar com codificação alternativa...');
+                // Tentar com o caminho codificado para espaços
+                const altPath = 'Documentos%20Partilhados/EAN/produtos.json';
+                const altUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${altPath}:/content`;
+                const altResponse = await fetch(altUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                if (!altResponse.ok) {
+                    throw new Error(`HTTP ${altResponse.status} - Ficheiro não encontrado. Verifique o caminho.`);
+                }
+                const data = await altResponse.json();
+                return processarDadosProdutos(data);
+            }
+            throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return processarDadosProdutos(data);
+
+    } catch (error) {
+        console.error('❌ Erro ao carregar do SharePoint:', error);
+        // Fallback para cache local
+        if (carregarLocal()) {
+            notificar('⚠️ Dados carregados do cache local (SharePoint indisponível).', 'warning');
+            return true;
+        } else {
+            // Se não houver cache, criar array vazio e mostrar erro
+            produtos = [];
+            atualizarBadgeTotal();
+            notificar('❌ Erro ao carregar produtos: ' + error.message, 'error');
+            return false;
+        }
+    } finally {
+        hideLoading();
+    }
+}
+
+// Função auxiliar para processar os dados
+function processarDadosProdutos(data) {
+    if (!Array.isArray(data) || data.length === 0) {
+        throw new Error('JSON vazio ou inválido.');
+    }
+
+    // Normalizar os dados
+    produtos = data.map(p => ({
+        ean: String(p.ean || '').trim(),
+        nome: String(p.nome || '').trim(),
+        preco_custo: parseFloat(p.preco_custo) || 0,
+        preco_kero: parseFloat(p.preco_kero) || 0,
+        iva: parseFloat(p.iva) || 0,
+        fornecedor: String(p.fornecedor || '').trim(),
+        venda_media_mensal: parseFloat(p.venda_media_mensal) || 0,
+        stock: p.stock || {},
+        concorrentes: p.concorrentes || {}
+    }));
+
+    guardarLocal();
+    atualizarBadgeTotal();
+    renderizarHistorico();
+
+    if (produtoAtual) {
+        const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
+        if (atualizado) renderizarProduto(atualizado);
+    }
+
+    notificar(`✅ ${produtos.length} produtos carregados do SharePoint.`, 'success');
+    return true;
+}
 
             // --------------------- UTILITÁRIO: GERAR JSON DO EXCEL ---------------------
             function exportarExcelParaJSON() {
