@@ -8577,991 +8577,1100 @@
         // MÓDULO EAN SCAN (JSON) - CÓDIGO COMPLETO
         // ============================================================
         const eanApp = (function() {
-            // Lista de lojas Kero
-            const LOJAS_KERO = [
-                "Kero Loja Talatona",
-                "Kero Loja Kilamba",
-                "Kero Loja Morro Bento",
-                "Kero Loja Nova Vida",
-                "Kero Loja Lubango",
-                "Kero Loja Huambo",
-                "Kero Loja Lobito",
-                "Kero Loja Benguela",
-                "Kero Loja Viana",
-                "Kero Loja Gika",
-                "Kero Loja Mártires",
-                "Kero Loja Combatentes",
-                "Kero Loja Cacuaco"
-            ];
-            const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
+    // ============================================================
+    //  CONFIGURAÇÕES
+    // ============================================================
+    const LISTA_EAN = 'EANPRODUTOS';
+    const LOJAS_KERO = [
+        "Kero Loja Talatona", "Kero Loja Kilamba", "Kero Loja Morro Bento",
+        "Kero Loja Nova Vida", "Kero Loja Lubango", "Kero Loja Huambo",
+        "Kero Loja Lobito", "Kero Loja Benguela", "Kero Loja Viana",
+        "Kero Loja Gika", "Kero Loja Mártires", "Kero Loja Combatentes",
+        "Kero Loja Cacuaco"
+    ];
+    const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
+    const PERMISSAO_PUBLICAR = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
 
-            let produtos = [];
-            let produtoAtual = null;
-            let historicoPesquisas = [];
-            let editandoPrecos = false;
-            let cameraStream = null;
-            let barcodeDetector = null;
-            let scanFrameId = null;
+    // ============================================================
+    //  ESTADO INTERNO
+    // ============================================================
+    let produtos = [];
+    let produtoAtual = null;
+    let historicoPesquisas = [];
+    let editandoPrecos = false;
+    let cameraStream = null;
+    let scanFrameId = null;
 
-            // URL do JSON (GitHub)
-            const JSON_URL = 'https://raw.githubusercontent.com/kero-sir/Kero/main/produtos.json';
-
-            // --------------------- PERSISTÊNCIA LOCAL ---------------------
-            function carregarLocal() {
-                const saved = localStorage.getItem('ean_produtos');
-                if (saved) {
-                    try {
-                        produtos = JSON.parse(saved);
-                        produtos = produtos.map(p => {
-                            LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; });
-                            CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
-                            if (p.iva === undefined) p.iva = 0;
-                            if (p.fornecedor === undefined) p.fornecedor = '';
-                            if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0;
-                            return p;
-                        });
-                        return true;
-                    } catch (e) { console.warn('Dados locais corrompidos, usando mock'); }
-                }
-                return false;
-            }
-
-            function guardarLocal() {
-                localStorage.setItem('ean_produtos', JSON.stringify(produtos));
-            }
-
-            function carregarHistoricoLocal() {
-                const hist = localStorage.getItem('ean_historico');
-                if (hist) {
-                    try {
-                        historicoPesquisas = JSON.parse(hist);
-                        if (!Array.isArray(historicoPesquisas)) historicoPesquisas = [];
-                        return true;
-                    } catch (e) { historicoPesquisas = []; }
-                }
-                return false;
-            }
-
-            function guardarHistoricoLocal() {
-                localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas));
-            }
-
-            // --------------------- UI ---------------------
-            function notificar(msg, tipo = 'success') {
-                mostrarNotificacao(msg, tipo);
-            }
-
-            function atualizarBadgeTotal() {
-                document.getElementById('totalProdutosBadge').textContent = `${produtos.length} produtos`;
-            }
-
-            function adicionarHistorico(ean) {
-                historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
-                historicoPesquisas.unshift(ean);
-                if (historicoPesquisas.length > 5) historicoPesquisas.pop();
-                guardarHistoricoLocal();
-                renderizarHistorico();
-            }
-
-            function renderizarHistorico() {
-                const area = document.getElementById('historyArea');
-                const container = document.getElementById('historyButtons');
-                container.innerHTML = '';
-                if (historicoPesquisas.length === 0) {
-                    area.style.display = 'none';
-                    return;
-                }
-                area.style.display = 'flex';
-                historicoPesquisas.forEach(ean => {
-                    const prod = produtos.find(p => p.ean === ean);
-                    const label = prod ? `${prod.nome} (${ean})` : ean;
-                    const btn = document.createElement('button');
-                    btn.className = 'history-btn';
-                    btn.textContent = label;
-                    btn.title = `Pesquisar ${ean}`;
-                    btn.addEventListener('click', () => {
-                        document.getElementById('eanInput').value = ean;
-                        buscarProduto(ean);
-                    });
-                    container.appendChild(btn);
+    // ============================================================
+    //  PERSISTÊNCIA LOCAL (cache)
+    // ============================================================
+    function carregarLocal() {
+        const saved = localStorage.getItem('ean_produtos');
+        if (saved) {
+            try {
+                produtos = JSON.parse(saved);
+                produtos = produtos.map(p => {
+                    LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; });
+                    CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
+                    if (p.iva === undefined) p.iva = 0;
+                    if (p.fornecedor === undefined) p.fornecedor = '';
+                    if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0;
+                    return p;
                 });
+                return true;
+            } catch (e) { console.warn('Cache corrompido'); }
+        }
+        return false;
+    }
+
+    function guardarLocal() {
+        localStorage.setItem('ean_produtos', JSON.stringify(produtos));
+    }
+
+    function carregarHistoricoLocal() {
+        const hist = localStorage.getItem('ean_historico');
+        if (hist) {
+            try {
+                historicoPesquisas = JSON.parse(hist);
+                if (!Array.isArray(historicoPesquisas)) historicoPesquisas = [];
+                return true;
+            } catch (e) { historicoPesquisas = []; }
+        }
+        return false;
+    }
+
+    function guardarHistoricoLocal() {
+        localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas));
+    }
+
+    // ============================================================
+    //  HELPERS DE UI
+    // ============================================================
+    function notificar(msg, tipo = 'success') {
+        mostrarNotificacao(msg, tipo);
+    }
+
+    function showLoading() {
+        document.getElementById('loadingOverlay').classList.add('show');
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingOverlay').classList.remove('show');
+    }
+
+    function atualizarBadgeTotal() {
+        const badge = document.getElementById('totalProdutosBadge');
+        if (badge) badge.textContent = `${produtos.length} produtos`;
+    }
+
+    function adicionarHistorico(ean) {
+        historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
+        historicoPesquisas.unshift(ean);
+        if (historicoPesquisas.length > 5) historicoPesquisas.pop();
+        guardarHistoricoLocal();
+        renderizarHistorico();
+    }
+
+    function renderizarHistorico() {
+        const area = document.getElementById('historyArea');
+        const container = document.getElementById('historyButtons');
+        if (!area || !container) return;
+        container.innerHTML = '';
+        if (historicoPesquisas.length === 0) {
+            area.style.display = 'none';
+            return;
+        }
+        area.style.display = 'flex';
+        historicoPesquisas.forEach(ean => {
+            const prod = produtos.find(p => p.ean === ean);
+            const label = prod ? `${prod.nome} (${ean})` : ean;
+            const btn = document.createElement('button');
+            btn.className = 'history-btn';
+            btn.textContent = label;
+            btn.title = `Pesquisar ${ean}`;
+            btn.addEventListener('click', () => {
+                document.getElementById('eanInput').value = ean;
+                buscarProduto(ean);
+            });
+            container.appendChild(btn);
+        });
+    }
+
+    // ============================================================
+    //  RENDERIZAÇÃO DE PRODUTO
+    // ============================================================
+    function renderizarProduto(prod) {
+        if (!prod) {
+            const result = document.getElementById('resultContainer');
+            if (result) result.classList.remove('active');
+            const empty = document.getElementById('emptyStateEAN');
+            if (empty) empty.style.display = 'block';
+            produtoAtual = null;
+            const btnConc = document.getElementById('btnGuardarConcorrentes');
+            if (btnConc) btnConc.disabled = true;
+            const allProd = document.getElementById('allProducts');
+            if (allProd) allProd.classList.remove('active');
+            return;
+        }
+        produtoAtual = prod;
+        const empty = document.getElementById('emptyStateEAN');
+        if (empty) empty.style.display = 'none';
+        const result = document.getElementById('resultContainer');
+        if (result) result.classList.add('active');
+        const btnConc = document.getElementById('btnGuardarConcorrentes');
+        if (btnConc) btnConc.disabled = false;
+        const allProd = document.getElementById('allProducts');
+        if (allProd) allProd.classList.remove('active');
+
+        const nomeEl = document.getElementById('prodNome');
+        const eanEl = document.getElementById('prodEan');
+        if (nomeEl) nomeEl.textContent = prod.nome;
+        if (eanEl) eanEl.textContent = `EAN: ${prod.ean}`;
+
+        atualizarPrecos(prod);
+        renderizarConcorrentes(prod);
+        renderizarStockVertical(prod);
+
+        sessionStorage.setItem('ean_ultimo_produto', prod.ean);
+        const info = document.getElementById('lastSearchInfo');
+        if (info) info.textContent = `Última pesquisa: ${prod.nome} (${prod.ean})`;
+    }
+
+    function atualizarPrecos(prod) {
+        const displayMap = {
+            prodPrecoKeroDisplay: prod.preco_kero || 0,
+            prodPrecoCustoDisplay: prod.preco_custo || 0,
+            prodIvaDisplay: prod.iva || 0,
+            prodFornecedorDisplay: prod.fornecedor || '',
+            prodVendaMediaDisplay: prod.venda_media_mensal || 0
+        };
+        Object.keys(displayMap).forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const val = displayMap[id];
+            if (id.includes('Preco') || id === 'prodIvaDisplay') {
+                el.textContent = (typeof val === 'number' ? val.toFixed(2) : val) + (id === 'prodIvaDisplay' ? ' %' : ' Kz');
+            } else if (id === 'prodFornecedorDisplay') {
+                el.textContent = val || '';
+            } else {
+                el.textContent = val;
             }
+        });
 
-            // --------------------- RENDERIZAÇÃO ---------------------
-            function renderizarProduto(prod) {
-                if (!prod) {
-                    document.getElementById('resultContainer').classList.remove('active');
-                    document.getElementById('emptyStateEAN').style.display = 'block';
-                    produtoAtual = null;
-                    document.getElementById('btnGuardarConcorrentes').disabled = true;
-                    document.getElementById('allProducts').classList.remove('active');
-                    return;
-                }
+        const inputMap = {
+            prodPrecoKeroInput: prod.preco_kero || 0,
+            prodPrecoCustoInput: prod.preco_custo || 0,
+            prodIvaInput: prod.iva || 0,
+            prodFornecedorInput: prod.fornecedor || '',
+            prodVendaMediaInput: prod.venda_media_mensal || 0
+        };
+        Object.keys(inputMap).forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const val = inputMap[id];
+            if (id === 'prodFornecedorInput') {
+                el.value = val;
+            } else {
+                el.value = (typeof val === 'number' ? val.toFixed(2) : val);
+            }
+        });
+    }
 
-                produtoAtual = prod;
-                document.getElementById('emptyStateEAN').style.display = 'none';
-                document.getElementById('resultContainer').classList.add('active');
-                document.getElementById('btnGuardarConcorrentes').disabled = false;
+    function renderizarStockVertical(prod) {
+        const tbody = document.getElementById('stockBody');
+        if (!tbody) return;
+        let html = '';
+        let totalGeral = 0;
+        LOJAS_KERO.forEach(loja => {
+            const qtd = prod.stock[loja] || 0;
+            totalGeral += qtd;
+            const nomeCurto = loja.replace('Kero Loja ', '');
+            html += `<tr><td>${nomeCurto}</td><td>${qtd}</td></tr>`;
+        });
+        html += `<tr class="total-row"><td><strong>Total</strong></td><td><strong>${totalGeral}</strong></td></tr>`;
+        tbody.innerHTML = html;
+    }
+
+    function renderizarConcorrentes(prod) {
+        const grid = document.getElementById('concorrentesGrid');
+        if (!grid) return;
+        let html = '';
+        CONCORRENTES.forEach(nome => {
+            const valor = prod.concorrentes[nome] || 0;
+            html += `
+                <div class="concorrente-item">
+                    <span class="label">${nome}</span>
+                    <input type="number" step="0.01" class="concorrente-input" data-concorrente="${nome}" value="${valor}" placeholder="0.00">
+                </div>
+            `;
+        });
+        grid.innerHTML = html;
+    }
+
+    function renderizarTodosProdutos() {
+        const container = document.getElementById('productGrid');
+        if (!container) return;
+        container.innerHTML = '';
+        if (produtos.length === 0) {
+            container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#999;">Nenhum produto disponível.</div>';
+            document.getElementById('allProducts').classList.add('active');
+            return;
+        }
+        produtos.forEach(prod => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <div class="card-name">${prod.nome}</div>
+                <div class="card-ean">EAN: ${prod.ean}</div>
+                <div class="card-price">${(prod.preco_kero || 0).toFixed(2)} Kz</div>
+            `;
+            card.addEventListener('click', () => {
+                renderizarProduto(prod);
+                document.getElementById('eanInput').value = prod.ean;
                 document.getElementById('allProducts').classList.remove('active');
+            });
+            container.appendChild(card);
+        });
+        document.getElementById('allProducts').classList.add('active');
+    }
 
-                document.getElementById('prodNome').textContent = prod.nome;
-                document.getElementById('prodEan').textContent = `EAN: ${prod.ean}`;
-                atualizarPrecos(prod);
-                renderizarConcorrentes(prod);
-                renderizarStockVertical(prod);
+    // ============================================================
+    //  PESQUISA E SUGESTÕES
+    // ============================================================
+    function atualizarSugestoes(termo) {
+        const box = document.getElementById('suggestionsBox');
+        if (!box) return;
+        if (termo.length < 1) {
+            box.classList.remove('active');
+            return;
+        }
+        const filtrados = produtos.filter(p =>
+            p.nome.toLowerCase().includes(termo.toLowerCase()) ||
+            p.ean.includes(termo)
+        );
+        if (filtrados.length === 0) {
+            box.classList.remove('active');
+            return;
+        }
+        box.innerHTML = '';
+        filtrados.slice(0, 8).forEach(p => {
+            const item = document.createElement('div');
+            item.className = 'suggestion-item';
+            item.innerHTML = `
+                <span class="suggestion-name">${p.nome}</span>
+                <span class="suggestion-ean">${p.ean}</span>
+            `;
+            item.addEventListener('click', () => {
+                renderizarProduto(p);
+                document.getElementById('eanInput').value = p.ean;
+                box.classList.remove('active');
+                adicionarHistorico(p.ean);
+            });
+            box.appendChild(item);
+        });
+        box.classList.add('active');
+    }
 
-                sessionStorage.setItem('ean_ultimo_produto', prod.ean);
-                document.getElementById('lastSearchInfo').textContent = `Última pesquisa: ${prod.nome} (${prod.ean})`;
+    function buscarProduto(termo) {
+        const termoNormalizado = termo.replace(/\s/g, '');
+        if (!termoNormalizado) {
+            notificar('Digite um nome ou EAN.', 'error');
+            return;
+        }
+
+        let prod = produtos.find(p => p.ean === termoNormalizado);
+        if (!prod) {
+            const matches = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase().trim()));
+            if (matches.length === 1) {
+                prod = matches[0];
+            } else if (matches.length > 1) {
+                notificar(`Encontrados ${matches.length} produtos. Use as sugestões.`, 'info');
+                atualizarSugestoes(termo);
+                return;
+            } else {
+                notificar(`Nenhum produto encontrado para "${termo}".`, 'error');
+                return;
             }
+        }
+        if (prod) {
+            renderizarProduto(prod);
+            document.getElementById('eanInput').value = prod.ean;
+            adicionarHistorico(prod.ean);
+        }
+    }
 
-            function atualizarPrecos(prod) {
-                const precoKero = prod.preco_kero || 0;
-                const precoCusto = prod.preco_custo || 0;
-                const iva = prod.iva || 0;
-                const fornecedor = prod.fornecedor || '';
-                const vendaMedia = prod.venda_media_mensal || 0;
+    function limparPesquisa() {
+        document.getElementById('eanInput').value = '';
+        const result = document.getElementById('resultContainer');
+        if (result) result.classList.remove('active');
+        const empty = document.getElementById('emptyStateEAN');
+        if (empty) empty.style.display = 'block';
+        const allProd = document.getElementById('allProducts');
+        if (allProd) allProd.classList.remove('active');
+        produtoAtual = null;
+        const btnConc = document.getElementById('btnGuardarConcorrentes');
+        if (btnConc) btnConc.disabled = true;
+        const info = document.getElementById('lastSearchInfo');
+        if (info) info.textContent = '';
+        sessionStorage.removeItem('ean_ultimo_produto');
+        document.querySelectorAll('#productPricing .pricing-item input').forEach(inp => inp.style.display = 'none');
+        document.querySelectorAll('#productPricing .pricing-item .value').forEach(val => val.style.display = 'block');
+        const btnEditar = document.getElementById('btnEditarPrecos');
+        if (btnEditar) btnEditar.textContent = 'Editar';
+        const btnGuardar = document.getElementById('btnGuardarPrecos');
+        if (btnGuardar) btnGuardar.style.display = 'none';
+        editandoPrecos = false;
+        document.getElementById('eanInput').focus();
+    }
 
-                document.getElementById('prodPrecoKeroDisplay').textContent = precoKero.toFixed(2) + ' Kz';
-                document.getElementById('prodPrecoCustoDisplay').textContent = precoCusto.toFixed(2) + ' Kz';
-                document.getElementById('prodIvaDisplay').textContent = iva.toFixed(2) + ' %';
-                document.getElementById('prodFornecedorDisplay').textContent = fornecedor;
-                document.getElementById('prodVendaMediaDisplay').textContent = vendaMedia;
-
-                document.getElementById('prodPrecoKeroInput').value = precoKero.toFixed(2);
-                document.getElementById('prodPrecoCustoInput').value = precoCusto.toFixed(2);
-                document.getElementById('prodIvaInput').value = iva.toFixed(2);
-                document.getElementById('prodFornecedorInput').value = fornecedor;
-                document.getElementById('prodVendaMediaInput').value = vendaMedia;
+    // ============================================================
+    //  EDIÇÃO DE PREÇOS
+    // ============================================================
+    function guardarPrecosConcorrentes() {
+        if (!produtoAtual) {
+            notificar('Nenhum produto selecionado.', 'error');
+            return;
+        }
+        const inputs = document.querySelectorAll('.concorrente-input');
+        let valido = true;
+        inputs.forEach(input => {
+            const concorrente = input.dataset.concorrente;
+            const valor = parseFloat(input.value);
+            if (isNaN(valor) || valor < 0) {
+                notificar(`Valor inválido para ${concorrente}. Use número positivo.`, 'error');
+                valido = false;
+                return;
             }
+            produtoAtual.concorrentes[concorrente] = valor;
+        });
+        if (!valido) return;
+        guardarLocal();
+        notificar('✅ Preços da concorrência guardados localmente!', 'success');
+    }
 
-            function renderizarStockVertical(prod) {
-                const tbody = document.getElementById('stockBody');
-                let html = '';
-                let totalGeral = 0;
-                LOJAS_KERO.forEach(loja => {
-                    const qtd = prod.stock[loja] || 0;
-                    totalGeral += qtd;
-                    const nomeCurto = loja.replace('Kero Loja ', '');
-                    html += `<tr><td>${nomeCurto}</td><td>${qtd}</td></tr>`;
-                });
-                html += `<tr class="total-row"><td><strong>Total</strong></td><td><strong>${totalGeral}</strong></td></tr>`;
-                tbody.innerHTML = html;
-            }
+    function toggleEdicaoPrecos() {
+        if (!produtoAtual) return;
+        editandoPrecos = !editandoPrecos;
+        const campos = [
+            { display: 'prodPrecoKeroDisplay', input: 'prodPrecoKeroInput' },
+            { display: 'prodPrecoCustoDisplay', input: 'prodPrecoCustoInput' },
+            { display: 'prodIvaDisplay', input: 'prodIvaInput' },
+            { display: 'prodFornecedorDisplay', input: 'prodFornecedorInput' },
+            { display: 'prodVendaMediaDisplay', input: 'prodVendaMediaInput' }
+        ];
+        const btnEditar = document.getElementById('btnEditarPrecos');
+        const btnGuardar = document.getElementById('btnGuardarPrecos');
 
-            function renderizarConcorrentes(prod) {
-                const grid = document.getElementById('concorrentesGrid');
-                let html = '';
-                CONCORRENTES.forEach(nome => {
-                    const valor = prod.concorrentes[nome] || 0;
-                    html += `
-                        <div class="concorrente-item">
-                            <span class="label">${nome}</span>
-                            <input type="number" step="0.01" class="concorrente-input" data-concorrente="${nome}" value="${valor}" placeholder="0.00">
-                        </div>
-                    `;
-                });
-                grid.innerHTML = html;
-            }
+        if (editandoPrecos) {
+            campos.forEach(c => {
+                const d = document.getElementById(c.display);
+                const i = document.getElementById(c.input);
+                if (d) d.style.display = 'none';
+                if (i) i.style.display = 'block';
+            });
+            if (btnEditar) btnEditar.textContent = 'Cancelar';
+            if (btnGuardar) btnGuardar.style.display = 'inline-block';
+        } else {
+            campos.forEach(c => {
+                const d = document.getElementById(c.display);
+                const i = document.getElementById(c.input);
+                if (d) d.style.display = 'block';
+                if (i) i.style.display = 'none';
+            });
+            if (btnEditar) btnEditar.textContent = 'Editar';
+            if (btnGuardar) btnGuardar.style.display = 'none';
+            atualizarPrecos(produtoAtual);
+        }
+    }
 
-            function renderizarTodosProdutos() {
-                const container = document.getElementById('productGrid');
-                container.innerHTML = '';
-                produtos.forEach(prod => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    card.innerHTML = `
-                        <div class="card-name">${prod.nome}</div>
-                        <div class="card-ean">EAN: ${prod.ean}</div>
-                        <div class="card-price">${(prod.preco_kero || 0).toFixed(2)} Kz</div>
-                    `;
-                    card.addEventListener('click', () => {
-                        renderizarProduto(prod);
-                        document.getElementById('eanInput').value = prod.ean;
-                        document.getElementById('allProducts').classList.remove('active');
-                    });
-                    container.appendChild(card);
-                });
-                document.getElementById('allProducts').classList.toggle('active');
-            }
+    function guardarPrecosKero() {
+        if (!produtoAtual) return;
+        const precoKero = parseFloat(document.getElementById('prodPrecoKeroInput').value);
+        const precoCusto = parseFloat(document.getElementById('prodPrecoCustoInput').value);
+        const iva = parseFloat(document.getElementById('prodIvaInput').value);
+        const fornecedor = document.getElementById('prodFornecedorInput').value.trim();
+        const vendaMedia = parseFloat(document.getElementById('prodVendaMediaInput').value);
 
-            // --------------------- PESQUISA E SUGESTÕES ---------------------
-            function atualizarSugestoes(termo) {
-                const box = document.getElementById('suggestionsBox');
-                if (termo.length < 1) {
-                    box.classList.remove('active');
+        if (isNaN(precoKero) || precoKero < 0 || isNaN(precoCusto) || precoCusto < 0 || isNaN(iva) || iva < 0 ||
+            isNaN(vendaMedia) || vendaMedia < 0) {
+            notificar('Valores inválidos. Use números positivos.', 'error');
+            return;
+        }
+
+        produtoAtual.preco_kero = precoKero;
+        produtoAtual.preco_custo = precoCusto;
+        produtoAtual.iva = iva;
+        produtoAtual.fornecedor = fornecedor;
+        produtoAtual.venda_media_mensal = vendaMedia;
+        guardarLocal();
+        notificar('✅ Dados do produto atualizados localmente!', 'success');
+        atualizarPrecos(produtoAtual);
+        toggleEdicaoPrecos();
+    }
+
+    // ============================================================
+    //  CÂMARA E LEITURA
+    // ============================================================
+    function redimensionarImagem(imageData, maxLargura = 1000) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = function() {
+                let { width, height } = img;
+                if (width > maxLargura) {
+                    height = Math.round(height * (maxLargura / width));
+                    width = maxLargura;
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.9));
+            };
+            img.onerror = function() { resolve(imageData); };
+            img.src = imageData;
+        });
+    }
+
+    function abrirCamera() {
+        const modal = document.getElementById('cameraModal');
+        if (!modal) return;
+        modal.classList.add('active');
+        document.getElementById('cameraStatus').textContent = 'A iniciar câmera...';
+
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(t => t.stop());
+            cameraStream = null;
+        }
+        if (scanFrameId) {
+            cancelAnimationFrame(scanFrameId);
+            scanFrameId = null;
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            document.getElementById('cameraStatus').textContent = 'Câmara não suportada. Use "Carregar Imagem".';
+            notificar('Câmara não suportada.', 'error');
+            return;
+        }
+
+        if ('BarcodeDetector' in window) {
+            iniciarCameraComBarcodeDetector();
+        } else {
+            iniciarCameraFallback();
+        }
+    }
+
+    function iniciarCameraComBarcodeDetector() {
+        navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } }
+        })
+        .then(stream => {
+            cameraStream = stream;
+            const video = document.getElementById('cameraVideo');
+            video.srcObject = stream;
+            video.play();
+            document.getElementById('cameraStatus').textContent = '📷 Aponte para o código (deteção automática)';
+
+            const barcodeDetector = new BarcodeDetector({
+                formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39']
+            });
+            let scanning = true;
+
+            function scanFrame() {
+                if (!scanning || !video.srcObject || !document.getElementById('cameraModal').classList.contains('active')) {
                     return;
                 }
-                const filtrados = produtos.filter(p =>
-                    p.nome.toLowerCase().includes(termo.toLowerCase()) ||
-                    p.ean.includes(termo)
-                );
-                if (filtrados.length === 0) {
-                    box.classList.remove('active');
-                    return;
-                }
-                box.innerHTML = '';
-                filtrados.slice(0, 8).forEach(p => {
-                    const item = document.createElement('div');
-                    item.className = 'suggestion-item';
-                    item.innerHTML = `
-                        <span class="suggestion-name">${p.nome}</span>
-                        <span class="suggestion-ean">${p.ean}</span>
-                    `;
-                    item.addEventListener('click', () => {
-                        renderizarProduto(p);
-                        document.getElementById('eanInput').value = p.ean;
-                        box.classList.remove('active');
-                        adicionarHistorico(p.ean);
-                    });
-                    box.appendChild(item);
-                });
-                box.classList.add('active');
-            }
-
-            function buscarProduto(termo) {
-                const termoNormalizado = termo.replace(/\s/g, '');
-                if (!termoNormalizado) {
-                    notificar('Digite um nome ou EAN.', 'error');
-                    return;
-                }
-
-                let prod = produtos.find(p => p.ean === termoNormalizado);
-                if (!prod) {
-                    const matches = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase().trim()));
-                    if (matches.length === 1) {
-                        prod = matches[0];
-                    } else if (matches.length > 1) {
-                        notificar(`Encontrados ${matches.length} produtos. Use as sugestões.`, 'info');
-                        atualizarSugestoes(termo);
-                        return;
-                    } else {
-                        notificar(`Nenhum produto encontrado para "${termo}".`, 'error');
-                        return;
-                    }
-                }
-                if (prod) {
-                    renderizarProduto(prod);
-                    document.getElementById('eanInput').value = prod.ean;
-                    adicionarHistorico(prod.ean);
-                }
-            }
-
-            function limparPesquisa() {
-                document.getElementById('eanInput').value = '';
-                document.getElementById('resultContainer').classList.remove('active');
-                document.getElementById('emptyStateEAN').style.display = 'block';
-                document.getElementById('allProducts').classList.remove('active');
-                produtoAtual = null;
-                document.getElementById('btnGuardarConcorrentes').disabled = true;
-                document.getElementById('lastSearchInfo').textContent = '';
-                sessionStorage.removeItem('ean_ultimo_produto');
-                document.querySelectorAll('#productPricing .pricing-item input').forEach(inp => inp.style.display = 'none');
-                document.querySelectorAll('#productPricing .pricing-item .value').forEach(val => val.style.display = 'block');
-                document.getElementById('btnEditarPrecos').textContent = 'Editar';
-                document.getElementById('btnGuardarPrecos').style.display = 'none';
-                editandoPrecos = false;
-                document.getElementById('eanInput').focus();
-            }
-
-            // --------------------- EDIÇÃO DE PREÇOS ---------------------
-            function guardarPrecosConcorrentes() {
-                if (!produtoAtual) {
-                    notificar('Nenhum produto selecionado.', 'error');
-                    return;
-                }
-                const inputs = document.querySelectorAll('.concorrente-input');
-                let valido = true;
-                inputs.forEach(input => {
-                    const concorrente = input.dataset.concorrente;
-                    const valor = parseFloat(input.value);
-                    if (isNaN(valor) || valor < 0) {
-                        notificar(`Valor inválido para ${concorrente}. Use número positivo.`, 'error');
-                        valido = false;
-                        return;
-                    }
-                    produtoAtual.concorrentes[concorrente] = valor;
-                });
-                if (!valido) return;
-                guardarLocal();
-                notificar('✅ Preços da concorrência guardados localmente!', 'success');
-            }
-
-            function toggleEdicaoPrecos() {
-                if (!produtoAtual) return;
-                editandoPrecos = !editandoPrecos;
-                const campos = [
-                    { display: 'prodPrecoKeroDisplay', input: 'prodPrecoKeroInput' },
-                    { display: 'prodPrecoCustoDisplay', input: 'prodPrecoCustoInput' },
-                    { display: 'prodIvaDisplay', input: 'prodIvaInput' },
-                    { display: 'prodFornecedorDisplay', input: 'prodFornecedorInput' },
-                    { display: 'prodVendaMediaDisplay', input: 'prodVendaMediaInput' }
-                ];
-                const btnEditar = document.getElementById('btnEditarPrecos');
-                const btnGuardar = document.getElementById('btnGuardarPrecos');
-
-                if (editandoPrecos) {
-                    campos.forEach(c => {
-                        document.getElementById(c.display).style.display = 'none';
-                        document.getElementById(c.input).style.display = 'block';
-                    });
-                    btnEditar.textContent = 'Cancelar';
-                    btnGuardar.style.display = 'inline-block';
-                } else {
-                    campos.forEach(c => {
-                        document.getElementById(c.display).style.display = 'block';
-                        document.getElementById(c.input).style.display = 'none';
-                    });
-                    btnEditar.textContent = 'Editar';
-                    btnGuardar.style.display = 'none';
-                    atualizarPrecos(produtoAtual);
-                }
-            }
-
-            function guardarPrecosKero() {
-                if (!produtoAtual) return;
-                const precoKero = parseFloat(document.getElementById('prodPrecoKeroInput').value);
-                const precoCusto = parseFloat(document.getElementById('prodPrecoCustoInput').value);
-                const iva = parseFloat(document.getElementById('prodIvaInput').value);
-                const fornecedor = document.getElementById('prodFornecedorInput').value.trim();
-                const vendaMedia = parseFloat(document.getElementById('prodVendaMediaInput').value);
-
-                if (isNaN(precoKero) || precoKero < 0 || isNaN(precoCusto) || precoCusto < 0 || isNaN(iva) || iva < 0 ||
-                    isNaN(vendaMedia) || vendaMedia < 0) {
-                    notificar('Valores inválidos. Use números positivos.', 'error');
-                    return;
-                }
-
-                produtoAtual.preco_kero = precoKero;
-                produtoAtual.preco_custo = precoCusto;
-                produtoAtual.iva = iva;
-                produtoAtual.fornecedor = fornecedor;
-                produtoAtual.venda_media_mensal = vendaMedia;
-                guardarLocal();
-                notificar('✅ Dados do produto atualizados localmente!', 'success');
-                atualizarPrecos(produtoAtual);
-                toggleEdicaoPrecos();
-            }
-
-            // --------------------- CÂMARA E LEITURA ---------------------
-            function redimensionarImagem(imageData, maxLargura = 1000) {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = function() {
-                        let { width, height } = img;
-                        if (width > maxLargura) {
-                            height = Math.round(height * (maxLargura / width));
-                            width = maxLargura;
-                        }
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
-                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.9));
-                    };
-                    img.onerror = function() {
-                        resolve(imageData);
-                    };
-                    img.src = imageData;
-                });
-            }
-
-            function abrirCamera() {
-                const modal = document.getElementById('cameraModal');
-                modal.classList.add('active');
-                document.getElementById('cameraStatus').textContent = 'A iniciar câmera...';
-
-                if (cameraStream) {
-                    cameraStream.getTracks().forEach(t => t.stop());
-                    cameraStream = null;
-                }
-                if (scanFrameId) {
-                    cancelAnimationFrame(scanFrameId);
-                    scanFrameId = null;
-                }
-
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    document.getElementById('cameraStatus').textContent = 'Câmara não suportada. Use "Carregar Imagem".';
-                    notificar('Câmara não suportada.', 'error');
-                    return;
-                }
-
-                if ('BarcodeDetector' in window) {
-                    iniciarCameraComBarcodeDetector();
-                } else {
-                    iniciarCameraFallback();
-                }
-            }
-
-            function iniciarCameraComBarcodeDetector() {
-                navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } }
-                })
-                    .then(stream => {
-                        cameraStream = stream;
-                        const video = document.getElementById('cameraVideo');
-                        video.srcObject = stream;
-                        video.play();
-                        document.getElementById('cameraStatus').textContent = '📷 Aponte para o código (deteção automática)';
-
-                        barcodeDetector = new BarcodeDetector({
-                            formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39']
-                        });
-                        let scanning = true;
-
-                        function scanFrame() {
-                            if (!scanning || !video.srcObject || !document.getElementById('cameraModal')
-                                .classList.contains('active')) {
-                                return;
-                            }
-                            barcodeDetector.detect(video)
-                                .then(barcodes => {
-                                    if (barcodes.length > 0) {
-                                        const code = barcodes[0].rawValue.replace(/\s/g, '');
-                                        document.getElementById('cameraStatus').textContent = '✅ Código lido: ' + code;
-                                        notificar('Código lido: ' + code, 'success');
-                                        fecharCamera();
-                                        document.getElementById('eanInput').value = code;
-                                        buscarProduto(code);
-                                        return;
-                                    }
-                                })
-                                .catch(err => { /* ignorar */ });
-                            scanFrameId = requestAnimationFrame(scanFrame);
-                        }
-                        scanFrame();
-
-                        setTimeout(() => {
-                            scanning = false;
-                            if (scanFrameId) cancelAnimationFrame(scanFrameId);
-                        }, 30000);
-                    })
-                    .catch(err => {
-                        console.error('Erro na câmara com BarcodeDetector:', err);
-                        document.getElementById('cameraStatus').textContent = 'Erro com deteção automática, a tentar modo manual...';
-                        iniciarCameraFallback();
-                    });
-            }
-
-            function iniciarCameraFallback() {
-                navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } }
-                })
-                    .then(stream => {
-                        cameraStream = stream;
-                        const video = document.getElementById('cameraVideo');
-                        video.srcObject = stream;
-                        video.play();
-                        document.getElementById('cameraStatus').textContent = '📷 Clique em "Capturar" para ler o código';
-                        notificar('Câmera ativa. Clique em "Capturar" para ler.', 'info');
-                    })
-                    .catch(err => {
-                        console.error('Erro ao aceder à câmara:', err);
-                        document.getElementById('cameraStatus').textContent = 'Câmara indisponível. Use "Carregar Imagem".';
-                        notificar('Câmara indisponível.', 'error');
-                    });
-            }
-
-            function fecharCamera() {
-                if (cameraStream) {
-                    cameraStream.getTracks().forEach(t => t.stop());
-                    cameraStream = null;
-                }
-                if (scanFrameId) {
-                    cancelAnimationFrame(scanFrameId);
-                    scanFrameId = null;
-                }
-                const video = document.getElementById('cameraVideo');
-                if (video.srcObject) {
-                    video.srcObject = null;
-                }
-                document.getElementById('cameraModal').classList.remove('active');
-                document.getElementById('cameraStatus').textContent = 'Aguardando...';
-            }
-
-            function capturarEscanear() {
-                const video = document.getElementById('cameraVideo');
-                if (!video.srcObject || video.paused) {
-                    notificar('A câmera não está ativa. Clique em "Ler Código" primeiro.', 'error');
-                    return;
-                }
-                const canvas = document.getElementById('cameraCanvas');
-                canvas.width = video.videoWidth || 640;
-                canvas.height = video.videoHeight || 480;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = canvas.toDataURL('image/jpeg', 0.9);
-                decodificarImagemComZXing(imageData);
-            }
-
-            function decodificarImagemComZXing(imageData) {
-                notificar('A ler código da imagem...', 'info');
-                if (typeof ZXing !== 'undefined') {
-                    const reader = new ZXing.BrowserMultiFormatReader();
-                    reader.decodeFromImage(undefined, imageData)
-                        .then(result => {
-                            const code = result.getText().replace(/\s/g, '');
+                barcodeDetector.detect(video)
+                    .then(barcodes => {
+                        if (barcodes.length > 0) {
+                            const code = barcodes[0].rawValue.replace(/\s/g, '');
+                            document.getElementById('cameraStatus').textContent = '✅ Código lido: ' + code;
+                            notificar('Código lido: ' + code, 'success');
+                            fecharCamera();
                             document.getElementById('eanInput').value = code;
                             buscarProduto(code);
-                            fecharCamera();
-                            notificar('Código lido: ' + code, 'success');
-                        })
-                        .catch(err => {
-                            console.warn('ZXing falhou, a tentar Quagga:', err);
-                            decodificarImagem(imageData);
-                        });
-                } else {
+                            return;
+                        }
+                    })
+                    .catch(err => { /* ignora */ });
+                scanFrameId = requestAnimationFrame(scanFrame);
+            }
+            scanFrame();
+
+            setTimeout(() => {
+                scanning = false;
+                if (scanFrameId) cancelAnimationFrame(scanFrameId);
+            }, 30000);
+        })
+        .catch(err => {
+            console.error('Erro na câmara com BarcodeDetector:', err);
+            document.getElementById('cameraStatus').textContent = 'Erro com deteção automática, a tentar modo manual...';
+            iniciarCameraFallback();
+        });
+    }
+
+    function iniciarCameraFallback() {
+        navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } }
+        })
+        .then(stream => {
+            cameraStream = stream;
+            const video = document.getElementById('cameraVideo');
+            video.srcObject = stream;
+            video.play();
+            document.getElementById('cameraStatus').textContent = '📷 Clique em "Capturar" para ler o código';
+            notificar('Câmera ativa. Clique em "Capturar" para ler.', 'info');
+        })
+        .catch(err => {
+            console.error('Erro ao aceder à câmara:', err);
+            document.getElementById('cameraStatus').textContent = 'Câmara indisponível. Use "Carregar Imagem".';
+            notificar('Câmara indisponível.', 'error');
+        });
+    }
+
+    function fecharCamera() {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(t => t.stop());
+            cameraStream = null;
+        }
+        if (scanFrameId) {
+            cancelAnimationFrame(scanFrameId);
+            scanFrameId = null;
+        }
+        const video = document.getElementById('cameraVideo');
+        if (video.srcObject) {
+            video.srcObject = null;
+        }
+        document.getElementById('cameraModal').classList.remove('active');
+        document.getElementById('cameraStatus').textContent = 'Aguardando...';
+    }
+
+    function capturarEscanear() {
+        const video = document.getElementById('cameraVideo');
+        if (!video.srcObject || video.paused) {
+            notificar('A câmera não está ativa. Clique em "Ler Código" primeiro.', 'error');
+            return;
+        }
+        const canvas = document.getElementById('cameraCanvas');
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = canvas.toDataURL('image/jpeg', 0.9);
+        decodificarImagemComZXing(imageData);
+    }
+
+    function decodificarImagemComZXing(imageData) {
+        notificar('A ler código da imagem...', 'info');
+        if (typeof ZXing !== 'undefined') {
+            const reader = new ZXing.BrowserMultiFormatReader();
+            reader.decodeFromImage(undefined, imageData)
+                .then(result => {
+                    const code = result.getText().replace(/\s/g, '');
+                    document.getElementById('eanInput').value = code;
+                    buscarProduto(code);
+                    fecharCamera();
+                    notificar('Código lido: ' + code, 'success');
+                })
+                .catch(err => {
+                    console.warn('ZXing falhou, a tentar Quagga:', err);
                     decodificarImagem(imageData);
-                }
+                });
+        } else {
+            decodificarImagem(imageData);
+        }
+    }
+
+    function decodificarImagem(imageData, tentativas = 0) {
+        if (tentativas === 0) {
+            notificar('A ler código da imagem (Quagga)...', 'info');
+        }
+
+        const config = {
+            src: imageData,
+            numOfWorkers: 4,
+            inputStream: {
+                size: 800,
+                singleChannel: true
+            },
+            decoder: {
+                readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"],
+                multiple: false,
+                tryHarder: true
+            },
+            locate: true,
+            patchSize: "large"
+        };
+
+        Quagga.decodeSingle(config, function(result) {
+            if (result && result.codeResult) {
+                const code = result.codeResult.code.replace(/\s/g, '');
+                notificar('Código lido: ' + code, 'success');
+                document.getElementById('eanInput').value = code;
+                buscarProduto(code);
+                fecharCamera();
+                return;
             }
 
-            function decodificarImagem(imageData, tentativas = 0) {
-                if (tentativas === 0) {
-                    notificar('A ler código da imagem (Quagga)...', 'info');
-                }
-
-                const config = {
-                    src: imageData,
-                    numOfWorkers: 4,
-                    inputStream: {
-                        size: 800,
-                        singleChannel: true
-                    },
-                    decoder: {
-                        readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"],
-                        multiple: false,
-                        tryHarder: true
-                    },
-                    locate: true,
-                    patchSize: "large"
+            if (tentativas < 3) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.height;
+                    canvas.height = img.width;
+                    ctx.translate(canvas.width / 2, canvas.height / 2);
+                    ctx.rotate(Math.PI / 2);
+                    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                    const novaImagem = canvas.toDataURL('image/jpeg', 0.9);
+                    decodificarImagem(novaImagem, tentativas + 1);
                 };
-
-                Quagga.decodeSingle(config, function(result) {
-                    if (result && result.codeResult) {
-                        const code = result.codeResult.code.replace(/\s/g, '');
-                        notificar('Código lido: ' + code, 'success');
-                        document.getElementById('eanInput').value = code;
-                        buscarProduto(code);
-                        fecharCamera();
-                        return;
-                    }
-
-                    if (tentativas < 3) {
-                        const img = new Image();
-                        img.onload = function() {
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
-                            canvas.width = img.height;
-                            canvas.height = img.width;
-                            ctx.translate(canvas.width / 2, canvas.height / 2);
-                            ctx.rotate(Math.PI / 2);
-                            ctx.drawImage(img, -img.width / 2, -img.height / 2);
-                            const novaImagem = canvas.toDataURL('image/jpeg', 0.9);
-                            decodificarImagem(novaImagem, tentativas + 1);
-                        };
-                        img.onerror = function() {
-                            notificar('Erro ao processar imagem.', 'error');
-                        };
-                        img.src = imageData;
-                    } else {
-                        notificar('Não foi possível ler o código na imagem.', 'error');
-                    }
-                });
-            }
-
-            async function processarImagem(file) {
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    const imagemRedimensionada = await redimensionarImagem(e.target.result);
-                    decodificarImagemComZXing(imagemRedimensionada);
+                img.onerror = function() {
+                    notificar('Erro ao processar imagem.', 'error');
                 };
-                reader.readAsDataURL(file);
+                img.src = imageData;
+            } else {
+                notificar('Não foi possível ler o código na imagem.', 'error');
+            }
+        });
+    }
+
+    async function processarImagem(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const imagemRedimensionada = await redimensionarImagem(e.target.result);
+            decodificarImagemComZXing(imagemRedimensionada);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // ============================================================
+    //  SHAREPOINT – LISTA EANPRODUTOS
+    // ============================================================
+    async function obterToken() {
+        return await getSharePointToken();
+    }
+
+    async function obterSiteId() {
+        return await getSiteId();
+    }
+
+    async function salvarProdutoNaLista(produto) {
+        try {
+            const token = await obterToken();
+            const siteId = await obterSiteId();
+            const listName = LISTA_EAN;
+
+            // Verificar se o produto já existe pelo EAN
+            const filter = encodeURIComponent(`fields/EAN eq '${produto.ean}'`);
+            const searchUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$filter=${filter}`;
+            const searchResp = await fetch(searchUrl, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            if (!searchResp.ok) {
+                throw new Error(`Erro ao pesquisar produto: ${searchResp.status}`);
+            }
+            const searchData = await searchResp.json();
+            const existing = searchData.value && searchData.value.length > 0 ? searchData.value[0] : null;
+
+            const fields = {
+                "Title": produto.nome,
+                "EAN": produto.ean,
+                "PrecoCusto": produto.preco_custo || 0,
+                "PrecoKero": produto.preco_kero || 0,
+                "IVA": produto.iva || 0,
+                "Fornecedor": produto.fornecedor || '',
+                "VendaMedia": produto.venda_media_mensal || 0,
+                "Stock": JSON.stringify(produto.stock || {}),
+                "Concorrentes": JSON.stringify(produto.concorrentes || {})
+            };
+
+            if (existing) {
+                // Atualizar
+                const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items/${existing.id}/fields`;
+                const updateResp = await fetch(updateUrl, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(fields)
+                });
+                if (!updateResp.ok) {
+                    const err = await updateResp.text();
+                    throw new Error(`Falha ao atualizar: ${updateResp.status} - ${err}`);
+                }
+                return { success: true, action: 'updated', id: existing.id };
+            } else {
+                // Criar
+                const createUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items`;
+                const createResp = await fetch(createUrl, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fields })
+                });
+                if (!createResp.ok) {
+                    const err = await createResp.text();
+                    throw new Error(`Falha ao criar: ${createResp.status} - ${err}`);
+                }
+                const newItem = await createResp.json();
+                return { success: true, action: 'created', id: newItem.id };
+            }
+        } catch (error) {
+            console.error('❌ Erro ao salvar produto na lista:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async function publicarProdutosNoSharePoint() {
+        if (produtos.length === 0) {
+            notificar('Não há produtos para publicar.', 'error');
+            return false;
+        }
+
+        // Verificar permissão
+        if (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email)) {
+            notificar('Sem permissão para publicar. Apenas Administrador.', 'error');
+            return false;
+        }
+
+        notificar(`A publicar ${produtos.length} produtos... Aguarde.`, 'info');
+        showLoading();
+
+        let sucessos = 0, erros = 0;
+        for (const prod of produtos) {
+            const result = await salvarProdutoNaLista(prod);
+            if (result.success) {
+                sucessos++;
+            } else {
+                erros++;
+                console.error(`Erro ao publicar ${prod.ean}:`, result.error);
+            }
+        }
+
+        hideLoading();
+        if (erros === 0) {
+            notificar(`✅ ${sucessos} produtos publicados com sucesso na lista EANPRODUTOS.`, 'success');
+        } else {
+            notificar(`⚠️ ${sucessos} publicados, ${erros} falhas. Verifique o console.`, 'warning');
+        }
+        return erros === 0;
+    }
+
+    async function carregarProdutosDoSharePoint() {
+        try {
+            const token = await obterToken();
+            const siteId = await obterSiteId();
+            const listName = LISTA_EAN;
+
+            const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$top=5000`;
+            const response = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
             }
 
-            // --------------------- ADICIONAR PRODUTO ---------------------
-            function adicionarProduto() {
-                const nome = document.getElementById('addNome').value.trim();
-                const ean = document.getElementById('addEan').value.trim();
-                const precoCusto = parseFloat(document.getElementById('addPrecoCusto').value);
-                const precoKero = parseFloat(document.getElementById('addPrecoKero').value);
-                const iva = parseFloat(document.getElementById('addIva').value) || 0;
-                const fornecedor = document.getElementById('addFornecedor').value.trim();
-                const vendaMedia = parseFloat(document.getElementById('addVendaMedia').value) || 0;
-                const stockStr = document.getElementById('addStock').value.trim();
-                const concStr = document.getElementById('addConcorrentes').value.trim();
+            const data = await response.json();
+            if (!data.value || data.value.length === 0) {
+                throw new Error('Lista vazia ou não encontrada');
+            }
 
-                if (!nome || !ean) {
-                    notificar('Nome e EAN são obrigatórios.', 'error');
-                    return;
-                }
-
-                if (!/^\d{8,13}$/.test(ean)) {
-                    notificar('EAN inválido. Deve conter apenas números e ter entre 8 e 13 dígitos.', 'error');
-                    return;
-                }
-
-                if (isNaN(precoCusto) || precoCusto < 0 || isNaN(precoKero) || precoKero < 0) {
-                    notificar('Preços devem ser números positivos.', 'error');
-                    return;
-                }
-
-                if (produtos.find(p => p.ean === ean)) {
-                    notificar('Já existe um produto com este EAN.', 'error');
-                    return;
-                }
-
-                const stockArray = stockStr ? stockStr.split(',').map(s => parseFloat(s.trim())) : [];
-                const stock = {};
-                LOJAS_KERO.forEach((loja, index) => {
-                    stock[loja] = (stockArray[index] && !isNaN(stockArray[index])) ? stockArray[index] : 0;
-                });
-
-                const concArray = concStr ? concStr.split(',').map(s => parseFloat(s.trim())) : [];
-                const concorrentes = {};
-                CONCORRENTES.forEach((nomeConc, index) => {
-                    concorrentes[nomeConc] = (concArray[index] && !isNaN(concArray[index])) ? concArray[index] : 0;
-                });
-
-                const novoProduto = {
-                    ean: ean,
-                    nome: nome,
-                    preco_custo: precoCusto,
-                    preco_kero: precoKero,
-                    iva: iva,
-                    fornecedor: fornecedor,
-                    venda_media_mensal: vendaMedia,
+            const produtosLista = data.value.map(item => {
+                const f = item.fields;
+                let stock = {}, concorrentes = {};
+                try { stock = JSON.parse(f.Stock || '{}'); } catch (e) { stock = {}; }
+                try { concorrentes = JSON.parse(f.Concorrentes || '{}'); } catch (e) { concorrentes = {}; }
+                return {
+                    ean: String(f.EAN || '').trim(),
+                    nome: String(f.Title || '').trim(),
+                    preco_custo: parseFloat(f.PrecoCusto) || 0,
+                    preco_kero: parseFloat(f.PrecoKero) || 0,
+                    iva: parseFloat(f.IVA) || 0,
+                    fornecedor: String(f.Fornecedor || '').trim(),
+                    venda_media_mensal: parseFloat(f.VendaMedia) || 0,
                     stock: stock,
                     concorrentes: concorrentes
                 };
+            }).filter(p => p.ean !== '');
 
-                produtos.push(novoProduto);
-                guardarLocal();
-                notificar(`✅ Produto "${nome}" adicionado localmente!`, 'success');
-
-                document.getElementById('addNome').value = '';
-                document.getElementById('addEan').value = '';
-                document.getElementById('addPrecoCusto').value = '';
-                document.getElementById('addPrecoKero').value = '';
-                document.getElementById('addIva').value = '';
-                document.getElementById('addFornecedor').value = '';
-                document.getElementById('addVendaMedia').value = '';
-                document.getElementById('addStock').value = '';
-                document.getElementById('addConcorrentes').value = '';
-
-                renderizarTodosProdutos();
-                renderizarHistorico();
-                atualizarBadgeTotal();
+            if (produtosLista.length === 0) {
+                throw new Error('Nenhum produto válido na lista');
             }
 
-            // --------------------- CARREGAR DO JSON (GITHUB) ---------------------
-         async function carregarProdutosDoJSON() {
-    try {
-        showLoading();
-        
-        // Obter token e IDs
-        const token = await getSharePointToken();
-        const siteId = await getSiteId();
-        const driveId = await getDriveId();
-
-        // CAMINHO CORRETO: apenas a pasta e o nome do ficheiro (a drive já é "Documentos Partilhados")
-        const filePath = 'EAN/Produtos.json';  // Atenção ao P maiúsculo!
-        const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${encodeURIComponent(filePath)}:/content`;
-
-        console.log('📂 A carregar de:', url);
-
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            // Se falhar, tentar usar a API REST do SharePoint (alternativa)
-            console.warn('⚠️ Falha na Graph API, a tentar via REST...');
-            return await carregarViaREST(token, siteId);
-        }
-
-        const data = await response.json();
-        return processarDadosProdutos(data);
-
-    } catch (error) {
-        console.error('❌ Erro ao carregar do SharePoint:', error);
-        // Fallback para cache local
-        if (carregarLocal()) {
-            notificar('⚠️ Dados carregados do cache local (SharePoint indisponível).', 'warning');
-            return true;
-        } else {
-            produtos = [];
+            // Substituir produtos locais
+            produtos = produtosLista;
+            guardarLocal();
             atualizarBadgeTotal();
-            notificar('❌ Erro ao carregar produtos: ' + error.message, 'error');
+            renderizarHistorico();
+            if (produtoAtual) {
+                const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
+                if (atualizado) renderizarProduto(atualizado);
+                else limparPesquisa();
+            }
+            notificar(`✅ ${produtos.length} produtos carregados da lista EANPRODUTOS.`, 'success');
+            return true;
+        } catch (error) {
+            console.warn('Erro ao carregar do SharePoint:', error);
+            // Fallback para cache local
+            if (carregarLocal()) {
+                notificar('⚠️ A usar dados em cache (SharePoint indisponível).', 'warning');
+                return true;
+            }
+            notificar('❌ Erro ao carregar produtos do SharePoint.', 'error');
             return false;
         }
-    } finally {
-        hideLoading();
     }
-}
 
-// Função alternativa usando a REST API do SharePoint (mais simples)
-async function carregarViaREST(token, siteId) {
-    try {
-        // Caminho relativo ao site
-        const siteUrl = 'https://accordgroupslda.sharepoint.com/sites/SIR';
-        const fileRelativeUrl = '/sites/SIR/Documentos Partilhados/EAN/Produtos.json';
-        const restUrl = `${siteUrl}/_api/web/getfilebyserverrelativeurl('${encodeURIComponent(fileRelativeUrl)}')/$value`;
+    // ============================================================
+    //  IMPORTAÇÃO DE EXCEL
+    // ============================================================
+    function importarExcel(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 
-        const response = await fetch(restUrl, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json'
+                if (!rows || rows.length === 0) {
+                    notificar('Excel vazio ou formato inválido.', 'error');
+                    return;
+                }
+
+                // Mapeamento de colunas (ajuste conforme seu Excel)
+                const produtosImportados = rows.map(row => {
+                    const ean = String(row['EAN'] || '').trim();
+                    if (!ean) return null;
+                    const stock = {};
+                    LOJAS_KERO.forEach(loja => {
+                        const nomeCurto = loja.replace('Kero Loja ', '');
+                        stock[loja] = parseFloat(row[nomeCurto]) || 0;
+                    });
+                    const concorrentes = {};
+                    CONCORRENTES.forEach(c => {
+                        concorrentes[c] = parseFloat(row[c]) || 0;
+                    });
+                    return {
+                        ean: ean,
+                        nome: String(row['Nome'] || row['Descrição'] || '').trim(),
+                        preco_custo: parseFloat(row['PrecoCusto'] || row['PMM'] || 0),
+                        preco_kero: parseFloat(row['PrecoKero'] || row['PVP'] || 0),
+                        iva: parseFloat(row['IVA'] || row['IVA %'] || 0),
+                        fornecedor: String(row['Fornecedor'] || row['Nome Fornecedor'] || '').trim(),
+                        venda_media_mensal: parseFloat(row['VendaMedia'] || row['VENDA Media Mensal'] || 0),
+                        stock: stock,
+                        concorrentes: concorrentes
+                    };
+                }).filter(p => p !== null);
+
+                if (produtosImportados.length === 0) {
+                    notificar('Nenhum produto válido encontrado no Excel.', 'error');
+                    return;
+                }
+
+                produtos = produtosImportados;
+                guardarLocal();
+                atualizarBadgeTotal();
+                renderizarHistorico();
+                if (produtoAtual) {
+                    const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
+                    if (atualizado) renderizarProduto(atualizado);
+                    else limparPesquisa();
+                }
+                notificar(`✅ ${produtos.length} produtos importados do Excel com sucesso!`, 'success');
+                if (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email)) {
+                    notificar('💡 Clique em "Publicar no SharePoint" para guardar na lista.', 'info');
+                }
+            } catch (err) {
+                notificar('Erro ao ler o Excel: ' + err.message, 'error');
+                console.error(err);
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // ============================================================
+    //  EXPORTAÇÃO DE DADOS (JSON local)
+    // ============================================================
+    function exportarDados() {
+        if (produtos.length === 0) {
+            notificar('Não há produtos para exportar.', 'error');
+            return;
+        }
+        const json = JSON.stringify(produtos, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `produtos_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        notificar(`✅ ${produtos.length} produtos exportados.`, 'success');
+    }
+
+    // ============================================================
+    //  INICIALIZAÇÃO E EVENTOS
+    // ============================================================
+    async function inicializar() {
+        // Tentar carregar do SharePoint primeiro
+        const carregou = await carregarProdutosDoSharePoint();
+        if (!carregou) {
+            if (carregarLocal()) {
+                notificar('⚠️ Dados carregados do cache local.', 'warning');
+            } else {
+                // Dados de exemplo (mock)
+                const PRODUTOS_MOCK = [
+                    {
+                        ean: "5601234567890",
+                        nome: "Arroz Carolino 1kg",
+                        preco_custo: 450,
+                        preco_kero: 650,
+                        iva: 14,
+                        fornecedor: "Arrozal SA",
+                        venda_media_mensal: 120,
+                        stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100); return acc; }, {}),
+                        concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {})
+                    }
+                ];
+                produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
+                guardarLocal();
+                notificar('📦 Dados de exemplo carregados.', 'info');
+            }
+        }
+
+        carregarHistoricoLocal();
+        atualizarBadgeTotal();
+        renderizarHistorico();
+
+        configurarEventos();
+
+        const lastEan = sessionStorage.getItem('ean_ultimo_produto');
+        if (lastEan) {
+            const prod = produtos.find(p => p.ean === lastEan);
+            if (prod) {
+                renderizarProduto(prod);
+                document.getElementById('eanInput').value = lastEan;
+            }
+        }
+
+        document.getElementById('eanInput').focus();
+
+        if (produtos.length === 0) {
+            document.getElementById('emptyStateEAN').style.display = 'block';
+        } else {
+            if (!produtoAtual) {
+                document.getElementById('emptyStateEAN').style.display = 'block';
+            }
+        }
+
+        console.log('✅ Módulo EAN inicializado com sucesso!');
+    }
+
+    function configurarEventos() {
+        // Botões de pesquisa
+        document.getElementById('btnBuscar').addEventListener('click', () => buscarProduto(document.getElementById('eanInput').value));
+        document.getElementById('eanInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarProduto(e.target.value);
+            }
+        });
+        document.getElementById('btnLimpar').addEventListener('click', limparPesquisa);
+        document.getElementById('btnListarTodos').addEventListener('click', renderizarTodosProdutos);
+
+        // Edição de preços
+        document.getElementById('btnGuardarConcorrentes').addEventListener('click', guardarPrecosConcorrentes);
+        document.getElementById('btnEditarPrecos').addEventListener('click', toggleEdicaoPrecos);
+        document.getElementById('btnGuardarPrecos').addEventListener('click', guardarPrecosKero);
+
+        // Câmara
+        document.getElementById('btnCamera').addEventListener('click', abrirCamera);
+        document.getElementById('btnCloseCamera').addEventListener('click', fecharCamera);
+        document.getElementById('btnCapture').addEventListener('click', capturarEscanear);
+        document.getElementById('btnUploadFromCamera').addEventListener('click', () => { fecharCamera(); document.getElementById('fileInput').click(); });
+        document.getElementById('btnUploadImage').addEventListener('click', () => document.getElementById('fileInput').click());
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                processarImagem(this.files[0]);
+            }
+            this.value = '';
+        });
+
+        // Importar Excel
+        document.getElementById('btnImportExcel').addEventListener('click', () => document.getElementById('fileInputExcel').click());
+        document.getElementById('fileInputExcel').addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                importarExcel(this.files[0]);
+            }
+            this.value = '';
+        });
+
+        // Publicar no SharePoint (lista)
+        document.getElementById('btnPublicarSharePoint').addEventListener('click', async function() {
+            await publicarProdutosNoSharePoint();
+        });
+
+        // Sincronizar (carregar da lista)
+        document.getElementById('btnSyncSharePoint').addEventListener('click', async function() {
+            await carregarProdutosDoSharePoint();
+            if (document.getElementById('allProducts').classList.contains('active')) {
+                renderizarTodosProdutos();
             }
         });
 
-        if (!response.ok) {
-            throw new Error(`REST API falhou: ${response.status}`);
+        // Exportar dados (JSON local)
+        document.getElementById('btnExportarDados').addEventListener('click', exportarDados);
+
+        // Sugestões
+        document.getElementById('eanInput').addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if (val.length >= 2) {
+                atualizarSugestoes(val);
+            } else {
+                document.getElementById('suggestionsBox').classList.remove('active');
+            }
+        });
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-area-ean')) {
+                document.getElementById('suggestionsBox').classList.remove('active');
+            }
+        });
+
+        // Adicionar produto (se existir)
+        const btnAdd = document.getElementById('btnAddProduct');
+        if (btnAdd) {
+            btnAdd.addEventListener('click', adicionarProduto);
         }
-
-        const data = await response.json();
-        return processarDadosProdutos(data);
-    } catch (error) {
-        console.error('❌ REST API falhou:', error);
-        throw error;
-    }
-}
-
-// Função para processar os dados (já existente)
-function processarDadosProdutos(data) {
-    if (!Array.isArray(data) || data.length === 0) {
-        throw new Error('JSON vazio ou inválido.');
     }
 
-    produtos = data.map(p => ({
-        ean: String(p.ean || '').trim(),
-        nome: String(p.nome || '').trim(),
-        preco_custo: parseFloat(p.preco_custo) || 0,
-        preco_kero: parseFloat(p.preco_kero) || 0,
-        iva: parseFloat(p.iva) || 0,
-        fornecedor: String(p.fornecedor || '').trim(),
-        venda_media_mensal: parseFloat(p.venda_media_mensal) || 0,
-        stock: p.stock || {},
-        concorrentes: p.concorrentes || {}
-    }));
-
-    guardarLocal();
-    atualizarBadgeTotal();
-    renderizarHistorico();
-
-    if (produtoAtual) {
-        const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
-        if (atualizado) renderizarProduto(atualizado);
+    function adicionarProduto() {
+        // Implementação simples, pode ser expandida
+        notificar('Função de adicionar produto manual não implementada. Use importação Excel.', 'info');
     }
 
-    notificar(`✅ ${produtos.length} produtos carregados do SharePoint.`, 'success');
-    return true;
-}
-
-            // --------------------- UTILITÁRIO: GERAR JSON DO EXCEL ---------------------
-            function exportarExcelParaJSON() {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = '.xlsx,.xls,.xlsb';
-                input.onchange = function(e) {
-                    const file = e.target.files[0];
-                    const reader = new FileReader();
-                    reader.onload = function(ev) {
-                        const data = new Uint8Array(ev.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-
-                        // Mapeamento das lojas
-                        const lojas = {
-                            'NOVA VIDA': 'Kero Loja Nova Vida',
-                            'KILAMBA': 'Kero Loja Kilamba',
-                            'LOBITO': 'Kero Loja Lobito',
-                            'VIANA': 'Kero Loja Viana',
-                            'CACUACO': 'Kero Loja Cacuaco',
-                            'TALATONA': 'Kero Loja Talatona',
-                            'BENGUELA': 'Kero Loja Benguela',
-                            'MORRO BENTO': 'Kero Loja Morro Bento',
-                            'LUBANGO': 'Kero Loja Lubango',
-                            'HUAMBO': 'Kero Loja Huambo',
-                            'COMB.': 'Kero Loja Combatentes',
-                            'MARTIRES': 'Kero Loja Mártires',
-                            'GIKA': 'Kero Loja Gika'
-                        };
-
-                        const produtos = rows.map(row => {
-                            const ean = String(row['EAN'] || '').trim();
-                            if (!ean) return null;
-
-                            const stock = {};
-                            Object.keys(lojas).forEach(colName => {
-                                const loja = lojas[colName];
-                                stock[loja] = parseFloat(row[colName]) || 0;
-                            });
-
-                            const concorrentes = {
-                                "Angomart": parseFloat(row['Angomart']) || 0,
-                                "Maxi": parseFloat(row['Maxi']) || 0,
-                                "Shoprite": parseFloat(row['Shoprite']) || 0
-                            };
-
-                            return {
-                                ean: ean,
-                                nome: String(row['Descrição'] || '').trim(),
-                                preco_custo: parseFloat(row['PMM']) || 0,
-                                preco_kero: parseFloat(row['PVP']) || 0,
-                                iva: parseFloat(row['IVA %']) || 0,
-                                fornecedor: String(row['Nome Fornecedor'] || '').trim(),
-                                venda_media_mensal: parseFloat(row['VENDA Media Mensal']) || 0,
-                                stock: stock,
-                                concorrentes: concorrentes
-                            };
-                        }).filter(p => p !== null);
-
-                        const json = JSON.stringify(produtos, null, 2);
-                        const blob = new Blob([json], { type: 'application/json' });
-                        const link = document.createElement('a');
-                        link.href = URL.createObjectURL(blob);
-                        link.download = 'produtos.json';
-                        link.click();
-                        alert(`✅ JSON gerado com ${produtos.length} produtos!`);
-                    };
-                    reader.readAsArrayBuffer(file);
-                };
-                input.click();
-            }
-
-            // --------------------- CONFIGURAR EVENTOS ---------------------
-            function configurarEventos() {
-                document.getElementById('btnBuscar').addEventListener('click', () => buscarProduto(document.getElementById(
-                    'eanInput').value));
-                document.getElementById('eanInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') { e
-                        .preventDefault();
-                        buscarProduto(e.target.value); } });
-                document.getElementById('btnLimpar').addEventListener('click', limparPesquisa);
-                document.getElementById('btnListarTodos').addEventListener('click', renderizarTodosProdutos);
-                document.getElementById('btnGuardarConcorrentes').addEventListener('click', guardarPrecosConcorrentes);
-                document.getElementById('btnEditarPrecos').addEventListener('click', toggleEdicaoPrecos);
-                document.getElementById('btnGuardarPrecos').addEventListener('click', guardarPrecosKero);
-                document.getElementById('btnAddProduct').addEventListener('click', adicionarProduto);
-
-                document.getElementById('btnCamera').addEventListener('click', abrirCamera);
-                document.getElementById('btnCloseCamera').addEventListener('click', fecharCamera);
-                document.getElementById('btnCapture').addEventListener('click', capturarEscanear);
-                document.getElementById('btnUploadFromCamera').addEventListener('click', () => { fecharCamera();
-                    document.getElementById('fileInput').click(); });
-                document.getElementById('btnUploadImage').addEventListener('click', () => document.getElementById(
-                    'fileInput').click());
-                document.getElementById('fileInput').addEventListener('change', function(e) {
-                    if (this.files.length > 0) {
-                        processarImagem(this.files[0]);
-                    }
-                    this.value = '';
-                });
-
-                // Botão Sincronizar (agora carrega do JSON)
-                document.getElementById('btnSyncSharePoint').addEventListener('click', async function() {
-                    if (!usuarioAtual || !EMAILS_IMPORTACAO_EAN.includes(usuarioAtual.email)) {
-                        notificar('Sem permissão para sincronizar.', 'error');
-                        return;
-                    }
-                    await carregarProdutosDoJSON();
-                    if (document.getElementById('allProducts').classList.contains('active')) {
-                        renderizarTodosProdutos();
-                    }
-                });
-
-                document.getElementById('eanInput').addEventListener('input', (e) => {
-                    const val = e.target.value.trim();
-                    if (val.length >= 2) {
-                        atualizarSugestoes(val);
-                    } else {
-                        document.getElementById('suggestionsBox').classList.remove('active');
-                    }
-                });
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.search-area-ean')) {
-                        document.getElementById('suggestionsBox').classList.remove('active');
-                    }
-                });
-            }
-
-            // --------------------- INICIALIZAÇÃO ---------------------
-            async function inicializar() {
-                // Tenta carregar do cache local primeiro
-                if (!carregarLocal()) {
-                    // Se não houver cache, cria produtos mock (apenas para testes)
-                    const PRODUTOS_MOCK = [
-                        {
-                            ean: "5601234567890",
-                            nome: "Arroz Carolino 1kg",
-                            preco_custo: 450,
-                            preco_kero: 650,
-                            iva: 14,
-                            fornecedor: "Arrozal SA",
-                            venda_media_mensal: 120,
-                            stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100);
-                                return acc; }, {}),
-                            concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math
-                                    .random() * 200);
-                                return acc; }, {})
-                        }
-                    ];
-                    produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
-                    guardarLocal();
-                }
-
-                carregarHistoricoLocal();
-                atualizarBadgeTotal();
-                renderizarHistorico();
-
-                // Carrega dados do GitHub (substitui o cache se disponível)
-                await carregarProdutosDoJSON();
-
-                configurarEventos();
-
-                const lastEan = sessionStorage.getItem('ean_ultimo_produto');
-                if (lastEan) {
-                    const prod = produtos.find(p => p.ean === lastEan);
-                    if (prod) {
-                        renderizarProduto(prod);
-                        document.getElementById('eanInput').value = lastEan;
-                    }
-                }
-
-                document.getElementById('eanInput').focus();
-
-                if (produtos.length === 0) {
-                    document.getElementById('emptyStateEAN').style.display = 'block';
-                } else {
-                    if (!produtoAtual) {
-                        document.getElementById('emptyStateEAN').style.display = 'block';
-                    }
-                }
-
-                console.log('✅ Módulo EAN inicializado com sucesso!');
-            }
-
-            // --------------------- INICIALIZAÇÃO PÚBLICA (MODO CONVIDADO) ---------------------
-            function inicializarPublico() {
-                inicializar();
-            }
-
-            // --------------------- EXPORTAÇÃO PÚBLICA ---------------------
-            return {
-                inicializar,
-                inicializarPublico,
-                buscarProduto,
-                limparPesquisa,
-                renderizarTodosProdutos,
-                adicionarProduto,
-                exportarExcelParaJSON,
-                carregarProdutosDoJSON
-            };
-        })();
-
+    // ============================================================
+    //  API PÚBLICA
+    // ============================================================
+    return {
+        inicializar,
+        buscarProduto,
+        limparPesquisa,
+        renderizarTodosProdutos,
+        exportarDados,
+        publicarProdutosNoSharePoint,
+        carregarProdutosDoSharePoint,
+        importarExcel,
+        adicionarProduto,
+        guardarPrecosConcorrentes,
+        toggleEdicaoPrecos,
+        guardarPrecosKero,
+        abrirCamera,
+        fecharCamera,
+        capturarEscanear,
+        processarImagem
+    };
+})();
         // ============================================================
         // INICIALIZAÇÃO DO SISTEMA
         // ============================================================
