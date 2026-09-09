@@ -8576,7 +8576,7 @@
         // ============================================================
         // MÓDULO EAN SCAN (JSON) - CÓDIGO COMPLETO
         // ============================================================
-     const eanApp = (function() {
+    const eanApp = (function() {
     // ============================================================
     //  CONFIGURAÇÕES
     // ============================================================
@@ -8663,15 +8663,21 @@
     //  HELPERS DE UI
     // ============================================================
     function notificar(msg, tipo = 'success') {
-        mostrarNotificacao(msg, tipo);
+        if (typeof mostrarNotificacao === 'function') {
+            mostrarNotificacao(msg, tipo);
+        } else {
+            alert(msg);
+        }
     }
 
     function showLoading() {
-        document.getElementById('loadingOverlay').classList.add('show');
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.classList.add('show');
     }
 
     function hideLoading() {
-        document.getElementById('loadingOverlay').classList.remove('show');
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.classList.remove('show');
     }
 
     function atualizarBadgeTotal() {
@@ -8823,9 +8829,14 @@
         grid.innerHTML = html;
     }
 
+    // CORREÇÃO: função renderizarTodosProdutos agora verifica se há produtos e atualiza a UI
     function renderizarTodosProdutos() {
+        log('Renderizar todos os produtos', produtos.length);
         const container = document.getElementById('productGrid');
-        if (!container) return;
+        if (!container) {
+            log('Elemento productGrid não encontrado');
+            return;
+        }
         container.innerHTML = '';
         if (produtos.length === 0) {
             container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#999;">Nenhum produto disponível.</div>';
@@ -8848,6 +8859,7 @@
             container.appendChild(card);
         });
         document.getElementById('allProducts').classList.add('active');
+        log('Produtos renderizados na lista');
     }
 
     // ============================================================
@@ -8915,29 +8927,22 @@
         }
     }
 
-    // FUNÇÃO LIMPAR CORRIGIDA
     function limparPesquisa() {
         document.getElementById('eanInput').value = '';
-        // Esconder sugestões
         const box = document.getElementById('suggestionsBox');
         if (box) box.classList.remove('active');
-        // Esconder resultados
         const result = document.getElementById('resultContainer');
         if (result) result.classList.remove('active');
-        // Mostrar estado vazio
         const empty = document.getElementById('emptyStateEAN');
         if (empty) empty.style.display = 'block';
-        // Esconder lista de todos
         const allProd = document.getElementById('allProducts');
         if (allProd) allProd.classList.remove('active');
-        // Resetar produto atual
         produtoAtual = null;
         const btnConc = document.getElementById('btnGuardarConcorrentes');
         if (btnConc) btnConc.disabled = true;
         const info = document.getElementById('lastSearchInfo');
         if (info) info.textContent = '';
         sessionStorage.removeItem('ean_ultimo_produto');
-        // Resetar edição de preços
         document.querySelectorAll('#productPricing .pricing-item input').forEach(inp => inp.style.display = 'none');
         document.querySelectorAll('#productPricing .pricing-item .value').forEach(val => val.style.display = 'block');
         const btnEditar = document.getElementById('btnEditarPrecos');
@@ -9271,7 +9276,7 @@
     }
 
     // ============================================================
-    //  SHAREPOINT – LISTA EANPRODUTOS (CORRIGIDO COM LOGS)
+    //  SHAREPOINT – LISTA EANPRODUTOS
     // ============================================================
     async function obterToken() {
         log('A obter token SharePoint...');
@@ -9304,7 +9309,6 @@
             const siteId = await obterSiteId();
             const listName = LISTA_EAN;
 
-            // Verificar se o produto já existe
             const filter = encodeURIComponent(`fields/EAN eq '${produto.ean}'`);
             const searchUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$filter=${filter}`;
             log('A pesquisar produto na lista', searchUrl);
@@ -9371,8 +9375,7 @@
             return false;
         }
 
-        // Verificar permissão
-        if (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email)) {
+        if (typeof usuarioAtual === 'undefined' || (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
             notificar('Sem permissão para publicar. Apenas Administrador.', 'error');
             log('Permissão negada para publicar', usuarioAtual);
             return false;
@@ -9449,7 +9452,6 @@
                 throw new Error('Nenhum produto válido na lista');
             }
 
-            // Substituir produtos locais
             produtos = produtosLista;
             guardarLocal();
             atualizarBadgeTotal();
@@ -9464,7 +9466,6 @@
             return true;
         } catch (error) {
             log('❌ Erro ao carregar do SharePoint', error);
-            // Fallback para cache local
             if (carregarLocal()) {
                 notificar('⚠️ A usar dados em cache (SharePoint indisponível).', 'warning');
                 return true;
@@ -9492,7 +9493,6 @@
                     return;
                 }
 
-                // Mapeamento de colunas (ajuste conforme seu Excel)
                 const produtosImportados = rows.map(row => {
                     const ean = String(row['EAN'] || '').trim();
                     if (!ean) return null;
@@ -9533,7 +9533,7 @@
                     else limparPesquisa();
                 }
                 notificar(`✅ ${produtos.length} produtos importados do Excel com sucesso!`, 'success');
-                if (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email)) {
+                if (typeof usuarioAtual !== 'undefined' && (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
                     notificar('💡 Clique em "Publicar no SharePoint" para guardar na lista.', 'info');
                 }
             } catch (err) {
@@ -9564,62 +9564,68 @@
     }
 
     // ============================================================
-    //  INICIALIZAÇÃO E EVENTOS
+    //  INICIALIZAÇÃO E EVENTOS (CORRIGIDO)
     // ============================================================
     async function inicializar() {
         log('Inicializando módulo EAN...');
-        // Tentar carregar do SharePoint primeiro
-        const carregou = await carregarProdutosDoSharePoint();
-        if (!carregou) {
-            if (carregarLocal()) {
-                notificar('⚠️ Dados carregados do cache local.', 'warning');
-            } else {
-                // Dados de exemplo (mock)
-                const PRODUTOS_MOCK = [
-                    {
-                        ean: "5601234567890",
-                        nome: "Arroz Carolino 1kg",
-                        preco_custo: 450,
-                        preco_kero: 650,
-                        iva: 14,
-                        fornecedor: "Arrozal SA",
-                        venda_media_mensal: 120,
-                        stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100); return acc; }, {}),
-                        concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {})
-                    }
-                ];
-                produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
-                guardarLocal();
-                notificar('📦 Dados de exemplo carregados.', 'info');
+        try {
+            // Tentar carregar do SharePoint primeiro
+            const carregou = await carregarProdutosDoSharePoint();
+            if (!carregou) {
+                if (carregarLocal()) {
+                    notificar('⚠️ Dados carregados do cache local.', 'warning');
+                } else {
+                    // Dados de exemplo (mock)
+                    const PRODUTOS_MOCK = [
+                        {
+                            ean: "5601234567890",
+                            nome: "Arroz Carolino 1kg",
+                            preco_custo: 450,
+                            preco_kero: 650,
+                            iva: 14,
+                            fornecedor: "Arrozal SA",
+                            venda_media_mensal: 120,
+                            stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100); return acc; }, {}),
+                            concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {})
+                        }
+                    ];
+                    produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
+                    guardarLocal();
+                    notificar('📦 Dados de exemplo carregados.', 'info');
+                }
             }
-        }
 
-        carregarHistoricoLocal();
-        atualizarBadgeTotal();
-        renderizarHistorico();
+            carregarHistoricoLocal();
+            atualizarBadgeTotal();
+            renderizarHistorico();
 
-        configurarEventos();
+            // Configurar eventos APENAS se os elementos existirem
+            configurarEventos();
 
-        const lastEan = sessionStorage.getItem('ean_ultimo_produto');
-        if (lastEan) {
-            const prod = produtos.find(p => p.ean === lastEan);
-            if (prod) {
-                renderizarProduto(prod);
-                document.getElementById('eanInput').value = lastEan;
+            const lastEan = sessionStorage.getItem('ean_ultimo_produto');
+            if (lastEan) {
+                const prod = produtos.find(p => p.ean === lastEan);
+                if (prod) {
+                    renderizarProduto(prod);
+                    document.getElementById('eanInput').value = lastEan;
+                }
             }
-        }
 
-        document.getElementById('eanInput').focus();
+            document.getElementById('eanInput').focus();
 
-        if (produtos.length === 0) {
-            document.getElementById('emptyStateEAN').style.display = 'block';
-        } else {
-            if (!produtoAtual) {
+            if (produtos.length === 0) {
                 document.getElementById('emptyStateEAN').style.display = 'block';
+            } else {
+                if (!produtoAtual) {
+                    document.getElementById('emptyStateEAN').style.display = 'block';
+                }
             }
-        }
 
-        log('Módulo EAN inicializado com sucesso!', produtos.length);
+            log('Módulo EAN inicializado com sucesso!', produtos.length);
+        } catch (error) {
+            log('ERRO na inicialização do EAN', error);
+            // Não propaga o erro para não afetar o resto do sistema
+        }
     }
 
     function configurarEventos() {
@@ -9649,10 +9655,14 @@
             log('Evento btnLimpar ligado');
         }
 
+        // CORREÇÃO: Botão "Todos" - garantir que chama renderizarTodosProdutos
         const btnListar = document.getElementById('btnListarTodos');
         if (btnListar) {
+            btnListar.removeEventListener('click', renderizarTodosProdutos); // evitar duplicação
             btnListar.addEventListener('click', renderizarTodosProdutos);
             log('Evento btnListarTodos ligado');
+        } else {
+            log('AVISO: btnListarTodos não encontrado');
         }
 
         // Edição de preços
@@ -9734,7 +9744,7 @@
             log('Evento fileInputExcel ligado');
         }
 
-        // Publicar no SharePoint (lista)
+        // Publicar no SharePoint
         const btnPublicar = document.getElementById('btnPublicarSharePoint');
         if (btnPublicar) {
             btnPublicar.addEventListener('click', async function() {
@@ -9743,18 +9753,18 @@
             });
             log('Evento btnPublicarSharePoint ligado');
         } else {
-            log('AVISO: btnPublicarSharePoint não encontrado no DOM');
+            log('AVISO: btnPublicarSharePoint não encontrado');
         }
 
-        // Sincronizar (carregar da lista) - CORRIGIDO
+        // CORREÇÃO: Botão Sincronizar
         const btnSync = document.getElementById('btnSyncSharePoint');
         if (btnSync) {
+            btnSync.removeEventListener('click', null); // evitar duplicação
             btnSync.addEventListener('click', async function() {
                 log('Botão Sincronizar clicado');
                 notificar('A sincronizar com SharePoint...', 'info');
                 const success = await carregarProdutosDoSharePoint();
                 if (success) {
-                    // Atualizar visualização
                     if (document.getElementById('allProducts').classList.contains('active')) {
                         renderizarTodosProdutos();
                     }
@@ -9766,7 +9776,7 @@
             });
             log('Evento btnSyncSharePoint ligado');
         } else {
-            log('AVISO: btnSyncSharePoint não encontrado no DOM');
+            log('AVISO: btnSyncSharePoint não encontrado');
         }
 
         // Exportar dados
@@ -9797,7 +9807,6 @@
             }
         });
 
-        // Adicionar produto (se existir)
         const btnAdd = document.getElementById('btnAddProduct');
         if (btnAdd) {
             btnAdd.addEventListener('click', adicionarProduto);
