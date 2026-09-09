@@ -8576,7 +8576,7 @@
         // ============================================================
         // MÓDULO EAN SCAN (JSON) - CÓDIGO COMPLETO
         // ============================================================
-        const eanApp = (function() {
+       const eanApp = (function() {
     // ============================================================
     //  CONFIGURAÇÕES
     // ============================================================
@@ -8590,6 +8590,9 @@
     ];
     const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
     const PERMISSAO_PUBLICAR = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
+    const DB_NAME = 'EANDB';
+    const STORE_NAME = 'produtos';
+    const HIST_STORE = 'historico';
 
     // ============================================================
     //  ESTADO INTERNO
@@ -8600,15 +8603,89 @@
     let editandoPrecos = false;
     let cameraStream = null;
     let scanFrameId = null;
+    let db = null;
 
     // ============================================================
-    //  PERSISTÊNCIA LOCAL (cache)
+    //  INDEXEDDB HELPERS
     // ============================================================
-    function carregarLocal() {
-        const saved = localStorage.getItem('ean_produtos');
-        if (saved) {
+    function abrirDB() {
+        return new Promise((resolve, reject) => {
+            if (db) {
+                resolve(db);
+                return;
+            }
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onupgradeneeded = function(e) {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                }
+                if (!db.objectStoreNames.contains(HIST_STORE)) {
+                    db.createObjectStore(HIST_STORE, { keyPath: 'id' });
+                }
+            };
+            request.onsuccess = function(e) {
+                db = e.target.result;
+                resolve(db);
+            };
+            request.onerror = function(e) {
+                reject(e.target.error);
+            };
+        });
+    }
+
+    function guardarDados(storeName, data) {
+        return new Promise(async (resolve, reject) => {
             try {
-                produtos = JSON.parse(saved);
+                const db = await abrirDB();
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                // Limpar todos os dados existentes
+                store.clear();
+                // Inserir novos dados (cada item com um id)
+                data.forEach(item => {
+                    store.add(item);
+                });
+                tx.oncomplete = function() {
+                    resolve();
+                };
+                tx.onerror = function(e) {
+                    reject(e.target.error);
+                };
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+    function carregarDados(storeName) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const db = await abrirDB();
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = function() {
+                    resolve(request.result);
+                };
+                request.onerror = function(e) {
+                    reject(e.target.error);
+                };
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+    // ============================================================
+    //  PERSISTÊNCIA LOCAL (IndexedDB)
+    // ============================================================
+    async function carregarLocal() {
+        try {
+            const dados = await carregarDados(STORE_NAME);
+            if (dados && dados.length > 0) {
+                produtos = dados;
+                // Garantir que todos os campos existem
                 produtos = produtos.map(p => {
                     LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; });
                     CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
@@ -8618,29 +8695,48 @@
                     return p;
                 });
                 return true;
-            } catch (e) { console.warn('Cache corrompido'); }
+            }
+        } catch (e) {
+            console.warn('Erro ao carregar do IndexedDB:', e);
         }
         return false;
     }
 
-    function guardarLocal() {
-        localStorage.setItem('ean_produtos', JSON.stringify(produtos));
+    async function guardarLocal() {
+        try {
+            // Preparar dados com um id único para cada produto (usamos o EAN como id)
+            const dados = produtos.map(p => ({ ...p, id: p.ean }));
+            await guardarDados(STORE_NAME, dados);
+        } catch (e) {
+            console.error('Erro ao guardar no IndexedDB:', e);
+            notificar('Erro ao guardar dados localmente: ' + e.message, 'error');
+        }
     }
 
-    function carregarHistoricoLocal() {
-        const hist = localStorage.getItem('ean_historico');
-        if (hist) {
-            try {
-                historicoPesquisas = JSON.parse(hist);
-                if (!Array.isArray(historicoPesquisas)) historicoPesquisas = [];
-                return true;
-            } catch (e) { historicoPesquisas = []; }
+    async function carregarHistoricoLocal() {
+        try {
+            const dados = await carregarDados(HIST_STORE);
+            if (dados && dados.length > 0) {
+                // Assumimos que há apenas um registo com id 'historico'
+                const hist = dados.find(item => item.id === 'historico');
+                if (hist) {
+                    historicoPesquisas = hist.valores || [];
+                    return true;
+                }
+            }
+        } catch (e) {
+            console.warn('Erro ao carregar histórico do IndexedDB:', e);
         }
         return false;
     }
 
-    function guardarHistoricoLocal() {
-        localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas));
+    async function guardarHistoricoLocal() {
+        try {
+            const dados = [{ id: 'historico', valores: historicoPesquisas }];
+            await guardarDados(HIST_STORE, dados);
+        } catch (e) {
+            console.error('Erro ao guardar histórico no IndexedDB:', e);
+        }
     }
 
     // ============================================================
@@ -8697,7 +8793,7 @@
     }
 
     // ============================================================
-    //  RENDERIZAÇÃO DE PRODUTO
+    //  RENDERIZAÇÃO DE PRODUTO (mantida igual)
     // ============================================================
     function renderizarProduto(prod) {
         if (!prod) {
@@ -8835,7 +8931,7 @@
     }
 
     // ============================================================
-    //  PESQUISA E SUGESTÕES
+    //  PESQUISA E SUGESTÕES (mantido igual)
     // ============================================================
     function atualizarSugestoes(termo) {
         const box = document.getElementById('suggestionsBox');
@@ -8924,7 +9020,7 @@
     }
 
     // ============================================================
-    //  EDIÇÃO DE PREÇOS
+    //  EDIÇÃO DE PREÇOS (mantido igual)
     // ============================================================
     function guardarPrecosConcorrentes() {
         if (!produtoAtual) {
@@ -9009,8 +9105,14 @@
     }
 
     // ============================================================
-    //  CÂMARA E LEITURA
+    //  CÂMARA E LEITURA (mantido igual)
     // ============================================================
+    // As funções de câmara são extensas, mantêm-se iguais
+    // (incluir as funções: redimensionarImagem, abrirCamera, iniciarCameraComBarcodeDetector, etc.)
+    // Para não repetir todo o código, assumimos que já estão definidas.
+    // Se necessário, posso fornecer, mas por brevidade, mantenho as funções de câmara existentes.
+    // Vou incluir as funções essenciais para não quebrar.
+
     function redimensionarImagem(imageData, maxLargura = 1000) {
         return new Promise((resolve) => {
             const img = new Image();
@@ -9245,7 +9347,7 @@
     }
 
     // ============================================================
-    //  SHAREPOINT – LISTA EANPRODUTOS
+    //  SHAREPOINT – LISTA EANPRODUTOS (mantido igual)
     // ============================================================
     async function obterToken() {
         return await getSharePointToken();
@@ -9261,7 +9363,6 @@
             const siteId = await obterSiteId();
             const listName = LISTA_EAN;
 
-            // Verificar se o produto já existe pelo EAN
             const filter = encodeURIComponent(`fields/EAN eq '${produto.ean}'`);
             const searchUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$filter=${filter}`;
             const searchResp = await fetch(searchUrl, {
@@ -9286,7 +9387,6 @@
             };
 
             if (existing) {
-                // Atualizar
                 const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items/${existing.id}/fields`;
                 const updateResp = await fetch(updateUrl, {
                     method: 'PATCH',
@@ -9299,7 +9399,6 @@
                 }
                 return { success: true, action: 'updated', id: existing.id };
             } else {
-                // Criar
                 const createUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items`;
                 const createResp = await fetch(createUrl, {
                     method: 'POST',
@@ -9325,7 +9424,6 @@
             return false;
         }
 
-        // Verificar permissão
         if (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email)) {
             notificar('Sem permissão para publicar. Apenas Administrador.', 'error');
             return false;
@@ -9396,9 +9494,8 @@
                 throw new Error('Nenhum produto válido na lista');
             }
 
-            // Substituir produtos locais
             produtos = produtosLista;
-            guardarLocal();
+            await guardarLocal();
             atualizarBadgeTotal();
             renderizarHistorico();
             if (produtoAtual) {
@@ -9410,8 +9507,7 @@
             return true;
         } catch (error) {
             console.warn('Erro ao carregar do SharePoint:', error);
-            // Fallback para cache local
-            if (carregarLocal()) {
+            if (await carregarLocal()) {
                 notificar('⚠️ A usar dados em cache (SharePoint indisponível).', 'warning');
                 return true;
             }
@@ -9421,12 +9517,12 @@
     }
 
     // ============================================================
-    //  IMPORTAÇÃO DE EXCEL
+    //  IMPORTAÇÃO DE EXCEL (modificada para usar IndexedDB)
     // ============================================================
     function importarExcel(file) {
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             try {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
@@ -9438,7 +9534,6 @@
                     return;
                 }
 
-                // Mapeamento de colunas (ajuste conforme seu Excel)
                 const produtosImportados = rows.map(row => {
                     const ean = String(row['EAN'] || '').trim();
                     if (!ean) return null;
@@ -9470,7 +9565,7 @@
                 }
 
                 produtos = produtosImportados;
-                guardarLocal();
+                await guardarLocal();
                 atualizarBadgeTotal();
                 renderizarHistorico();
                 if (produtoAtual) {
@@ -9491,7 +9586,7 @@
     }
 
     // ============================================================
-    //  EXPORTAÇÃO DE DADOS (JSON local)
+    //  EXPORTAÇÃO DE DADOS (JSON local) – igual
     // ============================================================
     function exportarDados() {
         if (produtos.length === 0) {
@@ -9510,13 +9605,13 @@
     }
 
     // ============================================================
-    //  INICIALIZAÇÃO E EVENTOS
+    //  INICIALIZAÇÃO E EVENTOS (adaptado para async)
     // ============================================================
     async function inicializar() {
         // Tentar carregar do SharePoint primeiro
         const carregou = await carregarProdutosDoSharePoint();
         if (!carregou) {
-            if (carregarLocal()) {
+            if (await carregarLocal()) {
                 notificar('⚠️ Dados carregados do cache local.', 'warning');
             } else {
                 // Dados de exemplo (mock)
@@ -9534,12 +9629,12 @@
                     }
                 ];
                 produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
-                guardarLocal();
+                await guardarLocal();
                 notificar('📦 Dados de exemplo carregados.', 'info');
             }
         }
 
-        carregarHistoricoLocal();
+        await carregarHistoricoLocal();
         atualizarBadgeTotal();
         renderizarHistorico();
 
@@ -9645,7 +9740,6 @@
     }
 
     function adicionarProduto() {
-        // Implementação simples, pode ser expandida
         notificar('Função de adicionar produto manual não implementada. Use importação Excel.', 'info');
     }
 
