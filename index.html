@@ -9254,20 +9254,20 @@
             }
 
             // --------------------- CARREGAR DO JSON (GITHUB) ---------------------
-           async function carregarProdutosDoJSON() {
+         async function carregarProdutosDoJSON() {
     try {
         showLoading();
         
-        // Obter token e IDs (já existentes no sistema)
+        // Obter token e IDs
         const token = await getSharePointToken();
         const siteId = await getSiteId();
         const driveId = await getDriveId();
 
-        // Caminho do ficheiro na biblioteca (usando o caminho que forneceu)
-        const filePath = 'Documentos Partilhados/EAN/produtos.json';
-        const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${filePath}:/content`;
+        // CAMINHO CORRETO: apenas a pasta e o nome do ficheiro (a drive já é "Documentos Partilhados")
+        const filePath = 'EAN/Produtos.json';  // Atenção ao P maiúsculo!
+        const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${encodeURIComponent(filePath)}:/content`;
 
-        console.log('📂 A carregar produtos de:', url);
+        console.log('📂 A carregar de:', url);
 
         const response = await fetch(url, {
             headers: {
@@ -9277,25 +9277,9 @@
         });
 
         if (!response.ok) {
-            // Se der 404, tentar com codificação URL alternativa
-            if (response.status === 404) {
-                console.warn('⚠️ Caminho não encontrado, a tentar com codificação alternativa...');
-                // Tentar com o caminho codificado para espaços
-                const altPath = 'Documentos%20Partilhados/EAN/produtos.json';
-                const altUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root:/${altPath}:/content`;
-                const altResponse = await fetch(altUrl, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                if (!altResponse.ok) {
-                    throw new Error(`HTTP ${altResponse.status} - Ficheiro não encontrado. Verifique o caminho.`);
-                }
-                const data = await altResponse.json();
-                return processarDadosProdutos(data);
-            }
-            throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+            // Se falhar, tentar usar a API REST do SharePoint (alternativa)
+            console.warn('⚠️ Falha na Graph API, a tentar via REST...');
+            return await carregarViaREST(token, siteId);
         }
 
         const data = await response.json();
@@ -9308,7 +9292,6 @@
             notificar('⚠️ Dados carregados do cache local (SharePoint indisponível).', 'warning');
             return true;
         } else {
-            // Se não houver cache, criar array vazio e mostrar erro
             produtos = [];
             atualizarBadgeTotal();
             notificar('❌ Erro ao carregar produtos: ' + error.message, 'error');
@@ -9319,13 +9302,39 @@
     }
 }
 
-// Função auxiliar para processar os dados
+// Função alternativa usando a REST API do SharePoint (mais simples)
+async function carregarViaREST(token, siteId) {
+    try {
+        // Caminho relativo ao site
+        const siteUrl = 'https://accordgroupslda.sharepoint.com/sites/SIR';
+        const fileRelativeUrl = '/sites/SIR/Documentos Partilhados/EAN/Produtos.json';
+        const restUrl = `${siteUrl}/_api/web/getfilebyserverrelativeurl('${encodeURIComponent(fileRelativeUrl)}')/$value`;
+
+        const response = await fetch(restUrl, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`REST API falhou: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return processarDadosProdutos(data);
+    } catch (error) {
+        console.error('❌ REST API falhou:', error);
+        throw error;
+    }
+}
+
+// Função para processar os dados (já existente)
 function processarDadosProdutos(data) {
     if (!Array.isArray(data) || data.length === 0) {
         throw new Error('JSON vazio ou inválido.');
     }
 
-    // Normalizar os dados
     produtos = data.map(p => ({
         ean: String(p.ean || '').trim(),
         nome: String(p.nome || '').trim(),
