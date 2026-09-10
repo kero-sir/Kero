@@ -3891,6 +3891,9 @@
                         <button class="btn-ean btn-import" id="btnImportExcel"><i class="fas fa-file-excel"></i> Importar Excel</button>
                         <input type="file" id="fileInputExcel" accept=".xlsx,.xls,.xlsb" style="display:none;">
                         <button class="btn-ean btn-sync" id="btnSyncSharePoint"><i class="fas fa-sync-alt"></i> Sincronizar</button>
+                        <button class="btn-ean" id="btnPublicarSharePoint" style="background:#217346;">
+    <i class="fas fa-cloud-upload-alt"></i> Publicar no SharePoint
+</button>
                         <div class="suggestions-box" id="suggestionsBox"></div>
                     </section>
 
@@ -8581,15 +8584,27 @@
     //  CONFIGURAÇÕES
     // ============================================================
     const LISTA_EAN = 'EANPRODUTOS';
-    const LOJAS_KERO = [
-        "Kero Loja Talatona", "Kero Loja Kilamba", "Kero Loja Morro Bento",
-        "Kero Loja Nova Vida", "Kero Loja Lubango", "Kero Loja Huambo",
-        "Kero Loja Lobito", "Kero Loja Benguela", "Kero Loja Viana",
-        "Kero Loja Gika", "Kero Loja Mártires", "Kero Loja Combatentes",
-        "Kero Loja Cacuaco"
-    ];
-    const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
-    const PERMISSAO_PUBLICAR = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
+   const MAPA_LOJAS = {
+    "TALATONA":    "Kero Loja Talatona",
+    "KILAMBA":     "Kero Loja Kilamba",
+    "MORRO BENTO": "Kero Loja Morro Bento",
+    "NOVA VIDA":   "Kero Loja Nova Vida",
+    "LUBANGO":     "Kero Loja Lubango",
+    "HUAMBO":      "Kero Loja Huambo",
+    "LOBITO":      "Kero Loja Lobito",
+    "BENGUELA":    "Kero Loja Benguela",
+    "VIANA":       "Kero Loja Viana",
+    "GIKA":        "Kero Loja Gika",
+    "MARTIRES":    "Kero Loja Mártires",
+    "COMB.":       "Kero Loja Combatentes",
+    "CACUACO":     "Kero Loja Cacuaco",
+    "CD ZEE":      "Armazém ZEE",
+    "SONIT":       "Armazém SONIT"
+};
+
+const LOJAS_KERO = Object.values(MAPA_LOJAS);
+
+const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
 
     // ============================================================
     //  ESTADO INTERNO
@@ -9303,247 +9318,245 @@
     }
 
     async function salvarProdutoNaLista(produto) {
-        try {
-            log(`A processar produto ${produto.ean} - ${produto.nome}`);
-            const token = await obterToken();
-            const siteId = await obterSiteId();
-            const listName = LISTA_EAN;
+    try {
+        log(`A processar produto ${produto.ean} - ${produto.nome}`);
+        const token = await obterToken();
+        const siteId = await obterSiteId();
+        const listName = LISTA_EAN;
 
-            const filter = encodeURIComponent(`fields/EAN eq '${produto.ean}'`);
-            const searchUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$filter=${filter}`;
-            log('A pesquisar produto na lista', searchUrl);
-            const searchResp = await fetch(searchUrl, {
-                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-            });
-            if (!searchResp.ok) {
-                throw new Error(`Erro ao pesquisar produto: ${searchResp.status} ${await searchResp.text()}`);
-            }
-            const searchData = await searchResp.json();
-            const existing = searchData.value && searchData.value.length > 0 ? searchData.value[0] : null;
-
-            const fields = {
-                "Title": produto.nome,
-                "EAN": produto.ean,
-                "PrecoCusto": produto.preco_custo || 0,
-                "PrecoKero": produto.preco_kero || 0,
-                "IVA": produto.iva || 0,
-                "Fornecedor": produto.fornecedor || '',
-                "VendaMedia": produto.venda_media_mensal || 0,
-                "Stock": JSON.stringify(produto.stock || {}),
-                "Concorrentes": JSON.stringify(produto.concorrentes || {})
-            };
-
-            if (existing) {
-                log(`Produto ${produto.ean} existe, a atualizar...`);
-                const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items/${existing.id}/fields`;
-                const updateResp = await fetch(updateUrl, {
-                    method: 'PATCH',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(fields)
-                });
-                if (!updateResp.ok) {
-                    const err = await updateResp.text();
-                    throw new Error(`Falha ao atualizar: ${updateResp.status} - ${err}`);
-                }
-                log(`Produto ${produto.ean} atualizado com sucesso`);
-                return { success: true, action: 'updated', id: existing.id };
-            } else {
-                log(`Produto ${produto.ean} não existe, a criar...`);
-                const createUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items`;
-                const createResp = await fetch(createUrl, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ fields })
-                });
-                if (!createResp.ok) {
-                    const err = await createResp.text();
-                    throw new Error(`Falha ao criar: ${createResp.status} - ${err}`);
-                }
-                const newItem = await createResp.json();
-                log(`Produto ${produto.ean} criado com sucesso, ID: ${newItem.id}`);
-                return { success: true, action: 'created', id: newItem.id };
-            }
-        } catch (error) {
-            log(`❌ Erro ao salvar produto ${produto.ean}`, error);
-            return { success: false, error: error.message };
+        const filter = encodeURIComponent(`fields/Title eq '${produto.ean}'`);
+        const searchUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$filter=${filter}`;
+        const searchResp = await fetch(searchUrl, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+        });
+        if (!searchResp.ok) {
+            throw new Error(`Erro ao pesquisar: ${searchResp.status} ${await searchResp.text()}`);
         }
+        const searchData = await searchResp.json();
+        const existing = searchData.value && searchData.value.length > 0 ? searchData.value[0] : null;
+
+        const fields = {
+            "Title":            produto.ean,
+            "Nome":             produto.nome,
+            "PrecoCusto":       produto.preco_custo || 0,
+            "PrecoKero":        produto.preco_kero || 0,
+            "Iva":              produto.iva || 0,
+            "Fornecedor":       produto.fornecedor || '',
+            "VendaMediaMensal": produto.venda_media_mensal || 0,
+            "Stock":            JSON.stringify(produto.stock || {}),
+            "Concorrentes":     JSON.stringify(produto.concorrentes || {})
+        };
+
+        if (existing) {
+            const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items/${existing.id}/fields`;
+            const updateResp = await fetch(updateUrl, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(fields)
+            });
+            if (!updateResp.ok) {
+                throw new Error(`Falha ao atualizar: ${updateResp.status} - ${await updateResp.text()}`);
+            }
+            log(`Produto ${produto.ean} atualizado`);
+            return { success: true, action: 'updated', id: existing.id };
+        } else {
+            const createUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items`;
+            const createResp = await fetch(createUrl, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields })
+            });
+            if (!createResp.ok) {
+                throw new Error(`Falha ao criar: ${createResp.status} - ${await createResp.text()}`);
+            }
+            const newItem = await createResp.json();
+            log(`Produto ${produto.ean} criado, ID ${newItem.id}`);
+            return { success: true, action: 'created', id: newItem.id };
+        }
+    } catch (error) {
+        log(`❌ Erro ao salvar ${produto.ean}`, error);
+        return { success: false, error: error.message };
     }
+}
 
     async function publicarProdutosNoSharePoint() {
-        if (produtos.length === 0) {
-            notificar('Não há produtos para publicar.', 'error');
-            return false;
-        }
-
-        if (typeof usuarioAtual === 'undefined' || (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
-            notificar('Sem permissão para publicar. Apenas Administrador.', 'error');
-            log('Permissão negada para publicar', usuarioAtual);
-            return false;
-        }
-
-        notificar(`A publicar ${produtos.length} produtos... Aguarde.`, 'info');
-        showLoading();
-
-        let sucessos = 0, erros = 0;
-        for (const prod of produtos) {
-            const result = await salvarProdutoNaLista(prod);
-            if (result.success) {
-                sucessos++;
-            } else {
-                erros++;
-                log(`Erro ao publicar ${prod.ean}:`, result.error);
-            }
-        }
-
-        hideLoading();
-        if (erros === 0) {
-            notificar(`✅ ${sucessos} produtos publicados com sucesso na lista EANPRODUTOS.`, 'success');
-        } else {
-            notificar(`⚠️ ${sucessos} publicados, ${erros} falhas. Verifique o console.`, 'warning');
-        }
-        return erros === 0;
+    if (produtos.length === 0) {
+        notificar('Não há produtos para publicar.', 'error');
+        return false;
+    }
+    if (typeof usuarioAtual === 'undefined' ||
+        (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
+        notificar('Sem permissão para publicar. Apenas Administrador.', 'error');
+        return false;
     }
 
-    async function carregarProdutosDoSharePoint() {
-        log('A carregar produtos da lista SharePoint...');
+    showLoading();
+    let sucessos = 0, erros = 0;
+    const total = produtos.length;
+    const CONCORRENCIA = 5;
+
+    for (let i = 0; i < total; i += CONCORRENCIA) {
+        const lote = produtos.slice(i, i + CONCORRENCIA);
+        const resultados = await Promise.all(lote.map(p => salvarProdutoNaLista(p)));
+        resultados.forEach(r => r.success ? sucessos++ : erros++);
+
+        const badge = document.getElementById('totalProdutosBadge');
+        if (badge) badge.textContent = `A publicar… ${sucessos + erros}/${total}`;
+    }
+
+    hideLoading();
+    atualizarBadgeTotal();
+
+    if (erros === 0) {
+        notificar(`✅ ${sucessos} produtos publicados na lista EANPRODUTOS.`, 'success');
+        return true;
+    }
+    notificar(`⚠️ ${sucessos} publicados, ${erros} falharam. Verifique o console.`, 'warning');
+    return false;
+}
+    
+        async function carregarProdutosDoSharePoint() {
+    log('A carregar produtos da lista SharePoint...');
+    try {
+        const token = await obterToken();
+        const siteId = await obterSiteId();
+        const listName = LISTA_EAN;
+
+        const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$top=5000`;
+        const response = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`HTTP ${response.status} - ${errText}`);
+        }
+        const data = await response.json();
+        if (!data.value || data.value.length === 0) throw new Error('Lista vazia ou não encontrada');
+
+        const produtosLista = data.value.map(item => {
+            const f = item.fields;
+            let stock = {}, concorrentes = {};
+            try { stock = JSON.parse(f.Stock || '{}'); } catch (e) {}
+            try { concorrentes = JSON.parse(f.Concorrentes || '{}'); } catch (e) {}
+
+            return {
+                ean:                String(f.Title || '').trim(),
+                nome:               String(f.Nome  || '').trim(),
+                preco_custo:        parseFloat(f.PrecoCusto) || 0,
+                preco_kero:         parseFloat(f.PrecoKero) || 0,
+                iva:                parseFloat(f.Iva) || 0,
+                fornecedor:         String(f.Fornecedor || '').trim(),
+                venda_media_mensal: parseFloat(f.VendaMediaMensal) || 0,
+                stock,
+                concorrentes
+            };
+        }).filter(p => p.ean !== '' && p.nome !== '');
+
+        if (produtosLista.length === 0) throw new Error('Nenhum produto válido na lista');
+
+        produtos = produtosLista;
+        guardarLocal();
+        atualizarBadgeTotal();
+        renderizarHistorico();
+        if (produtoAtual) {
+            const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
+            if (atualizado) renderizarProduto(atualizado);
+            else limparPesquisa();
+        }
+        notificar(`✅ ${produtos.length} produtos carregados de EANPRODUTOS.`, 'success');
+        return true;
+    } catch (error) {
+        log('❌ Erro ao carregar do SharePoint', error);
+        if (carregarLocal()) {
+            notificar('⚠️ A usar dados em cache (SharePoint indisponível).', 'warning');
+            return true;
+        }
+        notificar('❌ Erro ao carregar: ' + error.message, 'error');
+        return false;
+    }
+}
+
+    // ============================================================
+    //  IMPORTAÇÃO DE EXCEL
+    // ============================================================
+   function importarExcel(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
         try {
-            const token = await obterToken();
-            const siteId = await obterSiteId();
-            const listName = LISTA_EAN;
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 
-            const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$top=5000`;
-            log('A fazer fetch da lista', url);
-            const response = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-            });
-
-            if (!response.ok) {
-                const errText = await response.text();
-                log(`Erro HTTP ${response.status}`, errText);
-                throw new Error(`HTTP ${response.status} - ${errText}`);
+            if (!rows || rows.length === 0) {
+                notificar('Excel vazio ou formato inválido.', 'error');
+                return;
             }
 
-            const data = await response.json();
-            log('Dados recebidos da lista', data.value ? data.value.length : 0);
+            const produtosImportados = rows.map(row => {
+                const ean = String(row['EAN'] || '').trim();
+                if (!ean) return null;
 
-            if (!data.value || data.value.length === 0) {
-                throw new Error('Lista vazia ou não encontrada');
-            }
+                const stock = {};
+                Object.entries(MAPA_LOJAS).forEach(([colExcel, chaveInterna]) => {
+                    stock[chaveInterna] = parseFloat(row[colExcel]) || 0;
+                });
 
-            const produtosLista = data.value.map(item => {
-                const f = item.fields;
-                let stock = {}, concorrentes = {};
-                try { stock = JSON.parse(f.Stock || '{}'); } catch (e) { stock = {}; }
-                try { concorrentes = JSON.parse(f.Concorrentes || '{}'); } catch (e) { concorrentes = {}; }
+                const concorrentes = {};
+                CONCORRENTES.forEach(c => { concorrentes[c] = 0; });
+
                 return {
-                    ean: String(f.EAN || '').trim(),
-                    nome: String(f.Title || '').trim(),
-                    preco_custo: parseFloat(f.PrecoCusto) || 0,
-                    preco_kero: parseFloat(f.PrecoKero) || 0,
-                    iva: parseFloat(f.IVA) || 0,
-                    fornecedor: String(f.Fornecedor || '').trim(),
-                    venda_media_mensal: parseFloat(f.VendaMedia) || 0,
-                    stock: stock,
-                    concorrentes: concorrentes
+                    ean:                ean,
+                    nome:               String(row['Descrição'] || '').trim(),
+                    fornecedor:         String(row['Nome Fornecedor'] || '').trim(),
+                    preco_custo:        parseFloat(row['PMM']) || 0,
+                    preco_kero:         parseFloat(row['PVP']) || 0,
+                    iva:                parseFloat(row['IVA %']) || 0,
+                    venda_media_mensal: parseFloat(row['VENDA Media Mensal']) || 0,
+                    stock:              stock,
+                    concorrentes:       concorrentes
                 };
-            }).filter(p => p.ean !== '');
+            }).filter(p => p !== null && p.nome !== '');
 
-            if (produtosLista.length === 0) {
-                throw new Error('Nenhum produto válido na lista');
+            if (produtosImportados.length === 0) {
+                notificar('Nenhum produto válido encontrado no Excel.', 'error');
+                return;
             }
 
-            produtos = produtosLista;
+            produtos = produtosImportados;
             guardarLocal();
             atualizarBadgeTotal();
             renderizarHistorico();
+
             if (produtoAtual) {
                 const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
                 if (atualizado) renderizarProduto(atualizado);
                 else limparPesquisa();
             }
-            notificar(`✅ ${produtos.length} produtos carregados da lista EANPRODUTOS.`, 'success');
-            log('Produtos carregados com sucesso', produtos.length);
-            return true;
-        } catch (error) {
-            log('❌ Erro ao carregar do SharePoint', error);
-            if (carregarLocal()) {
-                notificar('⚠️ A usar dados em cache (SharePoint indisponível).', 'warning');
-                return true;
+
+            notificar(`✅ ${produtos.length} produtos importados do Excel!`, 'success');
+
+            if (typeof usuarioAtual !== 'undefined' &&
+                (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
+
+                notificar('⏳ A publicar automaticamente no SharePoint… aguarde.', 'info');
+                publicarProdutosNoSharePoint().then(sucesso => {
+                    if (sucesso) notificar(`🎉 ${produtos.length} produtos guardados em EANPRODUTOS!`, 'success');
+                    else        notificar('⚠️ Alguns produtos falharam. Verifique a consola.', 'warning');
+                });
+            } else {
+                notificar('⚠️ Importado localmente. Sem permissão para publicar.', 'warning');
             }
-            notificar('❌ Erro ao carregar produtos do SharePoint: ' + error.message, 'error');
-            return false;
+
+        } catch (err) {
+            notificar('Erro ao ler o Excel: ' + err.message, 'error');
+            console.error(err);
         }
-    }
-
-    // ============================================================
-    //  IMPORTAÇÃO DE EXCEL
-    // ============================================================
-    function importarExcel(file) {
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-
-                if (!rows || rows.length === 0) {
-                    notificar('Excel vazio ou formato inválido.', 'error');
-                    return;
-                }
-
-                const produtosImportados = rows.map(row => {
-                    const ean = String(row['EAN'] || '').trim();
-                    if (!ean) return null;
-                    const stock = {};
-                    LOJAS_KERO.forEach(loja => {
-                        const nomeCurto = loja.replace('Kero Loja ', '');
-                        stock[loja] = parseFloat(row[nomeCurto]) || 0;
-                    });
-                    const concorrentes = {};
-                    CONCORRENTES.forEach(c => {
-                        concorrentes[c] = parseFloat(row[c]) || 0;
-                    });
-                    return {
-                        ean: ean,
-                        nome: String(row['Nome'] || row['Descrição'] || '').trim(),
-                        preco_custo: parseFloat(row['PrecoCusto'] || row['PMM'] || 0),
-                        preco_kero: parseFloat(row['PrecoKero'] || row['PVP'] || 0),
-                        iva: parseFloat(row['IVA'] || row['IVA %'] || 0),
-                        fornecedor: String(row['Fornecedor'] || row['Nome Fornecedor'] || '').trim(),
-                        venda_media_mensal: parseFloat(row['VendaMedia'] || row['VENDA Media Mensal'] || 0),
-                        stock: stock,
-                        concorrentes: concorrentes
-                    };
-                }).filter(p => p !== null);
-
-                if (produtosImportados.length === 0) {
-                    notificar('Nenhum produto válido encontrado no Excel.', 'error');
-                    return;
-                }
-
-                produtos = produtosImportados;
-                guardarLocal();
-                atualizarBadgeTotal();
-                renderizarHistorico();
-                if (produtoAtual) {
-                    const atualizado = produtos.find(p => p.ean === produtoAtual.ean);
-                    if (atualizado) renderizarProduto(atualizado);
-                    else limparPesquisa();
-                }
-                notificar(`✅ ${produtos.length} produtos importados do Excel com sucesso!`, 'success');
-                if (typeof usuarioAtual !== 'undefined' && (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
-                    notificar('💡 Clique em "Publicar no SharePoint" para guardar na lista.', 'info');
-                }
-            } catch (err) {
-                notificar('Erro ao ler o Excel: ' + err.message, 'error');
-                console.error(err);
-            }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
+    };
+    reader.readAsArrayBuffer(file);
+}
     // ============================================================
     //  EXPORTAÇÃO DE DADOS (JSON local)
     // ============================================================
