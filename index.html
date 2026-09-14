@@ -9318,47 +9318,67 @@ const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
     }
 
     async function salvarProdutoNaLista(produto) {
+   // Cache: EAN -> itemId (evita procurar novamente na mesma sessão de publicação)
+let _eanItemIdCache = null;
+
+async function _obterMapaEanParaId(token, siteId) {
+    if (_eanItemIdCache) return _eanItemIdCache;
+    const mapa = {};
+    let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
+    while (url) {
+        const resp = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+        });
+        if (!resp.ok) {
+            throw new Error(`Erro ao listar: ${resp.status} ${await resp.text()}`);
+        }
+        const data = await resp.json();
+        (data.value || []).forEach(item => {
+            const t = item.fields && item.fields.Title;
+            if (t) mapa[String(t).trim()] = item.id;
+        });
+        url = data['@odata.nextLink'] || null;
+    }
+    _eanItemIdCache = mapa;
+    return mapa;
+}
+
+async function salvarProdutoNaLista(produto) {
     try {
         log(`A processar produto ${produto.ean} - ${produto.nome}`);
         const token = await obterToken();
         const siteId = await obterSiteId();
         const listName = LISTA_EAN;
 
-        const filter = encodeURIComponent(`fields/Title eq '${produto.ean}'`);
-        const searchUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$filter=${filter}`;
-        const searchResp = await fetch(searchUrl, {
-            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-        });
-        if (!searchResp.ok) {
-            throw new Error(`Erro ao pesquisar: ${searchResp.status} ${await searchResp.text()}`);
-        }
-        const searchData = await searchResp.json();
-        const existing = searchData.value && searchData.value.length > 0 ? searchData.value[0] : null;
+        // 1) Procurar item existente pelo EAN (via cache)
+        const mapa = await _obterMapaEanParaId(token, siteId);
+        const existingId = mapa[String(produto.ean).trim()] || null;
 
+        // 2) Preparar os campos
         const fields = {
-            "Title":            produto.ean,
-            "Nome":             produto.nome,
-            "PrecoCusto":       produto.preco_custo || 0,
-            "PrecoKero":        produto.preco_kero || 0,
-            "Iva":              produto.iva || 0,
+            "Title":            String(produto.ean),
+            "Nome":             produto.nome || '',
+            "PrecoCusto":       Number(produto.preco_custo) || 0,
+            "PrecoKero":        Number(produto.preco_kero) || 0,
+            "Iva":              Number(produto.iva) || 0,
             "Fornecedor":       produto.fornecedor || '',
-            "VendaMediaMensal": produto.venda_media_mensal || 0,
+            "VendaMediaMensal": Number(produto.venda_media_mensal) || 0,
             "Stock":            JSON.stringify(produto.stock || {}),
             "Concorrentes":     JSON.stringify(produto.concorrentes || {})
         };
 
-        if (existing) {
-            const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items/${existing.id}/fields`;
+        if (existingId) {
+            const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items/${existingId}/fields`;
             const updateResp = await fetch(updateUrl, {
                 method: 'PATCH',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(fields)
             });
             if (!updateResp.ok) {
-                throw new Error(`Falha ao atualizar: ${updateResp.status} - ${await updateResp.text()}`);
+                throw new Error(`Falha ao atualizar (id=${existingId}): ${updateResp.status} - ${await updateResp.text()}`);
             }
-            log(`Produto ${produto.ean} atualizado`);
-            return { success: true, action: 'updated', id: existing.id };
+            log(`Produto ${produto.ean} atualizado (id=${existingId})`);
+            return { success: true, action: 'updated', id: existingId };
         } else {
             const createUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items`;
             const createResp = await fetch(createUrl, {
@@ -9370,49 +9390,14 @@ const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
                 throw new Error(`Falha ao criar: ${createResp.status} - ${await createResp.text()}`);
             }
             const newItem = await createResp.json();
-            log(`Produto ${produto.ean} criado, ID ${newItem.id}`);
+            mapa[String(produto.ean).trim()] = newItem.id;
+            log(`Produto ${produto.ean} criado (id=${newItem.id})`);
             return { success: true, action: 'created', id: newItem.id };
         }
     } catch (error) {
         log(`❌ Erro ao salvar ${produto.ean}`, error);
         return { success: false, error: error.message };
     }
-}
-
-    async function publicarProdutosNoSharePoint() {
-    if (produtos.length === 0) {
-        notificar('Não há produtos para publicar.', 'error');
-        return false;
-    }
-    if (typeof usuarioAtual === 'undefined' ||
-        (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
-        notificar('Sem permissão para publicar. Apenas Administrador.', 'error');
-        return false;
-    }
-
-    showLoading();
-    let sucessos = 0, erros = 0;
-    const total = produtos.length;
-    const CONCORRENCIA = 5;
-
-    for (let i = 0; i < total; i += CONCORRENCIA) {
-        const lote = produtos.slice(i, i + CONCORRENCIA);
-        const resultados = await Promise.all(lote.map(p => salvarProdutoNaLista(p)));
-        resultados.forEach(r => r.success ? sucessos++ : erros++);
-
-        const badge = document.getElementById('totalProdutosBadge');
-        if (badge) badge.textContent = `A publicar… ${sucessos + erros}/${total}`;
-    }
-
-    hideLoading();
-    atualizarBadgeTotal();
-
-    if (erros === 0) {
-        notificar(`✅ ${sucessos} produtos publicados na lista EANPRODUTOS.`, 'success');
-        return true;
-    }
-    notificar(`⚠️ ${sucessos} publicados, ${erros} falharam. Verifique o console.`, 'warning');
-    return false;
 }
     
         async function carregarProdutosDoSharePoint() {
