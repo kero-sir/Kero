@@ -3868,13 +3868,10 @@
         function exportarRequisicaoIndividualMob() { mobApp.exportarIndividual(); }
 
         // ============================================================
-        // MÓDULO EAN SCAN - VERSÃO CORRIGIDA
+        // MÓDULO EAN SCAN - VERSÃO CORRIGIDA E ESTÁVEL
         // ============================================================
         const eanApp = (function() {
-            // ========== CONFIGURAÇÕES ==========
             const LISTA_EAN = 'EANPRODUTOS';
-
-            // CORREÇÃO 1: constante de permissão que estava em falta
             const PERMISSAO_PUBLICAR = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
 
             const MAPA_LOJAS = {
@@ -3897,15 +3894,12 @@
             const LOJAS_KERO = Object.values(MAPA_LOJAS);
             const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
 
-            // ========== ESTADO ==========
             let produtos = [];
             let produtoAtual = null;
             let historicoPesquisas = [];
             let editandoPrecos = false;
             let cameraStream = null;
             let scanFrameId = null;
-
-            // CORREÇÃO 2: cache de EAN -> itemId para evitar o $filter problemático
             let _eanItemIdCache = null;
 
             function log(msg, data = null) { console.log(`[EAN] ${msg}`, data || ''); }
@@ -4257,7 +4251,6 @@
             async function obterToken() { log('A obter token SharePoint...'); try { const token = await getSharePointToken(); log('Token obtido com sucesso'); return token; } catch (e) { log('Erro ao obter token', e); throw e; } }
             async function obterSiteId() { log('A obter Site ID...'); try { const siteId = await getSiteId(); log('Site ID obtido', siteId); return siteId; } catch (e) { log('Erro ao obter Site ID', e); throw e; } }
 
-            // CORREÇÃO 3: substituir $filter por listagem + filtro local (o Title não está indexado)
             async function _obterMapaEanParaId(token, siteId) {
                 if (_eanItemIdCache) return _eanItemIdCache;
                 const mapa = {};
@@ -4277,248 +4270,269 @@
                 return mapa;
             }
 
-            // CORREÇÃO 4: nova versão de salvarProdutoNaLista (sem $filter)
-            async function salvarProdutoNaLista(produto) {
+            // ============================================================
+            // CORREÇÃO PRINCIPAL: função que estava em falta
+            // ============================================================
+            async function carregarProdutosDoSharePoint() {
+                log('A carregar produtos do SharePoint...');
                 try {
-                    log(`A processar produto ${produto.ean} - ${produto.nome}`);
-                    const token = await obterToken();
+                    const token  = await obterToken();
                     const siteId = await obterSiteId();
                     const listName = LISTA_EAN;
 
-                    // 1) Procurar item existente pelo EAN (Title), via cache em memória
-                    const mapa = await _obterMapaEanParaId(token, siteId);
-                    const existingId = mapa[String(produto.ean).trim()] || null;
+                    let allItems = [];
+                    let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$top=999`;
 
-                    // 2) Preparar os campos
-                    const fields = {
-                        "Title":            String(produto.ean),
-                        "Nome":             produto.nome || '',
-                        "PrecoCusto":       Number(produto.preco_custo) || 0,
-                        "PrecoKero":        Number(produto.preco_kero) || 0,
-                        "Iva":              Number(produto.iva) || 0,
-                        "Fornecedor":       produto.fornecedor || '',
-                        "VendaMediaMensal": Number(produto.venda_media_mensal) || 0,
-                        "Stock":            JSON.stringify(produto.stock || {}),
-                        "Concorrentes":     JSON.stringify(produto.concorrentes || {})
-                    };
+                    while (url) {
+                        const resp = await fetch(url, {
+                            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+                        });
 
-                    if (existingId) {
-                        // Atualizar item existente
-                        const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items/${existingId}/fields`;
-                        const updateResp = await fetch(updateUrl, {
-                            method: 'PATCH',
-                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify(fields)
-                        });
-                        if (!updateResp.ok) throw new Error(`Falha ao atualizar (id=${existingId}): ${updateResp.status} - ${await updateResp.text()}`);
-                        log(`Produto ${produto.ean} atualizado (id=${existingId})`);
-                        return { success: true, action: 'updated', id: existingId };
-                    } else {
-                        // Criar novo item
-                        const createUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items`;
-                        const createResp = await fetch(createUrl, {
-                            method: 'POST',
-                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ fields })
-                        });
-                        if (!createResp.ok) throw new Error(`Falha ao criar: ${createResp.status} - ${await createResp.text()}`);
-                        const newItem = await createResp.json();
-                        mapa[String(produto.ean).trim()] = newItem.id;
-                        log(`Produto ${produto.ean} criado (id=${newItem.id})`);
-                        return { success: true, action: 'created', id: newItem.id };
+                        if (!resp.ok) {
+                            if (resp.status === 404) {
+                                log('Lista EANPRODUTOS não encontrada no SharePoint');
+                                notificar('⚠️ Lista EANPRODUTOS não encontrada no SharePoint.', 'warning');
+                                return false;
+                            }
+                            if (resp.status === 429 || resp.status === 503) {
+                                const wait = parseInt(resp.headers.get('Retry-After') || '10');
+                                log(`Throttling a ler lista (${resp.status}) — aguardar ${wait}s`);
+                                await new Promise(r => setTimeout(r, wait * 1000));
+                                continue;
+                            }
+                            throw new Error(`Erro ${resp.status}: ${await resp.text()}`);
+                        }
+
+                        const data = await resp.json();
+                        allItems = allItems.concat(data.value || []);
+                        url = data['@odata.nextLink'] || null;
+                        log(`Carregados ${allItems.length} itens do SharePoint...`);
                     }
+
+                    if (allItems.length === 0) {
+                        log('Lista do SharePoint vazia.');
+                        return false;
+                    }
+
+                    const carregados = [];
+                    for (const item of allItems) {
+                        const f = item.fields || {};
+                        const ean = String(f.Title || '').trim();
+                        if (!ean) continue;
+
+                        let stock = {}, concorrentes = {};
+                        try { stock = JSON.parse(f.Stock || '{}'); } catch (e) {}
+                        try { concorrentes = JSON.parse(f.Concorrentes || '{}'); } catch (e) {}
+
+                        LOJAS_KERO.forEach(l => { if (!(l in stock)) stock[l] = 0; });
+                        CONCORRENTES.forEach(c => { if (!(c in concorrentes)) concorrentes[c] = 0; });
+
+                        carregados.push({
+                            ean,
+                            nome:                 f.Nome || '',
+                            preco_custo:          Number(f.PrecoCusto) || 0,
+                            preco_kero:           Number(f.PrecoKero) || 0,
+                            iva:                  Number(f.Iva) || 0,
+                            fornecedor:           f.Fornecedor || '',
+                            venda_media_mensal:   Number(f.VendaMediaMensal) || 0,
+                            stock,
+                            concorrentes
+                        });
+                    }
+
+                    if (carregados.length === 0) {
+                        log('Nenhum produto válido no SharePoint.');
+                        return false;
+                    }
+
+                    produtos = carregados;
+
+                    _eanItemIdCache = {};
+                    allItems.forEach(it => {
+                        const t = it.fields && it.fields.Title;
+                        if (t) _eanItemIdCache[String(t).trim()] = it.id;
+                    });
+
+                    guardarLocal();
+                    atualizarBadgeTotal();
+                    renderizarHistorico();
+                    log(`✅ ${produtos.length} produtos carregados do SharePoint`);
+                    notificar(`✅ ${produtos.length} produtos carregados do SharePoint.`, 'success');
+                    return true;
+
                 } catch (error) {
-                    log(`❌ Erro ao salvar ${produto.ean}`, error);
-                    return { success: false, error: error.message };
+                    log('❌ Erro ao carregar produtos do SharePoint', error);
+                    notificar('⚠️ Erro ao carregar do SharePoint. A usar cache local.', 'warning');
+                    return false;
                 }
             }
 
             async function publicarProdutosNoSharePoint() {
-    if (produtos.length === 0) { notificar('Não há produtos para publicar.', 'error'); return false; }
-    if (typeof usuarioAtual === 'undefined' || (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
-        notificar('Sem permissão para publicar. Apenas Administrador.', 'error'); return false;
-    }
-
-    const token = await obterToken();
-    const siteId = await obterSiteId();
-    const listName = LISTA_EAN;
-    const total = produtos.length;
-
-    // ---- OPTIMIZAÇÃO 1: verificar se a lista está vazia antes de construir cache ----
-    let mapa = {};
-    showLoading();
-    try {
-        const checkUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?$top=1`;
-        const checkResp = await fetch(checkUrl, { headers: { 'Authorization': `Bearer ${token}` } });
-        const checkData = await checkResp.json();
-        if (!checkData.value || checkData.value.length === 0) {
-            log('Lista vazia — a saltar construção de cache (modo inserção em massa)');
-            mapa = {};
-            _eanItemIdCache = {};
-        } else {
-            log('Lista já contém itens — a construir cache de EAN->ID...');
-            mapa = await _obterMapaEanParaId(token, siteId);
-        }
-    } catch (e) {
-        console.warn('[EAN] Falha na verificação inicial, a assumir lista vazia:', e);
-        mapa = {};
-    }
-
-    // ---- OPTIMIZAÇÃO 2: retomar progresso guardado ----
-    const savedProgress = localStorage.getItem('ean_publish_progress');
-    let startIndex = 0;
-    if (savedProgress) {
-        try {
-            const p = JSON.parse(savedProgress);
-            const retomar = confirm(
-                `Existe progresso guardado: ${p.processados}/${total} produtos publicados.\n\n` +
-                `OK = Retomar de onde parou\n` +
-                `Cancelar = Recomeçar do início`
-            );
-            if (retomar) {
-                startIndex = p.processados;
-                Object.assign(mapa, p.mapa || {});
-                _eanItemIdCache = mapa;
-                log(`A retomar do produto #${startIndex}`);
-            } else {
-                localStorage.removeItem('ean_publish_progress');
-            }
-        } catch (e) { localStorage.removeItem('ean_publish_progress'); }
-    }
-
-    // ---- OPTIMIZAÇÃO 3: $batch (20 pedidos por HTTP call) ----
-    const BATCH_SIZE = 20;
-    let sucessos = startIndex, erros = 0;
-    const inicio = Date.now();
-
-    for (let i = startIndex; i < total; i += BATCH_SIZE) {
-        const lote = produtos.slice(i, i + BATCH_SIZE);
-
-        const batchRequests = lote.map((produto, idx) => {
-            const eanKey = String(produto.ean).trim();
-            const existingId = mapa[eanKey];
-            const fields = {
-                "Title":            eanKey,
-                "Nome":             produto.nome || '',
-                "PrecoCusto":       Number(produto.preco_custo) || 0,
-                "PrecoKero":        Number(produto.preco_kero) || 0,
-                "Iva":              Number(produto.iva) || 0,
-                "Fornecedor":       produto.fornecedor || '',
-                "VendaMediaMensal": Number(produto.venda_media_mensal) || 0,
-                "Stock":            JSON.stringify(produto.stock || {}),
-                "Concorrentes":     JSON.stringify(produto.concorrentes || {})
-            };
-            const requestId = String(idx + 1);
-            if (existingId) {
-                return {
-                    id: requestId,
-                    method: 'PATCH',
-                    url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: fields
-                };
-            }
-            return {
-                id: requestId,
-                method: 'POST',
-                url: `/sites/${siteId}/lists/${listName}/items`,
-                headers: { 'Content-Type': 'application/json' },
-                body: { fields }
-            };
-        });
-
-        // Retry em caso de throttling (429)
-        let tentativas = 0;
-        let sucessoLote = false;
-        while (tentativas < 5 && !sucessoLote) {
-            try {
-                const resp = await fetch('https://graph.microsoft.com/v1.0/$batch', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ requests: batchRequests })
-                });
-
-                if (resp.status === 429) {
-                    const retryAfter = parseInt(resp.headers.get('Retry-After') || '10');
-                    log(`Throttling 429 — a aguardar ${retryAfter}s antes de repetir o lote`);
-                    await new Promise(r => setTimeout(r, retryAfter * 1000));
-                    tentativas++;
-                    continue;
+                if (produtos.length === 0) { notificar('Não há produtos para publicar.', 'error'); return false; }
+                if (typeof usuarioAtual === 'undefined' ||
+                    (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
+                    notificar('Sem permissão para publicar. Apenas Administrador.', 'error');
+                    return false;
                 }
 
-                if (!resp.ok) {
-                    console.error('Erro HTTP no batch:', resp.status, await resp.text());
-                    erros += lote.length;
-                    sucessoLote = true;
-                    break;
-                }
+                showLoading();
+                const token  = await obterToken();
+                const siteId = await obterSiteId();
+                const listName = LISTA_EAN;
+                const total = produtos.length;
 
-                const data = await resp.json();
-                (data.responses || []).forEach((r, idx) => {
-                    const produto = lote[idx];
-                    if (r.status >= 200 && r.status < 300) {
-                        sucessos++;
-                        if (r.status === 201 && r.body && r.body.id) {
-                            mapa[String(produto.ean).trim()] = r.body.id;
-                        }
-                    } else if (r.status === 429) {
-                        // Retry individual não trivial em batch — marcar como falha e continuar
-                        erros++;
-                        console.warn(`Produto ${produto.ean} throttled dentro do batch`);
+                let mapa = {};
+                try {
+                    const checkUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?$top=1`;
+                    const checkResp = await fetch(checkUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                    const checkData = await checkResp.json();
+                    if (!checkData.value || checkData.value.length === 0) {
+                        log('Lista vazia — modo inserção em massa');
+                        mapa = {}; _eanItemIdCache = {};
                     } else {
-                        erros++;
-                        console.error(`Falha no produto ${produto.ean}:`, r.status, r.body);
+                        log('Lista já contém itens — a construir cache EAN→ID...');
+                        mapa = await _obterMapaEanParaId(token, siteId);
+                        log(`Cache construído: ${Object.keys(mapa).length} itens`);
                     }
-                });
-                sucessoLote = true;
-            } catch (e) {
-                console.error('Erro de rede no batch:', e);
-                await new Promise(r => setTimeout(r, 2000));
-                tentativas++;
+                } catch (e) {
+                    console.warn('[EAN] Falha na verificação inicial:', e);
+                    mapa = {};
+                }
+
+                const BATCH_SIZE  = 20;
+                const MAX_RODADAS = 5;
+                const inicio = Date.now();
+                let processados = 0, sucessos = 0;
+
+                let pendentes = [...produtos];
+
+                for (let rodada = 0; rodada < MAX_RODADAS && pendentes.length > 0; rodada++) {
+                    if (rodada > 0) {
+                        const espera = Math.min(120, Math.pow(2, rodada) * 5);
+                        log(`Rodada ${rodada + 1}: ${pendentes.length} pendentes. Aguardar ${espera}s...`);
+                        notificar(`⏳ Rodada ${rodada + 1}: a retentar ${pendentes.length} produtos (${espera}s)...`, 'info');
+                        await new Promise(r => setTimeout(r, espera * 1000));
+                    }
+
+                    const falhados = [];
+                    const totalRodada = pendentes.length;
+
+                    for (let i = 0; i < totalRodada; i += BATCH_SIZE) {
+                        const lote = pendentes.slice(i, i + BATCH_SIZE);
+
+                        const batchRequests = lote.map((produto, idx) => {
+                            const eanKey = String(produto.ean).trim();
+                            const existingId = mapa[eanKey];
+                            const fields = {
+                                "Title":            eanKey,
+                                "Nome":             produto.nome || '',
+                                "PrecoCusto":       Number(produto.preco_custo) || 0,
+                                "PrecoKero":        Number(produto.preco_kero) || 0,
+                                "Iva":              Number(produto.iva) || 0,
+                                "Fornecedor":       produto.fornecedor || '',
+                                "VendaMediaMensal": Number(produto.venda_media_mensal) || 0,
+                                "Stock":            JSON.stringify(produto.stock || {}),
+                                "Concorrentes":     JSON.stringify(produto.concorrentes || {})
+                            };
+                            const requestId = String(idx + 1);
+                            if (existingId) {
+                                return {
+                                    id: requestId, method: 'PATCH',
+                                    url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`,
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: fields
+                                };
+                            }
+                            return {
+                                id: requestId, method: 'POST',
+                                url: `/sites/${siteId}/lists/${listName}/items`,
+                                headers: { 'Content-Type': 'application/json' },
+                                body: { fields }
+                            };
+                        });
+
+                        let tentativa = 0;
+                        let respostas = null;
+                        while (tentativa < 6) {
+                            try {
+                                const resp = await fetch('https://graph.microsoft.com/v1.0/$batch', {
+                                    method: 'POST',
+                                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ requests: batchRequests })
+                                });
+
+                                if (resp.status === 429 || resp.status === 503) {
+                                    const wait = parseInt(resp.headers.get('Retry-After') || String(5 * (tentativa + 1)));
+                                    log(`HTTP ${resp.status} — aguardar ${wait}s`);
+                                    await new Promise(r => setTimeout(r, wait * 1000));
+                                    tentativa++;
+                                    continue;
+                                }
+                                if (!resp.ok) {
+                                    console.error('Erro HTTP no batch:', resp.status);
+                                    respostas = null;
+                                    break;
+                                }
+                                const data = await resp.json();
+                                respostas = data.responses || [];
+                                break;
+                            } catch (e) {
+                                console.error('Erro de rede no batch:', e);
+                                await new Promise(r => setTimeout(r, 2000 * (tentativa + 1)));
+                                tentativa++;
+                            }
+                        }
+
+                        if (!respostas) {
+                            falhados.push(...lote);
+                        } else {
+                            respostas.forEach((r, idx) => {
+                                const produto = lote[idx];
+                                if (!produto) return;
+
+                                if (r.status >= 200 && r.status < 300) {
+                                    sucessos++;
+                                    processados++;
+                                    if (r.body && r.body.id) {
+                                        mapa[String(produto.ean).trim()] = r.body.id;
+                                    }
+                                } else if (r.status === 429 || r.status === 503 || r.status >= 500) {
+                                    falhados.push(produto);
+                                } else {
+                                    console.error(`Falha permanente produto ${produto.ean}:`, r.status, r.body);
+                                    processados++;
+                                }
+                            });
+                        }
+
+                        const elapsed = (Date.now() - inicio) / 1000;
+                        const rate = processados > 0 ? processados / elapsed : 0;
+                        const restantes = total - processados;
+                        const etaMin = rate > 0 ? Math.round(restantes / rate / 60) : 0;
+                        const badge = document.getElementById('totalProdutosBadge');
+                        if (badge) {
+                            badge.textContent = `Rodada ${rodada+1} · ${processados}/${total} · ETA ${etaMin}min`;
+                        }
+                    }
+
+                    pendentes = falhados;
+                    log(`Rodada ${rodada + 1} concluída. Falhados para próxima rodada: ${pendentes.length}`);
+                }
+
+                _eanItemIdCache = mapa;
+                hideLoading();
+                atualizarBadgeTotal();
+
+                const duracao = Math.round((Date.now() - inicio) / 1000 / 60);
+                const falhasFinais = pendentes.length;
+
+                if (falhasFinais === 0) {
+                    notificar(`✅ ${sucessos} produtos publicados em ${duracao} min.`, 'success');
+                    return true;
+                }
+                notificar(`⚠️ ${sucessos} publicados, ${falhasFinais} falharam após ${MAX_RODADAS} rodadas (${duracao} min).`, 'warning');
+                return false;
             }
-        }
-        if (!sucessoLote) erros += lote.length;
-
-        // Atualizar badge com ETA
-        const processados = sucessos + erros;
-        const badge = document.getElementById('totalProdutosBadge');
-        if (badge) {
-            const elapsed = (Date.now() - inicio) / 1000;
-            const feitosNestaSessao = processados - startIndex;
-            const rate = feitosNestaSessao > 0 ? feitosNestaSessao / elapsed : 0;
-            const restantes = total - processados;
-            const etaSeg = rate > 0 ? Math.round(restantes / rate) : 0;
-            const etaMin = Math.round(etaSeg / 60);
-            badge.textContent = `A publicar… ${processados}/${total} (~${etaMin} min restantes)`;
-        }
-
-        // ---- OPTIMIZAÇÃO 4: persistir progresso a cada ~500 produtos ----
-        if (processados % 500 < BATCH_SIZE) {
-            try {
-                localStorage.setItem('ean_publish_progress', JSON.stringify({
-                    processados,
-                    mapa,
-                    timestamp: new Date().toISOString()
-                }));
-            } catch (e) { /* localStorage cheio — ignorar */ }
-        }
-    }
-
-    // Limpar progresso ao terminar
-    localStorage.removeItem('ean_publish_progress');
-    _eanItemIdCache = mapa;
-
-    hideLoading();
-    atualizarBadgeTotal();
-
-    const duracao = Math.round((Date.now() - inicio) / 1000 / 60);
-    if (erros === 0) {
-        notificar(`✅ ${sucessos} produtos publicados em ${duracao} min.`, 'success');
-        return true;
-    }
-    notificar(`⚠️ ${sucessos} publicados, ${erros} falharam (${duracao} min). Verifique a consola.`, 'warning');
-    return false;
-}
 
             // ========== IMPORTAÇÃO DE EXCEL ==========
             function importarExcel(file) {
@@ -4573,32 +4587,7 @@
                 notificar(`✅ ${produtos.length} produtos exportados.`, 'success');
             }
 
-            // ========== INICIALIZAÇÃO ==========
-            async function inicializar() {
-                log('Inicializando módulo EAN...');
-                try {
-                    const carregou = await carregarProdutosDoSharePoint();
-                    if (!carregou) {
-                        if (carregarLocal()) notificar('⚠️ Dados carregados do cache local.', 'warning');
-                        else {
-                            const PRODUTOS_MOCK = [{ ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14, fornecedor: "Arrozal SA", venda_media_mensal: 120, stock: LOJAS_KERO.reduce((acc, l) => { acc[l] = Math.floor(Math.random() * 100); return acc; }, {}), concorrentes: CONCORRENTES.reduce((acc, c) => { acc[c] = 500 + Math.floor(Math.random() * 200); return acc; }, {}) }];
-                            produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
-                            guardarLocal();
-                            notificar('📦 Dados de exemplo carregados.', 'info');
-                        }
-                    }
-                    carregarHistoricoLocal();
-                    atualizarBadgeTotal();
-                    renderizarHistorico();
-                    configurarEventos();
-                    const lastEan = sessionStorage.getItem('ean_ultimo_produto');
-                    if (lastEan) { const prod = produtos.find(p => p.ean === lastEan); if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = lastEan; } }
-                    document.getElementById('eanInput').focus();
-                    if (produtos.length === 0) document.getElementById('emptyStateEAN').style.display = 'block';
-                    else if (!produtoAtual) document.getElementById('emptyStateEAN').style.display = 'block';
-                    log('Módulo EAN inicializado com sucesso!', produtos.length);
-                } catch (error) { log('ERRO na inicialização do EAN', error); }
-            }
+            function adicionarProduto() { notificar('Função de adicionar produto manual não implementada. Use importação Excel.', 'info'); }
 
             function configurarEventos() {
                 log('Configurando eventos...');
@@ -4636,11 +4625,10 @@
                 if (btnPublicar) { btnPublicar.addEventListener('click', async function() { log('Botão Publicar clicado'); await publicarProdutosNoSharePoint(); }); log('Evento btnPublicarSharePoint ligado'); }
                 const btnSync = document.getElementById('btnSyncSharePoint');
                 if (btnSync) {
-                    btnSync.removeEventListener('click', null);
                     btnSync.addEventListener('click', async function() {
                         log('Botão Sincronizar clicado');
                         notificar('A sincronizar com SharePoint...', 'info');
-                        _eanItemIdCache = null; // garantir leitura fresca
+                        _eanItemIdCache = null;
                         const success = await carregarProdutosDoSharePoint();
                         if (success) {
                             if (document.getElementById('allProducts').classList.contains('active')) renderizarTodosProdutos();
@@ -4666,7 +4654,55 @@
                 if (btnAdd) { btnAdd.addEventListener('click', adicionarProduto); log('Evento btnAddProduct ligado'); }
             }
 
-            function adicionarProduto() { notificar('Função de adicionar produto manual não implementada. Use importação Excel.', 'info'); }
+            // ========== INICIALIZAÇÃO (CORRIGIDA) ==========
+            async function inicializar() {
+                log('Inicializando módulo EAN...');
+
+                // 1) LIGAR BOTÕES PRIMEIRO — assim funcionam sempre, mesmo se o SharePoint falhar
+                try { configurarEventos(); } catch (e) { console.error('Erro em configurarEventos:', e); }
+
+                try {
+                    const carregou = await carregarProdutosDoSharePoint();
+
+                    if (!carregou) {
+                        if (carregarLocal()) {
+                            notificar('⚠️ Dados carregados do cache local.', 'warning');
+                        } else {
+                            const PRODUTOS_MOCK = [{
+                                ean: "5601234567890", nome: "Arroz Carolino 1kg",
+                                preco_custo: 450, preco_kero: 650, iva: 14,
+                                fornecedor: "Arrozal SA", venda_media_mensal: 120,
+                                stock: LOJAS_KERO.reduce((a,l)=>{a[l]=Math.floor(Math.random()*100);return a;},{}),
+                                concorrentes: CONCORRENTES.reduce((a,c)=>{a[c]=500+Math.floor(Math.random()*200);return a;},{})
+                            }];
+                            produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
+                            guardarLocal();
+                            notificar('📦 Dados de exemplo carregados.', 'info');
+                        }
+                    }
+
+                    carregarHistoricoLocal();
+                    atualizarBadgeTotal();
+                    renderizarHistorico();
+
+                    const lastEan = sessionStorage.getItem('ean_ultimo_produto');
+                    if (lastEan) {
+                        const prod = produtos.find(p => p.ean === lastEan);
+                        if (prod) {
+                            renderizarProduto(prod);
+                            document.getElementById('eanInput').value = lastEan;
+                        }
+                    }
+                    document.getElementById('eanInput').focus();
+
+                    if (!produtoAtual) document.getElementById('emptyStateEAN').style.display = 'block';
+
+                    log('Módulo EAN inicializado com sucesso!', produtos.length);
+                } catch (error) {
+                    log('ERRO na inicialização do EAN', error);
+                    notificar('❌ Erro na inicialização do módulo EAN.', 'error');
+                }
+            }
 
             return { inicializar, buscarProduto, limparPesquisa, renderizarTodosProdutos, exportarDados, publicarProdutosNoSharePoint, carregarProdutosDoSharePoint, importarExcel, adicionarProduto, guardarPrecosConcorrentes, toggleEdicaoPrecos, guardarPrecosKero, abrirCamera, fecharCamera, capturarEscanear, processarImagem };
         })();
