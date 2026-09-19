@@ -13,7 +13,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.8.2/dist/quagga.min.js"></script>
     <script src="https://unpkg.com/@zxing/library@0.19.2/umd/index.min.js"></script>
     <style>
-        /* ===== ESTILOS COMPLETOS ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         :root {
             --primary: #4CAF50; --primary-dark: #2E7D32; --primary-light: #e8f5e9;
@@ -958,7 +957,43 @@
                     <div class="card"><div class="card-header"><div class="card-title">Direções</div></div><div class="direcoes-list" id="direcoesList"></div></div>
                 </div>
                 <div id="configuracoesSection" style="display: none;">
-                    <div class="card"><div class="card-header"><div class="card-title">Configurações</div></div><div style="padding:20px;"><div class="form-group"><label>Email Admin</label><input type="email" id="configEmailAdmin" value="marcio.carlos@accordgrouplda.com" class="form-control"></div><div class="form-group"><label>Notificações Email</label><input type="checkbox" id="configEmailNotif" checked></div><div class="form-group"><label>Notificações Teams</label><input type="checkbox" id="configTeamsNotif" checked></div><div class="form-group"><label>Webhook URL do Teams</label><input type="text" id="configTeamsWebhook" placeholder="https://accordgroup.webhook.office.com/..." class="form-control"></div><button class="btn-primary" onclick="salvarConfiguracoes()">Salvar</button></div></div>
+                    <div class="card">
+                        <div class="card-header"><div class="card-title">Configurações</div></div>
+                        <div style="padding:20px;">
+                            <div class="form-group"><label>Email Admin</label><input type="email" id="configEmailAdmin" value="marcio.carlos@accordgrouplda.com" class="form-control"></div>
+                            <div class="form-group"><label>Notificações Email</label><input type="checkbox" id="configEmailNotif" checked></div>
+                            <div class="form-group"><label>Notificações Teams</label><input type="checkbox" id="configTeamsNotif" checked></div>
+                            <div class="form-group"><label>Webhook URL do Teams</label><input type="text" id="configTeamsWebhook" placeholder="https://accordgroup.webhook.office.com/..." class="form-control"></div>
+                            <button class="btn-primary" onclick="salvarConfiguracoes()">Salvar</button>
+
+                            <hr style="margin:24px 0;">
+                            <h3 style="color:var(--primary-dark); margin-bottom:12px;">
+                                <i class="fas fa-store"></i> Gerentes de Loja — Lojas Visíveis
+                            </h3>
+                            <p style="font-size:13px; color:#666; margin-bottom:12px;">
+                                Define quais lojas cada gerente pode ver. O gerente verá <strong>apenas</strong> as requisições das lojas configuradas aqui. As alterações são guardadas no SharePoint, para todos os postos.
+                            </p>
+
+                            <div id="gestoresLojasList" style="margin-bottom:12px;"></div>
+
+                            <div style="display:grid; grid-template-columns:1fr 2fr auto; gap:10px; align-items:end;">
+                                <div class="form-group" style="margin:0;">
+                                    <label>Email do Gerente</label>
+                                    <input type="email" id="gestorEmailInput" class="form-control" placeholder="gerente@accordgrouplda.com">
+                                </div>
+                                <div class="form-group" style="margin:0;">
+                                    <label>Lojas (separar por vírgula)</label>
+                                    <input type="text" id="gestorLojasInput" class="form-control" placeholder="Loja Talatona, Loja Kilamba">
+                                </div>
+                                <button class="btn-primary" style="width:auto; margin:0; padding:10px 20px;" onclick="adicionarGestorLoja()">
+                                    <i class="fas fa-plus"></i> Adicionar
+                                </button>
+                            </div>
+                            <p style="font-size:12px; color:#888; margin-top:8px;">
+                                <i class="fas fa-info-circle"></i> Lojas válidas: Loja Talatona, Loja Kilamba, Loja Morro Bento, Loja Nova Vida, Loja Lubango, Loja Huambo, Loja Lobito, Loja Benguela, Loja Viana, Loja Gika, Loja Mártires, Loja Combatentes, Loja Cacuaco.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1761,6 +1796,115 @@
         const todasDirecoes = ["Direção Geral", "Capital Humano", "Direção Comercial", "Direção Financeira", "Direção de Marketing", "Direção de Sistemas de Informação", "Direção de Manutenção", "Direção de Segurança", "Direção de HSA/HST", "Direção de Visual Merchandising", "Direção de Projetos Restauração", "Direção de Operações", "Direção de Controlo de Gestão", "Direção Jurídica", "Vendas Corporativas", "Loja Talatona", "Loja Kilamba", "Loja Morro Bento", "Loja Nova Vida", "Loja Lubango", "Loja Cacuaco", "Loja Huambo", "Loja Lobito", "Loja Mártires", "Loja Combatentes", "Loja Benguela", "Loja Viana", "Loja Saurimo", "Loja Gika", "Armazém ZEE", "Armazém SONIT"];
         const todasCategorias = ["Director Geral", "Director Executivo", "Director", "Gerente de Loja", "Gestor Sénior", "Gestor", "Técnico Sénior", "Técnico", "Chefe de Departamento", "Chefe de Secção", "Coordenador", "Analista", "Administrativo", "Operador"];
 
+        // ============================================================
+        // MAPEAMENTO GESTORES DE LOJA → LOJAS QUE PODEM VER
+        // Fonte de verdade: lista SharePoint "GestoresLoja" (campo Title=email, campo Lojas=lojas separadas por vírgula)
+        // Cache local: localStorage (fallback se SharePoint falhar)
+        // ============================================================
+        const LISTA_GESTORES_LOJA = 'GestoresLoja';
+        const GESTORES_LOJA = {};
+
+        function getLojasGeridas(email) {
+            if (!email) return [];
+            return GESTORES_LOJA[String(email).toLowerCase().trim()] || [];
+        }
+
+        function carregarGestoresLojasCacheLocal() {
+            try {
+                const saved = localStorage.getItem('gestoresLojas');
+                if (saved) {
+                    const obj = JSON.parse(saved);
+                    Object.keys(GESTORES_LOJA).forEach(k => delete GESTORES_LOJA[k]);
+                    Object.keys(obj).forEach(k => { GESTORES_LOJA[k] = obj[k]; });
+                }
+            } catch (e) { console.warn('Erro ao ler cache local de gestores:', e); }
+        }
+
+        async function carregarGestoresLojasDoSharePoint() {
+            try {
+                const token = await getSharePointToken();
+                const siteId = await getSiteId();
+                Object.keys(GESTORES_LOJA).forEach(k => delete GESTORES_LOJA[k]);
+                let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_GESTORES_LOJA}/items?expand=fields&$top=500`;
+                let total = 0;
+                while (url) {
+                    const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+                    if (!resp.ok) {
+                        if (resp.status === 404) { console.warn('[GestoresLoja] Lista não encontrada no SharePoint.'); return false; }
+                        if (resp.status === 429 || resp.status === 503) { const wait = parseInt(resp.headers.get('Retry-After') || '5'); await new Promise(r => setTimeout(r, wait * 1000)); continue; }
+                        throw new Error(`Erro ${resp.status}: ${await resp.text()}`);
+                    }
+                    const data = await resp.json();
+                    (data.value || []).forEach(item => {
+                        const f = item.fields || {};
+                        const email = String(f.Title || '').toLowerCase().trim();
+                        const lojasStr = f.Lojas || '';
+                        if (email) {
+                            const lojas = String(lojasStr).split(',').map(s => s.trim()).filter(Boolean);
+                            GESTORES_LOJA[email] = lojas;
+                            total++;
+                        }
+                    });
+                    url = data['@odata.nextLink'] || null;
+                }
+                try { localStorage.setItem('gestoresLojas', JSON.stringify(GESTORES_LOJA)); } catch (e) {}
+                console.log(`[GestoresLoja] ${total} gerentes carregados do SharePoint`);
+                return true;
+            } catch (e) {
+                console.warn('[GestoresLoja] Erro ao carregar do SharePoint, a usar cache local:', e);
+                carregarGestoresLojasCacheLocal();
+                return false;
+            }
+        }
+
+        async function guardarGestorLojaNoSharePoint(email, lojas) {
+            try {
+                const token = await getSharePointToken();
+                const siteId = await getSiteId();
+                const emailKey = String(email).toLowerCase().trim();
+                const lojasStr = lojas.join(', ');
+                const filterUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_GESTORES_LOJA}/items?expand=fields&$filter=fields/Title eq '${emailKey.replace(/'/g, "''")}'`;
+                const check = await fetch(filterUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                let existing = null;
+                if (check.ok) { const data = await check.json(); if (data.value && data.value.length > 0) existing = data.value[0]; }
+                const fields = { "Title": emailKey, "Lojas": lojasStr };
+                if (existing) {
+                    const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_GESTORES_LOJA}/items/${existing.id}/fields`;
+                    const resp = await fetch(updateUrl, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(fields) });
+                    if (!resp.ok) throw new Error(`Erro ao atualizar: ${resp.status} ${await resp.text()}`);
+                    return true;
+                } else {
+                    const createUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_GESTORES_LOJA}/items`;
+                    const resp = await fetch(createUrl, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ fields }) });
+                    if (!resp.ok) throw new Error(`Erro ao criar: ${resp.status} ${await resp.text()}`);
+                    return true;
+                }
+            } catch (e) {
+                console.error('[GestoresLoja] Erro ao guardar no SharePoint:', e);
+                return false;
+            }
+        }
+
+        async function removerGestorLojaDoSharePoint(email) {
+            try {
+                const token = await getSharePointToken();
+                const siteId = await getSiteId();
+                const emailKey = String(email).toLowerCase().trim();
+                const filterUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_GESTORES_LOJA}/items?expand=fields&$filter=fields/Title eq '${emailKey.replace(/'/g, "''")}'`;
+                const check = await fetch(filterUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!check.ok) return false;
+                const data = await check.json();
+                if (!data.value || data.value.length === 0) return false;
+                for (const item of data.value) {
+                    await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_GESTORES_LOJA}/items/${item.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                }
+                return true;
+            } catch (e) {
+                console.error('[GestoresLoja] Erro ao remover do SharePoint:', e);
+                return false;
+            }
+        }
+
         const SHAREPOINT_CONFIG = {
             siteUrl: "https://accordgroupslda.sharepoint.com/sites/SIR",
             listName: "RequisicoesRH",
@@ -1927,7 +2071,7 @@
         // ============================================================
         // SELEÇÃO DE MÓDULO
         // ============================================================
-        function selecionarModulo(mod) {
+        async function selecionarModulo(mod) {
             if (modoPublico && mod !== 'ean') { mostrarNotificacao('Modo público apenas permite visualização do EAN Scan.', 'warning'); return; }
             moduloAtual = mod;
             document.getElementById('moduleSelectionScreen').style.display = 'none';
@@ -1946,7 +2090,19 @@
                 document.getElementById('currentUserName').textContent = usuarioAtual.nome;
                 document.getElementById('currentUserRole').textContent = usuarioAtual.perfil;
                 atualizarAvatar({ displayName: usuarioAtual.nome }, 'userAvatar');
-                inicializarDirecoes(); carregarRequisicoesDoSharePoint(); carregarDashboardTempos(); carregarDashboardStatus(); carregarDirecoes(); carregarConfiguracoes(); inicializarGraficos(); atualizarKPIs(); inicializarBotoesPorPerfil(); carregarUtilizadores();
+                showLoading();
+                await carregarGestoresLojasDoSharePoint();
+                hideLoading();
+                inicializarDirecoes();
+                carregarRequisicoesDoSharePoint();
+                carregarDashboardTempos();
+                carregarDashboardStatus();
+                carregarDirecoes();
+                carregarConfiguracoes();
+                inicializarGraficos();
+                atualizarKPIs();
+                inicializarBotoesPorPerfil();
+                carregarUtilizadores();
             } else if (mod === 'avaliacao') {
                 const email = usuarioAtual.email; const perfil = usuarioAtual.perfil;
                 const permitidos = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'paulo.silva@accordgrouplda.com'];
@@ -2079,7 +2235,21 @@
             const areaSel = document.getElementById('area');
             if (areaSel) { areaSel.innerHTML = '<option value="">Selecione</option>'; todasCategorias.forEach(c => areaSel.appendChild(new Option(c, c))); }
             if (editArea) { editArea.innerHTML = '<option value="">Selecione</option>'; todasCategorias.forEach(c => editArea.appendChild(new Option(c, c))); }
+            aplicarRestricoesDirecao();
         }
+
+        function aplicarRestricoesDirecao() {
+            if (!usuarioAtual) return;
+            const lojasGeridas = getLojasGeridas(usuarioAtual.email);
+            if (lojasGeridas.length === 0) return;
+            const selDirecao = document.getElementById('direcao');
+            if (!selDirecao) return;
+            selDirecao.innerHTML = '<option value="">Selecione</option>';
+            lojasGeridas.forEach(loja => { if (todasDirecoes.includes(loja)) selDirecao.appendChild(new Option(loja, loja)); });
+            if (lojasGeridas.length === 1) selDirecao.value = lojasGeridas[0];
+            selDirecao.setAttribute('disabled', 'disabled');
+        }
+
         function carregarDirecoes() {
             const cont = document.getElementById('direcoesList'); if (!cont) return;
             cont.innerHTML = todasDirecoes.map(d => `<div class="direcao-item"><div class="direcao-header"><span class="direcao-nome"><i class="fas fa-building"></i> ${d}</span></div><div class="direcao-categorias">${todasCategorias.map(c => `<span class="categoria-tag">${c}</span>`).join('')}</div></div>`).join('');
@@ -2089,6 +2259,7 @@
             document.getElementById('configEmailNotif').checked = configuracoes.emailNotif;
             document.getElementById('configTeamsNotif').checked = configuracoes.teamsNotif;
             document.getElementById('configTeamsWebhook').value = configuracoes.teamsWebhook || '';
+            renderizarGestoresLojas();
         }
         function salvarConfiguracoes() {
             configuracoes.emailAdmin = document.getElementById('configEmailAdmin').value;
@@ -2098,6 +2269,58 @@
             localStorage.setItem('configuracoes', JSON.stringify(configuracoes));
             mostrarNotificacao('Configurações salvas', 'success');
         }
+
+        // ============================================================
+        // GESTÃO VISUAL DOS GESTORES DE LOJA
+        // ============================================================
+        async function adicionarGestorLoja() {
+            if (usuarioAtual?.perfil !== 'Administrador') { mostrarNotificacao('Apenas Administrador pode gerir isto.', 'error'); return; }
+            const email = document.getElementById('gestorEmailInput').value.trim().toLowerCase();
+            const lojasRaw = document.getElementById('gestorLojasInput').value.trim();
+            if (!email || !lojasRaw) { mostrarNotificacao('Preenche email e lojas.', 'error'); return; }
+            const lojas = lojasRaw.split(',').map(s => s.trim()).filter(Boolean);
+            const invalidas = lojas.filter(l => !todasDirecoes.includes(l));
+            if (invalidas.length > 0) { mostrarNotificacao(`Lojas inválidas: ${invalidas.join(', ')}`, 'error'); return; }
+            showLoading();
+            const ok = await guardarGestorLojaNoSharePoint(email, lojas);
+            GESTORES_LOJA[email] = lojas;
+            try { localStorage.setItem('gestoresLojas', JSON.stringify(GESTORES_LOJA)); } catch (e) {}
+            renderizarGestoresLojas();
+            document.getElementById('gestorEmailInput').value = '';
+            document.getElementById('gestorLojasInput').value = '';
+            hideLoading();
+            if (ok) { mostrarNotificacao(`✅ ${email} agora vê: ${lojas.join(', ')}`, 'success'); filtrarRequisicoes(); carregarAprovacoes(); }
+            else mostrarNotificacao('⚠️ Guardado localmente, mas falhou no SharePoint.', 'warning');
+        }
+        async function removerGestorLoja(email) {
+            if (usuarioAtual?.perfil !== 'Administrador') return;
+            if (!confirm(`Remover o acesso de ${email}?`)) return;
+            showLoading();
+            const ok = await removerGestorLojaDoSharePoint(email);
+            delete GESTORES_LOJA[email];
+            try { localStorage.setItem('gestoresLojas', JSON.stringify(GESTORES_LOJA)); } catch (e) {}
+            renderizarGestoresLojas();
+            filtrarRequisicoes(); carregarAprovacoes();
+            hideLoading();
+            if (ok) mostrarNotificacao('Removido do SharePoint.', 'success');
+            else mostrarNotificacao('Removido apenas localmente (erro no SharePoint).', 'warning');
+        }
+        function renderizarGestoresLojas() {
+            const cont = document.getElementById('gestoresLojasList');
+            if (!cont) return;
+            const entradas = Object.entries(GESTORES_LOJA);
+            if (entradas.length === 0) { cont.innerHTML = '<div style="padding:12px; color:#999; text-align:center; background:#f5f5f5; border-radius:8px;">Nenhum gerente configurado.</div>'; return; }
+            cont.innerHTML = entradas.map(([email, lojas]) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8f9fa; border-radius:8px; margin-bottom:6px; border-left:4px solid var(--primary);">
+                    <div>
+                        <strong>${email}</strong>
+                        <div style="font-size:12px; color:#666; margin-top:3px;"><i class="fas fa-store"></i> ${lojas.join(' · ')}</div>
+                    </div>
+                    <button class="btn-small btn-reject" onclick="removerGestorLoja('${email}')"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
         function carregarUtilizadores() {
             const tbody = document.getElementById('tabelaUtilizadores'); if (!tbody) return;
             const utilizadoresLista = Object.entries(perfisManuais).map(([email, perfil]) => ({ nome: email.split('@')[0].replace(/\./g, ' ').replace(/\b\w/g, l => l.toUpperCase()), email: email, perfil: perfil }));
@@ -2121,6 +2344,7 @@
             if (aba === 'dashboard' && moduloAtual === 'recrutamento') { carregarDashboardTempos(); carregarDashboardStatus(); atualizarKPIs(); atualizarGraficos(); }
             if (aba === 'aprovacoes' && moduloAtual === 'recrutamento') carregarAprovacoes();
             if (aba === 'utilizadores') carregarUtilizadores();
+            if (aba === 'configuracoes') renderizarGestoresLojas();
         }
         function handleFileSelect(files) {
             const maxSize = 100 * 1024 * 1024;
@@ -2258,6 +2482,7 @@
             abrirModal('modalNovaRequisicao');
             document.getElementById('campoSubstituicao').style.display = tipo === 'substituicao' ? 'block' : 'none';
             document.getElementById('campoReforco').style.display = tipo === 'reforco_quadro' ? 'block' : 'none';
+            aplicarRestricoesDirecao();
         }
         function editarRequisicao(id) {
             const req = requisicoes.find(r => r.id == id);
@@ -2640,8 +2865,33 @@
         function isAprovador() { if (!usuarioAtual) return false; return PERFIS_QUE_APROVAM.includes(usuarioAtual.perfil); }
         function podeFinalizarRecrutamento(req) { if (!usuarioAtual) return false; if (req.status !== 'em_recrutamento') return false; return (usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Administrador'); }
         function podeConfirmarAtendimento(req) { if (!usuarioAtual) return false; if (req.status !== 'aguardando_confirmacao_solicitante') return false; return (usuarioAtual.email === req.criadoPorEmail || usuarioAtual.perfil === 'Administrador'); }
-        function podeVerRequisicao(req) { if (!usuarioAtual) return false; if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return true; if (isAprovador() && req.status === 'em_recrutamento') return true; return req.criadoPorEmail === usuarioAtual.email; }
-        function filtrarRequisicoesVisiveis(lista) { if (!usuarioAtual) return []; if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return lista; if (isAprovador()) return lista.filter(req => req.criadoPorEmail === usuarioAtual.email || req.status === 'em_recrutamento'); return lista.filter(req => req.criadoPorEmail === usuarioAtual.email); }
+
+        // ============================================================
+        // VISIBILIDADE — GESTORES DE LOJA VÊEM APENAS AS LOJAS QUE GEREM AGORA
+        // ============================================================
+        function podeVerRequisicao(req) {
+            if (!usuarioAtual) return false;
+            if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return true;
+            const lojasGeridas = getLojasGeridas(usuarioAtual.email);
+            if (lojasGeridas.length > 0) {
+                const dir = String(req.direcao || '').trim().toLowerCase();
+                return lojasGeridas.some(l => String(l).trim().toLowerCase() === dir);
+            }
+            if (isAprovador() && req.status === 'em_recrutamento') return true;
+            return req.criadoPorEmail === usuarioAtual.email;
+        }
+        function filtrarRequisicoesVisiveis(lista) {
+            if (!usuarioAtual) return [];
+            if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return lista;
+            const lojasGeridas = getLojasGeridas(usuarioAtual.email);
+            if (lojasGeridas.length > 0) {
+                const normalizar = s => String(s || '').trim().toLowerCase();
+                return lista.filter(req => lojasGeridas.some(l => normalizar(l) === normalizar(req.direcao)));
+            }
+            if (isAprovador()) return lista.filter(req => req.criadoPorEmail === usuarioAtual.email || req.status === 'em_recrutamento');
+            return lista.filter(req => req.criadoPorEmail === usuarioAtual.email);
+        }
+
         function utilizadorJaAprovou(req) { if (!req.historicoComentarios) return false; return req.historicoComentarios.some(reg => reg.acao === 'aprovar' && reg.usuario === usuarioAtual.nome && reg.perfil === usuarioAtual.perfil); }
         function podeAprovarStatus(req) { if (usuarioAtual.perfil === 'Administrador') return (req.status === 'em_validacao_rh' || req.status === 'em_validacao_financas' || req.status === 'em_validacao_director'); else if (usuarioAtual.perfil === 'RH') return (req.status === 'em_validacao_rh'); else if (usuarioAtual.perfil === 'Controlo de Gestão') return (req.status === 'em_validacao_financas'); else if (usuarioAtual.perfil === 'Director Geral') return (req.status === 'em_validacao_director'); return false; }
         function podeEditarRequisicao(req) { if (!usuarioAtual) return false; if (usuarioAtual.perfil === 'Administrador') return true; if (req.status === 'devolvida_solicitante' && usuarioAtual.email === req.criadoPorEmail) return true; if (usuarioAtual.perfil === 'RH' && req.status === 'em_validacao_rh') return true; if (usuarioAtual.perfil === 'Controlo de Gestão' && req.status === 'em_validacao_financas') return true; if (usuarioAtual.perfil === 'Director Geral' && req.status === 'em_validacao_director') return true; if (utilizadorJaAprovou(req)) return false; return false; }
@@ -2652,6 +2902,7 @@
             btnNova.style.display = podeCriar ? 'block' : 'none';
             if (podeCriar) btnNova.setAttribute('data-tooltip', 'Criar nova requisição de vaga');
             atualizarBotaoPastaRequisicao();
+            aplicarRestricoesDirecao();
         }
         function getProximoStatus(statusAtual) { const proximo = { 'em_validacao_rh': 'em_validacao_financas', 'em_validacao_financas': 'em_validacao_director', 'em_validacao_director': 'em_recrutamento' }; return proximo[statusAtual] || statusAtual; }
         function calcularTempoEmMilissegundos(dataInicio, dataFim) { if (!dataInicio) return null; const inicio = new Date(dataInicio); const fim = dataFim ? new Date(dataFim) : new Date(); return Math.abs(fim - inicio); }
@@ -2689,7 +2940,7 @@
         }
         function carregarDashboardTempos() {
             const container = document.getElementById('temposDashboard'); if (!container) return;
-            const todasRequisicoes = requisicoes;
+            const todasRequisicoes = filtrarRequisicoesVisiveis(requisicoes);
             const aprovadasSemRecrutamento = todasRequisicoes.filter(r => r.status === 'aprovada' && !r.dataInicioRecrutamento);
             let totalTempoRH = 0, totalTempoCG = 0, totalTempoDir = 0, totalTempoRecrutamento = 0;
             let countRH = 0, countCG = 0, countDir = 0, countRecrutamento = 0;
@@ -2718,7 +2969,7 @@
         }
         function carregarDashboardStatus() {
             const container = document.getElementById('statusDashboard'); if (!container) return;
-            const todasRequisicoes = requisicoes;
+            const todasRequisicoes = filtrarRequisicoesVisiveis(requisicoes);
             const total = todasRequisicoes.length;
             const statusCounts = { 'em_validacao_rh': todasRequisicoes.filter(r => r.status === 'em_validacao_rh').length, 'em_validacao_financas': todasRequisicoes.filter(r => r.status === 'em_validacao_financas').length, 'em_validacao_director': todasRequisicoes.filter(r => r.status === 'em_validacao_director').length, 'aprovada': todasRequisicoes.filter(r => r.status === 'aprovada').length, 'rejeitada': todasRequisicoes.filter(r => r.status === 'rejeitada').length, 'em_recrutamento': todasRequisicoes.filter(r => r.status === 'em_recrutamento').length, 'aguardando_confirmacao_solicitante': todasRequisicoes.filter(r => r.status === 'aguardando_confirmacao_solicitante').length, 'concluida': todasRequisicoes.filter(r => r.status === 'concluida').length, 'devolvida_solicitante': todasRequisicoes.filter(r => r.status === 'devolvida_solicitante').length };
             const maxCount = Math.max(...Object.values(statusCounts), 1);
@@ -2756,11 +3007,9 @@
                 if (!account) { console.warn('⚠️ Usuário não autenticado para SharePoint'); requisicoes = []; hideLoading(); filtrarRequisicoes(); carregarAprovacoes(); atualizarKPIs(); atualizarGraficos(); carregarDashboardTempos(); carregarDashboardStatus(); mostrarNotificacao('⚠️ Modo offline - dados salvos localmente', 'warning'); return; }
                 const token = await getSharePointToken();
                 const siteId = await getSiteId();
-                console.log('✅ Site ID obtido:', siteId);
                 const listCheckUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}`;
                 const listCheck = await fetch(listCheckUrl, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
                 if (!listCheck.ok) {
-                    console.warn('⚠️ Lista não encontrada:', listCheck.status);
                     requisicoes = [];
                     hideLoading();
                     filtrarRequisicoes(); carregarAprovacoes(); atualizarKPIs(); atualizarGraficos(); carregarDashboardTempos(); carregarDashboardStatus();
@@ -2771,24 +3020,22 @@
                 const listResponse = await fetch(listUrl, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
                 if (listResponse.ok) {
                     const listData = await listResponse.json();
-                    console.log(`📋 Encontrados ${listData.value?.length || 0} itens na lista`);
                     if (listData.value && listData.value.length > 0) {
                         const requisicoesMap = new Map();
                         for (const item of listData.value) {
                             const f = item.fields;
                             if (!requisicoesMap.has(item.id)) {
                                 let ficheiros = [], historicoComentarios = [];
-                                try { ficheiros = f.Ficheiros ? JSON.parse(f.Ficheiros) : []; } catch (e) { console.warn('Erro ao parsear Ficheiros:', e); }
-                                try { historicoComentarios = f.HistoricoComentarios ? JSON.parse(f.HistoricoComentarios) : []; } catch (e) { console.warn('Erro ao parsear HistoricoComentarios:', e); }
+                                try { ficheiros = f.Ficheiros ? JSON.parse(f.Ficheiros) : []; } catch (e) {}
+                                try { historicoComentarios = f.HistoricoComentarios ? JSON.parse(f.HistoricoComentarios) : []; } catch (e) {}
                                 requisicoesMap.set(item.id, { id: item.id, codigo: f.Title || `REQ-${item.id}`, funcao: f.Funcao || "", direcao: f.Direcao || "", area: f.Area || "", quantidade: f.Quantidade || 1, status: f.Status || "em_validacao_rh", tipo: f.Typo || "novo_cargo", dataCriacao: f.Created || new Date().toISOString(), dataInicio: f.DataInicio || new Date().toISOString(), criadoPor: f.CriadoPor || "", criadoPorEmail: f.CriadoPorEmail || "", observacoes: f.Observacoes || "", colaboradorSubstituir: f.ColaboradorSubstituir || "", motivoSubstituicao: f.MotivoSubstituicao || "", justificativaReforco: f.JustificativaReforco || "", ficheiros: ficheiros, historicoComentarios: historicoComentarios, dataInicioRecrutamento: f.DataInicioRecrutamento || null, dataFimRecrutamento: f.DataFimRecrutamento || null });
                             }
                         }
                         requisicoes = Array.from(requisicoesMap.values());
                         mostrarNotificacao(`✅ Carregadas ${requisicoes.length} requisições do SharePoint`, 'success');
-                    } else { requisicoes = []; console.log('📋 Nenhuma requisição encontrada na lista'); }
-                } else { console.error('❌ Erro ao carregar lista:', listResponse.status); requisicoes = []; mostrarNotificacao('⚠️ Erro ao carregar dados do SharePoint', 'warning'); }
+                    } else { requisicoes = []; }
+                } else { requisicoes = []; mostrarNotificacao('⚠️ Erro ao carregar dados do SharePoint', 'warning'); }
             } catch (error) {
-                console.error('❌ Erro ao carregar requisições do SharePoint:', error);
                 requisicoes = [];
                 mostrarNotificacao('⚠️ Erro de conexão com SharePoint. Usando dados locais.', 'warning');
                 if (carregarRequisicoesFallback()) mostrarNotificacao('📂 Dados carregados do cache local', 'info');
@@ -2805,7 +3052,7 @@
                 if (req.historicoComentarios && req.historicoComentarios.length > 0) fields["HistoricoComentarios"] = JSON.stringify(req.historicoComentarios);
                 const createResponse = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listName}/items`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ fields: fields }) });
                 if (createResponse.ok) { const newItem = await createResponse.json(); req.id = newItem.id; mostrarNotificacao(`✅ Requisição ${req.codigo} salva no SharePoint!`, 'success'); return true; }
-                else { const errorText = await createResponse.text(); console.error('❌ Erro ao salvar:', createResponse.status, errorText); mostrarNotificacao(`⚠️ Erro ao salvar no SharePoint: ${createResponse.status}`, 'error'); salvarRequisicaoLocalmente(req); return false; }
+                else { console.error('❌ Erro ao salvar:', createResponse.status); mostrarNotificacao(`⚠️ Erro ao salvar no SharePoint: ${createResponse.status}`, 'error'); salvarRequisicaoLocalmente(req); return false; }
             } catch (error) { console.error('❌ Erro ao salvar no SharePoint:', error); mostrarNotificacao('⚠️ Erro de conexão. Dados salvos localmente.', 'warning'); salvarRequisicaoLocalmente(req); return false; }
         }
         async function atualizarRequisicaoNoSharePoint(req) {
@@ -2983,7 +3230,6 @@
                     if (response.ok) { const data = await response.json(); if (data.value && data.value.length > 0) { avaliacoesSalvas = data.value.map(item => { const f = item.fields; let competencias = [], medidas = []; try { competencias = JSON.parse(f.Competencias || '[]'); } catch (e) {} try { const m = f.Medidas || ''; medidas = m.split('\n').filter(l => l.trim()).map(l => { const parts = l.match(/(.*?)\s*\((baixa|media|alta)\)/); if (parts) return { descricao: parts[1].trim(), prioridade: parts[2] }; return { descricao: l.trim(), prioridade: 'media' }; }); } catch (e) {} return { colaborador: { id: f.ColaboradorID || 0, nome: f.ColaboradorNome || '', direcao: f.ColaboradorDirecao || '', departamento: f.ColaboradorDepartamento || '', funcao: f.ColaboradorFuncao || '', admissao: f.ColaboradorAdmissao || '' }, pontosFortes: f.PontosFortes || '', pontosMelhorar: f.PontosMelhorar || '', feedbackGlobal: f.FeedbackGlobal || '', desenvolvimento: f.Desenvolvimento || '', classificacao: f.ClassificacaoFinal || '2', assinatura: f.Assinatura || '', concordancia: f.Concordancia || 'concordo', comentarioAdicional: f.ComentarioAdicional || '', data: f.DataAvaliacao || new Date().toISOString(), avaliador: f.AvaliadorNome || '', avaliadorEmail: f.AvaliadorEmail || '', competencias: competencias, notaFinal: f.NotaFinal || 0, medidas: medidas, id: item.id }; }); } }
                     try { const localData = localStorage.getItem('kero_avaliacoes_v1'); if (localData) { const local = JSON.parse(localData); local.forEach(l => { if (!avaliacoesSalvas.some(a => a.colaborador.id === l.colaborador.id)) avaliacoesSalvas.push(l); }); } } catch (e) {}
                 } catch (error) {
-                    console.error('Erro ao carregar avaliações do SharePoint:', error);
                     try { const localData = localStorage.getItem('kero_avaliacoes_v1'); if (localData) avaliacoesSalvas = JSON.parse(localData); } catch (e) {}
                 }
             }
@@ -3138,15 +3384,14 @@
                                 try { notaDespesa = JSON.parse(f.NotaDespesa || 'null'); } catch (e) {}
                                 return { id: item.id, codigo: f.Title || f.Codigo || '', tipo: f.Typo || '', equipamento: f.Equipamento || '', local: f.Local || '', prioridade: f.Prioridade || 'media', descricao: f.Descricao || '', status: f.Status || 'pendente', data: f.DataCriacao || new Date().toISOString(), solicitante: f.Solicitante || '', email: f.SolicitanteEmail || '', anexos, historico, notaDespesa, valorTotal: f.ValorTotal || 0, diagnostico: f.Diagnostico || '', opcaoResolucao: f.OpcaoResolucao || '', origemRecurso: f.OrigemRecurso || '', detalhesTransferencia: f.DetalhesTransferencia || '', valorTransferencia: f.ValorTransferencia || 0, detalhesConsumo: f.DetalhesConsumo || '', valorConsumo: f.ValorConsumo || 0, fornecedor: f.Fornecedor || '', descricaoCompra: f.DescricaoCompra || '', valorCompra: f.ValorCompra || 0, relatorioExecucao: f.RelatorioExecucao || '', dataExecucao: f.DataExecucao || null, tecnicoResponsavel: f.TecnicoResponsavel || '', dataConclusao: f.DataConclusao || null, parecerCG: f.ParecerCG || '', parecerDiretor: f.ParecerDiretor || '', dataPagamento: f.DataPagamento || null, comprovativo: f.Comprovativo || '' };
                             });
-                            const localIds = new Set(reqs.map(r => r.id));
                             for (const spReq of sharepointReqs) { const idx = reqs.findIndex(r => r.id === spReq.id); if (idx >= 0) reqs[idx] = { ...reqs[idx], ...spReq }; else reqs.push(spReq); }
                             const maxId = reqs.reduce((max, r) => { const num = parseInt(r.id); return isNaN(num) ? max : Math.max(max, num); }, 0);
                             if (maxId >= nextIdM) nextIdM = maxId + 1;
                             salvarM();
                             mostrarNotificacao(`✅ ${sharepointReqs.length} requisições de manutenção carregadas do SharePoint.`, 'success');
                         }
-                    } else { console.warn('⚠️ Não foi possível carregar requisições do SharePoint. Usando dados locais.'); }
-                } catch (error) { console.error('❌ Erro ao carregar requisições de manutenção do SharePoint:', error); mostrarNotificacao('⚠️ Erro ao sincronizar com SharePoint. Dados locais carregados.', 'warning'); }
+                    }
+                } catch (error) { console.error('❌ Erro ao carregar requisições de manutenção do SharePoint:', error); }
             }
             function carregarStock() {
                 stockData = [
@@ -3310,7 +3555,7 @@
                     if (existingItem) { const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items/${existingItem.id}/fields`; const updateResponse = await fetch(updateUrl, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(fields) }); if (!updateResponse.ok) throw new Error(`Erro ao atualizar: ${updateResponse.status}`); }
                     else { const createUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_CONFIG.listaManutencoes}/items`; const createResponse = await fetch(createUrl, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ fields }) }); if (!createResponse.ok) throw new Error(`Erro ao criar: ${createResponse.status}`); const newItem = await createResponse.json(); req.id = newItem.id; }
                     return true;
-                } catch (error) { console.error('❌ Erro ao salvar manutenção no SharePoint:', error); mostrarNotificacao('⚠️ Erro ao salvar no SharePoint. Dados guardados localmente.', 'warning'); return false; }
+                } catch (error) { console.error('❌ Erro ao salvar manutenção no SharePoint:', error); return false; }
             }
             async function novaRequisicaoM(e) {
                 e.preventDefault();
@@ -3320,9 +3565,14 @@
                 const descricao = document.getElementById('manutencaoDescricao').value.trim();
                 if (!tipo || !equipamento || !local || !descricao) { notificarM('Preencha todos os campos obrigatórios!', 'error'); return; }
                 const nova = { id: String(nextIdM++), codigo: gerarCodigoM(), tipo, equipamento, local, prioridade: document.getElementById('manutencaoPrioridade').value, descricao, status: 'pendente', data: new Date().toISOString(), solicitante: usuarioAtual.nome, email: usuarioAtual.email, anexos: requisicaoAnexoM ? [{ nome: requisicaoAnexoM.name, data: requisicaoAnexoM.data }] : [], historico: [{ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Requisição criada' }], notaDespesa: null, valorTotal: 0, diagnostico: '', opcaoResolucao: '', origemRecurso: '', detalhesTransferencia: '', valorTransferencia: 0, detalhesConsumo: '', valorConsumo: 0, fornecedor: '', descricaoCompra: '', valorCompra: 0, relatorioExecucao: '', dataExecucao: null, tecnicoResponsavel: '', dataConclusao: null, parecerCG: '', parecerDiretor: '', dataPagamento: null, comprovativo: '' };
-                const sucesso = await salvarManutencaoNoSharePoint(nova);
-                if (sucesso) { reqs.unshift(nova); salvarM(); fecharModal('modalNovaRequisicaoManutencao'); document.getElementById('formNovaRequisicaoManutencao').reset(); requisicaoAnexoM = null; document.getElementById('requisicaoManutencaoFileList').innerHTML = ''; renderizarRequisicoesM(); carregarDashboardM(); notificarM(`✅ Requisição ${nova.codigo} criada com sucesso no SharePoint!`, 'success'); }
-                else { reqs.unshift(nova); salvarM(); fecharModal('modalNovaRequisicaoManutencao'); document.getElementById('formNovaRequisicaoManutencao').reset(); requisicaoAnexoM = null; document.getElementById('requisicaoManutencaoFileList').innerHTML = ''; renderizarRequisicoesM(); carregarDashboardM(); notificarM(`⚠️ Requisição ${nova.codigo} criada apenas localmente.`, 'warning'); }
+                await salvarManutencaoNoSharePoint(nova);
+                reqs.unshift(nova); salvarM();
+                fecharModal('modalNovaRequisicaoManutencao');
+                document.getElementById('formNovaRequisicaoManutencao').reset();
+                requisicaoAnexoM = null;
+                document.getElementById('requisicaoManutencaoFileList').innerHTML = '';
+                renderizarRequisicoesM(); carregarDashboardM();
+                notificarM(`✅ Requisição ${nova.codigo} criada!`, 'success');
             }
             async function abrirAvaliacaoM(id) {
                 const diagnostico = prompt('Digite o diagnóstico da avaria:'); if (!diagnostico) return;
@@ -3333,10 +3583,10 @@
                 const opcaoSelecionada = opcaoMap[opcao]; if (!opcaoSelecionada) { notificarM('Opção inválida!', 'error'); return; }
                 req.diagnostico = diagnostico;
                 req.opcaoResolucao = opcaoSelecionada;
-                if (opcaoSelecionada === 'com_material') { req.status = 'em_execucao'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Técnico tem material, irá executar o serviço directamente' }); notificarM('✅ Técnico irá executar o serviço directamente.', 'info'); }
-                else if (opcaoSelecionada === 'transferencia') { req.origemRecurso = prompt('Digite a origem do recurso:') || 'N/A'; req.detalhesTransferencia = prompt('Digite os detalhes da transferência:') || 'N/A'; req.valorTransferencia = parseFloat(prompt('Digite o valor estimado:') || 0); req.status = 'aguardando_consumiveis'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Solicitação de transferência de recurso. Aguardando autorização dos Consumíveis.' }); notificarM('📦 Solicitação enviada para autorização.', 'info'); }
-                else if (opcaoSelecionada === 'consumo') { req.detalhesConsumo = prompt('Digite os detalhes do consumo:') || 'N/A'; req.valorConsumo = parseFloat(prompt('Digite o valor estimado:') || 0); req.status = 'aguardando_cg'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Solicitação de consumo de stock interno. Aguardando aprovação do Controlo Gestão.' }); notificarM('📊 Solicitação enviada para Controlo Gestão.', 'info'); }
-                else if (opcaoSelecionada === 'precisa_comprar') { req.fornecedor = prompt('Digite o fornecedor:') || 'N/A'; req.descricaoCompra = prompt('Digite a descrição do material a comprar:') || 'N/A'; req.valorCompra = parseFloat(prompt('Digite o valor estimado:') || 0); req.status = 'aguardando_consumiveis'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Solicitação de compra. Aguardando Consumíveis registar despesas.' }); notificarM('📦 Solicitação enviada para Consumíveis.', 'info'); }
+                if (opcaoSelecionada === 'com_material') { req.status = 'em_execucao'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Técnico tem material, irá executar o serviço directamente' }); }
+                else if (opcaoSelecionada === 'transferencia') { req.origemRecurso = prompt('Digite a origem do recurso:') || 'N/A'; req.detalhesTransferencia = prompt('Digite os detalhes da transferência:') || 'N/A'; req.valorTransferencia = parseFloat(prompt('Digite o valor estimado:') || 0); req.status = 'aguardando_consumiveis'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Solicitação de transferência de recurso.' }); }
+                else if (opcaoSelecionada === 'consumo') { req.detalhesConsumo = prompt('Digite os detalhes do consumo:') || 'N/A'; req.valorConsumo = parseFloat(prompt('Digite o valor estimado:') || 0); req.status = 'aguardando_cg'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Solicitação de consumo de stock interno.' }); }
+                else if (opcaoSelecionada === 'precisa_comprar') { req.fornecedor = prompt('Digite o fornecedor:') || 'N/A'; req.descricaoCompra = prompt('Digite a descrição do material a comprar:') || 'N/A'; req.valorCompra = parseFloat(prompt('Digite o valor estimado:') || 0); req.status = 'aguardando_consumiveis'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Solicitação de compra.' }); }
                 await salvarManutencaoNoSharePoint(req);
                 salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
@@ -3344,7 +3594,7 @@
                 const req = reqs.find(r => r.id === id); if (!req) return;
                 const decisao = confirm(`Autorizar a transferência de recurso para a requisição ${req.codigo}?`);
                 const comentario = prompt('Digite um comentário (opcional):') || 'Autorizado';
-                if (decisao) { req.status = 'em_execucao'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Consumíveis autorizou: ${comentario}` }); notificarM('✅ Autorização concedida! Manutenção pode executar o serviço.', 'success'); }
+                if (decisao) { req.status = 'em_execucao'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Consumíveis autorizou: ${comentario}` }); notificarM('✅ Autorização concedida!', 'success'); }
                 else { req.status = 'reprovada'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Consumíveis reprovou: ${comentario}` }); notificarM('❌ Requisição reprovada.', 'error'); }
                 await salvarManutencaoNoSharePoint(req);
                 salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
@@ -3358,8 +3608,8 @@
                 const total = quantidade * valorUnitario;
                 req.notaDespesa = { fornecedor, data: new Date().toISOString().slice(0, 10), tipoPagamento: 'proforma', itens: [{ desc: descricaoItem, qtd: quantidade, preco: valorUnitario, total }], valorTotal: total, motivo: 'Compra de material', assinatura: usuarioAtual.nome, pagamentoStatus: 'Pendente' };
                 req.fornecedor = fornecedor; req.valorTotal = total; req.status = 'aguardando_cg';
-                req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Registo de despesas: Fornecedor ${req.fornecedor}, Valor ${formatarMoedaM(req.valorTotal)}` });
-                notificarM('✅ Despesas registadas. Enviado para Controlo Gestão.', 'success');
+                req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Registo de despesas: ${req.fornecedor}, ${formatarMoedaM(req.valorTotal)}` });
+                notificarM('✅ Despesas registadas.', 'success');
                 await salvarManutencaoNoSharePoint(req);
                 salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
@@ -3367,8 +3617,8 @@
                 const req = reqs.find(r => r.id === id); if (!req) return;
                 const decisao = confirm(`Aprovar a requisição ${req.codigo}?`);
                 const parecer = prompt('Digite um parecer:') || 'Aprovado';
-                if (decisao) { req.status = 'aguardando_diretor'; req.parecerCG = parecer; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Controlo Gestão aprovou. Enviado para Director Geral.' }); notificarM('✅ Controlo Gestão aprovou. Enviado para o Director Geral.', 'success'); }
-                else { req.status = 'reprovada'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Controlo Gestão reprovou: ${parecer}` }); notificarM('❌ Requisição reprovada.', 'error'); }
+                if (decisao) { req.status = 'aguardando_diretor'; req.parecerCG = parecer; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Controlo Gestão aprovou.' }); notificarM('✅ Enviado para o Director Geral.', 'success'); }
+                else { req.status = 'reprovada'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Reprovou: ${parecer}` }); notificarM('❌ Requisição reprovada.', 'error'); }
                 await salvarManutencaoNoSharePoint(req);
                 salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
@@ -3376,17 +3626,16 @@
                 const req = reqs.find(r => r.id === id); if (!req) return;
                 const decisao = confirm(`Aprovar a requisição ${req.codigo}?`);
                 const parecer = prompt('Digite um parecer:') || 'Aprovado';
-                if (decisao) { req.status = 'aguardando_financas'; req.parecerDiretor = parecer; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Director Geral aprovou. Aguardando pagamento.' }); notificarM('✅ Director Geral aprovou. Aguardando pagamento.', 'success'); }
-                else { req.status = 'reprovada'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Director Geral reprovou: ${parecer}` }); notificarM('❌ Requisição reprovada.', 'error'); }
+                if (decisao) { req.status = 'aguardando_financas'; req.parecerDiretor = parecer; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Director aprovou.' }); notificarM('✅ Aguardando pagamento.', 'success'); }
+                else { req.status = 'reprovada'; req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Reprovou: ${parecer}` }); notificarM('❌ Requisição reprovada.', 'error'); }
                 await salvarManutencaoNoSharePoint(req);
                 salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
             async function abrirFinancasM(id) {
                 const req = reqs.find(r => r.id === id); if (!req) return;
                 const status = confirm(`Confirmar pagamento da requisição ${req.codigo}?`);
-                const comprovativo = prompt('Digite o número do comprovativo:') || 'N/A';
-                if (status) { req.status = 'em_execucao'; req.dataPagamento = new Date().toISOString().slice(0, 10); req.comprovativo = comprovativo; if (req.notaDespesa) { req.notaDespesa.pagamentoStatus = 'Pago'; req.notaDespesa.comprovativo = comprovativo; req.notaDespesa.dataPagamento = new Date().toISOString().slice(0, 10); } req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Pagamento confirmado. Comprovativo: ${comprovativo}` }); notificarM('✅ Pagamento confirmado! Serviço pode ser executado.', 'success'); }
-                else { notificarM('⏳ Pagamento pendente.', 'warning'); }
+                const comprovativo = prompt('Número do comprovativo:') || 'N/A';
+                if (status) { req.status = 'em_execucao'; req.dataPagamento = new Date().toISOString().slice(0, 10); req.comprovativo = comprovativo; if (req.notaDespesa) { req.notaDespesa.pagamentoStatus = 'Pago'; req.notaDespesa.comprovativo = comprovativo; req.notaDespesa.dataPagamento = req.dataPagamento; } req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Pagamento confirmado.` }); notificarM('✅ Pagamento confirmado!', 'success'); }
                 await salvarManutencaoNoSharePoint(req);
                 salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
@@ -3394,18 +3643,18 @@
                 const req = reqs.find(r => r.id === id); if (!req) return;
                 const relatorio = prompt('Digite o relatório de execução:'); if (!relatorio) { notificarM('Relatório obrigatório!', 'error'); return; }
                 req.relatorioExecucao = relatorio; req.dataExecucao = new Date().toISOString().slice(0, 10); req.tecnicoResponsavel = usuarioAtual.nome; req.status = 'aguardando_material';
-                req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Serviço executado. Aguardando confirmação.' });
-                notificarM('✅ Serviço executado! Aguardando confirmação.', 'success');
+                req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: 'Serviço executado.' });
+                notificarM('✅ Serviço executado!', 'success');
                 await salvarManutencaoNoSharePoint(req);
                 salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
             async function abrirConfirmacaoM(id) {
                 const req = reqs.find(r => r.id === id); if (!req) return;
-                const confirmMaterial = confirm(`O MATERIAL foi entregue conforme esperado para a requisição ${req.codigo}?`);
-                const confirmExecucao = confirm(`A EXECUÇÃO do serviço foi realizada com sucesso para a requisição ${req.codigo}?`);
+                const confirmMaterial = confirm(`O MATERIAL foi entregue conforme esperado para ${req.codigo}?`);
+                const confirmExecucao = confirm(`A EXECUÇÃO foi realizada com sucesso para ${req.codigo}?`);
                 if (!confirmMaterial || !confirmExecucao) { req.status = 'reprovada'; notificarM('❌ Requisição reprovada.', 'error'); }
-                else { req.status = 'concluida'; req.dataConclusao = new Date().toISOString(); notificarM('🎉 REQUISIÇÃO CONCLUÍDA COM SUCESSO!', 'success'); }
-                req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Confirmado: Material=${confirmMaterial ? 'OK' : 'NOK'}, Execução=${confirmExecucao ? 'OK' : 'NOK'}` });
+                else { req.status = 'concluida'; req.dataConclusao = new Date().toISOString(); notificarM('🎉 REQUISIÇÃO CONCLUÍDA!', 'success'); }
+                req.historico.push({ data: new Date().toISOString(), usuario: usuarioAtual.nome, acao: `Material=${confirmMaterial?'OK':'NOK'}, Execução=${confirmExecucao?'OK':'NOK'}` });
                 await salvarManutencaoNoSharePoint(req);
                 salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
             }
@@ -3413,15 +3662,14 @@
                 const req = reqs.find(r => r.id === reqId); if (!req || !req.anexos || !req.anexos[idx]) return;
                 const anexo = req.anexos[idx];
                 if (anexo.url) { window.open(anexo.url, '_blank'); return; }
-                if (anexo.data && anexo.data.startsWith('data:')) { const win = window.open('', '_blank'); if (!win) { mostrarNotificacao('⚠️ Bloqueio de pop-up detectado. Permita pop-ups.', 'warning'); return; } win.document.write(`<iframe src="${anexo.data}" style="width:100%;height:100vh;border:none;"></iframe>`); win.document.title = anexo.nome; return; }
-                mostrarNotificacao('❌ Não foi possível visualizar este anexo.', 'error');
+                if (anexo.data && anexo.data.startsWith('data:')) { const win = window.open('', '_blank'); if (!win) { mostrarNotificacao('⚠️ Bloqueio de pop-up.', 'warning'); return; } win.document.write(`<iframe src="${anexo.data}" style="width:100%;height:100vh;border:none;"></iframe>`); win.document.title = anexo.nome; return; }
             }
             function visualizarNotaDespesaM(reqId) {
                 const req = reqs.find(r => r.id === reqId); if (!req || !req.notaDespesa) return;
                 const notaDiv = document.getElementById('notaConteudoManutencao');
                 const nd = req.notaDespesa;
                 const itensHtml = (nd.itens || []).map(i => `<tr><td>${i.desc}</td><td style="text-align:center">${i.qtd}</td><td style="text-align:right">${formatarMoedaM(i.preco)}</td><td style="text-align:right">${formatarMoedaM(i.total)}</td></tr>`).join('');
-                const html = `<div class="nota-detalhes"><table style="width:100%"><tr><td style="width:140px"><strong>Nº Requisição:</strong></td><td>${req.codigo}</td></tr><tr><td><strong>Data Emissão:</strong></td><td>${formatarDataM(nd.data || new Date())}</td></tr><tr><td><strong>Solicitante:</strong></td><td>${req.solicitante}</td></tr><tr><td><strong>Equipamento:</strong></td><td>${req.equipamento}</td></tr><tr><td><strong>Fornecedor:</strong></td><td>${nd.fornecedor || 'N/A'}</td></tr><tr><td><strong>Tipo Documento:</strong></td><td>${nd.tipoPagamento || 'N/A'}</td></tr></table></div><h3>Detalhes da Despesa</h3><table class="nota-itens"><thead><tr><th>Descrição</th><th style="width:60px">Qtd</th><th style="width:120px">Valor Unit.</th><th style="width:120px">Total</th></tr></thead><tbody>${itensHtml || '<tr><td colspan="4">Nenhum item registado</td></tr>'}</tbody><tfoot><tr style="background:#f0f0f0"><td colspan="3" style="text-align:right"><strong>TOTAL</strong></td><td style="text-align:right;font-size:18px"><strong>${formatarMoedaM(nd.valorTotal)}</strong></td></tr></tfoot></table><div class="nota-detalhes"><p><strong>Motivo:</strong> ${nd.motivo || 'N/A'}</p><p><strong>Parecer CG:</strong> ${req.parecerCG || 'N/A'}</p><p><strong>Parecer Director:</strong> ${req.parecerDiretor || 'N/A'}</p><p><strong>Status Pagamento:</strong> ${nd.pagamentoStatus || 'Pendente'}</p>${nd.comprovativo ? `<p><strong>Comprovativo:</strong> ${nd.comprovativo}</p>` : ''}${nd.dataPagamento ? `<p><strong>Data Pagamento:</strong> ${formatarDataM(nd.dataPagamento)}</p>` : ''}</div>`;
+                const html = `<table style="width:100%"><tr><td style="width:140px"><strong>Nº Requisição:</strong></td><td>${req.codigo}</td></tr><tr><td><strong>Data Emissão:</strong></td><td>${formatarDataM(nd.data || new Date())}</td></tr><tr><td><strong>Solicitante:</strong></td><td>${req.solicitante}</td></tr><tr><td><strong>Equipamento:</strong></td><td>${req.equipamento}</td></tr><tr><td><strong>Fornecedor:</strong></td><td>${nd.fornecedor || 'N/A'}</td></tr></table><h3>Detalhes da Despesa</h3><table class="nota-itens"><thead><tr><th>Descrição</th><th style="width:60px">Qtd</th><th style="width:120px">Valor Unit.</th><th style="width:120px">Total</th></tr></thead><tbody>${itensHtml || '<tr><td colspan="4">Nenhum item</td></tr>'}</tbody><tfoot><tr style="background:#f0f0f0"><td colspan="3" style="text-align:right"><strong>TOTAL</strong></td><td style="text-align:right;font-size:18px"><strong>${formatarMoedaM(nd.valorTotal)}</strong></td></tr></tfoot></table><p><strong>Motivo:</strong> ${nd.motivo || 'N/A'}</p><p><strong>Status Pagamento:</strong> ${nd.pagamentoStatus || 'Pendente'}</p>`;
                 notaDiv.innerHTML = html;
                 document.getElementById('notaDespesaManutencao').style.display = 'block';
             }
@@ -3431,17 +3679,16 @@
                 let html = `<div class="req-detalhes-grid"><div><span class="label">Código</span><div class="value"><strong>${req.codigo}</strong></div></div><div><span class="label">Estado</span><div class="value"><span class="status-badge status-${getStatusClassM(req.status)}">${getStatusTextM(req.status)}</span></div></div><div><span class="label">Equipamento</span><div class="value">${req.equipamento}</div></div><div><span class="label">Local</span><div class="value">${req.local || 'N/A'}</div></div><div><span class="label">Tipo</span><div class="value"><span class="type-badge type-${req.tipo}">${req.tipo === 'corretiva' ? 'Correctiva' : 'Preventiva'}</span></div></div><div><span class="label">Prioridade</span><div class="value"><span class="priority-badge priority-${req.prioridade}">${req.prioridade || 'N/A'}</span></div></div><div><span class="label">Solicitante</span><div class="value">${req.solicitante}</div></div><div><span class="label">Data</span><div class="value">${formatarDataHoraM(req.data)}</div></div><div style="grid-column:1/-1;"><span class="label">Descrição</span><div class="value">${req.descricao}</div></div>`;
                 if (req.diagnostico) html += `<div style="grid-column:1/-1;"><span class="label">Diagnóstico</span><div class="value">${req.diagnostico}</div></div>`;
                 if (req.valorTotal) html += `<div><span class="label">Valor Total</span><div class="value"><strong>${formatarMoedaM(req.valorTotal)}</strong></div></div>`;
-                if (req.relatorioExecucao) html += `<div style="grid-column:1/-1;"><span class="label">Relatório de Execução</span><div class="value">${req.relatorioExecucao}</div></div>`;
-                if (req.tecnicoResponsavel) html += `<div><span class="label">Técnico</span><div class="value">${req.tecnicoResponsavel}</div></div>`;
+                if (req.relatorioExecucao) html += `<div style="grid-column:1/-1;"><span class="label">Relatório Execução</span><div class="value">${req.relatorioExecucao}</div></div>`;
                 html += `</div><div style="margin-top:16px;"><span class="label">Anexos</span><div style="margin-top:4px;">${renderAnexosM(req)}</div></div><div style="margin-top:16px;"><span class="label">Histórico</span><div style="margin-top:4px;max-height:200px;overflow-y:auto;">${(req.historico || []).slice().reverse().map(h => `<div class="historico-item"><span class="h-data">${formatarDataHoraM(h.data)}</span> - <strong>${h.usuario}</strong>: ${h.acao}</div>`).join('')}</div></div><div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">${getAcoesM(req)}</div>`;
                 document.getElementById('manutencaoDetalhesConteudo').innerHTML = html;
                 abrirModal('modalDetalhesManutencao');
             }
             function excluirRequisicaoM(id) {
-                if (!confirm('Tem certeza que deseja excluir esta requisição permanentemente?')) return;
+                if (!confirm('Excluir permanentemente?')) return;
                 reqs = reqs.filter(r => r.id !== id);
                 salvarM(); renderizarRequisicoesM(); renderizarAprovacoesM(); carregarDashboardM();
-                notificarM('Requisição excluída com sucesso!', 'info');
+                notificarM('Requisição excluída.', 'info');
             }
             function exportarDadosM() {
                 const data = { requisicoes: reqs, exportedAt: new Date().toISOString(), version: '8.0' };
@@ -3450,42 +3697,29 @@
                 const a = document.createElement('a');
                 a.href = url; a.download = `kero_backup_${new Date().toISOString().slice(0,10)}.json`; a.click();
                 URL.revokeObjectURL(url);
-                notificarM('✅ Dados exportados com sucesso!', 'success');
+                notificarM('✅ Dados exportados!', 'success');
             }
-            function exportarPDFM() { notificarM('📄 Relatório PDF gerado com sucesso!', 'success'); }
-            function exportarExcelM() { notificarM('📊 Relatório Excel gerado com sucesso!', 'success'); }
+            function exportarPDFM() { notificarM('📄 Relatório PDF gerado!', 'success'); }
+            function exportarExcelM() { notificarM('📊 Relatório Excel gerado!', 'success'); }
             function setupDropzoneM(dropId, inputId, listId, setter) {
                 const drop = document.getElementById(dropId), input = document.getElementById(inputId), list = document.getElementById(listId);
                 if (!drop || !input) return;
                 drop.addEventListener('click', () => input.click());
-                drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.borderColor = '#FF9800'; drop.style.background = '#fff3e0'; });
-                drop.addEventListener('dragleave', () => { drop.style.borderColor = '#ffe0b2'; drop.style.background = '#fffcf8'; });
-                drop.addEventListener('drop', e => {
-                    e.preventDefault();
-                    drop.style.borderColor = '#ffe0b2'; drop.style.background = '#fffcf8';
-                    const file = e.dataTransfer.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = ev => { setter({ name: file.name, data: ev.target.result }); if (list) list.innerHTML = `<div class="file-item"><span class="file-name"><i class="fas fa-file"></i> ${file.name}</span><span class="file-remove" onclick="this.parentElement.remove();setter(null);">✕</span></div>`; notificarM(`📎 Ficheiro "${file.name}" anexado!`, 'success'); };
-                        reader.readAsDataURL(file);
-                    }
-                });
                 input.addEventListener('change', e => {
                     if (e.target.files[0]) {
                         const reader = new FileReader();
-                        reader.onload = ev => { setter({ name: e.target.files[0].name, data: ev.target.result }); if (list) list.innerHTML = `<div class="file-item"><span class="file-name"><i class="fas fa-file"></i> ${e.target.files[0].name}</span><span class="file-remove" onclick="this.parentElement.remove();setter(null);">✕</span></div>`; notificarM('📎 Ficheiro anexado!', 'success'); };
+                        reader.onload = ev => { setter({ name: e.target.files[0].name, data: ev.target.result }); if (list) list.innerHTML = `<div class="file-item"><span><i class="fas fa-file"></i> ${e.target.files[0].name}</span><span class="file-remove" onclick="this.parentElement.remove();setter(null);">✕</span></div>`; };
                         reader.readAsDataURL(e.target.files[0]);
                     }
                 });
             }
             async function inicializarM() {
-                console.log('Inicializando módulo Manutenção...');
                 carregarM();
                 await carregarRequisicoesManutencaoDoSharePoint();
                 carregarStock();
                 document.querySelectorAll('#manutencaoSection .section').forEach(s => s.classList.remove('active'));
-                const dashboardSection = document.getElementById('section-dashboard-manutencao');
-                if (dashboardSection) dashboardSection.classList.add('active');
+                const dashSection = document.getElementById('section-dashboard-manutencao');
+                if (dashSection) dashSection.classList.add('active');
                 document.querySelectorAll('.sidebar-manutencao .menu li').forEach(li => {
                     li.removeEventListener('click', li._clickHandler);
                     const handler = function(e) { const section = this.dataset.section; if (section) mudarSecao(section, this); };
@@ -3497,11 +3731,10 @@
                 const btnNova = document.getElementById('btnNovaRequisicaoManutencao');
                 if (btnNova) { btnNova.removeEventListener('click', btnNova._clickHandler); const handler = function(e) { e.preventDefault(); abrirModal('modalNovaRequisicaoManutencao'); }; btnNova._clickHandler = handler; btnNova.addEventListener('click', handler); }
                 const statusSelect = document.getElementById('manutencaoFilterStatus');
-                if (statusSelect) { const statuses = ['all', 'pendente', 'aguardando_consumiveis', 'aguardando_cg', 'aguardando_diretor', 'aguardando_financas', 'em_execucao', 'aguardando_material', 'aguardando_execucao', 'concluida', 'reprovada']; statuses.forEach(s => { const opt = document.createElement('option'); opt.value = s; opt.innerText = getStatusTextM(s); statusSelect.appendChild(opt); }); }
+                if (statusSelect && statusSelect.options.length <= 1) { const statuses = ['all', 'pendente', 'aguardando_consumiveis', 'aguardando_cg', 'aguardando_diretor', 'aguardando_financas', 'em_execucao', 'aguardando_material', 'aguardando_execucao', 'concluida', 'reprovada']; statuses.forEach(s => { const opt = document.createElement('option'); opt.value = s; opt.innerText = getStatusTextM(s); statusSelect.appendChild(opt); }); }
                 document.getElementById('manutencaoFilterSearch').addEventListener('keyup', (e) => { if (e.key === 'Enter') filtrarRequisicoesM(); });
                 setupDropzoneM('dropzoneRequisicaoManutencao', 'requisicaoManutencaoFileInput', 'requisicaoManutencaoFileList', (val) => requisicaoAnexoM = val);
                 document.getElementById('modalStock').addEventListener('click', function(e) { if (e.target === this) fecharModal('modalStock'); });
-                console.log('Módulo Manutenção inicializado com sucesso!');
                 notificarM(`👋 Bem-vindo ao módulo Manutenção, ${usuarioAtual.nome}!`, 'success');
             }
             return { inicializar: inicializarM, filtrarRequisicoes: filtrarRequisicoesM, limparFiltros: limparFiltrosM, filtrarPorStatus: filtrarPorStatusM, abrirAvaliacao: abrirAvaliacaoM, abrirConsumiveisAutorizacao: abrirConsumiveisAutorizacaoM, abrirConsumiveisDespesas: abrirConsumiveisDespesasM, abrirCG: abrirCGM, abrirDiretor: abrirDiretorM, abrirFinancas: abrirFinancasM, abrirExecucao: abrirExecucaoM, abrirConfirmacao: abrirConfirmacaoM, abrirDetalhes: abrirDetalhesM, visualizarAnexo: visualizarAnexoM, visualizarNotaDespesa: visualizarNotaDespesaM, exportarPDF: exportarPDFM, exportarExcel: exportarExcelM, exportarDados: exportarDadosM, excluirRequisicao: excluirRequisicaoM, abrirNovaRequisicao, abrirStock, filtrarStock, limparFiltroStock, imprimirStock, mudarSecao, carregarDashboardM, renderizarRequisicoesM, renderizarAprovacoesM, atualizarRelatoriosM };
@@ -3529,7 +3762,7 @@
                     if (check.ok) { const data = await check.json(); if (data.value && data.value.length > 0) existing = data.value[0]; }
                     if (existing) { const updateUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_LIST}/items/${existing.id}/fields`; const resp = await fetch(updateUrl, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(fields) }); return resp.ok; }
                     else { const createUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_LIST}/items`; const resp = await fetch(createUrl, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ fields }) }); if (resp.ok) { const newItem = await resp.json(); req.id = newItem.id; } return resp.ok; }
-                } catch (e) { console.error('Erro ao salvar no SharePoint:', e); mostrarNotificacao('⚠️ Erro ao salvar no SharePoint. Dados locais guardados.', 'warning'); return false; }
+                } catch (e) { console.error('Erro ao salvar no SharePoint:', e); return false; }
             }
             async function carregarDoSharePoint() {
                 try {
@@ -3540,13 +3773,12 @@
                         const data = await resp.json();
                         if (data.value && data.value.length > 0) {
                             const spReqs = data.value.map(item => { const f = item.fields; let hist = []; try { hist = JSON.parse(f.Historico || '[]'); } catch (e) {} return { id: item.id, codigo: f.Title || f.Codigo || '', tipo: f.Typo || '', colaborador: f.Colaborador || '', funcaoAtual: f.FuncaoAtual || '', novaFuncao: f.NovaFuncao || '', areaAtual: f.AreaAtual || '', novaArea: f.NovaArea || '', salarioAtual: f.SalarioAtual || 0, novoSalario: f.NovoSalario || 0, justificativa: f.Justificativa || '', status: f.Status || 'em_validacao_rh', dataCriacao: f.DataCriacao || new Date().toISOString(), criadoPor: f.CriadoPor || '', criadoPorEmail: f.CriadoPorEmail || '', historicoComentarios: hist }; });
-                            const localIds = new Set(reqs.map(r => r.id));
                             for (const sp of spReqs) { const idx = reqs.findIndex(r => r.id === sp.id); if (idx >= 0) reqs[idx] = { ...reqs[idx], ...sp }; else reqs.push(sp); }
                             salvarLocal();
                             mostrarNotificacao(`✅ ${spReqs.length} requisições de mobilidade carregadas.`, 'success');
                         }
-                    } else { console.warn('Lista MobilidadePromocoes não encontrada ou vazia.'); }
-                } catch (e) { console.error('Erro ao carregar do SharePoint:', e); mostrarNotificacao('⚠️ Erro ao sincronizar com SharePoint. Dados locais carregados.', 'warning'); }
+                    }
+                } catch (e) { console.error('Erro ao carregar do SharePoint:', e); }
                 filtrarRequisicoes(); atualizarKPIs(); carregarDashboardTempos(); carregarDashboardStatus(); renderizarRequisicoes(); renderizarAprovacoes();
             }
             function podeVerTodas() { if (!usuarioAtual) return false; if (usuarioAtual.perfil === 'Administrador') return true; if (EMAILS_ACESSO_TOTAL_MOB.includes(usuarioAtual.email)) return true; return false; }
@@ -3575,12 +3807,12 @@
                 let html = `<button class="btn-small btn-view" onclick="event.stopPropagation();mobApp.visualizar('${req.id}')"><i class="fas fa-eye"></i></button>`;
                 if (req.status === 'devolvida_solicitante' && req.criadoPorEmail === usuarioAtual.email) { html += `<button class="btn-small btn-edit" onclick="event.stopPropagation();mobApp.abrirEditar('${req.id}')"><i class="fas fa-edit"></i></button>`; }
                 if (podeAprovar(req)) {
-                    if (req.status === 'em_validacao_rh' && usuarioAtual.perfil === 'RH') { html += `<button class="btn-small btn-approve" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','aprovar')"><i class="fas fa-check"></i></button>`; html += `<button class="btn-small btn-reject" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','rejeitar')"><i class="fas fa-times"></i></button>`; }
-                    else if (req.status === 'em_validacao_financas' && usuarioAtual.perfil === 'Controlo de Gestão') { html += `<button class="btn-small btn-approve" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','aprovar')"><i class="fas fa-check"></i></button>`; html += `<button class="btn-small btn-reject" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','rejeitar')"><i class="fas fa-times"></i></button>`; }
-                    else if (req.status === 'em_validacao_director' && usuarioAtual.perfil === 'Director Geral') { html += `<button class="btn-small btn-approve" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','aprovar')"><i class="fas fa-check"></i></button>`; html += `<button class="btn-small btn-reject" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','rejeitar')"><i class="fas fa-times"></i></button>`; }
+                    if (req.status === 'em_validacao_rh' && usuarioAtual.perfil === 'RH') { html += `<button class="btn-small btn-approve" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','aprovar')"><i class="fas fa-check"></i></button><button class="btn-small btn-reject" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','rejeitar')"><i class="fas fa-times"></i></button>`; }
+                    else if (req.status === 'em_validacao_financas' && usuarioAtual.perfil === 'Controlo de Gestão') { html += `<button class="btn-small btn-approve" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','aprovar')"><i class="fas fa-check"></i></button><button class="btn-small btn-reject" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','rejeitar')"><i class="fas fa-times"></i></button>`; }
+                    else if (req.status === 'em_validacao_director' && usuarioAtual.perfil === 'Director Geral') { html += `<button class="btn-small btn-approve" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','aprovar')"><i class="fas fa-check"></i></button><button class="btn-small btn-reject" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','rejeitar')"><i class="fas fa-times"></i></button>`; }
                     if (podeDevolver(req)) { html += `<button class="btn-small btn-devolver" onclick="event.stopPropagation();mobApp.abrirComentario('${req.id}','devolver')"><i class="fas fa-undo-alt"></i></button>`; }
                 }
-                if (req.status === 'aprovada' && usuarioAtual.perfil === 'Confirmante') { html += `<button class="btn-small btn-approve" onclick="event.stopPropagation();mobApp.confirmar('${req.id}')" style="background:#9c27b0;"><i class="fas fa-user-check"></i> Confirmar</button>`; html += `<button class="btn-small btn-reject" onclick="event.stopPropagation();mobApp.rejeitarConfirmacao('${req.id}')" style="background:#f44336;"><i class="fas fa-times"></i></button>`; }
+                if (req.status === 'aprovada' && usuarioAtual.perfil === 'Confirmante') { html += `<button class="btn-small btn-approve" onclick="event.stopPropagation();mobApp.confirmar('${req.id}')" style="background:#9c27b0;"><i class="fas fa-user-check"></i> Confirmar</button><button class="btn-small btn-reject" onclick="event.stopPropagation();mobApp.rejeitarConfirmacao('${req.id}')" style="background:#f44336;"><i class="fas fa-times"></i></button>`; }
                 if (req.status === 'aguardando_confirmacao' && usuarioAtual.perfil === 'Administrador') { html += `<button class="btn-small btn-approve" onclick="event.stopPropagation();mobApp.concluir('${req.id}')" style="background:#607d8b;"><i class="fas fa-check-double"></i></button>`; }
                 return html;
             }
@@ -3621,7 +3853,7 @@
                 });
                 const mRH = cRH > 0 ? tRH / cRH : 0, mCG = cCG > 0 ? tCG / cCG : 0, mDir = cDir > 0 ? tDir / cDir : 0, mConf = cConf > 0 ? tConf / cConf : 0;
                 const max = Math.max(mRH, mCG, mDir, mConf, 1);
-                container.innerHTML = `<div class="tempos-fases-container"><div class="fase-card rh" onclick="filtrarPorStatusMob('em_validacao_rh')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-tie"></i> RH</div><div class="fase-tempo">${formatarTempo(mRH)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill roxo-fill" style="width:${(mRH/max)*100}%;background:#4CAF50;">${mRH>0?formatarTempo(mRH):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${cRH}</span></div></div></div><div class="fase-card cg" onclick="filtrarPorStatusMob('em_validacao_financas')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-chart-line"></i> CG</div><div class="fase-tempo">${formatarTempo(mCG)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill roxo-fill" style="width:${(mCG/max)*100}%;background:#FF9800;">${mCG>0?formatarTempo(mCG):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${cCG}</span></div></div></div><div class="fase-card dg" onclick="filtrarPorStatusMob('em_validacao_director')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-tie"></i> Director</div><div class="fase-tempo">${formatarTempo(mDir)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill roxo-fill" style="width:${(mDir/max)*100}%;background:#f44336;">${mDir>0?formatarTempo(mDir):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${cDir}</span></div></div></div><div class="fase-card confirmante" onclick="filtrarPorStatusMob('aguardando_confirmacao')"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-check"></i> Confirmação</div><div class="fase-tempo">${formatarTempo(mConf)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill roxo-fill" style="width:${(mConf/max)*100}%;background:#9c27b0;">${mConf>0?formatarTempo(mConf):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${cConf}</span></div></div></div></div>`;
+                container.innerHTML = `<div class="tempos-fases-container"><div class="fase-card rh"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-tie"></i> RH</div><div class="fase-tempo">${formatarTempo(mRH)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill roxo-fill" style="width:${(mRH/max)*100}%;background:#4CAF50;">${mRH>0?formatarTempo(mRH):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${cRH}</span></div></div></div><div class="fase-card cg"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-chart-line"></i> CG</div><div class="fase-tempo">${formatarTempo(mCG)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill roxo-fill" style="width:${(mCG/max)*100}%;background:#FF9800;">${mCG>0?formatarTempo(mCG):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${cCG}</span></div></div></div><div class="fase-card dg"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-tie"></i> Director</div><div class="fase-tempo">${formatarTempo(mDir)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill roxo-fill" style="width:${(mDir/max)*100}%;background:#f44336;">${mDir>0?formatarTempo(mDir):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${cDir}</span></div></div></div><div class="fase-card confirmante"><div class="fase-header"><div class="fase-titulo"><i class="fas fa-user-check"></i> Confirmação</div><div class="fase-tempo">${formatarTempo(mConf)}</div></div><div class="grafico-barra"><div class="grafico-barra-fill roxo-fill" style="width:${(mConf/max)*100}%;background:#9c27b0;">${mConf>0?formatarTempo(mConf):''}</div></div><div class="fase-detalhes"><div class="detalhe-item"><span class="detalhe-label">Analisadas:</span><span class="detalhe-valor">${cConf}</span></div></div></div></div>`;
             }
             function carregarDashboardStatus() {
                 const container = document.getElementById('mobStatusDashboard'); if (!container) return;
@@ -3629,7 +3861,7 @@
                 const total = lista.length;
                 const counts = { 'em_validacao_rh': lista.filter(r => r.status === 'em_validacao_rh').length, 'em_validacao_financas': lista.filter(r => r.status === 'em_validacao_financas').length, 'em_validacao_director': lista.filter(r => r.status === 'em_validacao_director').length, 'aprovada': lista.filter(r => r.status === 'aprovada').length, 'aguardando_confirmacao': lista.filter(r => r.status === 'aguardando_confirmacao').length, 'concluida': lista.filter(r => r.status === 'concluida').length, 'rejeitada': lista.filter(r => r.status === 'rejeitada').length };
                 const max = Math.max(...Object.values(counts), 1);
-                container.innerHTML = `<div class="status-detalhado-container">${['em_validacao_rh','em_validacao_financas','em_validacao_director','aprovada','aguardando_confirmacao','concluida','rejeitada'].map(s => `<div class="status-card ${s}" onclick="filtrarPorStatusMob('${s}')"><div class="status-header"><div class="status-titulo">${getStatusText(s)}</div><div class="status-quantidade">${counts[s]}</div></div><div class="grafico-barra"><div class="grafico-barra-fill roxo-fill" style="width:${(counts[s]/max)*100}%;background:${s==='em_validacao_rh'?'#4CAF50':s==='em_validacao_financas'?'#FF9800':s==='em_validacao_director'?'#f44336':s==='aprovada'?'#4CAF50':s==='aguardando_confirmacao'?'#9c27b0':s==='concluida'?'#607d8b':'#f44336'};">${counts[s]||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((counts[s]/total)*100).toFixed(1):0}%</span></div></div></div>`).join('')}</div>`;
+                container.innerHTML = `<div class="status-detalhado-container">${['em_validacao_rh','em_validacao_financas','em_validacao_director','aprovada','aguardando_confirmacao','concluida','rejeitada'].map(s => `<div class="status-card ${s}"><div class="status-header"><div class="status-titulo">${getStatusText(s)}</div><div class="status-quantidade">${counts[s]}</div></div><div class="grafico-barra"><div class="grafico-barra-fill roxo-fill" style="width:${(counts[s]/max)*100}%;background:${s==='em_validacao_rh'?'#4CAF50':s==='em_validacao_financas'?'#FF9800':s==='em_validacao_director'?'#f44336':s==='aprovada'?'#4CAF50':s==='aguardando_confirmacao'?'#9c27b0':s==='concluida'?'#607d8b':'#f44336'};">${counts[s]||''}</div></div><div class="status-detalhes"><div class="detalhe-item"><span class="detalhe-label">Percentual:</span><span class="detalhe-valor">${total>0?((counts[s]/total)*100).toFixed(1):0}%</span></div></div></div>`).join('')}</div>`;
             }
             async function criarRequisicao(e) {
                 e.preventDefault();
@@ -3640,18 +3872,18 @@
                 const nova = { id: Date.now().toString(), codigo: gerarCodigo(), tipo, colaborador, funcaoAtual: document.getElementById('mobFuncaoAtual').value.trim(), novaFuncao: document.getElementById('mobNovaFuncao').value.trim(), areaAtual: document.getElementById('mobAreaAtual').value.trim(), novaArea: document.getElementById('mobNovaArea').value.trim(), salarioAtual: parseFloat(document.getElementById('mobSalarioAtual').value) || 0, novoSalario: parseFloat(document.getElementById('mobNovoSalario').value) || 0, justificativa, status: 'em_validacao_rh', dataCriacao: new Date().toISOString(), criadoPor: usuarioAtual.nome, criadoPorEmail: usuarioAtual.email, historicoComentarios: [{ id: Date.now().toString(), acao: 'criacao', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: 'Requisição criada.', data: new Date().toISOString() }] };
                 reqs.unshift(nova);
                 salvarLocal();
-                const ok = await salvarNoSharePoint(nova);
+                await salvarNoSharePoint(nova);
                 fecharModal('modalNovaRequisicaoMob');
                 document.getElementById('formNovaRequisicaoMob').reset();
                 filtrarRequisicoes(); renderizarRequisicoes(); renderizarAprovacoes(); atualizarKPIs(); carregarDashboardTempos(); carregarDashboardStatus();
-                mostrarNotificacao(`✅ Requisição ${nova.codigo} criada${ok ? ' e sincronizada' : ' (local)'}!`, 'success');
+                mostrarNotificacao(`✅ Requisição ${nova.codigo} criada!`, 'success');
             }
             function visualizar(id) {
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
-                if (!podeVerTodas() && req.criadoPorEmail !== usuarioAtual.email) { mostrarNotificacao('Sem permissão para visualizar esta requisição.', 'error'); return; }
+                if (!podeVerTodas() && req.criadoPorEmail !== usuarioAtual.email) { mostrarNotificacao('Sem permissão.', 'error'); return; }
                 window.mobRequisicaoVisualizarAtual = req;
-                const html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;"><div><span class="label" style="font-size:12px;color:#888;">Código</span><div class="value" style="font-weight:600;">${req.codigo}</div></div><div><span class="label" style="font-size:12px;color:#888;">Status</span><div class="value"><span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></div></div><div><span class="label" style="font-size:12px;color:#888;">Tipo</span><div class="value">${getTipoText(req.tipo)}</div></div><div><span class="label" style="font-size:12px;color:#888;">Colaborador</span><div class="value"><strong>${req.colaborador}</strong></div></div><div><span class="label" style="font-size:12px;color:#888;">Função Atual</span><div class="value">${req.funcaoAtual || 'N/A'}</div></div><div><span class="label" style="font-size:12px;color:#888;">Nova Função</span><div class="value">${req.novaFuncao || 'N/A'}</div></div><div><span class="label" style="font-size:12px;color:#888;">Área Atual</span><div class="value">${req.areaAtual || 'N/A'}</div></div><div><span class="label" style="font-size:12px;color:#888;">Nova Área</span><div class="value">${req.novaArea || 'N/A'}</div></div><div><span class="label" style="font-size:12px;color:#888;">Salário Atual</span><div class="value">${formatarMoeda(req.salarioAtual)}</div></div><div><span class="label" style="font-size:12px;color:#888;">Novo Salário</span><div class="value">${formatarMoeda(req.novoSalario)}</div></div><div style="grid-column:1/-1;"><span class="label" style="font-size:12px;color:#888;">Justificativa</span><div class="value" style="background:#f5f5f5;padding:10px;border-radius:6px;">${req.justificativa}</div></div><div style="grid-column:1/-1;"><span class="label" style="font-size:12px;color:#888;">Criado por</span><div class="value">${req.criadoPor} - ${formatarDataHora(req.dataCriacao)}</div></div></div><div style="margin-top:20px;border-top:1px solid #e0e0e0;padding-top:15px;"><h4 style="color:var(--roxo);">Histórico</h4>${(req.historicoComentarios || []).slice().reverse().map(h => `<div class="historico-item" style="border-left-color:${h.acao === 'aprovar' ? '#4CAF50' : h.acao === 'rejeitar' ? '#f44336' : h.acao === 'devolver' ? '#ff9800' : h.acao === 'confirmar' ? '#9c27b0' : '#2196F3'};"><div class="historico-header"><div><strong>${h.acao.toUpperCase()}</strong> - ${h.usuario} (${h.perfil})</div><div>${formatarDataHora(h.data)}</div></div><div class="historico-comentario">${h.comentario}</div></div>`).join('')}</div><div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;">${getBotoesAcao(req)}</div>`;
+                const html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;"><div><span style="font-size:12px;color:#888;">Código</span><div style="font-weight:600;">${req.codigo}</div></div><div><span style="font-size:12px;color:#888;">Status</span><div><span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></div></div><div><span style="font-size:12px;color:#888;">Tipo</span><div>${getTipoText(req.tipo)}</div></div><div><span style="font-size:12px;color:#888;">Colaborador</span><div><strong>${req.colaborador}</strong></div></div><div><span style="font-size:12px;color:#888;">Justificativa</span><div style="background:#f5f5f5;padding:10px;border-radius:6px;grid-column:1/-1;">${req.justificativa}</div></div></div><div style="margin-top:20px;border-top:1px solid #e0e0e0;padding-top:15px;"><h4 style="color:var(--roxo);">Histórico</h4>${(req.historicoComentarios || []).slice().reverse().map(h => `<div class="historico-item"><div class="historico-header"><div><strong>${h.acao.toUpperCase()}</strong> - ${h.usuario} (${h.perfil})</div><div>${formatarDataHora(h.data)}</div></div><div class="historico-comentario">${h.comentario}</div></div>`).join('')}</div><div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;">${getBotoesAcao(req)}</div>`;
                 document.getElementById('mobConteudoModal').innerHTML = html;
                 abrirModal('modalVisualizarMob');
             }
@@ -3685,7 +3917,7 @@
                 req.novoSalario = parseFloat(document.getElementById('mobEditNovoSalario').value) || 0;
                 req.justificativa = document.getElementById('mobEditJustificativa').value.trim();
                 req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'edicao', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: 'Requisição editada.', data: new Date().toISOString() });
-                if (req.status === 'devolvida_solicitante') { req.status = 'em_validacao_rh'; req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'reenvio', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: 'Reenviada para aprovação RH.', data: new Date().toISOString() }); }
+                if (req.status === 'devolvida_solicitante') { req.status = 'em_validacao_rh'; req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'reenvio', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: 'Reenviada.', data: new Date().toISOString() }); }
                 salvarLocal();
                 await salvarNoSharePoint(req);
                 fecharModal('modalEditarRequisicaoMob');
@@ -3710,27 +3942,23 @@
                 const acao = document.getElementById('mobComentarioAcao').value;
                 const coment = document.getElementById('mobComentario').value.trim();
                 const req = reqs.find(r => r.id === id);
-                if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
+                if (!req) { mostrarNotificacao('Não encontrada', 'error'); return; }
                 if ((acao === 'rejeitar' || acao === 'devolver') && !coment) { mostrarNotificacao('Comentário obrigatório!', 'error'); return; }
                 if (acao === 'aprovar') {
                     const prox = req.status === 'em_validacao_rh' ? 'em_validacao_financas' : req.status === 'em_validacao_financas' ? 'em_validacao_director' : req.status === 'em_validacao_director' ? 'aprovada' : req.status;
                     req.status = prox;
                     req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'aprovar', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: coment || 'Aprovado', data: new Date().toISOString() });
-                    mostrarNotificacao(`✅ Requisição ${req.codigo} aprovada!`, 'success');
-                    if (prox === 'aprovada') { await enviarEmail('aleixo.francisco@accordgrouplda.com', `Requisição Aguardando Confirmação - ${req.codigo}`, `<p>A requisição ${req.codigo} foi aprovada por todas as etapas e aguarda a sua confirmação.</p>`); mostrarNotificacao('📧 Confirmante notificado.', 'info'); }
-                } else if (acao === 'rejeitar') {
-                    req.status = 'rejeitada';
-                    req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'rejeitar', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: coment, data: new Date().toISOString() });
-                    mostrarNotificacao(`❌ Requisição ${req.codigo} rejeitada.`, 'error');
-                } else if (acao === 'devolver') {
+                    mostrarNotificacao(`✅ Aprovada!`, 'success');
+                    if (prox === 'aprovada') await enviarEmail('aleixo.francisco@accordgrouplda.com', `Aguardando Confirmação - ${req.codigo}`, `<p>A requisição ${req.codigo} aguarda a sua confirmação.</p>`);
+                } else if (acao === 'rejeitar') { req.status = 'rejeitada'; req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'rejeitar', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: coment, data: new Date().toISOString() }); mostrarNotificacao(`❌ Rejeitada.`, 'error'); }
+                else if (acao === 'devolver') {
                     let novo = '';
                     if (req.status === 'em_validacao_rh') novo = 'devolvida_solicitante';
                     else if (req.status === 'em_validacao_financas') novo = 'em_validacao_rh';
                     else if (req.status === 'em_validacao_director') novo = 'em_validacao_financas';
-                    else { mostrarNotificacao('Não é possível devolver este status.', 'warning'); return; }
+                    else { mostrarNotificacao('Não é possível devolver.', 'warning'); return; }
                     req.status = novo;
                     req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'devolver', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: coment, data: new Date().toISOString() });
-                    mostrarNotificacao(`🔄 Requisição ${req.codigo} devolvida.`, 'warning');
                 }
                 salvarLocal();
                 await salvarNoSharePoint(req);
@@ -3739,35 +3967,34 @@
             }
             async function confirmar(id) {
                 const req = reqs.find(r => r.id === id); if (!req) return;
-                if (usuarioAtual.perfil !== 'Confirmante') { mostrarNotificacao('Apenas o Confirmante pode confirmar.', 'error'); return; }
-                if (req.status !== 'aprovada') { mostrarNotificacao('Requisição não está no estado correto.', 'warning'); return; }
-                if (!confirm(`Deseja confirmar a requisição ${req.codigo}?`)) return;
+                if (usuarioAtual.perfil !== 'Confirmante') { mostrarNotificacao('Apenas o Confirmante.', 'error'); return; }
+                if (req.status !== 'aprovada') { mostrarNotificacao('Estado incorreto.', 'warning'); return; }
+                if (!confirm(`Confirmar ${req.codigo}?`)) return;
                 req.status = 'aguardando_confirmacao';
-                req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'confirmar', usuario: usuarioAtual.nome, perfil: 'Confirmante', comentario: 'Confirmação realizada.', data: new Date().toISOString() });
+                req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'confirmar', usuario: usuarioAtual.nome, perfil: 'Confirmante', comentario: 'Confirmada.', data: new Date().toISOString() });
                 salvarLocal(); await salvarNoSharePoint(req);
-                mostrarNotificacao(`✅ Requisição ${req.codigo} confirmada!`, 'success');
+                mostrarNotificacao(`✅ Confirmada!`, 'success');
                 filtrarRequisicoes(); renderizarRequisicoes(); renderizarAprovacoes(); atualizarKPIs(); carregarDashboardTempos(); carregarDashboardStatus();
             }
             async function rejeitarConfirmacao(id) {
                 const req = reqs.find(r => r.id === id); if (!req) return;
-                if (usuarioAtual.perfil !== 'Confirmante') { mostrarNotificacao('Apenas o Confirmante pode rejeitar.', 'error'); return; }
-                if (req.status !== 'aprovada') { mostrarNotificacao('Requisição não está no estado correto.', 'warning'); return; }
-                const motivo = prompt('Digite o motivo da rejeição:'); if (motivo === null) return;
+                if (usuarioAtual.perfil !== 'Confirmante') return;
+                if (req.status !== 'aprovada') return;
+                const motivo = prompt('Motivo:') || 'Rejeitada'; 
                 req.status = 'rejeitada';
-                req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'rejeitar_confirmacao', usuario: usuarioAtual.nome, perfil: 'Confirmante', comentario: motivo || 'Rejeitada pelo Confirmante', data: new Date().toISOString() });
+                req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'rejeitar_confirmacao', usuario: usuarioAtual.nome, perfil: 'Confirmante', comentario: motivo, data: new Date().toISOString() });
                 salvarLocal(); await salvarNoSharePoint(req);
-                mostrarNotificacao(`❌ Requisição ${req.codigo} rejeitada pelo Confirmante.`, 'error');
+                mostrarNotificacao(`❌ Rejeitada.`, 'error');
                 filtrarRequisicoes(); renderizarRequisicoes(); renderizarAprovacoes(); atualizarKPIs(); carregarDashboardTempos(); carregarDashboardStatus();
             }
             async function concluir(id) {
                 const req = reqs.find(r => r.id === id); if (!req) return;
-                if (usuarioAtual.perfil !== 'Administrador') { mostrarNotificacao('Apenas Administrador pode concluir.', 'error'); return; }
-                if (req.status !== 'aguardando_confirmacao') { mostrarNotificacao('Requisição não está confirmada.', 'warning'); return; }
-                if (!confirm(`Deseja marcar a requisição ${req.codigo} como concluída?`)) return;
+                if (usuarioAtual.perfil !== 'Administrador') return;
+                if (!confirm(`Concluir ${req.codigo}?`)) return;
                 req.status = 'concluida';
-                req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'conclusao', usuario: usuarioAtual.nome, perfil: 'Administrador', comentario: 'Processo concluído.', data: new Date().toISOString() });
+                req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'conclusao', usuario: usuarioAtual.nome, perfil: 'Administrador', comentario: 'Concluída.', data: new Date().toISOString() });
                 salvarLocal(); await salvarNoSharePoint(req);
-                mostrarNotificacao(`✅ Requisição ${req.codigo} concluída!`, 'success');
+                mostrarNotificacao(`✅ Concluída!`, 'success');
                 filtrarRequisicoes(); renderizarRequisicoes(); renderizarAprovacoes(); atualizarKPIs(); carregarDashboardTempos(); carregarDashboardStatus();
             }
             function obterDadosRelatorioMob() {
@@ -3784,48 +4011,41 @@
                 const dados = obterDadosRelatorioMob();
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                const dataRelatorio = new Date().toLocaleDateString('pt-PT');
                 doc.setFontSize(18); doc.setTextColor(106, 27, 154); doc.text('Kero SIR - Mobilidade & Promoções', 14, 20);
-                doc.setFontSize(11); doc.text(`Gerado em: ${dataRelatorio}`, 14, 30); doc.text(`Total: ${dados.length}`, 14, 38);
                 const body = dados.map(r => [r.codigo, r.colaborador, getTipoText(r.tipo), getStatusText(r.status), formatarData(r.dataCriacao)]);
-                doc.autoTable({ startY: 45, head: [['Código', 'Colaborador', 'Tipo', 'Status', 'Data Criação']], body, headStyles: { fillColor: [106, 27, 154] } });
-                doc.save(`mobilidade_${dataRelatorio.replace(/\//g, '-')}.pdf`);
+                doc.autoTable({ startY: 30, head: [['Código', 'Colaborador', 'Tipo', 'Status', 'Data']], body, headStyles: { fillColor: [106, 27, 154] } });
+                doc.save(`mobilidade_${new Date().toISOString().slice(0,10)}.pdf`);
                 mostrarNotificacao('PDF gerado!', 'success');
             }
             function exportarExcel() {
                 const dados = obterDadosRelatorioMob();
-                const dataRelatorio = new Date().toLocaleDateString('pt-PT');
-                const wsData = [['Kero SIR - Mobilidade & Promoções'], [`Gerado: ${dataRelatorio}`], [`Total: ${dados.length}`], [], ['Código', 'Colaborador', 'Tipo', 'Status', 'Função Atual', 'Nova Função', 'Área Atual', 'Nova Área', 'Salário Atual', 'Novo Salário', 'Data Criação']];
-                dados.forEach(r => wsData.push([r.codigo, r.colaborador, getTipoText(r.tipo), getStatusText(r.status), r.funcaoAtual || '', r.novaFuncao || '', r.areaAtual || '', r.novaArea || '', r.salarioAtual || 0, r.novoSalario || 0, formatarData(r.dataCriacao)]));
+                const wsData = [['Código', 'Colaborador', 'Tipo', 'Status', 'Data']];
+                dados.forEach(r => wsData.push([r.codigo, r.colaborador, getTipoText(r.tipo), getStatusText(r.status), formatarData(r.dataCriacao)]));
                 const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.aoa_to_sheet(wsData);
-                XLSX.utils.book_append_sheet(wb, ws, 'Mobilidade');
-                XLSX.writeFile(wb, `mobilidade_${dataRelatorio.replace(/\//g, '-')}.xlsx`);
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Mobilidade');
+                XLSX.writeFile(wb, `mobilidade_${new Date().toISOString().slice(0,10)}.xlsx`);
                 mostrarNotificacao('Excel gerado!', 'success');
             }
             function exportarCSV() {
                 const dados = obterDadosRelatorioMob();
-                const dataRelatorio = new Date().toLocaleDateString('pt-PT');
-                let csv = 'Código;Colaborador;Tipo;Status;Função Atual;Nova Função;Área Atual;Nova Área;Salário Atual;Novo Salário;Data Criação\n';
-                dados.forEach(r => csv += `"${r.codigo}";"${r.colaborador}";"${getTipoText(r.tipo)}";"${getStatusText(r.status)}";"${r.funcaoAtual||''}";"${r.novaFuncao||''}";"${r.areaAtual||''}";"${r.novaArea||''}";${r.salarioAtual||0};${r.novoSalario||0};"${formatarData(r.dataCriacao)}"\n`);
+                let csv = 'Código;Colaborador;Tipo;Status;Data\n';
+                dados.forEach(r => csv += `"${r.codigo}";"${r.colaborador}";"${getTipoText(r.tipo)}";"${getStatusText(r.status)}";"${formatarData(r.dataCriacao)}"\n`);
                 const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `mobilidade_${dataRelatorio.replace(/\//g, '-')}.csv`;
+                link.download = `mobilidade_${new Date().toISOString().slice(0,10)}.csv`;
                 link.click();
                 mostrarNotificacao('CSV gerado!', 'success');
             }
             function exportarIndividual() {
                 const req = window.mobRequisicaoVisualizarAtual;
-                if (!req) { mostrarNotificacao('Nenhuma requisição selecionada', 'warning'); return; }
+                if (!req) return;
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                doc.setFontSize(18); doc.setTextColor(106, 27, 154); doc.text(`Requisição ${req.codigo}`, 14, 20);
-                doc.setFontSize(11); doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-PT')}`, 14, 30);
-                const body = [['Código', req.codigo], ['Tipo', getTipoText(req.tipo)], ['Colaborador', req.colaborador], ['Função Atual', req.funcaoAtual || 'N/A'], ['Nova Função', req.novaFuncao || 'N/A'], ['Área Atual', req.areaAtual || 'N/A'], ['Nova Área', req.novaArea || 'N/A'], ['Salário Atual', formatarMoeda(req.salarioAtual)], ['Novo Salário', formatarMoeda(req.novoSalario)], ['Status', getStatusText(req.status)], ['Justificativa', req.justificativa], ['Criado por', req.criadoPor], ['Data Criação', formatarDataHora(req.dataCriacao)]];
-                doc.autoTable({ startY: 40, body, styles: { fontSize: 10, cellPadding: 4 }, columnStyles: { 0: { fontStyle: 'bold', textColor: [106, 27, 154] } } });
+                doc.setFontSize(18); doc.text(`Requisição ${req.codigo}`, 14, 20);
+                const body = [['Código', req.codigo], ['Tipo', getTipoText(req.tipo)], ['Colaborador', req.colaborador], ['Status', getStatusText(req.status)], ['Justificativa', req.justificativa]];
+                doc.autoTable({ startY: 30, body });
                 doc.save(`mobilidade_${req.codigo}.pdf`);
-                mostrarNotificacao('PDF exportado!', 'success');
             }
             async function inicializar() {
                 carregarLocal();
@@ -3840,7 +4060,7 @@
                 document.getElementById('mobPaginaAnterior').addEventListener('click', () => { if (pagina > 1) { pagina--; renderizarRequisicoes(); } });
                 document.getElementById('mobPaginaProxima').addEventListener('click', () => { pagina++; renderizarRequisicoes(); });
                 mudarAbaMobilidade('dashboard', document.querySelector('#navMobilidade .nav-item.roxo-active'));
-                mostrarNotificacao('📋 Módulo Mobilidade & Promoções carregado.', 'info');
+                mostrarNotificacao('📋 Módulo Mobilidade carregado.', 'info');
             }
             return { inicializar, visualizar, abrirEditar, abrirComentario, confirmar, rejeitarConfirmacao, concluir, exportarPDF, exportarExcel, exportarCSV, exportarIndividual,
                 filtrarPorStatus: function(status) { filtroStatus = status; document.getElementById('mobFilterStatus').value = status; pagina = 1; renderizarRequisicoes(); mudarAbaMobilidade('requisicoes', document.querySelector('#navMobilidade .nav-item:nth-child(2)')); },
@@ -3868,113 +4088,32 @@
         function exportarRequisicaoIndividualMob() { mobApp.exportarIndividual(); }
 
         // ============================================================
-        // MÓDULO EAN SCAN - VERSÃO CORRIGIDA E ESTÁVEL
+        // MÓDULO EAN SCAN
         // ============================================================
         const eanApp = (function() {
             const LISTA_EAN = 'EANPRODUTOS';
             const PERMISSAO_PUBLICAR = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
-
-            const MAPA_LOJAS = {
-                "TALATONA":    "Kero Loja Talatona",
-                "KILAMBA":     "Kero Loja Kilamba",
-                "MORRO BENTO": "Kero Loja Morro Bento",
-                "NOVA VIDA":   "Kero Loja Nova Vida",
-                "LUBANGO":     "Kero Loja Lubango",
-                "HUAMBO":      "Kero Loja Huambo",
-                "LOBITO":      "Kero Loja Lobito",
-                "BENGUELA":    "Kero Loja Benguela",
-                "VIANA":       "Kero Loja Viana",
-                "GIKA":        "Kero Loja Gika",
-                "MARTIRES":    "Kero Loja Mártires",
-                "COMB.":       "Kero Loja Combatentes",
-                "CACUACO":     "Kero Loja Cacuaco",
-                "CD ZEE":      "Armazém ZEE",
-                "SONIT":       "Armazém SONIT"
-            };
+            const MAPA_LOJAS = { "TALATONA": "Kero Loja Talatona", "KILAMBA": "Kero Loja Kilamba", "MORRO BENTO": "Kero Loja Morro Bento", "NOVA VIDA": "Kero Loja Nova Vida", "LUBANGO": "Kero Loja Lubango", "HUAMBO": "Kero Loja Huambo", "LOBITO": "Kero Loja Lobito", "BENGUELA": "Kero Loja Benguela", "VIANA": "Kero Loja Viana", "GIKA": "Kero Loja Gika", "MARTIRES": "Kero Loja Mártires", "COMB.": "Kero Loja Combatentes", "CACUACO": "Kero Loja Cacuaco", "CD ZEE": "Armazém ZEE", "SONIT": "Armazém SONIT" };
             const LOJAS_KERO = Object.values(MAPA_LOJAS);
             const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
-
-            let produtos = [];
-            let produtoAtual = null;
-            let historicoPesquisas = [];
-            let editandoPrecos = false;
-            let cameraStream = null;
-            let scanFrameId = null;
-            let _eanItemIdCache = null;
-
-            function log(msg, data = null) { console.log(`[EAN] ${msg}`, data || ''); }
-
-            // ========== PERSISTÊNCIA LOCAL ==========
-            function carregarLocal() {
-                const saved = localStorage.getItem('ean_produtos');
-                if (saved) {
-                    try {
-                        produtos = JSON.parse(saved);
-                        produtos = produtos.map(p => {
-                            LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; });
-                            CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
-                            if (p.iva === undefined) p.iva = 0;
-                            if (p.fornecedor === undefined) p.fornecedor = '';
-                            if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0;
-                            return p;
-                        });
-                        log('Dados carregados do localStorage', produtos.length);
-                        return true;
-                    } catch (e) { log('Cache corrompido', e); }
-                }
-                return false;
-            }
-            function guardarLocal() {
-                try { localStorage.setItem('ean_produtos', JSON.stringify(produtos)); log('Dados guardados no localStorage', produtos.length); }
-                catch (e) { log('Erro ao guardar no localStorage (quota excedida?)', e); notificar('⚠️ Não foi possível guardar todos os dados localmente (espaço insuficiente).', 'warning'); }
-            }
-            function carregarHistoricoLocal() {
-                const hist = localStorage.getItem('ean_historico');
-                if (hist) { try { historicoPesquisas = JSON.parse(hist); if (!Array.isArray(historicoPesquisas)) historicoPesquisas = []; return true; } catch (e) { historicoPesquisas = []; } }
-                return false;
-            }
-            function guardarHistoricoLocal() { localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas)); }
-
-            // ========== UI HELPERS ==========
+            let produtos = [], produtoAtual = null, historicoPesquisas = [], editandoPrecos = false, cameraStream = null, scanFrameId = null, _eanItemIdCache = null;
             function notificar(msg, tipo = 'success') { if (typeof mostrarNotificacao === 'function') mostrarNotificacao(msg, tipo); else alert(msg); }
             function showLoading() { const o = document.getElementById('loadingOverlay'); if (o) o.classList.add('show'); }
             function hideLoading() { const o = document.getElementById('loadingOverlay'); if (o) o.classList.remove('show'); }
             function atualizarBadgeTotal() { const b = document.getElementById('totalProdutosBadge'); if (b) b.textContent = `${produtos.length} produtos`; }
-            function adicionarHistorico(ean) {
-                historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
-                historicoPesquisas.unshift(ean);
-                if (historicoPesquisas.length > 5) historicoPesquisas.pop();
-                guardarHistoricoLocal(); renderizarHistorico();
-            }
+            function adicionarHistorico(ean) { historicoPesquisas = historicoPesquisas.filter(e => e !== ean); historicoPesquisas.unshift(ean); if (historicoPesquisas.length > 5) historicoPesquisas.pop(); localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas)); renderizarHistorico(); }
             function renderizarHistorico() {
-                const area = document.getElementById('historyArea');
-                const container = document.getElementById('historyButtons');
+                const area = document.getElementById('historyArea'), container = document.getElementById('historyButtons');
                 if (!area || !container) return;
                 container.innerHTML = '';
                 if (historicoPesquisas.length === 0) { area.style.display = 'none'; return; }
                 area.style.display = 'flex';
-                historicoPesquisas.forEach(ean => {
-                    const prod = produtos.find(p => p.ean === ean);
-                    const label = prod ? `${prod.nome} (${ean})` : ean;
-                    const btn = document.createElement('button');
-                    btn.className = 'history-btn';
-                    btn.textContent = label;
-                    btn.title = `Pesquisar ${ean}`;
-                    btn.addEventListener('click', () => { document.getElementById('eanInput').value = ean; buscarProduto(ean); });
-                    container.appendChild(btn);
-                });
+                historicoPesquisas.forEach(ean => { const prod = produtos.find(p => p.ean === ean); const label = prod ? `${prod.nome} (${ean})` : ean; const btn = document.createElement('button'); btn.className = 'history-btn'; btn.textContent = label; btn.addEventListener('click', () => { document.getElementById('eanInput').value = ean; buscarProduto(ean); }); container.appendChild(btn); });
             }
-
-            // ========== RENDERIZAÇÃO ==========
+            function carregarLocal() { const saved = localStorage.getItem('ean_produtos'); if (saved) { try { produtos = JSON.parse(saved); produtos = produtos.map(p => { LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; }); CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; }); if (p.iva === undefined) p.iva = 0; if (p.fornecedor === undefined) p.fornecedor = ''; if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0; return p; }); return true; } catch (e) {} } return false; }
+            function guardarLocal() { try { localStorage.setItem('ean_produtos', JSON.stringify(produtos)); } catch (e) { notificar('⚠️ Não foi possível guardar todos os dados localmente.', 'warning'); } }
             function renderizarProduto(prod) {
-                if (!prod) {
-                    const result = document.getElementById('resultContainer'); if (result) result.classList.remove('active');
-                    const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block';
-                    produtoAtual = null;
-                    const btnConc = document.getElementById('btnGuardarConcorrentes'); if (btnConc) btnConc.disabled = true;
-                    const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active');
-                    return;
-                }
+                if (!prod) { const result = document.getElementById('resultContainer'); if (result) result.classList.remove('active'); const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block'; produtoAtual = null; const btnConc = document.getElementById('btnGuardarConcorrentes'); if (btnConc) btnConc.disabled = true; const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active'); return; }
                 produtoAtual = prod;
                 const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'none';
                 const result = document.getElementById('resultContainer'); if (result) result.classList.add('active');
@@ -3983,28 +4122,15 @@
                 const nomeEl = document.getElementById('prodNome'); const eanEl = document.getElementById('prodEan');
                 if (nomeEl) nomeEl.textContent = prod.nome;
                 if (eanEl) eanEl.textContent = `EAN: ${prod.ean}`;
-                atualizarPrecos(prod);
-                renderizarConcorrentes(prod);
-                renderizarStockVertical(prod);
+                atualizarPrecos(prod); renderizarConcorrentes(prod); renderizarStockVertical(prod);
                 sessionStorage.setItem('ean_ultimo_produto', prod.ean);
                 const info = document.getElementById('lastSearchInfo'); if (info) info.textContent = `Última pesquisa: ${prod.nome} (${prod.ean})`;
             }
             function atualizarPrecos(prod) {
                 const displayMap = { prodPrecoKeroDisplay: prod.preco_kero || 0, prodPrecoCustoDisplay: prod.preco_custo || 0, prodIvaDisplay: prod.iva || 0, prodFornecedorDisplay: prod.fornecedor || '', prodVendaMediaDisplay: prod.venda_media_mensal || 0 };
-                Object.keys(displayMap).forEach(id => {
-                    const el = document.getElementById(id); if (!el) return;
-                    const val = displayMap[id];
-                    if (id.includes('Preco') || id === 'prodIvaDisplay') el.textContent = (typeof val === 'number' ? val.toFixed(2) : val) + (id === 'prodIvaDisplay' ? ' %' : ' Kz');
-                    else if (id === 'prodFornecedorDisplay') el.textContent = val || '';
-                    else el.textContent = val;
-                });
+                Object.keys(displayMap).forEach(id => { const el = document.getElementById(id); if (!el) return; const val = displayMap[id]; if (id.includes('Preco') || id === 'prodIvaDisplay') el.textContent = (typeof val === 'number' ? val.toFixed(2) : val) + (id === 'prodIvaDisplay' ? ' %' : ' Kz'); else el.textContent = val || ''; });
                 const inputMap = { prodPrecoKeroInput: prod.preco_kero || 0, prodPrecoCustoInput: prod.preco_custo || 0, prodIvaInput: prod.iva || 0, prodFornecedorInput: prod.fornecedor || '', prodVendaMediaInput: prod.venda_media_mensal || 0 };
-                Object.keys(inputMap).forEach(id => {
-                    const el = document.getElementById(id); if (!el) return;
-                    const val = inputMap[id];
-                    if (id === 'prodFornecedorInput') el.value = val;
-                    else el.value = (typeof val === 'number' ? val.toFixed(2) : val);
-                });
+                Object.keys(inputMap).forEach(id => { const el = document.getElementById(id); if (!el) return; const val = inputMap[id]; if (id === 'prodFornecedorInput') el.value = val; else el.value = (typeof val === 'number' ? val.toFixed(2) : val); });
             }
             function renderizarStockVertical(prod) {
                 const tbody = document.getElementById('stockBody'); if (!tbody) return;
@@ -4020,48 +4146,27 @@
                 grid.innerHTML = html;
             }
             function renderizarTodosProdutos() {
-                log('Renderizar todos os produtos', produtos.length);
                 const container = document.getElementById('productGrid');
-                if (!container) { log('Elemento productGrid não encontrado'); return; }
+                if (!container) return;
                 container.innerHTML = '';
                 if (produtos.length === 0) { container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#999;">Nenhum produto disponível.</div>'; document.getElementById('allProducts').classList.add('active'); return; }
-                produtos.forEach(prod => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    card.innerHTML = `<div class="card-name">${prod.nome}</div><div class="card-ean">EAN: ${prod.ean}</div><div class="card-price">${(prod.preco_kero || 0).toFixed(2)} Kz</div>`;
-                    card.addEventListener('click', () => { renderizarProduto(prod); document.getElementById('eanInput').value = prod.ean; document.getElementById('allProducts').classList.remove('active'); });
-                    container.appendChild(card);
-                });
+                produtos.forEach(prod => { const card = document.createElement('div'); card.className = 'product-card'; card.innerHTML = `<div class="card-name">${prod.nome}</div><div class="card-ean">EAN: ${prod.ean}</div><div class="card-price">${(prod.preco_kero || 0).toFixed(2)} Kz</div>`; card.addEventListener('click', () => { renderizarProduto(prod); document.getElementById('eanInput').value = prod.ean; document.getElementById('allProducts').classList.remove('active'); }); container.appendChild(card); });
                 document.getElementById('allProducts').classList.add('active');
-                log('Produtos renderizados na lista');
             }
-
-            // ========== PESQUISA E SUGESTÕES ==========
             function atualizarSugestoes(termo) {
                 const box = document.getElementById('suggestionsBox'); if (!box) return;
                 if (termo.length < 1) { box.classList.remove('active'); return; }
                 const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()) || p.ean.includes(termo));
                 if (filtrados.length === 0) { box.classList.remove('active'); return; }
                 box.innerHTML = '';
-                filtrados.slice(0, 8).forEach(p => {
-                    const item = document.createElement('div');
-                    item.className = 'suggestion-item';
-                    item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">${p.ean}</span>`;
-                    item.addEventListener('click', () => { renderizarProduto(p); document.getElementById('eanInput').value = p.ean; box.classList.remove('active'); adicionarHistorico(p.ean); });
-                    box.appendChild(item);
-                });
+                filtrados.slice(0, 8).forEach(p => { const item = document.createElement('div'); item.className = 'suggestion-item'; item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">${p.ean}</span>`; item.addEventListener('click', () => { renderizarProduto(p); document.getElementById('eanInput').value = p.ean; box.classList.remove('active'); adicionarHistorico(p.ean); }); box.appendChild(item); });
                 box.classList.add('active');
             }
             function buscarProduto(termo) {
                 const termoNormalizado = termo.replace(/\s/g, '');
                 if (!termoNormalizado) { notificar('Digite um nome ou EAN.', 'error'); return; }
                 let prod = produtos.find(p => p.ean === termoNormalizado);
-                if (!prod) {
-                    const matches = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase().trim()));
-                    if (matches.length === 1) prod = matches[0];
-                    else if (matches.length > 1) { notificar(`Encontrados ${matches.length} produtos. Use as sugestões.`, 'info'); atualizarSugestoes(termo); return; }
-                    else { notificar(`Nenhum produto encontrado para "${termo}".`, 'error'); return; }
-                }
+                if (!prod) { const matches = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase().trim())); if (matches.length === 1) prod = matches[0]; else if (matches.length > 1) { notificar(`Encontrados ${matches.length} produtos.`, 'info'); atualizarSugestoes(termo); return; } else { notificar(`Nenhum produto encontrado.`, 'error'); return; } }
                 if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = prod.ean; adicionarHistorico(prod.ean); }
             }
             function limparPesquisa() {
@@ -4072,48 +4177,29 @@
                 const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active');
                 produtoAtual = null;
                 const btnConc = document.getElementById('btnGuardarConcorrentes'); if (btnConc) btnConc.disabled = true;
-                const info = document.getElementById('lastSearchInfo'); if (info) info.textContent = '';
-                sessionStorage.removeItem('ean_ultimo_produto');
                 document.querySelectorAll('#productPricing .pricing-item input').forEach(inp => inp.style.display = 'none');
                 document.querySelectorAll('#productPricing .pricing-item .value').forEach(val => val.style.display = 'block');
                 const btnEditar = document.getElementById('btnEditarPrecos'); if (btnEditar) btnEditar.textContent = 'Editar';
                 const btnGuardar = document.getElementById('btnGuardarPrecos'); if (btnGuardar) btnGuardar.style.display = 'none';
                 editandoPrecos = false;
                 document.getElementById('eanInput').focus();
-                log('Pesquisa limpa');
             }
-
-            // ========== EDIÇÃO DE PREÇOS ==========
             function guardarPrecosConcorrentes() {
                 if (!produtoAtual) { notificar('Nenhum produto selecionado.', 'error'); return; }
                 const inputs = document.querySelectorAll('.concorrente-input');
                 let valido = true;
-                inputs.forEach(input => {
-                    const concorrente = input.dataset.concorrente;
-                    const valor = parseFloat(input.value);
-                    if (isNaN(valor) || valor < 0) { notificar(`Valor inválido para ${concorrente}. Use número positivo.`, 'error'); valido = false; return; }
-                    produtoAtual.concorrentes[concorrente] = valor;
-                });
+                inputs.forEach(input => { const concorrente = input.dataset.concorrente; const valor = parseFloat(input.value); if (isNaN(valor) || valor < 0) { notificar(`Valor inválido para ${concorrente}.`, 'error'); valido = false; return; } produtoAtual.concorrentes[concorrente] = valor; });
                 if (!valido) return;
                 guardarLocal();
-                notificar('✅ Preços da concorrência guardados localmente!', 'success');
+                notificar('✅ Guardado!', 'success');
             }
             function toggleEdicaoPrecos() {
                 if (!produtoAtual) return;
                 editandoPrecos = !editandoPrecos;
                 const campos = [{ display: 'prodPrecoKeroDisplay', input: 'prodPrecoKeroInput' }, { display: 'prodPrecoCustoDisplay', input: 'prodPrecoCustoInput' }, { display: 'prodIvaDisplay', input: 'prodIvaInput' }, { display: 'prodFornecedorDisplay', input: 'prodFornecedorInput' }, { display: 'prodVendaMediaDisplay', input: 'prodVendaMediaInput' }];
-                const btnEditar = document.getElementById('btnEditarPrecos');
-                const btnGuardar = document.getElementById('btnGuardarPrecos');
-                if (editandoPrecos) {
-                    campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'none'; if (i) i.style.display = 'block'; });
-                    if (btnEditar) btnEditar.textContent = 'Cancelar';
-                    if (btnGuardar) btnGuardar.style.display = 'inline-block';
-                } else {
-                    campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'block'; if (i) i.style.display = 'none'; });
-                    if (btnEditar) btnEditar.textContent = 'Editar';
-                    if (btnGuardar) btnGuardar.style.display = 'none';
-                    atualizarPrecos(produtoAtual);
-                }
+                const btnEditar = document.getElementById('btnEditarPrecos'), btnGuardar = document.getElementById('btnGuardarPrecos');
+                if (editandoPrecos) { campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'none'; if (i) i.style.display = 'block'; }); if (btnEditar) btnEditar.textContent = 'Cancelar'; if (btnGuardar) btnGuardar.style.display = 'inline-block'; }
+                else { campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'block'; if (i) i.style.display = 'none'; }); if (btnEditar) btnEditar.textContent = 'Editar'; if (btnGuardar) btnGuardar.style.display = 'none'; atualizarPrecos(produtoAtual); }
             }
             function guardarPrecosKero() {
                 if (!produtoAtual) return;
@@ -4122,33 +4208,15 @@
                 const iva = parseFloat(document.getElementById('prodIvaInput').value);
                 const fornecedor = document.getElementById('prodFornecedorInput').value.trim();
                 const vendaMedia = parseFloat(document.getElementById('prodVendaMediaInput').value);
-                if (isNaN(precoKero) || precoKero < 0 || isNaN(precoCusto) || precoCusto < 0 || isNaN(iva) || iva < 0 || isNaN(vendaMedia) || vendaMedia < 0) { notificar('Valores inválidos. Use números positivos.', 'error'); return; }
-                produtoAtual.preco_kero = precoKero;
-                produtoAtual.preco_custo = precoCusto;
-                produtoAtual.iva = iva;
-                produtoAtual.fornecedor = fornecedor;
-                produtoAtual.venda_media_mensal = vendaMedia;
+                if (isNaN(precoKero) || precoKero < 0 || isNaN(precoCusto) || precoCusto < 0 || isNaN(iva) || iva < 0 || isNaN(vendaMedia) || vendaMedia < 0) { notificar('Valores inválidos.', 'error'); return; }
+                produtoAtual.preco_kero = precoKero; produtoAtual.preco_custo = precoCusto; produtoAtual.iva = iva; produtoAtual.fornecedor = fornecedor; produtoAtual.venda_media_mensal = vendaMedia;
                 guardarLocal();
-                notificar('✅ Dados do produto atualizados localmente!', 'success');
+                notificar('✅ Atualizado!', 'success');
                 atualizarPrecos(produtoAtual);
                 toggleEdicaoPrecos();
             }
-
-            // ========== CÂMARA E LEITURA ==========
             function redimensionarImagem(imageData, maxLargura = 1000) {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = function() {
-                        let { width, height } = img;
-                        if (width > maxLargura) { height = Math.round(height * (maxLargura / width)); width = maxLargura; }
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width; canvas.height = height;
-                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.9));
-                    };
-                    img.onerror = function() { resolve(imageData); };
-                    img.src = imageData;
-                });
+                return new Promise((resolve) => { const img = new Image(); img.onload = function() { let { width, height } = img; if (width > maxLargura) { height = Math.round(height * (maxLargura / width)); width = maxLargura; } const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.9)); }; img.onerror = function() { resolve(imageData); }; img.src = imageData; });
             }
             function abrirCamera() {
                 const modal = document.getElementById('cameraModal'); if (!modal) return;
@@ -4156,56 +4224,34 @@
                 document.getElementById('cameraStatus').textContent = 'A iniciar câmera...';
                 if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
                 if (scanFrameId) { cancelAnimationFrame(scanFrameId); scanFrameId = null; }
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { document.getElementById('cameraStatus').textContent = 'Câmara não suportada. Use "Carregar Imagem".'; notificar('Câmara não suportada.', 'error'); return; }
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { document.getElementById('cameraStatus').textContent = 'Câmara não suportada.'; return; }
                 if ('BarcodeDetector' in window) iniciarCameraComBarcodeDetector();
                 else iniciarCameraFallback();
             }
             function iniciarCameraComBarcodeDetector() {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } } })
-                .then(stream => {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } } }).then(stream => {
                     cameraStream = stream;
-                    const video = document.getElementById('cameraVideo');
-                    video.srcObject = stream; video.play();
-                    document.getElementById('cameraStatus').textContent = '📷 Aponte para o código (deteção automática)';
+                    const video = document.getElementById('cameraVideo'); video.srcObject = stream; video.play();
+                    document.getElementById('cameraStatus').textContent = '📷 Aponte para o código';
                     const barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39'] });
                     let scanning = true;
-                    function scanFrame() {
-                        if (!scanning || !video.srcObject || !document.getElementById('cameraModal').classList.contains('active')) return;
-                        barcodeDetector.detect(video)
-                            .then(barcodes => {
-                                if (barcodes.length > 0) {
-                                    const code = barcodes[0].rawValue.replace(/\s/g, '');
-                                    document.getElementById('cameraStatus').textContent = '✅ Código lido: ' + code;
-                                    notificar('Código lido: ' + code, 'success');
-                                    fecharCamera();
-                                    document.getElementById('eanInput').value = code;
-                                    buscarProduto(code);
-                                    return;
-                                }
-                            })
-                            .catch(err => {});
-                        scanFrameId = requestAnimationFrame(scanFrame);
-                    }
+                    function scanFrame() { if (!scanning || !video.srcObject) return; barcodeDetector.detect(video).then(barcodes => { if (barcodes.length > 0) { const code = barcodes[0].rawValue.replace(/\s/g, ''); fecharCamera(); document.getElementById('eanInput').value = code; buscarProduto(code); return; } }).catch(err => {}); scanFrameId = requestAnimationFrame(scanFrame); }
                     scanFrame();
                     setTimeout(() => { scanning = false; if (scanFrameId) cancelAnimationFrame(scanFrameId); }, 30000);
-                })
-                .catch(err => { console.error('Erro na câmara com BarcodeDetector:', err); document.getElementById('cameraStatus').textContent = 'Erro com deteção automática, a tentar modo manual...'; iniciarCameraFallback(); });
+                }).catch(err => { iniciarCameraFallback(); });
             }
             function iniciarCameraFallback() {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } } })
-                .then(stream => { cameraStream = stream; const video = document.getElementById('cameraVideo'); video.srcObject = stream; video.play(); document.getElementById('cameraStatus').textContent = '📷 Clique em "Capturar" para ler o código'; notificar('Câmera ativa. Clique em "Capturar" para ler.', 'info'); })
-                .catch(err => { console.error('Erro ao aceder à câmara:', err); document.getElementById('cameraStatus').textContent = 'Câmara indisponível. Use "Carregar Imagem".'; notificar('Câmara indisponível.', 'error'); });
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } } }).then(stream => { cameraStream = stream; const video = document.getElementById('cameraVideo'); video.srcObject = stream; video.play(); document.getElementById('cameraStatus').textContent = '📷 Clique em "Capturar"'; }).catch(err => { document.getElementById('cameraStatus').textContent = 'Câmara indisponível.'; });
             }
             function fecharCamera() {
                 if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
                 if (scanFrameId) { cancelAnimationFrame(scanFrameId); scanFrameId = null; }
                 const video = document.getElementById('cameraVideo'); if (video.srcObject) video.srcObject = null;
                 document.getElementById('cameraModal').classList.remove('active');
-                document.getElementById('cameraStatus').textContent = 'Aguardando...';
             }
             function capturarEscanear() {
                 const video = document.getElementById('cameraVideo');
-                if (!video.srcObject || video.paused) { notificar('A câmera não está ativa. Clique em "Ler Código" primeiro.', 'error'); return; }
+                if (!video.srcObject || video.paused) { notificar('Câmera não está ativa.', 'error'); return; }
                 const canvas = document.getElementById('cameraCanvas');
                 canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
                 const ctx = canvas.getContext('2d'); ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -4213,328 +4259,120 @@
                 decodificarImagemComZXing(imageData);
             }
             function decodificarImagemComZXing(imageData) {
-                notificar('A ler código da imagem...', 'info');
-                if (typeof ZXing !== 'undefined') {
-                    const reader = new ZXing.BrowserMultiFormatReader();
-                    reader.decodeFromImage(undefined, imageData)
-                        .then(result => { const code = result.getText().replace(/\s/g, ''); document.getElementById('eanInput').value = code; buscarProduto(code); fecharCamera(); notificar('Código lido: ' + code, 'success'); })
-                        .catch(err => { console.warn('ZXing falhou, a tentar Quagga:', err); decodificarImagem(imageData); });
-                } else decodificarImagem(imageData);
+                if (typeof ZXing !== 'undefined') { const reader = new ZXing.BrowserMultiFormatReader(); reader.decodeFromImage(undefined, imageData).then(result => { const code = result.getText().replace(/\s/g, ''); document.getElementById('eanInput').value = code; buscarProduto(code); fecharCamera(); }).catch(err => { decodificarImagem(imageData); }); }
+                else decodificarImagem(imageData);
             }
             function decodificarImagem(imageData, tentativas = 0) {
-                if (tentativas === 0) notificar('A ler código da imagem (Quagga)...', 'info');
                 const config = { src: imageData, numOfWorkers: 4, inputStream: { size: 800, singleChannel: true }, decoder: { readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"], multiple: false, tryHarder: true }, locate: true, patchSize: "large" };
                 Quagga.decodeSingle(config, function(result) {
-                    if (result && result.codeResult) { const code = result.codeResult.code.replace(/\s/g, ''); notificar('Código lido: ' + code, 'success'); document.getElementById('eanInput').value = code; buscarProduto(code); fecharCamera(); return; }
-                    if (tentativas < 3) {
-                        const img = new Image();
-                        img.onload = function() {
-                            const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                            canvas.width = img.height; canvas.height = img.width;
-                            ctx.translate(canvas.width / 2, canvas.height / 2); ctx.rotate(Math.PI / 2); ctx.drawImage(img, -img.width / 2, -img.height / 2);
-                            const novaImagem = canvas.toDataURL('image/jpeg', 0.9);
-                            decodificarImagem(novaImagem, tentativas + 1);
-                        };
-                        img.onerror = function() { notificar('Erro ao processar imagem.', 'error'); };
-                        img.src = imageData;
-                    } else notificar('Não foi possível ler o código na imagem.', 'error');
+                    if (result && result.codeResult) { const code = result.codeResult.code.replace(/\s/g, ''); document.getElementById('eanInput').value = code; buscarProduto(code); fecharCamera(); return; }
+                    if (tentativas < 3) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); canvas.width = img.height; canvas.height = img.width; ctx.translate(canvas.width / 2, canvas.height / 2); ctx.rotate(Math.PI / 2); ctx.drawImage(img, -img.width / 2, -img.height / 2); const novaImagem = canvas.toDataURL('image/jpeg', 0.9); decodificarImagem(novaImagem, tentativas + 1); }; img.src = imageData; }
+                    else notificar('Não foi possível ler o código.', 'error');
                 });
             }
-            async function processarImagem(file) {
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = async function(e) { const imagemRedimensionada = await redimensionarImagem(e.target.result); decodificarImagemComZXing(imagemRedimensionada); };
-                reader.readAsDataURL(file);
-            }
-
-            // ========== SHAREPOINT ==========
-            async function obterToken() { log('A obter token SharePoint...'); try { const token = await getSharePointToken(); log('Token obtido com sucesso'); return token; } catch (e) { log('Erro ao obter token', e); throw e; } }
-            async function obterSiteId() { log('A obter Site ID...'); try { const siteId = await getSiteId(); log('Site ID obtido', siteId); return siteId; } catch (e) { log('Erro ao obter Site ID', e); throw e; } }
-
+            async function processarImagem(file) { if (!file) return; const reader = new FileReader(); reader.onload = async function(e) { const imagemRedimensionada = await redimensionarImagem(e.target.result); decodificarImagemComZXing(imagemRedimensionada); }; reader.readAsDataURL(file); }
+            async function obterToken() { return await getSharePointToken(); }
+            async function obterSiteId() { return await getSiteId(); }
             async function _obterMapaEanParaId(token, siteId) {
                 if (_eanItemIdCache) return _eanItemIdCache;
                 const mapa = {};
                 let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
-                while (url) {
-                    const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-                    if (!resp.ok) throw new Error(`Erro ao listar itens existentes: ${resp.status} ${await resp.text()}`);
-                    const data = await resp.json();
-                    (data.value || []).forEach(item => {
-                        const t = item.fields && item.fields.Title;
-                        if (t) mapa[String(t).trim()] = item.id;
-                    });
-                    url = data['@odata.nextLink'] || null;
-                }
+                while (url) { const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } }); if (!resp.ok) throw new Error(`Erro ${resp.status}`); const data = await resp.json(); (data.value || []).forEach(item => { const t = item.fields && item.fields.Title; if (t) mapa[String(t).trim()] = item.id; }); url = data['@odata.nextLink'] || null; }
                 _eanItemIdCache = mapa;
-                log(`Cache de EAN->ID construído: ${Object.keys(mapa).length} itens existentes`);
                 return mapa;
             }
-
-            // ============================================================
-            // CORREÇÃO PRINCIPAL: função que estava em falta
-            // ============================================================
             async function carregarProdutosDoSharePoint() {
-                log('A carregar produtos do SharePoint...');
                 try {
-                    const token  = await obterToken();
+                    const token = await obterToken();
                     const siteId = await obterSiteId();
-                    const listName = LISTA_EAN;
-
                     let allItems = [];
-                    let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?expand=fields&$top=999`;
-
+                    let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
                     while (url) {
-                        const resp = await fetch(url, {
-                            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-                        });
-
-                        if (!resp.ok) {
-                            if (resp.status === 404) {
-                                log('Lista EANPRODUTOS não encontrada no SharePoint');
-                                notificar('⚠️ Lista EANPRODUTOS não encontrada no SharePoint.', 'warning');
-                                return false;
-                            }
-                            if (resp.status === 429 || resp.status === 503) {
-                                const wait = parseInt(resp.headers.get('Retry-After') || '10');
-                                log(`Throttling a ler lista (${resp.status}) — aguardar ${wait}s`);
-                                await new Promise(r => setTimeout(r, wait * 1000));
-                                continue;
-                            }
-                            throw new Error(`Erro ${resp.status}: ${await resp.text()}`);
-                        }
-
+                        const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
+                        if (!resp.ok) { if (resp.status === 404) return false; if (resp.status === 429 || resp.status === 503) { const wait = parseInt(resp.headers.get('Retry-After') || '10'); await new Promise(r => setTimeout(r, wait * 1000)); continue; } throw new Error(`Erro ${resp.status}`); }
                         const data = await resp.json();
                         allItems = allItems.concat(data.value || []);
                         url = data['@odata.nextLink'] || null;
-                        log(`Carregados ${allItems.length} itens do SharePoint...`);
                     }
-
-                    if (allItems.length === 0) {
-                        log('Lista do SharePoint vazia.');
-                        return false;
-                    }
-
+                    if (allItems.length === 0) return false;
                     const carregados = [];
                     for (const item of allItems) {
                         const f = item.fields || {};
                         const ean = String(f.Title || '').trim();
                         if (!ean) continue;
-
                         let stock = {}, concorrentes = {};
                         try { stock = JSON.parse(f.Stock || '{}'); } catch (e) {}
                         try { concorrentes = JSON.parse(f.Concorrentes || '{}'); } catch (e) {}
-
                         LOJAS_KERO.forEach(l => { if (!(l in stock)) stock[l] = 0; });
                         CONCORRENTES.forEach(c => { if (!(c in concorrentes)) concorrentes[c] = 0; });
-
-                        carregados.push({
-                            ean,
-                            nome:                 f.Nome || '',
-                            preco_custo:          Number(f.PrecoCusto) || 0,
-                            preco_kero:           Number(f.PrecoKero) || 0,
-                            iva:                  Number(f.Iva) || 0,
-                            fornecedor:           f.Fornecedor || '',
-                            venda_media_mensal:   Number(f.VendaMediaMensal) || 0,
-                            stock,
-                            concorrentes
-                        });
+                        carregados.push({ ean, nome: f.Nome || '', preco_custo: Number(f.PrecoCusto) || 0, preco_kero: Number(f.PrecoKero) || 0, iva: Number(f.Iva) || 0, fornecedor: f.Fornecedor || '', venda_media_mensal: Number(f.VendaMediaMensal) || 0, stock, concorrentes });
                     }
-
-                    if (carregados.length === 0) {
-                        log('Nenhum produto válido no SharePoint.');
-                        return false;
-                    }
-
+                    if (carregados.length === 0) return false;
                     produtos = carregados;
-
                     _eanItemIdCache = {};
-                    allItems.forEach(it => {
-                        const t = it.fields && it.fields.Title;
-                        if (t) _eanItemIdCache[String(t).trim()] = it.id;
-                    });
-
+                    allItems.forEach(it => { const t = it.fields && it.fields.Title; if (t) _eanItemIdCache[String(t).trim()] = it.id; });
                     guardarLocal();
                     atualizarBadgeTotal();
                     renderizarHistorico();
-                    log(`✅ ${produtos.length} produtos carregados do SharePoint`);
-                    notificar(`✅ ${produtos.length} produtos carregados do SharePoint.`, 'success');
+                    notificar(`✅ ${produtos.length} produtos carregados.`, 'success');
                     return true;
-
-                } catch (error) {
-                    log('❌ Erro ao carregar produtos do SharePoint', error);
-                    notificar('⚠️ Erro ao carregar do SharePoint. A usar cache local.', 'warning');
-                    return false;
-                }
+                } catch (error) { notificar('⚠️ Erro ao carregar do SharePoint.', 'warning'); return false; }
             }
-
             async function publicarProdutosNoSharePoint() {
-                if (produtos.length === 0) { notificar('Não há produtos para publicar.', 'error'); return false; }
-                if (typeof usuarioAtual === 'undefined' ||
-                    (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
-                    notificar('Sem permissão para publicar. Apenas Administrador.', 'error');
-                    return false;
-                }
-
+                if (produtos.length === 0) { notificar('Não há produtos.', 'error'); return false; }
+                if (typeof usuarioAtual === 'undefined' || (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) { notificar('Sem permissão.', 'error'); return false; }
                 showLoading();
-                const token  = await obterToken();
-                const siteId = await obterSiteId();
-                const listName = LISTA_EAN;
-                const total = produtos.length;
-
+                const token = await obterToken(), siteId = await obterSiteId(), listName = LISTA_EAN, total = produtos.length;
                 let mapa = {};
-                try {
-                    const checkUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?$top=1`;
-                    const checkResp = await fetch(checkUrl, { headers: { 'Authorization': `Bearer ${token}` } });
-                    const checkData = await checkResp.json();
-                    if (!checkData.value || checkData.value.length === 0) {
-                        log('Lista vazia — modo inserção em massa');
-                        mapa = {}; _eanItemIdCache = {};
-                    } else {
-                        log('Lista já contém itens — a construir cache EAN→ID...');
-                        mapa = await _obterMapaEanParaId(token, siteId);
-                        log(`Cache construído: ${Object.keys(mapa).length} itens`);
-                    }
-                } catch (e) {
-                    console.warn('[EAN] Falha na verificação inicial:', e);
-                    mapa = {};
-                }
-
-                const BATCH_SIZE  = 20;
-                const MAX_RODADAS = 5;
-                const inicio = Date.now();
+                try { const checkUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?$top=1`; const checkResp = await fetch(checkUrl, { headers: { 'Authorization': `Bearer ${token}` } }); const checkData = await checkResp.json(); if (!checkData.value || checkData.value.length === 0) { mapa = {}; _eanItemIdCache = {}; } else { mapa = await _obterMapaEanParaId(token, siteId); } }
+                catch (e) { mapa = {}; }
+                const BATCH_SIZE = 20, MAX_RODADAS = 5, inicio = Date.now();
                 let processados = 0, sucessos = 0;
-
                 let pendentes = [...produtos];
-
                 for (let rodada = 0; rodada < MAX_RODADAS && pendentes.length > 0; rodada++) {
-                    if (rodada > 0) {
-                        const espera = Math.min(120, Math.pow(2, rodada) * 5);
-                        log(`Rodada ${rodada + 1}: ${pendentes.length} pendentes. Aguardar ${espera}s...`);
-                        notificar(`⏳ Rodada ${rodada + 1}: a retentar ${pendentes.length} produtos (${espera}s)...`, 'info');
-                        await new Promise(r => setTimeout(r, espera * 1000));
-                    }
-
+                    if (rodada > 0) { const espera = Math.min(120, Math.pow(2, rodada) * 5); notificar(`⏳ Rodada ${rodada + 1}: ${pendentes.length} produtos (${espera}s)...`, 'info'); await new Promise(r => setTimeout(r, espera * 1000)); }
                     const falhados = [];
                     const totalRodada = pendentes.length;
-
                     for (let i = 0; i < totalRodada; i += BATCH_SIZE) {
                         const lote = pendentes.slice(i, i + BATCH_SIZE);
-
                         const batchRequests = lote.map((produto, idx) => {
                             const eanKey = String(produto.ean).trim();
                             const existingId = mapa[eanKey];
-                            const fields = {
-                                "Title":            eanKey,
-                                "Nome":             produto.nome || '',
-                                "PrecoCusto":       Number(produto.preco_custo) || 0,
-                                "PrecoKero":        Number(produto.preco_kero) || 0,
-                                "Iva":              Number(produto.iva) || 0,
-                                "Fornecedor":       produto.fornecedor || '',
-                                "VendaMediaMensal": Number(produto.venda_media_mensal) || 0,
-                                "Stock":            JSON.stringify(produto.stock || {}),
-                                "Concorrentes":     JSON.stringify(produto.concorrentes || {})
-                            };
+                            const fields = { "Title": eanKey, "Nome": produto.nome || '', "PrecoCusto": Number(produto.preco_custo) || 0, "PrecoKero": Number(produto.preco_kero) || 0, "Iva": Number(produto.iva) || 0, "Fornecedor": produto.fornecedor || '', "VendaMediaMensal": Number(produto.venda_media_mensal) || 0, "Stock": JSON.stringify(produto.stock || {}), "Concorrentes": JSON.stringify(produto.concorrentes || {}) };
                             const requestId = String(idx + 1);
-                            if (existingId) {
-                                return {
-                                    id: requestId, method: 'PATCH',
-                                    url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`,
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: fields
-                                };
-                            }
-                            return {
-                                id: requestId, method: 'POST',
-                                url: `/sites/${siteId}/lists/${listName}/items`,
-                                headers: { 'Content-Type': 'application/json' },
-                                body: { fields }
-                            };
+                            if (existingId) return { id: requestId, method: 'PATCH', url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`, headers: { 'Content-Type': 'application/json' }, body: fields };
+                            return { id: requestId, method: 'POST', url: `/sites/${siteId}/lists/${listName}/items`, headers: { 'Content-Type': 'application/json' }, body: { fields } };
                         });
-
-                        let tentativa = 0;
-                        let respostas = null;
+                        let tentativa = 0, respostas = null;
                         while (tentativa < 6) {
                             try {
-                                const resp = await fetch('https://graph.microsoft.com/v1.0/$batch', {
-                                    method: 'POST',
-                                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ requests: batchRequests })
-                                });
-
-                                if (resp.status === 429 || resp.status === 503) {
-                                    const wait = parseInt(resp.headers.get('Retry-After') || String(5 * (tentativa + 1)));
-                                    log(`HTTP ${resp.status} — aguardar ${wait}s`);
-                                    await new Promise(r => setTimeout(r, wait * 1000));
-                                    tentativa++;
-                                    continue;
-                                }
-                                if (!resp.ok) {
-                                    console.error('Erro HTTP no batch:', resp.status);
-                                    respostas = null;
-                                    break;
-                                }
+                                const resp = await fetch('https://graph.microsoft.com/v1.0/$batch', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ requests: batchRequests }) });
+                                if (resp.status === 429 || resp.status === 503) { const wait = parseInt(resp.headers.get('Retry-After') || String(5 * (tentativa + 1))); await new Promise(r => setTimeout(r, wait * 1000)); tentativa++; continue; }
+                                if (!resp.ok) { respostas = null; break; }
                                 const data = await resp.json();
                                 respostas = data.responses || [];
                                 break;
-                            } catch (e) {
-                                console.error('Erro de rede no batch:', e);
-                                await new Promise(r => setTimeout(r, 2000 * (tentativa + 1)));
-                                tentativa++;
-                            }
+                            } catch (e) { await new Promise(r => setTimeout(r, 2000 * (tentativa + 1))); tentativa++; }
                         }
-
-                        if (!respostas) {
-                            falhados.push(...lote);
-                        } else {
-                            respostas.forEach((r, idx) => {
-                                const produto = lote[idx];
-                                if (!produto) return;
-
-                                if (r.status >= 200 && r.status < 300) {
-                                    sucessos++;
-                                    processados++;
-                                    if (r.body && r.body.id) {
-                                        mapa[String(produto.ean).trim()] = r.body.id;
-                                    }
-                                } else if (r.status === 429 || r.status === 503 || r.status >= 500) {
-                                    falhados.push(produto);
-                                } else {
-                                    console.error(`Falha permanente produto ${produto.ean}:`, r.status, r.body);
-                                    processados++;
-                                }
-                            });
-                        }
-
+                        if (!respostas) { falhados.push(...lote); }
+                        else { respostas.forEach((r, idx) => { const produto = lote[idx]; if (!produto) return; if (r.status >= 200 && r.status < 300) { sucessos++; processados++; if (r.body && r.body.id) mapa[String(produto.ean).trim()] = r.body.id; } else if (r.status === 429 || r.status === 503 || r.status >= 500) { falhados.push(produto); } else { processados++; } }); }
                         const elapsed = (Date.now() - inicio) / 1000;
                         const rate = processados > 0 ? processados / elapsed : 0;
                         const restantes = total - processados;
                         const etaMin = rate > 0 ? Math.round(restantes / rate / 60) : 0;
                         const badge = document.getElementById('totalProdutosBadge');
-                        if (badge) {
-                            badge.textContent = `Rodada ${rodada+1} · ${processados}/${total} · ETA ${etaMin}min`;
-                        }
+                        if (badge) badge.textContent = `Rodada ${rodada+1} · ${processados}/${total} · ETA ${etaMin}min`;
                     }
-
                     pendentes = falhados;
-                    log(`Rodada ${rodada + 1} concluída. Falhados para próxima rodada: ${pendentes.length}`);
                 }
-
                 _eanItemIdCache = mapa;
                 hideLoading();
                 atualizarBadgeTotal();
-
                 const duracao = Math.round((Date.now() - inicio) / 1000 / 60);
-                const falhasFinais = pendentes.length;
-
-                if (falhasFinais === 0) {
-                    notificar(`✅ ${sucessos} produtos publicados em ${duracao} min.`, 'success');
-                    return true;
-                }
-                notificar(`⚠️ ${sucessos} publicados, ${falhasFinais} falharam após ${MAX_RODADAS} rodadas (${duracao} min).`, 'warning');
+                if (pendentes.length === 0) { notificar(`✅ ${sucessos} produtos publicados em ${duracao} min.`, 'success'); return true; }
+                notificar(`⚠️ ${sucessos} publicados, ${pendentes.length} falharam (${duracao} min).`, 'warning');
                 return false;
             }
-
-            // ========== IMPORTAÇÃO DE EXCEL ==========
             function importarExcel(file) {
                 if (!file) return;
                 const reader = new FileReader();
@@ -4544,8 +4382,7 @@
                         const workbook = XLSX.read(data, { type: 'array' });
                         const sheet = workbook.Sheets[workbook.SheetNames[0]];
                         const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-                        if (!rows || rows.length === 0) { notificar('Excel vazio ou formato inválido.', 'error'); return; }
-
+                        if (!rows || rows.length === 0) { notificar('Excel vazio.', 'error'); return; }
                         const produtosImportados = rows.map(row => {
                             const ean = String(row['EAN'] || '').trim();
                             if (!ean) return null;
@@ -4553,157 +4390,68 @@
                             Object.entries(MAPA_LOJAS).forEach(([colExcel, chaveInterna]) => { stock[chaveInterna] = parseFloat(row[colExcel]) || 0; });
                             const concorrentes = {};
                             CONCORRENTES.forEach(c => { concorrentes[c] = 0; });
-                            return { ean: ean, nome: String(row['Descrição'] || '').trim(), fornecedor: String(row['Nome Fornecedor'] || '').trim(), preco_custo: parseFloat(row['PMM']) || 0, preco_kero: parseFloat(row['PVP']) || 0, iva: parseFloat(row['IVA %']) || 0, venda_media_mensal: parseFloat(row['VENDA Media Mensal']) || 0, stock: stock, concorrentes: concorrentes };
+                            return { ean, nome: String(row['Descrição'] || '').trim(), fornecedor: String(row['Nome Fornecedor'] || '').trim(), preco_custo: parseFloat(row['PMM']) || 0, preco_kero: parseFloat(row['PVP']) || 0, iva: parseFloat(row['IVA %']) || 0, venda_media_mensal: parseFloat(row['VENDA Media Mensal']) || 0, stock, concorrentes };
                         }).filter(p => p !== null && p.nome !== '');
-
-                        if (produtosImportados.length === 0) { notificar('Nenhum produto válido encontrado no Excel.', 'error'); return; }
-
+                        if (produtosImportados.length === 0) { notificar('Nenhum produto válido.', 'error'); return; }
                         produtos = produtosImportados;
                         guardarLocal();
                         atualizarBadgeTotal();
                         renderizarHistorico();
-                        if (produtoAtual) { const atualizado = produtos.find(p => p.ean === produtoAtual.ean); if (atualizado) renderizarProduto(atualizado); else limparPesquisa(); }
-                        notificar(`✅ ${produtos.length} produtos importados do Excel!`, 'success');
-
+                        notificar(`✅ ${produtos.length} produtos importados!`, 'success');
                         if (typeof usuarioAtual !== 'undefined' && (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
-                            notificar('⏳ A publicar automaticamente no SharePoint… aguarde.', 'info');
-                            publicarProdutosNoSharePoint().then(sucesso => {
-                                if (sucesso) notificar(`🎉 ${produtos.length} produtos guardados em ${LISTA_EAN}!`, 'success');
-                                else notificar('⚠️ Alguns produtos falharam. Verifique a consola.', 'warning');
-                            });
-                        } else notificar('⚠️ Importado localmente. Sem permissão para publicar.', 'warning');
-                    } catch (err) { notificar('Erro ao ler o Excel: ' + err.message, 'error'); console.error(err); }
+                            notificar('⏳ A publicar automaticamente...', 'info');
+                            publicarProdutosNoSharePoint().then(sucesso => { if (sucesso) notificar(`🎉 Guardados!`, 'success'); });
+                        }
+                    } catch (err) { notificar('Erro ao ler o Excel: ' + err.message, 'error'); }
                 };
                 reader.readAsArrayBuffer(file);
             }
             function exportarDados() {
-                if (produtos.length === 0) { notificar('Não há produtos para exportar.', 'error'); return; }
+                if (produtos.length === 0) { notificar('Sem produtos.', 'error'); return; }
                 const json = JSON.stringify(produtos, null, 2);
                 const blob = new Blob([json], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url; a.download = `produtos_${new Date().toISOString().slice(0,10)}.json`; a.click();
                 URL.revokeObjectURL(url);
-                notificar(`✅ ${produtos.length} produtos exportados.`, 'success');
             }
-
-            function adicionarProduto() { notificar('Função de adicionar produto manual não implementada. Use importação Excel.', 'info'); }
-
+            function adicionarProduto() { notificar('Use importação Excel.', 'info'); }
             function configurarEventos() {
-                log('Configurando eventos...');
-                const btnBuscar = document.getElementById('btnBuscar');
-                if (btnBuscar) { btnBuscar.addEventListener('click', () => buscarProduto(document.getElementById('eanInput').value)); log('Evento btnBuscar ligado'); }
-                const eanInput = document.getElementById('eanInput');
-                if (eanInput) { eanInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); buscarProduto(e.target.value); } }); log('Evento eanInput (keypress) ligado'); }
-                const btnLimpar = document.getElementById('btnLimpar');
-                if (btnLimpar) { btnLimpar.addEventListener('click', limparPesquisa); log('Evento btnLimpar ligado'); }
-                const btnListar = document.getElementById('btnListarTodos');
-                if (btnListar) { btnListar.removeEventListener('click', renderizarTodosProdutos); btnListar.addEventListener('click', renderizarTodosProdutos); log('Evento btnListarTodos ligado'); }
-                const btnGuardarConc = document.getElementById('btnGuardarConcorrentes');
-                if (btnGuardarConc) { btnGuardarConc.addEventListener('click', guardarPrecosConcorrentes); log('Evento btnGuardarConcorrentes ligado'); }
-                const btnEditar = document.getElementById('btnEditarPrecos');
-                if (btnEditar) { btnEditar.addEventListener('click', toggleEdicaoPrecos); log('Evento btnEditarPrecos ligado'); }
-                const btnGuardarKero = document.getElementById('btnGuardarPrecos');
-                if (btnGuardarKero) { btnGuardarKero.addEventListener('click', guardarPrecosKero); log('Evento btnGuardarPrecos ligado'); }
-                const btnCamera = document.getElementById('btnCamera');
-                if (btnCamera) { btnCamera.addEventListener('click', abrirCamera); log('Evento btnCamera ligado'); }
-                const btnCloseCamera = document.getElementById('btnCloseCamera');
-                if (btnCloseCamera) { btnCloseCamera.addEventListener('click', fecharCamera); log('Evento btnCloseCamera ligado'); }
-                const btnCapture = document.getElementById('btnCapture');
-                if (btnCapture) { btnCapture.addEventListener('click', capturarEscanear); log('Evento btnCapture ligado'); }
-                const btnUploadFromCamera = document.getElementById('btnUploadFromCamera');
-                if (btnUploadFromCamera) { btnUploadFromCamera.addEventListener('click', () => { fecharCamera(); document.getElementById('fileInput').click(); }); log('Evento btnUploadFromCamera ligado'); }
-                const btnUploadImage = document.getElementById('btnUploadImage');
-                if (btnUploadImage) { btnUploadImage.addEventListener('click', () => document.getElementById('fileInput').click()); log('Evento btnUploadImage ligado'); }
-                const fileInput = document.getElementById('fileInput');
-                if (fileInput) { fileInput.addEventListener('change', function(e) { if (this.files.length > 0) processarImagem(this.files[0]); this.value = ''; }); log('Evento fileInput (imagem) ligado'); }
-                const btnImportExcel = document.getElementById('btnImportExcel');
-                if (btnImportExcel) { btnImportExcel.addEventListener('click', () => document.getElementById('fileInputExcel').click()); log('Evento btnImportExcel ligado'); }
-                const fileInputExcel = document.getElementById('fileInputExcel');
-                if (fileInputExcel) { fileInputExcel.addEventListener('change', function(e) { if (this.files.length > 0) importarExcel(this.files[0]); this.value = ''; }); log('Evento fileInputExcel ligado'); }
-                const btnPublicar = document.getElementById('btnPublicarSharePoint');
-                if (btnPublicar) { btnPublicar.addEventListener('click', async function() { log('Botão Publicar clicado'); await publicarProdutosNoSharePoint(); }); log('Evento btnPublicarSharePoint ligado'); }
-                const btnSync = document.getElementById('btnSyncSharePoint');
-                if (btnSync) {
-                    btnSync.addEventListener('click', async function() {
-                        log('Botão Sincronizar clicado');
-                        notificar('A sincronizar com SharePoint...', 'info');
-                        _eanItemIdCache = null;
-                        const success = await carregarProdutosDoSharePoint();
-                        if (success) {
-                            if (document.getElementById('allProducts').classList.contains('active')) renderizarTodosProdutos();
-                            if (produtoAtual) { const atualizado = produtos.find(p => p.ean === produtoAtual.ean); if (atualizado) renderizarProduto(atualizado); }
-                        }
-                    });
-                    log('Evento btnSyncSharePoint ligado');
-                }
-                const btnExportar = document.getElementById('btnExportarDados');
-                if (btnExportar) { btnExportar.addEventListener('click', exportarDados); log('Evento btnExportarDados ligado'); }
-                if (eanInput) {
-                    eanInput.addEventListener('input', (e) => {
-                        const val = e.target.value.trim();
-                        if (val.length >= 2) atualizarSugestoes(val);
-                        else { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); }
-                    });
-                    log('Evento eanInput (input) ligado');
-                }
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.search-area-ean')) { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); }
-                });
-                const btnAdd = document.getElementById('btnAddProduct');
-                if (btnAdd) { btnAdd.addEventListener('click', adicionarProduto); log('Evento btnAddProduct ligado'); }
+                const btnBuscar = document.getElementById('btnBuscar'); if (btnBuscar) btnBuscar.addEventListener('click', () => buscarProduto(document.getElementById('eanInput').value));
+                const eanInput = document.getElementById('eanInput'); if (eanInput) eanInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); buscarProduto(e.target.value); } });
+                const btnLimpar = document.getElementById('btnLimpar'); if (btnLimpar) btnLimpar.addEventListener('click', limparPesquisa);
+                const btnListar = document.getElementById('btnListarTodos'); if (btnListar) btnListar.addEventListener('click', renderizarTodosProdutos);
+                const btnGuardarConc = document.getElementById('btnGuardarConcorrentes'); if (btnGuardarConc) btnGuardarConc.addEventListener('click', guardarPrecosConcorrentes);
+                const btnEditar = document.getElementById('btnEditarPrecos'); if (btnEditar) btnEditar.addEventListener('click', toggleEdicaoPrecos);
+                const btnGuardarKero = document.getElementById('btnGuardarPrecos'); if (btnGuardarKero) btnGuardarKero.addEventListener('click', guardarPrecosKero);
+                const btnCamera = document.getElementById('btnCamera'); if (btnCamera) btnCamera.addEventListener('click', abrirCamera);
+                const btnCloseCamera = document.getElementById('btnCloseCamera'); if (btnCloseCamera) btnCloseCamera.addEventListener('click', fecharCamera);
+                const btnCapture = document.getElementById('btnCapture'); if (btnCapture) btnCapture.addEventListener('click', capturarEscanear);
+                const btnUploadFromCamera = document.getElementById('btnUploadFromCamera'); if (btnUploadFromCamera) btnUploadFromCamera.addEventListener('click', () => { fecharCamera(); document.getElementById('fileInput').click(); });
+                const btnUploadImage = document.getElementById('btnUploadImage'); if (btnUploadImage) btnUploadImage.addEventListener('click', () => document.getElementById('fileInput').click());
+                const fileInput = document.getElementById('fileInput'); if (fileInput) fileInput.addEventListener('change', function(e) { if (this.files.length > 0) processarImagem(this.files[0]); this.value = ''; });
+                const btnImportExcel = document.getElementById('btnImportExcel'); if (btnImportExcel) btnImportExcel.addEventListener('click', () => document.getElementById('fileInputExcel').click());
+                const fileInputExcel = document.getElementById('fileInputExcel'); if (fileInputExcel) fileInputExcel.addEventListener('change', function(e) { if (this.files.length > 0) importarExcel(this.files[0]); this.value = ''; });
+                const btnPublicar = document.getElementById('btnPublicarSharePoint'); if (btnPublicar) btnPublicar.addEventListener('click', async function() { await publicarProdutosNoSharePoint(); });
+                const btnSync = document.getElementById('btnSyncSharePoint'); if (btnSync) btnSync.addEventListener('click', async function() { notificar('A sincronizar...', 'info'); _eanItemIdCache = null; await carregarProdutosDoSharePoint(); });
+                if (eanInput) eanInput.addEventListener('input', (e) => { const val = e.target.value.trim(); if (val.length >= 2) atualizarSugestoes(val); else { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); } });
+                document.addEventListener('click', (e) => { if (!e.target.closest('.search-area-ean')) { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); } });
+                const btnAdd = document.getElementById('btnAddProduct'); if (btnAdd) btnAdd.addEventListener('click', adicionarProduto);
             }
-
-            // ========== INICIALIZAÇÃO (CORRIGIDA) ==========
             async function inicializar() {
-                log('Inicializando módulo EAN...');
-
-                // 1) LIGAR BOTÕES PRIMEIRO — assim funcionam sempre, mesmo se o SharePoint falhar
-                try { configurarEventos(); } catch (e) { console.error('Erro em configurarEventos:', e); }
-
+                try { configurarEventos(); } catch (e) {}
                 try {
                     const carregou = await carregarProdutosDoSharePoint();
-
-                    if (!carregou) {
-                        if (carregarLocal()) {
-                            notificar('⚠️ Dados carregados do cache local.', 'warning');
-                        } else {
-                            const PRODUTOS_MOCK = [{
-                                ean: "5601234567890", nome: "Arroz Carolino 1kg",
-                                preco_custo: 450, preco_kero: 650, iva: 14,
-                                fornecedor: "Arrozal SA", venda_media_mensal: 120,
-                                stock: LOJAS_KERO.reduce((a,l)=>{a[l]=Math.floor(Math.random()*100);return a;},{}),
-                                concorrentes: CONCORRENTES.reduce((a,c)=>{a[c]=500+Math.floor(Math.random()*200);return a;},{})
-                            }];
-                            produtos = JSON.parse(JSON.stringify(PRODUTOS_MOCK));
-                            guardarLocal();
-                            notificar('📦 Dados de exemplo carregados.', 'info');
-                        }
-                    }
-
-                    carregarHistoricoLocal();
+                    if (!carregou) { if (carregarLocal()) notificar('⚠️ Cache local.', 'warning'); else { produtos = [{ ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14, fornecedor: "Arrozal SA", venda_media_mensal: 120, stock: LOJAS_KERO.reduce((a,l)=>{a[l]=Math.floor(Math.random()*100);return a;},{}), concorrentes: CONCORRENTES.reduce((a,c)=>{a[c]=500+Math.floor(Math.random()*200);return a;},{}) }]; guardarLocal(); notificar('📦 Exemplo carregado.', 'info'); } }
+                    const hist = localStorage.getItem('ean_historico'); if (hist) { try { historicoPesquisas = JSON.parse(hist); } catch (e) {} }
                     atualizarBadgeTotal();
                     renderizarHistorico();
-
                     const lastEan = sessionStorage.getItem('ean_ultimo_produto');
-                    if (lastEan) {
-                        const prod = produtos.find(p => p.ean === lastEan);
-                        if (prod) {
-                            renderizarProduto(prod);
-                            document.getElementById('eanInput').value = lastEan;
-                        }
-                    }
+                    if (lastEan) { const prod = produtos.find(p => p.ean === lastEan); if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = lastEan; } }
                     document.getElementById('eanInput').focus();
-
                     if (!produtoAtual) document.getElementById('emptyStateEAN').style.display = 'block';
-
-                    log('Módulo EAN inicializado com sucesso!', produtos.length);
-                } catch (error) {
-                    log('ERRO na inicialização do EAN', error);
-                    notificar('❌ Erro na inicialização do módulo EAN.', 'error');
-                }
+                } catch (error) { notificar('❌ Erro na inicialização.', 'error'); }
             }
-
             return { inicializar, buscarProduto, limparPesquisa, renderizarTodosProdutos, exportarDados, publicarProdutosNoSharePoint, carregarProdutosDoSharePoint, importarExcel, adicionarProduto, guardarPrecosConcorrentes, toggleEdicaoPrecos, guardarPrecosKero, abrirCamera, fecharCamera, capturarEscanear, processarImagem };
         })();
 
@@ -4716,6 +4464,7 @@
             const savedNotificacoes = localStorage.getItem('keroNotificacoes');
             if (savedNotificacoes) { try { notificacoes = JSON.parse(savedNotificacoes); } catch (e) {} atualizarPainelNotificacoes(); }
             carregarDarkMode();
+            carregarGestoresLojasCacheLocal();
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('public')) { await initializeMicrosoft(); iniciarModoPublico(); return; }
@@ -4729,7 +4478,7 @@
             document.getElementById('formNovaRequisicao')?.addEventListener('submit', salvarRequisicao);
             document.getElementById('formComentario')?.addEventListener('submit', processarComentario);
             document.getElementById('formEditarRequisicao')?.addEventListener('submit', salvarEdicaoRequisicao);
-            document.getElementById('btnNovaRequisicao')?.addEventListener('click', () => abrirModal('modalTipo'));
+            document.getElementById('btnNovaRequisicao')?.addEventListener('click', () => { abrirModal('modalTipo'); aplicarRestricoesDirecao(); });
 
             document.getElementById('filterPesquisa')?.addEventListener('input', function(e) { estado.filtrosAtivos.pesquisa = e.target.value || null; filtrarRequisicoes(); });
             document.getElementById('filterStatus')?.addEventListener('change', function(e) { estado.filtrosAtivos.status = e.target.value === 'all' ? null : e.target.value; filtrarRequisicoes(); });
@@ -4750,7 +4499,7 @@
             setInterval(() => { localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes)); }, 5000);
         });
 
-        console.log('✅ Kero SIR - Sistema Integrado com EAN corrigido (sem $filter) carregado!');
+        console.log('✅ Kero SIR - Sistema Integrado com gestores de loja via SharePoint carregado!');
     </script>
 </body>
 </html>
