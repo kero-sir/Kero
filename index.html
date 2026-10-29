@@ -781,14 +781,6 @@
         [data-tooltip] { position: relative; cursor: help; }
         [data-tooltip]:before { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); padding: 5px 10px; background: #333; color: white; font-size: 11px; border-radius: 4px; white-space: nowrap; display: none; z-index: 1000; }
         [data-tooltip]:hover:before { display: block; }
-        .guest-banner { background: #fff3cd; color: #856404; padding: 8px 16px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .guest-banner i { font-size: 20px; }
-        .guest-banner .btn-close-guest { margin-left: auto; background: transparent; border: none; color: #856404; font-weight: 600; cursor: pointer; }
-        .guest-banner .btn-close-guest:hover { text-decoration: underline; }
-        body.dark-mode .guest-banner { background: #4a3a1a; color: #efd08f; }
-        body.dark-mode .guest-banner .btn-close-guest { color: #efd08f; }
-        .guest-only { border: 2px dashed #ffc107; padding: 12px; border-radius: 8px; background: #fff8e1; margin: 10px 0; }
-        body.dark-mode .guest-only { background: #4a3a1a; border-color: #6a5a2a; }
     </style>
 </head>
 <body>
@@ -1406,11 +1398,6 @@
 
             <!-- EAN -->
             <div id="eanSection" style="display: none;">
-                <div id="guestBanner" class="guest-banner" style="display: none;">
-                    <i class="fas fa-globe"></i>
-                    <span><strong>Modo Convidado</strong> – Visualização pública de preços e stock. Edições e importações estão desativadas.</span>
-                    <button class="btn-close-guest" onclick="fecharModoPublico()">✕</button>
-                </div>
                 <div class="container-ean">
                     <header class="ean-header">
                         <h1><i class="fas fa-barcode"></i> Kero EAN Scan</h1>
@@ -1770,13 +1757,11 @@
             'mario.arao@accordgrouplda.com': 'RH',
             'paulo.silva@accordgrouplda.com': 'Director Geral',
             'dircg@accordgrouplda.com': 'Controlo de Gestão',
-            'aleixo.francisco@accordgrouplda.com': 'Recrutador',            
+            'aleixo.francisco@accordgrouplda.com': 'Recrutador',
             'luzia.cauica@accordgrouplda.com': 'Recrutador',
         };
 
-        const EMAILS_ACESSO_TOTAL_MOB = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com',
-            'paulo.silva@accordgrouplda.com',
-        ];
+        const EMAILS_ACESSO_TOTAL_MOB = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'paulo.silva@accordgrouplda.com'];
         const EMAILS_IMPORTACAO_EAN = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
         const BLOCKED_EMAILS = ['paulo.silva@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'dircg@accordgrouplda.com'];
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador'];
@@ -1794,11 +1779,7 @@
         const todasDirecoes = ["Direção Geral", "Capital Humano", "Direção Comercial", "Direção Financeira", "Direção de Marketing", "Direção de Sistemas de Informação", "Direção de Manutenção", "Direção de Segurança", "Direção de HSA/HST", "Direção de Visual Merchandising", "Direção de Projetos Restauração", "Direção de Operações", "Direção de Controlo de Gestão", "Direção Jurídica", "Vendas Corporativas", "Loja Talatona", "Loja Kilamba", "Loja Morro Bento", "Loja Nova Vida", "Loja Lubango", "Loja Cacuaco", "Loja Huambo", "Loja Lobito", "Loja Mártires", "Loja Combatentes", "Loja Benguela", "Loja Viana", "Loja Saurimo", "Loja Gika", "Armazém ZEE", "Armazém SONIT"];
         const todasCategorias = ["Director Geral", "Director Executivo", "Director", "Gerente de Loja", "Gestor Sénior", "Gestor", "Técnico Sénior", "Técnico", "Chefe de Departamento", "Chefe de Secção", "Coordenador", "Analista", "Administrativo", "Operador"];
 
-        // ============================================================
-        // MAPEAMENTO GESTORES DE LOJA → LOJAS QUE PODEM VER
-        // Fonte de verdade: lista SharePoint "GestoresLoja" (campo Title=email, campo Lojas=lojas separadas por vírgula)
-        // Cache local: localStorage (fallback se SharePoint falhar)
-        // ============================================================
+        // Gestores de loja
         const LISTA_GESTORES_LOJA = 'GestoresLoja';
         const GESTORES_LOJA = {};
 
@@ -1921,7 +1902,6 @@
         let estado = { paginaAtual: 1, itensPorPagina: 10, filtrosAtivos: { pesquisa: null, status: null, direcao: null }, ordenacao: 'newest' };
         let requisicoesFiltradas = [], graficos = [], configuracoes = { emailAdmin: 'marcio.carlos@accordgrouplda.com', emailNotif: true, teamsNotif: true, teamsWebhook: '' };
         let moduloAtual = null, requisicaoVisualizarAtual = null, requisicaoSelecionadaAtual = null;
-        let modoPublico = false;
 
         // ============================================================
         // FUNÇÕES GLOBAIS
@@ -1997,7 +1977,6 @@
             document.getElementById('mainSystem').style.display = 'none';
             document.getElementById('moduleSelectionScreen').style.display = 'flex';
             moduloAtual = null;
-            if (modoPublico) { const url = new URL(window.location); url.searchParams.delete('public'); window.location.href = url.toString(); }
         }
         async function verificarSessao() {
             const sessao = localStorage.getItem('keroSessao');
@@ -2024,7 +2003,6 @@
             localStorage.removeItem('keroSessao');
             usuarioAtual = null;
             moduloAtual = null;
-            if (modoPublico) { const url = new URL(window.location); url.searchParams.delete('public'); window.location.href = url.toString(); return; }
             document.getElementById('mainSystem').style.display = 'none';
             document.getElementById('moduleSelectionScreen').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'flex';
@@ -2032,45 +2010,9 @@
         }
 
         // ============================================================
-        // MODO PÚBLICO (GUEST) - EAN SCAN
-        // ============================================================
-        function iniciarModoPublico() {
-            modoPublico = true;
-            usuarioAtual = { id: 'guest', nome: 'Convidado', email: 'guest@public.com', perfil: 'Convidado' };
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('moduleSelectionScreen').style.display = 'none';
-            document.getElementById('mainSystem').style.display = 'block';
-            document.getElementById('navMenu').style.display = 'none';
-            document.getElementById('currentUserName').textContent = 'Convidado';
-            document.getElementById('currentUserRole').textContent = 'Público';
-            document.getElementById('systemTitle').textContent = 'Kero EAN Scan - Público';
-            document.getElementById('systemSubtitle').textContent = 'Visualização de Preços e Stock';
-            document.querySelector('.user-info .btn-logout').style.display = 'none';
-            document.querySelector('.user-info .btn-modules').style.display = 'none';
-            document.getElementById('guestBanner').style.display = 'flex';
-            document.getElementById('recrutamentoSection').style.display = 'none';
-            document.getElementById('avaliacaoSection').style.display = 'none';
-            document.getElementById('manutencaoSection').style.display = 'none';
-            document.getElementById('mobilidadeSection').style.display = 'none';
-            document.getElementById('eanSection').style.display = 'block';
-            document.getElementById('addProductArea').style.display = 'none';
-            document.getElementById('btnImportExcel').style.display = 'none';
-            document.getElementById('btnEditarPrecos').style.display = 'none';
-            document.getElementById('btnGuardarPrecos').style.display = 'none';
-            document.getElementById('btnGuardarConcorrentes').style.display = 'none';
-            document.getElementById('btnSyncSharePoint').style.display = 'none';
-            eanApp.inicializar();
-            document.querySelectorAll('.pricing-item input').forEach(inp => inp.disabled = true);
-            document.querySelectorAll('.concorrente-item input').forEach(inp => inp.disabled = true);
-            mostrarNotificacao('🔓 Modo Público ativado. Visualização de preços e stock.', 'info');
-        }
-        function fecharModoPublico() { const url = new URL(window.location); url.searchParams.delete('public'); window.location.href = url.toString(); }
-
-        // ============================================================
         // SELEÇÃO DE MÓDULO
         // ============================================================
         async function selecionarModulo(mod) {
-            if (modoPublico && mod !== 'ean') { mostrarNotificacao('Modo público apenas permite visualização do EAN Scan.', 'warning'); return; }
             moduloAtual = mod;
             document.getElementById('moduleSelectionScreen').style.display = 'none';
             document.getElementById('mainSystem').style.display = 'block';
@@ -2864,9 +2806,6 @@
         function podeFinalizarRecrutamento(req) { if (!usuarioAtual) return false; if (req.status !== 'em_recrutamento') return false; return (usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Administrador'); }
         function podeConfirmarAtendimento(req) { if (!usuarioAtual) return false; if (req.status !== 'aguardando_confirmacao_solicitante') return false; return (usuarioAtual.email === req.criadoPorEmail || usuarioAtual.perfil === 'Administrador'); }
 
-        // ============================================================
-        // VISIBILIDADE — GESTORES DE LOJA VÊEM APENAS AS LOJAS QUE GEREM AGORA
-        // ============================================================
         function podeVerRequisicao(req) {
             if (!usuarioAtual) return false;
             if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return true;
@@ -4086,7 +4025,7 @@
         function exportarRequisicaoIndividualMob() { mobApp.exportarIndividual(); }
 
         // ============================================================
-        // MÓDULO EAN SCAN
+        // MÓDULO EAN SCAN - CONSULTAS DIRETAS AO SHAREPOINT
         // ============================================================
         const eanApp = (function() {
             const LISTA_EAN = 'EANPRODUTOS';
@@ -4094,11 +4033,12 @@
             const MAPA_LOJAS = { "TALATONA": "Kero Loja Talatona", "KILAMBA": "Kero Loja Kilamba", "MORRO BENTO": "Kero Loja Morro Bento", "NOVA VIDA": "Kero Loja Nova Vida", "LUBANGO": "Kero Loja Lubango", "HUAMBO": "Kero Loja Huambo", "LOBITO": "Kero Loja Lobito", "BENGUELA": "Kero Loja Benguela", "VIANA": "Kero Loja Viana", "GIKA": "Kero Loja Gika", "MARTIRES": "Kero Loja Mártires", "COMB.": "Kero Loja Combatentes", "CACUACO": "Kero Loja Cacuaco", "CD ZEE": "Armazém ZEE", "SONIT": "Armazém SONIT" };
             const LOJAS_KERO = Object.values(MAPA_LOJAS);
             const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
-            let produtos = [], produtoAtual = null, historicoPesquisas = [], editandoPrecos = false, cameraStream = null, scanFrameId = null, _eanItemIdCache = null;
+            let produtos = [], produtoAtual = null, historicoPesquisas = [], editandoPrecos = false, cameraStream = null, scanFrameId = null, _eanItemIdCache = {};
+
             function notificar(msg, tipo = 'success') { if (typeof mostrarNotificacao === 'function') mostrarNotificacao(msg, tipo); else alert(msg); }
             function showLoading() { const o = document.getElementById('loadingOverlay'); if (o) o.classList.add('show'); }
             function hideLoading() { const o = document.getElementById('loadingOverlay'); if (o) o.classList.remove('show'); }
-            function atualizarBadgeTotal() { const b = document.getElementById('totalProdutosBadge'); if (b) b.textContent = `${produtos.length} produtos`; }
+            function atualizarBadgeTotal() { const b = document.getElementById('totalProdutosBadge'); if (b) b.textContent = `${produtos.length} produtos em cache`; }
             function adicionarHistorico(ean) { historicoPesquisas = historicoPesquisas.filter(e => e !== ean); historicoPesquisas.unshift(ean); if (historicoPesquisas.length > 5) historicoPesquisas.pop(); localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas)); renderizarHistorico(); }
             function renderizarHistorico() {
                 const area = document.getElementById('historyArea'), container = document.getElementById('historyButtons');
@@ -4110,6 +4050,87 @@
             }
             function carregarLocal() { const saved = localStorage.getItem('ean_produtos'); if (saved) { try { produtos = JSON.parse(saved); produtos = produtos.map(p => { LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; }); CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; }); if (p.iva === undefined) p.iva = 0; if (p.fornecedor === undefined) p.fornecedor = ''; if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0; return p; }); return true; } catch (e) {} } return false; }
             function guardarLocal() { try { localStorage.setItem('ean_produtos', JSON.stringify(produtos)); } catch (e) { notificar('⚠️ Não foi possível guardar todos os dados localmente.', 'warning'); } }
+
+            // ============================================================
+            // CONVERSÃO E CONSULTAS DIRETAS AO SHAREPOINT
+            // ============================================================
+            function converterItemParaProduto(item) {
+                const f = item.fields || {};
+                const ean = String(f.Title || '').trim();
+                if (!ean) return null;
+                let stock = {}, concorrentes = {};
+                try { stock = JSON.parse(f.Stock || '{}'); } catch (e) {}
+                try { concorrentes = JSON.parse(f.Concorrentes || '{}'); } catch (e) {}
+                LOJAS_KERO.forEach(l => { if (!(l in stock)) stock[l] = 0; });
+                CONCORRENTES.forEach(c => { if (!(c in concorrentes)) concorrentes[c] = 0; });
+                return {
+                    id: item.id, ean,
+                    nome: f.Nome || '',
+                    preco_custo: Number(f.PrecoCusto) || 0,
+                    preco_kero: Number(f.PrecoKero) || 0,
+                    iva: Number(f.Iva) || 0,
+                    fornecedor: f.Fornecedor || '',
+                    venda_media_mensal: Number(f.VendaMediaMensal) || 0,
+                    stock, concorrentes
+                };
+            }
+
+            function upsertLocal(prod) {
+                if (!prod || !prod.ean) return prod;
+                const idx = produtos.findIndex(p => p.ean === prod.ean);
+                if (idx >= 0) produtos[idx] = { ...produtos[idx], ...prod };
+                else produtos.push(prod);
+                if (prod.id) _eanItemIdCache[String(prod.ean).trim()] = prod.id;
+                try { guardarLocal(); } catch (e) {}
+                atualizarBadgeTotal();
+                return prod;
+            }
+
+            async function obterToken() { return await getSharePointToken(); }
+            async function obterSiteId() { return await getSiteId(); }
+
+            async function buscarEanExatoNoSharePoint(ean) {
+                const token = await obterToken();
+                const siteId = await obterSiteId();
+                const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items`
+                          + `?expand=fields&$filter=fields/Title eq '${ean.replace(/'/g, "''")}'&$top=1`;
+                const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!resp.ok) throw new Error(`EAN lookup ${resp.status}`);
+                const data = await resp.json();
+                const item = (data.value || [])[0];
+                return item ? converterItemParaProduto(item) : null;
+            }
+
+            async function buscarPorNomeNoSharePoint(termo) {
+                const token = await obterToken();
+                const siteId = await obterSiteId();
+                const t = String(termo).replace(/'/g, "''");
+                const base = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields`;
+
+                // 1) startswith — rápido se coluna Nome estiver indexada
+                try {
+                    const r1 = await fetch(`${base}&$filter=startswith(fields/Nome,'${t}')&$top=15`,
+                        { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (r1.ok) {
+                        const d1 = await r1.json();
+                        const rs = (d1.value || []).map(converterItemParaProduto).filter(Boolean);
+                        if (rs.length > 0) return rs;
+                    }
+                } catch (e) {}
+
+                // 2) substringof — fallback (mais lento mas cobre "contém")
+                try {
+                    const r2 = await fetch(`${base}&$filter=substringof('${t}',fields/Nome)&$top=15`,
+                        { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (r2.ok) {
+                        const d2 = await r2.json();
+                        return (d2.value || []).map(converterItemParaProduto).filter(Boolean);
+                    }
+                } catch (e) {}
+
+                return [];
+            }
+
             function renderizarProduto(prod) {
                 if (!prod) { const result = document.getElementById('resultContainer'); if (result) result.classList.remove('active'); const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block'; produtoAtual = null; const btnConc = document.getElementById('btnGuardarConcorrentes'); if (btnConc) btnConc.disabled = true; const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active'); return; }
                 produtoAtual = prod;
@@ -4143,30 +4164,131 @@
                 CONCORRENTES.forEach(nome => { const valor = prod.concorrentes[nome] || 0; html += `<div class="concorrente-item"><span class="label">${nome}</span><input type="number" step="0.01" class="concorrente-input" data-concorrente="${nome}" value="${valor}" placeholder="0.00"></div>`; });
                 grid.innerHTML = html;
             }
-            function renderizarTodosProdutos() {
+            async function renderizarTodosProdutos() {
                 const container = document.getElementById('productGrid');
                 if (!container) return;
+                if (produtos.length === 0) {
+                    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#666;">A carregar todos os produtos…</div>';
+                    document.getElementById('allProducts').classList.add('active');
+                    showLoading();
+                    try { await carregarProdutosDoSharePoint(); } finally { hideLoading(); }
+                }
                 container.innerHTML = '';
-                if (produtos.length === 0) { container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#999;">Nenhum produto disponível.</div>'; document.getElementById('allProducts').classList.add('active'); return; }
-                produtos.forEach(prod => { const card = document.createElement('div'); card.className = 'product-card'; card.innerHTML = `<div class="card-name">${prod.nome}</div><div class="card-ean">EAN: ${prod.ean}</div><div class="card-price">${(prod.preco_kero || 0).toFixed(2)} Kz</div>`; card.addEventListener('click', () => { renderizarProduto(prod); document.getElementById('eanInput').value = prod.ean; document.getElementById('allProducts').classList.remove('active'); }); container.appendChild(card); });
+                if (produtos.length === 0) {
+                    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#999;">Nenhum produto.</div>';
+                    return;
+                }
+                produtos.forEach(prod => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `<div class="card-name">${prod.nome}</div>
+                                      <div class="card-ean">EAN: ${prod.ean}</div>
+                                      <div class="card-price">${(prod.preco_kero || 0).toFixed(2)} Kz</div>`;
+                    card.addEventListener('click', () => {
+                        const p = upsertLocal(prod);
+                        renderizarProduto(p);
+                        document.getElementById('eanInput').value = p.ean;
+                        document.getElementById('allProducts').classList.remove('active');
+                    });
+                    container.appendChild(card);
+                });
                 document.getElementById('allProducts').classList.add('active');
             }
+
+            let _sugestaoTimer = null, _sugestaoSeq = 0;
             function atualizarSugestoes(termo) {
-                const box = document.getElementById('suggestionsBox'); if (!box) return;
-                if (termo.length < 1) { box.classList.remove('active'); return; }
-                const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()) || p.ean.includes(termo));
-                if (filtrados.length === 0) { box.classList.remove('active'); return; }
+                const box = document.getElementById('suggestionsBox');
+                if (!box) return;
+                if (!termo || termo.length < 2) { box.classList.remove('active'); return; }
+                clearTimeout(_sugestaoTimer);
+                _sugestaoTimer = setTimeout(async () => {
+                    const seq = ++_sugestaoSeq;
+                    box.innerHTML = '<div style="padding:12px;color:#888;">A procurar…</div>';
+                    box.classList.add('active');
+                    try {
+                        const lista = await buscarPorNomeNoSharePoint(termo);
+                        if (seq !== _sugestaoSeq) return;
+                        if (lista.length === 0) { box.classList.remove('active'); return; }
+                        lista.forEach(upsertLocal);
+                        renderSugestoesLista(lista);
+                    } catch (e) {
+                        if (seq === _sugestaoSeq) box.classList.remove('active');
+                    }
+                }, 350);
+            }
+            function renderSugestoesLista(lista) {
+                const box = document.getElementById('suggestionsBox');
                 box.innerHTML = '';
-                filtrados.slice(0, 8).forEach(p => { const item = document.createElement('div'); item.className = 'suggestion-item'; item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">${p.ean}</span>`; item.addEventListener('click', () => { renderizarProduto(p); document.getElementById('eanInput').value = p.ean; box.classList.remove('active'); adicionarHistorico(p.ean); }); box.appendChild(item); });
+                lista.slice(0, 8).forEach(p => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    item.innerHTML = `<span class="suggestion-name">${p.nome}</span>
+                                      <span class="suggestion-ean">${p.ean}</span>`;
+                    item.addEventListener('click', () => {
+                        const prod = upsertLocal(p);
+                        renderizarProduto(prod);
+                        document.getElementById('eanInput').value = prod.ean;
+                        box.classList.remove('active');
+                        adicionarHistorico(prod.ean);
+                    });
+                    box.appendChild(item);
+                });
                 box.classList.add('active');
             }
-            function buscarProduto(termo) {
-                const termoNormalizado = termo.replace(/\s/g, '');
-                if (!termoNormalizado) { notificar('Digite um nome ou EAN.', 'error'); return; }
-                let prod = produtos.find(p => p.ean === termoNormalizado);
-                if (!prod) { const matches = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase().trim())); if (matches.length === 1) prod = matches[0]; else if (matches.length > 1) { notificar(`Encontrados ${matches.length} produtos.`, 'info'); atualizarSugestoes(termo); return; } else { notificar(`Nenhum produto encontrado.`, 'error'); return; } }
-                if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = prod.ean; adicionarHistorico(prod.ean); }
+
+            async function buscarProduto(termo) {
+                const termoLimpo = String(termo || '').trim();
+                if (!termoLimpo) { notificar('Digite um nome ou EAN.', 'error'); return; }
+                const semEspacos = termoLimpo.replace(/\s/g, '');
+
+                showLoading();
+                try {
+                    // EAN exato → consulta direta (Title indexado → instantâneo)
+                    if (/^\d{8,14}$/.test(semEspacos)) {
+                        let prod = produtos.find(p => p.ean === semEspacos);
+                        if (!prod) {
+                            prod = await buscarEanExatoNoSharePoint(semEspacos);
+                            if (prod) upsertLocal(prod);
+                        }
+                        if (!prod) { notificar(`EAN ${semEspacos} não existe na lista.`, 'error'); return; }
+                        renderizarProduto(prod);
+                        document.getElementById('eanInput').value = prod.ean;
+                        adicionarHistorico(prod.ean);
+                        return;
+                    }
+
+                    // Nome → consulta direta ao SharePoint
+                    const resultados = await buscarPorNomeNoSharePoint(termoLimpo);
+                    if (resultados.length === 0) {
+                        const locais = produtos.filter(p => (p.nome || '').toLowerCase().includes(termoLimpo.toLowerCase()));
+                        if (locais.length === 0) { notificar('Nenhum produto encontrado.', 'error'); return; }
+                        if (locais.length === 1) {
+                            renderizarProduto(locais[0]);
+                            document.getElementById('eanInput').value = locais[0].ean;
+                            adicionarHistorico(locais[0].ean);
+                        } else {
+                            renderSugestoesLista(locais);
+                        }
+                        return;
+                    }
+                    resultados.forEach(upsertLocal);
+                    if (resultados.length === 1) {
+                        renderizarProduto(resultados[0]);
+                        document.getElementById('eanInput').value = resultados[0].ean;
+                        adicionarHistorico(resultados[0].ean);
+                    } else {
+                        renderSugestoesLista(resultados);
+                    }
+                } catch (err) {
+                    console.error('[EAN] Erro consulta SharePoint:', err);
+                    const prod = produtos.find(p => p.ean === semEspacos);
+                    if (prod) { renderizarProduto(prod); adicionarHistorico(prod.ean); return; }
+                    notificar('Erro ao consultar SharePoint.', 'error');
+                } finally {
+                    hideLoading();
+                }
             }
+
             function limparPesquisa() {
                 document.getElementById('eanInput').value = '';
                 const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active');
@@ -4269,10 +4391,9 @@
                 });
             }
             async function processarImagem(file) { if (!file) return; const reader = new FileReader(); reader.onload = async function(e) { const imagemRedimensionada = await redimensionarImagem(e.target.result); decodificarImagemComZXing(imagemRedimensionada); }; reader.readAsDataURL(file); }
-            async function obterToken() { return await getSharePointToken(); }
-            async function obterSiteId() { return await getSiteId(); }
+
             async function _obterMapaEanParaId(token, siteId) {
-                if (_eanItemIdCache) return _eanItemIdCache;
+                if (_eanItemIdCache && Object.keys(_eanItemIdCache).length > 0) return _eanItemIdCache;
                 const mapa = {};
                 let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
                 while (url) { const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } }); if (!resp.ok) throw new Error(`Erro ${resp.status}`); const data = await resp.json(); (data.value || []).forEach(item => { const t = item.fields && item.fields.Title; if (t) mapa[String(t).trim()] = item.id; }); url = data['@odata.nextLink'] || null; }
@@ -4295,15 +4416,8 @@
                     if (allItems.length === 0) return false;
                     const carregados = [];
                     for (const item of allItems) {
-                        const f = item.fields || {};
-                        const ean = String(f.Title || '').trim();
-                        if (!ean) continue;
-                        let stock = {}, concorrentes = {};
-                        try { stock = JSON.parse(f.Stock || '{}'); } catch (e) {}
-                        try { concorrentes = JSON.parse(f.Concorrentes || '{}'); } catch (e) {}
-                        LOJAS_KERO.forEach(l => { if (!(l in stock)) stock[l] = 0; });
-                        CONCORRENTES.forEach(c => { if (!(c in concorrentes)) concorrentes[c] = 0; });
-                        carregados.push({ ean, nome: f.Nome || '', preco_custo: Number(f.PrecoCusto) || 0, preco_kero: Number(f.PrecoKero) || 0, iva: Number(f.Iva) || 0, fornecedor: f.Fornecedor || '', venda_media_mensal: Number(f.VendaMediaMensal) || 0, stock, concorrentes });
+                        const p = converterItemParaProduto(item);
+                        if (p) carregados.push(p);
                     }
                     if (carregados.length === 0) return false;
                     produtos = carregados;
@@ -4431,24 +4545,40 @@
                 const btnImportExcel = document.getElementById('btnImportExcel'); if (btnImportExcel) btnImportExcel.addEventListener('click', () => document.getElementById('fileInputExcel').click());
                 const fileInputExcel = document.getElementById('fileInputExcel'); if (fileInputExcel) fileInputExcel.addEventListener('change', function(e) { if (this.files.length > 0) importarExcel(this.files[0]); this.value = ''; });
                 const btnPublicar = document.getElementById('btnPublicarSharePoint'); if (btnPublicar) btnPublicar.addEventListener('click', async function() { await publicarProdutosNoSharePoint(); });
-                const btnSync = document.getElementById('btnSyncSharePoint'); if (btnSync) btnSync.addEventListener('click', async function() { notificar('A sincronizar...', 'info'); _eanItemIdCache = null; await carregarProdutosDoSharePoint(); });
+                const btnSync = document.getElementById('btnSyncSharePoint'); if (btnSync) btnSync.addEventListener('click', async function() { notificar('A sincronizar...', 'info'); _eanItemIdCache = {}; await carregarProdutosDoSharePoint(); });
                 if (eanInput) eanInput.addEventListener('input', (e) => { const val = e.target.value.trim(); if (val.length >= 2) atualizarSugestoes(val); else { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); } });
                 document.addEventListener('click', (e) => { if (!e.target.closest('.search-area-ean')) { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); } });
                 const btnAdd = document.getElementById('btnAddProduct'); if (btnAdd) btnAdd.addEventListener('click', adicionarProduto);
             }
             async function inicializar() {
                 try { configurarEventos(); } catch (e) {}
-                try {
-                    const carregou = await carregarProdutosDoSharePoint();
-                    if (!carregou) { if (carregarLocal()) notificar('⚠️ Cache local.', 'warning'); else { produtos = [{ ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14, fornecedor: "Arrozal SA", venda_media_mensal: 120, stock: LOJAS_KERO.reduce((a,l)=>{a[l]=Math.floor(Math.random()*100);return a;},{}), concorrentes: CONCORRENTES.reduce((a,c)=>{a[c]=500+Math.floor(Math.random()*200);return a;},{}) }]; guardarLocal(); notificar('📦 Exemplo carregado.', 'info'); } }
-                    const hist = localStorage.getItem('ean_historico'); if (hist) { try { historicoPesquisas = JSON.parse(hist); } catch (e) {} }
-                    atualizarBadgeTotal();
-                    renderizarHistorico();
-                    const lastEan = sessionStorage.getItem('ean_ultimo_produto');
-                    if (lastEan) { const prod = produtos.find(p => p.ean === lastEan); if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = lastEan; } }
-                    document.getElementById('eanInput').focus();
-                    if (!produtoAtual) document.getElementById('emptyStateEAN').style.display = 'block';
-                } catch (error) { notificar('❌ Erro na inicialização.', 'error'); }
+
+                // 1. Cache local primeiro (rápido)
+                const temCache = carregarLocal();
+                if (temCache) notificar('📂 Produtos em cache carregados.', 'info');
+
+                // 2. Histórico + UI
+                const hist = localStorage.getItem('ean_historico');
+                if (hist) { try { historicoPesquisas = JSON.parse(hist); } catch (e) {} }
+                atualizarBadgeTotal();
+                renderizarHistorico();
+
+                const lastEan = sessionStorage.getItem('ean_ultimo_produto');
+                if (lastEan) {
+                    const prod = produtos.find(p => p.ean === lastEan);
+                    if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = lastEan; }
+                }
+                if (!produtoAtual) document.getElementById('emptyStateEAN').style.display = 'block';
+                document.getElementById('eanInput').focus();
+
+                // 3. Esconde botões de escrita para quem não tem permissão
+                const podeEscrever = usuarioAtual && (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email));
+                const btnImport = document.getElementById('btnImportExcel');
+                const btnPub = document.getElementById('btnPublicarSharePoint');
+                if (btnImport) btnImport.style.display = podeEscrever ? 'inline-block' : 'none';
+                if (btnPub) btnPub.style.display = podeEscrever ? 'inline-block' : 'none';
+
+                // ❌ NÃO chamar carregarProdutosDoSharePoint() aqui — consulta é sob demanda
             }
             return { inicializar, buscarProduto, limparPesquisa, renderizarTodosProdutos, exportarDados, publicarProdutosNoSharePoint, carregarProdutosDoSharePoint, importarExcel, adicionarProduto, guardarPrecosConcorrentes, toggleEdicaoPrecos, guardarPrecosKero, abrirCamera, fecharCamera, capturarEscanear, processarImagem };
         })();
@@ -4463,9 +4593,6 @@
             if (savedNotificacoes) { try { notificacoes = JSON.parse(savedNotificacoes); } catch (e) {} atualizarPainelNotificacoes(); }
             carregarDarkMode();
             carregarGestoresLojasCacheLocal();
-
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('public')) { await initializeMicrosoft(); iniciarModoPublico(); return; }
 
             await initializeMicrosoft();
             await verificarSessao();
@@ -4497,7 +4624,7 @@
             setInterval(() => { localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes)); }, 5000);
         });
 
-        console.log('✅ Kero SIR - Sistema Integrado com gestores de loja via SharePoint carregado!');
+        console.log('✅ Kero SIR — Modo público removido, EAN com consultas diretas ao SharePoint.');
     </script>
 </body>
 </html>
