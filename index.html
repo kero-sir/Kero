@@ -4027,50 +4027,168 @@
         // ============================================================
         // MÓDULO EAN SCAN - CONSULTAS DIRETAS AO SHAREPOINT
         // ============================================================
+                // ============================================================
+        // MÓDULO EAN SCAN - DETEÇÃO AUTOMÁTICA + CONSULTAS DIRETAS
+        // ============================================================
         const eanApp = (function() {
             const LISTA_EAN = 'EANPRODUTOS';
             const PERMISSAO_PUBLICAR = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
             const MAPA_LOJAS = { "TALATONA": "Kero Loja Talatona", "KILAMBA": "Kero Loja Kilamba", "MORRO BENTO": "Kero Loja Morro Bento", "NOVA VIDA": "Kero Loja Nova Vida", "LUBANGO": "Kero Loja Lubango", "HUAMBO": "Kero Loja Huambo", "LOBITO": "Kero Loja Lobito", "BENGUELA": "Kero Loja Benguela", "VIANA": "Kero Loja Viana", "GIKA": "Kero Loja Gika", "MARTIRES": "Kero Loja Mártires", "COMB.": "Kero Loja Combatentes", "CACUACO": "Kero Loja Cacuaco", "CD ZEE": "Armazém ZEE", "SONIT": "Armazém SONIT" };
             const LOJAS_KERO = Object.values(MAPA_LOJAS);
             const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
-            let produtos = [], produtoAtual = null, historicoPesquisas = [], editandoPrecos = false, cameraStream = null, scanFrameId = null, _eanItemIdCache = {};
+
+            let produtos = [], produtoAtual = null, historicoPesquisas = [], editandoPrecos = false;
+            let cameraStream = null, scanFrameId = null, _eanItemIdCache = {}, _estruturaLista = null;
 
             function notificar(msg, tipo = 'success') { if (typeof mostrarNotificacao === 'function') mostrarNotificacao(msg, tipo); else alert(msg); }
             function showLoading() { const o = document.getElementById('loadingOverlay'); if (o) o.classList.add('show'); }
             function hideLoading() { const o = document.getElementById('loadingOverlay'); if (o) o.classList.remove('show'); }
             function atualizarBadgeTotal() { const b = document.getElementById('totalProdutosBadge'); if (b) b.textContent = `${produtos.length} produtos em cache`; }
-            function adicionarHistorico(ean) { historicoPesquisas = historicoPesquisas.filter(e => e !== ean); historicoPesquisas.unshift(ean); if (historicoPesquisas.length > 5) historicoPesquisas.pop(); localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas)); renderizarHistorico(); }
+            async function obterToken() { return await getSharePointToken(); }
+            async function obterSiteId() { return await getSiteId(); }
+
+            function adicionarHistorico(ean) {
+                historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
+                historicoPesquisas.unshift(ean);
+                if (historicoPesquisas.length > 5) historicoPesquisas.pop();
+                localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas));
+                renderizarHistorico();
+            }
             function renderizarHistorico() {
                 const area = document.getElementById('historyArea'), container = document.getElementById('historyButtons');
                 if (!area || !container) return;
                 container.innerHTML = '';
                 if (historicoPesquisas.length === 0) { area.style.display = 'none'; return; }
                 area.style.display = 'flex';
-                historicoPesquisas.forEach(ean => { const prod = produtos.find(p => p.ean === ean); const label = prod ? `${prod.nome} (${ean})` : ean; const btn = document.createElement('button'); btn.className = 'history-btn'; btn.textContent = label; btn.addEventListener('click', () => { document.getElementById('eanInput').value = ean; buscarProduto(ean); }); container.appendChild(btn); });
+                historicoPesquisas.forEach(ean => {
+                    const prod = produtos.find(p => p.ean === ean);
+                    const label = prod ? `${prod.nome} (${ean})` : ean;
+                    const btn = document.createElement('button');
+                    btn.className = 'history-btn';
+                    btn.textContent = label;
+                    btn.addEventListener('click', () => { document.getElementById('eanInput').value = ean; buscarProduto(ean); });
+                    container.appendChild(btn);
+                });
             }
-            function carregarLocal() { const saved = localStorage.getItem('ean_produtos'); if (saved) { try { produtos = JSON.parse(saved); produtos = produtos.map(p => { LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; }); CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; }); if (p.iva === undefined) p.iva = 0; if (p.fornecedor === undefined) p.fornecedor = ''; if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0; return p; }); return true; } catch (e) {} } return false; }
-            function guardarLocal() { try { localStorage.setItem('ean_produtos', JSON.stringify(produtos)); } catch (e) { notificar('⚠️ Não foi possível guardar todos os dados localmente.', 'warning'); } }
+            function carregarLocal() {
+                const saved = localStorage.getItem('ean_produtos');
+                if (saved) {
+                    try {
+                        produtos = JSON.parse(saved);
+                        produtos = produtos.map(p => {
+                            LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; });
+                            CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
+                            if (p.iva === undefined) p.iva = 0;
+                            if (p.fornecedor === undefined) p.fornecedor = '';
+                            if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0;
+                            return p;
+                        });
+                        return true;
+                    } catch (e) {}
+                }
+                return false;
+            }
+            function guardarLocal() {
+                try { localStorage.setItem('ean_produtos', JSON.stringify(produtos)); }
+                catch (e) { notificar('⚠️ Cache local cheio.', 'warning'); }
+            }
 
             // ============================================================
-            // CONVERSÃO E CONSULTAS DIRETAS AO SHAREPOINT
+            // DETEÇÃO AUTOMÁTICA DA ESTRUTURA DA LISTA
             // ============================================================
+            async function detectarEstruturaLista() {
+                if (_estruturaLista) return _estruturaLista;
+                try {
+                    const token = await obterToken();
+                    const siteId = await obterSiteId();
+                    let colunas = [];
+                    try {
+                        const metaResp = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/columns`, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (metaResp.ok) {
+                            const metaData = await metaResp.json();
+                            colunas = (metaData.value || []).map(c => c.name);
+                            console.log('📋 [EAN] Colunas:', colunas);
+                        }
+                    } catch (e) { console.warn('[EAN] Meta falhou:', e); }
+
+                    let amostra = null;
+                    try {
+                        const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=1`, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (r.ok) {
+                            const d = await r.json();
+                            amostra = (d.value || [])[0]?.fields;
+                            console.log('📋 [EAN] Amostra:', amostra);
+                        }
+                    } catch (e) { console.warn('[EAN] Amostra falhou:', e); }
+
+                    const candidatosEan = ['EAN', 'Ean', 'ean', 'Codigo', 'CodigoEAN', 'Codigo_Barras', 'Barcode', 'EANCode', 'Title'];
+                    let campoEan = 'Title';
+                    if (amostra) {
+                        for (const c of candidatosEan) {
+                            if (c in amostra) {
+                                const v = String(amostra[c] || '').trim();
+                                if (/^\d{8,14}$/.test(v)) { campoEan = c; break; }
+                            }
+                        }
+                    }
+                    if (campoEan === 'Title' && !colunas.includes('Title')) {
+                        campoEan = candidatosEan.find(c => colunas.includes(c)) || 'Title';
+                    }
+
+                    const candidatosNome = ['Nome', 'Name', 'Descricao', 'Descrição', 'DescricaoProduto', 'ProductName', 'Produto', 'Designacao', 'Title'];
+                    let campoNome = null;
+                    if (amostra) {
+                        for (const c of candidatosNome) {
+                            if (c !== campoEan && c in amostra && amostra[c]) { campoNome = c; break; }
+                        }
+                    }
+                    if (!campoNome) campoNome = candidatosNome.find(c => c !== campoEan && colunas.includes(c)) || 'Nome';
+
+                    const detectar = (nomes) => nomes.find(c => colunas.includes(c)) || nomes[0];
+
+                    _estruturaLista = {
+                        campoEan,
+                        campoNome,
+                        campoPrecoCusto: detectar(['PrecoCusto', 'PreçoCusto', 'Custo', 'PMM', 'PrecoCompra']),
+                        campoPrecoKero: detectar(['PrecoKero', 'PreçoKero', 'Preco', 'PVP', 'PrecoVenda']),
+                        campoIva: detectar(['Iva', 'IVA', 'IvaPercent', 'Taxa']),
+                        campoFornecedor: detectar(['Fornecedor', 'Supplier']),
+                        campoVendaMedia: detectar(['VendaMediaMensal', 'VendaMedia', 'Venda_Media_Mensal']),
+                        campoStock: detectar(['Stock']),
+                        campoConcorrentes: detectar(['Concorrentes']),
+                        colunas
+                    };
+                    console.log('🎯 [EAN] Estrutura detetada:', _estruturaLista);
+                    return _estruturaLista;
+                } catch (e) {
+                    console.error('[EAN] Erro deteção:', e);
+                    return null;
+                }
+            }
+
             function converterItemParaProduto(item) {
                 const f = item.fields || {};
-                const ean = String(f.Title || '').trim();
+                const est = _estruturaLista || {
+                    campoEan: 'Title', campoNome: 'Nome',
+                    campoPrecoCusto: 'PrecoCusto', campoPrecoKero: 'PrecoKero', campoIva: 'Iva',
+                    campoFornecedor: 'Fornecedor', campoVendaMedia: 'VendaMediaMensal',
+                    campoStock: 'Stock', campoConcorrentes: 'Concorrentes'
+                };
+                const ean = String(f[est.campoEan] || '').trim();
                 if (!ean) return null;
                 let stock = {}, concorrentes = {};
-                try { stock = JSON.parse(f.Stock || '{}'); } catch (e) {}
-                try { concorrentes = JSON.parse(f.Concorrentes || '{}'); } catch (e) {}
+                try { stock = JSON.parse(f[est.campoStock] || '{}'); } catch (e) {}
+                try { concorrentes = JSON.parse(f[est.campoConcorrentes] || '{}'); } catch (e) {}
                 LOJAS_KERO.forEach(l => { if (!(l in stock)) stock[l] = 0; });
                 CONCORRENTES.forEach(c => { if (!(c in concorrentes)) concorrentes[c] = 0; });
                 return {
                     id: item.id, ean,
-                    nome: f.Nome || '',
-                    preco_custo: Number(f.PrecoCusto) || 0,
-                    preco_kero: Number(f.PrecoKero) || 0,
-                    iva: Number(f.Iva) || 0,
-                    fornecedor: f.Fornecedor || '',
-                    venda_media_mensal: Number(f.VendaMediaMensal) || 0,
+                    nome: f[est.campoNome] || '',
+                    preco_custo: Number(f[est.campoPrecoCusto]) || 0,
+                    preco_kero: Number(f[est.campoPrecoKero]) || 0,
+                    iva: Number(f[est.campoIva]) || 0,
+                    fornecedor: f[est.campoFornecedor] || '',
+                    venda_media_mensal: Number(f[est.campoVendaMedia]) || 0,
                     stock, concorrentes
                 };
             }
@@ -4086,87 +4204,288 @@
                 return prod;
             }
 
-            async function obterToken() { return await getSharePointToken(); }
-            async function obterSiteId() { return await getSiteId(); }
-
+            // ============================================================
+            // CONSULTAS DIRETAS AO SHAREPOINT
+            // ============================================================
             async function buscarEanExatoNoSharePoint(ean) {
+                const est = await detectarEstruturaLista();
+                if (!est) throw new Error('Não consegui detetar a estrutura da lista. Vê a consola (F12).');
                 const token = await obterToken();
                 const siteId = await obterSiteId();
-                const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items`
-                          + `?expand=fields&$filter=fields/Title eq '${ean.replace(/'/g, "''")}'&$top=1`;
+                const eanEsc = String(ean).replace(/'/g, "''");
+                const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$filter=fields/${est.campoEan} eq '${eanEsc}'&$top=1`;
+                console.log('[EAN] Query EAN:', url);
                 const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-                if (!resp.ok) throw new Error(`EAN lookup ${resp.status}`);
+                if (!resp.ok) {
+                    const txt = await resp.text();
+                    console.error('[EAN] Query falhou:', resp.status, txt);
+                    throw new Error(`SharePoint ${resp.status}: ${txt.substring(0, 200)}`);
+                }
                 const data = await resp.json();
                 const item = (data.value || [])[0];
                 return item ? converterItemParaProduto(item) : null;
             }
 
             async function buscarPorNomeNoSharePoint(termo) {
+                const est = await detectarEstruturaLista();
+                if (!est) return [];
                 const token = await obterToken();
                 const siteId = await obterSiteId();
                 const t = String(termo).replace(/'/g, "''");
                 const base = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields`;
 
-                // 1) startswith — rápido se coluna Nome estiver indexada
                 try {
-                    const r1 = await fetch(`${base}&$filter=startswith(fields/Nome,'${t}')&$top=15`,
-                        { headers: { 'Authorization': `Bearer ${token}` } });
-                    if (r1.ok) {
-                        const d1 = await r1.json();
-                        const rs = (d1.value || []).map(converterItemParaProduto).filter(Boolean);
+                    const url = `${base}&$filter=startswith(fields/${est.campoNome},'${t}')&$top=15`;
+                    const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (r.ok) {
+                        const d = await r.json();
+                        const rs = (d.value || []).map(converterItemParaProduto).filter(Boolean);
                         if (rs.length > 0) return rs;
+                    } else {
+                        console.warn('[EAN] startswith falhou:', r.status);
                     }
-                } catch (e) {}
+                } catch (e) { console.warn('[EAN] startswith erro:', e); }
 
-                // 2) substringof — fallback (mais lento mas cobre "contém")
                 try {
-                    const r2 = await fetch(`${base}&$filter=substringof('${t}',fields/Nome)&$top=15`,
-                        { headers: { 'Authorization': `Bearer ${token}` } });
-                    if (r2.ok) {
-                        const d2 = await r2.json();
-                        return (d2.value || []).map(converterItemParaProduto).filter(Boolean);
+                    const url = `${base}&$filter=substringof('${t}',fields/${est.campoNome})&$top=15`;
+                    const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (r.ok) {
+                        const d = await r.json();
+                        return (d.value || []).map(converterItemParaProduto).filter(Boolean);
                     }
-                } catch (e) {}
+                } catch (e) { console.warn('[EAN] substringof erro:', e); }
 
                 return [];
             }
 
+            async function _obterMapaEanParaId(token, siteId) {
+                if (_eanItemIdCache && Object.keys(_eanItemIdCache).length > 0) return _eanItemIdCache;
+                const est = await detectarEstruturaLista();
+                const campoEan = est ? est.campoEan : 'Title';
+                const mapa = {};
+                let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
+                while (url) {
+                    const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (!resp.ok) throw new Error(`Erro ${resp.status}`);
+                    const data = await resp.json();
+                    (data.value || []).forEach(item => {
+                        const t = item.fields && item.fields[campoEan];
+                        if (t) mapa[String(t).trim()] = item.id;
+                    });
+                    url = data['@odata.nextLink'] || null;
+                }
+                _eanItemIdCache = mapa;
+                return mapa;
+            }
+
+            async function carregarProdutosDoSharePoint() {
+                try {
+                    await detectarEstruturaLista();
+                    const token = await obterToken();
+                    const siteId = await obterSiteId();
+                    let allItems = [];
+                    let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
+                    while (url) {
+                        const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (!resp.ok) {
+                            if (resp.status === 404) return false;
+                            if (resp.status === 429 || resp.status === 503) {
+                                const wait = parseInt(resp.headers.get('Retry-After') || '10');
+                                await new Promise(r => setTimeout(r, wait * 1000));
+                                continue;
+                            }
+                            throw new Error(`Erro ${resp.status}`);
+                        }
+                        const data = await resp.json();
+                        allItems = allItems.concat(data.value || []);
+                        const badge = document.getElementById('totalProdutosBadge');
+                        if (badge) badge.textContent = `A carregar… ${allItems.length}`;
+                        url = data['@odata.nextLink'] || null;
+                    }
+                    if (allItems.length === 0) return false;
+                    const carregados = [];
+                    _eanItemIdCache = {};
+                    for (const item of allItems) {
+                        const p = converterItemParaProduto(item);
+                        if (p) { carregados.push(p); _eanItemIdCache[String(p.ean).trim()] = item.id; }
+                    }
+                    if (carregados.length === 0) return false;
+                    produtos = carregados;
+                    guardarLocal();
+                    atualizarBadgeTotal();
+                    renderizarHistorico();
+                    notificar(`✅ ${produtos.length} produtos carregados.`, 'success');
+                    return true;
+                } catch (error) {
+                    console.error('[EAN] Erro load:', error);
+                    notificar(`⚠️ Erro: ${error.message}`, 'warning');
+                    return false;
+                }
+            }
+
+            async function publicarProdutosNoSharePoint() {
+                if (produtos.length === 0) { notificar('Não há produtos.', 'error'); return false; }
+                if (typeof usuarioAtual === 'undefined' || (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
+                    notificar('Sem permissão.', 'error'); return false;
+                }
+                await detectarEstruturaLista();
+                showLoading();
+                const token = await obterToken(), siteId = await obterSiteId(), listName = LISTA_EAN, total = produtos.length;
+                const est = _estruturaLista;
+                let mapa = {};
+                try {
+                    const checkUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?$top=1`;
+                    const checkResp = await fetch(checkUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                    const checkData = await checkResp.json();
+                    if (!checkData.value || checkData.value.length === 0) { mapa = {}; _eanItemIdCache = {}; }
+                    else { mapa = await _obterMapaEanParaId(token, siteId); }
+                } catch (e) { mapa = {}; }
+
+                const BATCH_SIZE = 20, MAX_RODADAS = 5, inicio = Date.now();
+                let processados = 0, sucessos = 0;
+                let pendentes = [...produtos];
+
+                for (let rodada = 0; rodada < MAX_RODADAS && pendentes.length > 0; rodada++) {
+                    if (rodada > 0) {
+                        const espera = Math.min(120, Math.pow(2, rodada) * 5);
+                        notificar(`⏳ Rodada ${rodada + 1}: ${pendentes.length} produtos (${espera}s)...`, 'info');
+                        await new Promise(r => setTimeout(r, espera * 1000));
+                    }
+                    const falhados = [];
+                    const totalRodada = pendentes.length;
+                    for (let i = 0; i < totalRodada; i += BATCH_SIZE) {
+                        const lote = pendentes.slice(i, i + BATCH_SIZE);
+                        const batchRequests = lote.map((produto, idx) => {
+                            const eanKey = String(produto.ean).trim();
+                            const existingId = mapa[eanKey];
+                            const fields = {
+                                [est.campoEan]: eanKey,
+                                [est.campoNome]: produto.nome || '',
+                                [est.campoPrecoCusto]: Number(produto.preco_custo) || 0,
+                                [est.campoPrecoKero]: Number(produto.preco_kero) || 0,
+                                [est.campoIva]: Number(produto.iva) || 0,
+                                [est.campoFornecedor]: produto.fornecedor || '',
+                                [est.campoVendaMedia]: Number(produto.venda_media_mensal) || 0,
+                                [est.campoStock]: JSON.stringify(produto.stock || {}),
+                                [est.campoConcorrentes]: JSON.stringify(produto.concorrentes || {})
+                            };
+                            const requestId = String(idx + 1);
+                            if (existingId) return { id: requestId, method: 'PATCH', url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`, headers: { 'Content-Type': 'application/json' }, body: fields };
+                            return { id: requestId, method: 'POST', url: `/sites/${siteId}/lists/${listName}/items`, headers: { 'Content-Type': 'application/json' }, body: { fields } };
+                        });
+                        let tentativa = 0, respostas = null;
+                        while (tentativa < 6) {
+                            try {
+                                const resp = await fetch('https://graph.microsoft.com/v1.0/$batch', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ requests: batchRequests }) });
+                                if (resp.status === 429 || resp.status === 503) {
+                                    const wait = parseInt(resp.headers.get('Retry-After') || String(5 * (tentativa + 1)));
+                                    await new Promise(r => setTimeout(r, wait * 1000));
+                                    tentativa++; continue;
+                                }
+                                if (!resp.ok) { respostas = null; break; }
+                                const data = await resp.json();
+                                respostas = data.responses || [];
+                                break;
+                            } catch (e) {
+                                await new Promise(r => setTimeout(r, 2000 * (tentativa + 1)));
+                                tentativa++;
+                            }
+                        }
+                        if (!respostas) { falhados.push(...lote); }
+                        else {
+                            respostas.forEach((r, idx) => {
+                                const produto = lote[idx];
+                                if (!produto) return;
+                                if (r.status >= 200 && r.status < 300) {
+                                    sucessos++; processados++;
+                                    if (r.body && r.body.id) mapa[String(produto.ean).trim()] = r.body.id;
+                                } else if (r.status === 429 || r.status === 503 || r.status >= 500) {
+                                    falhados.push(produto);
+                                } else { processados++; }
+                            });
+                        }
+                        const elapsed = (Date.now() - inicio) / 1000;
+                        const rate = processados > 0 ? processados / elapsed : 0;
+                        const restantes = total - processados;
+                        const etaMin = rate > 0 ? Math.round(restantes / rate / 60) : 0;
+                        const badge = document.getElementById('totalProdutosBadge');
+                        if (badge) badge.textContent = `Rodada ${rodada+1} · ${processados}/${total} · ETA ${etaMin}min`;
+                    }
+                    pendentes = falhados;
+                }
+                _eanItemIdCache = mapa;
+                hideLoading();
+                atualizarBadgeTotal();
+                const duracao = Math.round((Date.now() - inicio) / 1000 / 60);
+                if (pendentes.length === 0) {
+                    notificar(`✅ ${sucessos} produtos publicados em ${duracao} min.`, 'success');
+                    return true;
+                }
+                notificar(`⚠️ ${sucessos} publicados, ${pendentes.length} falharam (${duracao} min).`, 'warning');
+                return false;
+            }
+
+            // ============================================================
+            // RENDERIZAÇÃO
+            // ============================================================
             function renderizarProduto(prod) {
-                if (!prod) { const result = document.getElementById('resultContainer'); if (result) result.classList.remove('active'); const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block'; produtoAtual = null; const btnConc = document.getElementById('btnGuardarConcorrentes'); if (btnConc) btnConc.disabled = true; const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active'); return; }
+                if (!prod) {
+                    const result = document.getElementById('resultContainer'); if (result) result.classList.remove('active');
+                    const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block';
+                    produtoAtual = null;
+                    const btnConc = document.getElementById('btnGuardarConcorrentes'); if (btnConc) btnConc.disabled = true;
+                    const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active');
+                    return;
+                }
                 produtoAtual = prod;
                 const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'none';
                 const result = document.getElementById('resultContainer'); if (result) result.classList.add('active');
                 const btnConc = document.getElementById('btnGuardarConcorrentes'); if (btnConc) btnConc.disabled = false;
                 const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active');
-                const nomeEl = document.getElementById('prodNome'); const eanEl = document.getElementById('prodEan');
-                if (nomeEl) nomeEl.textContent = prod.nome;
-                if (eanEl) eanEl.textContent = `EAN: ${prod.ean}`;
-                atualizarPrecos(prod); renderizarConcorrentes(prod); renderizarStockVertical(prod);
+                const nomeEl = document.getElementById('prodNome'); if (nomeEl) nomeEl.textContent = prod.nome;
+                const eanEl = document.getElementById('prodEan'); if (eanEl) eanEl.textContent = `EAN: ${prod.ean}`;
+                atualizarPrecos(prod);
+                renderizarConcorrentes(prod);
+                renderizarStockVertical(prod);
                 sessionStorage.setItem('ean_ultimo_produto', prod.ean);
-                const info = document.getElementById('lastSearchInfo'); if (info) info.textContent = `Última pesquisa: ${prod.nome} (${prod.ean})`;
+                const info = document.getElementById('lastSearchInfo');
+                if (info) info.textContent = `Última pesquisa: ${prod.nome} (${prod.ean})`;
             }
+
             function atualizarPrecos(prod) {
-                const displayMap = { prodPrecoKeroDisplay: prod.preco_kero || 0, prodPrecoCustoDisplay: prod.preco_custo || 0, prodIvaDisplay: prod.iva || 0, prodFornecedorDisplay: prod.fornecedor || '', prodVendaMediaDisplay: prod.venda_media_mensal || 0 };
-                Object.keys(displayMap).forEach(id => { const el = document.getElementById(id); if (!el) return; const val = displayMap[id]; if (id.includes('Preco') || id === 'prodIvaDisplay') el.textContent = (typeof val === 'number' ? val.toFixed(2) : val) + (id === 'prodIvaDisplay' ? ' %' : ' Kz'); else el.textContent = val || ''; });
-                const inputMap = { prodPrecoKeroInput: prod.preco_kero || 0, prodPrecoCustoInput: prod.preco_custo || 0, prodIvaInput: prod.iva || 0, prodFornecedorInput: prod.fornecedor || '', prodVendaMediaInput: prod.venda_media_mensal || 0 };
-                Object.keys(inputMap).forEach(id => { const el = document.getElementById(id); if (!el) return; const val = inputMap[id]; if (id === 'prodFornecedorInput') el.value = val; else el.value = (typeof val === 'number' ? val.toFixed(2) : val); });
+                const el1 = document.getElementById('prodPrecoKeroDisplay'); if (el1) el1.textContent = `${(prod.preco_kero || 0).toFixed(2)} Kz`;
+                const el2 = document.getElementById('prodPrecoCustoDisplay'); if (el2) el2.textContent = `${(prod.preco_custo || 0).toFixed(2)} Kz`;
+                const el3 = document.getElementById('prodIvaDisplay'); if (el3) el3.textContent = `${(prod.iva || 0).toFixed(2)} %`;
+                const el4 = document.getElementById('prodFornecedorDisplay'); if (el4) el4.textContent = prod.fornecedor || '-';
+                const el5 = document.getElementById('prodVendaMediaDisplay'); if (el5) el5.textContent = prod.venda_media_mensal || 0;
+                const i1 = document.getElementById('prodPrecoKeroInput'); if (i1) i1.value = prod.preco_kero || 0;
+                const i2 = document.getElementById('prodPrecoCustoInput'); if (i2) i2.value = prod.preco_custo || 0;
+                const i3 = document.getElementById('prodIvaInput'); if (i3) i3.value = prod.iva || 0;
+                const i4 = document.getElementById('prodFornecedorInput'); if (i4) i4.value = prod.fornecedor || '';
+                const i5 = document.getElementById('prodVendaMediaInput'); if (i5) i5.value = prod.venda_media_mensal || 0;
             }
+
             function renderizarStockVertical(prod) {
                 const tbody = document.getElementById('stockBody'); if (!tbody) return;
-                let html = ''; let totalGeral = 0;
-                LOJAS_KERO.forEach(loja => { const qtd = prod.stock[loja] || 0; totalGeral += qtd; const nomeCurto = loja.replace('Kero Loja ', ''); html += `<tr><td>${nomeCurto}</td><td>${qtd}</td></tr>`; });
-                html += `<tr class="total-row"><td><strong>Total</strong></td><td><strong>${totalGeral}</strong></td></tr>`;
+                let html = '', total = 0;
+                LOJAS_KERO.forEach(loja => {
+                    const q = prod.stock[loja] || 0;
+                    total += q;
+                    html += `<tr><td>${loja.replace('Kero Loja ', '')}</td><td>${q}</td></tr>`;
+                });
+                html += `<tr class="total-row"><td><strong>Total</strong></td><td><strong>${total}</strong></td></tr>`;
                 tbody.innerHTML = html;
             }
+
             function renderizarConcorrentes(prod) {
                 const grid = document.getElementById('concorrentesGrid'); if (!grid) return;
-                let html = '';
-                CONCORRENTES.forEach(nome => { const valor = prod.concorrentes[nome] || 0; html += `<div class="concorrente-item"><span class="label">${nome}</span><input type="number" step="0.01" class="concorrente-input" data-concorrente="${nome}" value="${valor}" placeholder="0.00"></div>`; });
-                grid.innerHTML = html;
+                grid.innerHTML = CONCORRENTES.map(nome =>
+                    `<div class="concorrente-item"><span class="label">${nome}</span><input type="number" step="0.01" class="concorrente-input" data-concorrente="${nome}" value="${prod.concorrentes[nome] || 0}"></div>`
+                ).join('');
             }
+
             async function renderizarTodosProdutos() {
-                const container = document.getElementById('productGrid');
-                if (!container) return;
+                const container = document.getElementById('productGrid'); if (!container) return;
                 if (produtos.length === 0) {
                     container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#666;">A carregar todos os produtos…</div>';
                     document.getElementById('allProducts').classList.add('active');
@@ -4195,10 +4514,12 @@
                 document.getElementById('allProducts').classList.add('active');
             }
 
+            // ============================================================
+            // SUGESTÕES (com debounce + cancelamento)
+            // ============================================================
             let _sugestaoTimer = null, _sugestaoSeq = 0;
             function atualizarSugestoes(termo) {
-                const box = document.getElementById('suggestionsBox');
-                if (!box) return;
+                const box = document.getElementById('suggestionsBox'); if (!box) return;
                 if (!termo || termo.length < 2) { box.classList.remove('active'); return; }
                 clearTimeout(_sugestaoTimer);
                 _sugestaoTimer = setTimeout(async () => {
@@ -4217,13 +4538,11 @@
                 }, 350);
             }
             function renderSugestoesLista(lista) {
-                const box = document.getElementById('suggestionsBox');
-                box.innerHTML = '';
+                const box = document.getElementById('suggestionsBox'); box.innerHTML = '';
                 lista.slice(0, 8).forEach(p => {
                     const item = document.createElement('div');
                     item.className = 'suggestion-item';
-                    item.innerHTML = `<span class="suggestion-name">${p.nome}</span>
-                                      <span class="suggestion-ean">${p.ean}</span>`;
+                    item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">${p.ean}</span>`;
                     item.addEventListener('click', () => {
                         const prod = upsertLocal(p);
                         renderizarProduto(prod);
@@ -4236,14 +4555,16 @@
                 box.classList.add('active');
             }
 
+            // ============================================================
+            // BUSCA PRINCIPAL
+            // ============================================================
             async function buscarProduto(termo) {
                 const termoLimpo = String(termo || '').trim();
                 if (!termoLimpo) { notificar('Digite um nome ou EAN.', 'error'); return; }
                 const semEspacos = termoLimpo.replace(/\s/g, '');
-
                 showLoading();
                 try {
-                    // EAN exato → consulta direta (Title indexado → instantâneo)
+                    // EAN exato → consulta direta
                     if (/^\d{8,14}$/.test(semEspacos)) {
                         let prod = produtos.find(p => p.ean === semEspacos);
                         if (!prod) {
@@ -4256,8 +4577,7 @@
                         adicionarHistorico(prod.ean);
                         return;
                     }
-
-                    // Nome → consulta direta ao SharePoint
+                    // Nome → consulta direta
                     const resultados = await buscarPorNomeNoSharePoint(termoLimpo);
                     if (resultados.length === 0) {
                         const locais = produtos.filter(p => (p.nome || '').toLowerCase().includes(termoLimpo.toLowerCase()));
@@ -4280,17 +4600,17 @@
                         renderSugestoesLista(resultados);
                     }
                 } catch (err) {
-                    console.error('[EAN] Erro consulta SharePoint:', err);
+                    console.error('[EAN] ❌ Erro:', err);
                     const prod = produtos.find(p => p.ean === semEspacos);
                     if (prod) { renderizarProduto(prod); adicionarHistorico(prod.ean); return; }
-                    notificar('Erro ao consultar SharePoint.', 'error');
+                    notificar(`❌ Erro SharePoint: ${err.message || err}`, 'error');
                 } finally {
                     hideLoading();
                 }
             }
 
             function limparPesquisa() {
-                document.getElementById('eanInput').value = '';
+                const eanInput = document.getElementById('eanInput'); if (eanInput) eanInput.value = '';
                 const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active');
                 const result = document.getElementById('resultContainer'); if (result) result.classList.remove('active');
                 const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block';
@@ -4302,25 +4622,47 @@
                 const btnEditar = document.getElementById('btnEditarPrecos'); if (btnEditar) btnEditar.textContent = 'Editar';
                 const btnGuardar = document.getElementById('btnGuardarPrecos'); if (btnGuardar) btnGuardar.style.display = 'none';
                 editandoPrecos = false;
-                document.getElementById('eanInput').focus();
+                if (eanInput) eanInput.focus();
             }
+
             function guardarPrecosConcorrentes() {
                 if (!produtoAtual) { notificar('Nenhum produto selecionado.', 'error'); return; }
                 const inputs = document.querySelectorAll('.concorrente-input');
                 let valido = true;
-                inputs.forEach(input => { const concorrente = input.dataset.concorrente; const valor = parseFloat(input.value); if (isNaN(valor) || valor < 0) { notificar(`Valor inválido para ${concorrente}.`, 'error'); valido = false; return; } produtoAtual.concorrentes[concorrente] = valor; });
+                inputs.forEach(input => {
+                    const c = input.dataset.concorrente;
+                    const v = parseFloat(input.value);
+                    if (isNaN(v) || v < 0) { notificar(`Valor inválido para ${c}.`, 'error'); valido = false; return; }
+                    produtoAtual.concorrentes[c] = v;
+                });
                 if (!valido) return;
                 guardarLocal();
                 notificar('✅ Guardado!', 'success');
             }
+
             function toggleEdicaoPrecos() {
                 if (!produtoAtual) return;
                 editandoPrecos = !editandoPrecos;
-                const campos = [{ display: 'prodPrecoKeroDisplay', input: 'prodPrecoKeroInput' }, { display: 'prodPrecoCustoDisplay', input: 'prodPrecoCustoInput' }, { display: 'prodIvaDisplay', input: 'prodIvaInput' }, { display: 'prodFornecedorDisplay', input: 'prodFornecedorInput' }, { display: 'prodVendaMediaDisplay', input: 'prodVendaMediaInput' }];
+                const campos = [
+                    { display: 'prodPrecoKeroDisplay', input: 'prodPrecoKeroInput' },
+                    { display: 'prodPrecoCustoDisplay', input: 'prodPrecoCustoInput' },
+                    { display: 'prodIvaDisplay', input: 'prodIvaInput' },
+                    { display: 'prodFornecedorDisplay', input: 'prodFornecedorInput' },
+                    { display: 'prodVendaMediaDisplay', input: 'prodVendaMediaInput' }
+                ];
                 const btnEditar = document.getElementById('btnEditarPrecos'), btnGuardar = document.getElementById('btnGuardarPrecos');
-                if (editandoPrecos) { campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'none'; if (i) i.style.display = 'block'; }); if (btnEditar) btnEditar.textContent = 'Cancelar'; if (btnGuardar) btnGuardar.style.display = 'inline-block'; }
-                else { campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'block'; if (i) i.style.display = 'none'; }); if (btnEditar) btnEditar.textContent = 'Editar'; if (btnGuardar) btnGuardar.style.display = 'none'; atualizarPrecos(produtoAtual); }
+                if (editandoPrecos) {
+                    campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'none'; if (i) i.style.display = 'block'; });
+                    if (btnEditar) btnEditar.textContent = 'Cancelar';
+                    if (btnGuardar) btnGuardar.style.display = 'inline-block';
+                } else {
+                    campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'block'; if (i) i.style.display = 'none'; });
+                    if (btnEditar) btnEditar.textContent = 'Editar';
+                    if (btnGuardar) btnGuardar.style.display = 'none';
+                    atualizarPrecos(produtoAtual);
+                }
             }
+
             function guardarPrecosKero() {
                 if (!produtoAtual) return;
                 const precoKero = parseFloat(document.getElementById('prodPrecoKeroInput').value);
@@ -4328,15 +4670,37 @@
                 const iva = parseFloat(document.getElementById('prodIvaInput').value);
                 const fornecedor = document.getElementById('prodFornecedorInput').value.trim();
                 const vendaMedia = parseFloat(document.getElementById('prodVendaMediaInput').value);
-                if (isNaN(precoKero) || precoKero < 0 || isNaN(precoCusto) || precoCusto < 0 || isNaN(iva) || iva < 0 || isNaN(vendaMedia) || vendaMedia < 0) { notificar('Valores inválidos.', 'error'); return; }
-                produtoAtual.preco_kero = precoKero; produtoAtual.preco_custo = precoCusto; produtoAtual.iva = iva; produtoAtual.fornecedor = fornecedor; produtoAtual.venda_media_mensal = vendaMedia;
+                if (isNaN(precoKero) || precoKero < 0 || isNaN(precoCusto) || precoCusto < 0 || isNaN(iva) || iva < 0 || isNaN(vendaMedia) || vendaMedia < 0) {
+                    notificar('Valores inválidos.', 'error'); return;
+                }
+                produtoAtual.preco_kero = precoKero;
+                produtoAtual.preco_custo = precoCusto;
+                produtoAtual.iva = iva;
+                produtoAtual.fornecedor = fornecedor;
+                produtoAtual.venda_media_mensal = vendaMedia;
                 guardarLocal();
                 notificar('✅ Atualizado!', 'success');
                 atualizarPrecos(produtoAtual);
                 toggleEdicaoPrecos();
             }
+
+            // ============================================================
+            // CÂMARA E IMAGEM
+            // ============================================================
             function redimensionarImagem(imageData, maxLargura = 1000) {
-                return new Promise((resolve) => { const img = new Image(); img.onload = function() { let { width, height } = img; if (width > maxLargura) { height = Math.round(height * (maxLargura / width)); width = maxLargura; } const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.9)); }; img.onerror = function() { resolve(imageData); }; img.src = imageData; });
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = function() {
+                        let { width, height } = img;
+                        if (width > maxLargura) { height = Math.round(height * (maxLargura / width)); width = maxLargura; }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width; canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.9));
+                    };
+                    img.onerror = function() { resolve(imageData); };
+                    img.src = imageData;
+                });
             }
             function abrirCamera() {
                 const modal = document.getElementById('cameraModal'); if (!modal) return;
@@ -4344,147 +4708,119 @@
                 document.getElementById('cameraStatus').textContent = 'A iniciar câmera...';
                 if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
                 if (scanFrameId) { cancelAnimationFrame(scanFrameId); scanFrameId = null; }
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { document.getElementById('cameraStatus').textContent = 'Câmara não suportada.'; return; }
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    document.getElementById('cameraStatus').textContent = 'Câmara não suportada.'; return;
+                }
                 if ('BarcodeDetector' in window) iniciarCameraComBarcodeDetector();
                 else iniciarCameraFallback();
             }
             function iniciarCameraComBarcodeDetector() {
                 navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } } }).then(stream => {
                     cameraStream = stream;
-                    const video = document.getElementById('cameraVideo'); video.srcObject = stream; video.play();
+                    const video = document.getElementById('cameraVideo');
+                    video.srcObject = stream; video.play();
                     document.getElementById('cameraStatus').textContent = '📷 Aponte para o código';
                     const barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39'] });
                     let scanning = true;
-                    function scanFrame() { if (!scanning || !video.srcObject) return; barcodeDetector.detect(video).then(barcodes => { if (barcodes.length > 0) { const code = barcodes[0].rawValue.replace(/\s/g, ''); fecharCamera(); document.getElementById('eanInput').value = code; buscarProduto(code); return; } }).catch(err => {}); scanFrameId = requestAnimationFrame(scanFrame); }
+                    function scanFrame() {
+                        if (!scanning || !video.srcObject) return;
+                        barcodeDetector.detect(video).then(barcodes => {
+                            if (barcodes.length > 0) {
+                                const code = barcodes[0].rawValue.replace(/\s/g, '');
+                                fecharCamera();
+                                document.getElementById('eanInput').value = code;
+                                buscarProduto(code);
+                                return;
+                            }
+                        }).catch(err => {});
+                        scanFrameId = requestAnimationFrame(scanFrame);
+                    }
                     scanFrame();
                     setTimeout(() => { scanning = false; if (scanFrameId) cancelAnimationFrame(scanFrameId); }, 30000);
                 }).catch(err => { iniciarCameraFallback(); });
             }
             function iniciarCameraFallback() {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } } }).then(stream => { cameraStream = stream; const video = document.getElementById('cameraVideo'); video.srcObject = stream; video.play(); document.getElementById('cameraStatus').textContent = '📷 Clique em "Capturar"'; }).catch(err => { document.getElementById('cameraStatus').textContent = 'Câmara indisponível.'; });
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } } }).then(stream => {
+                    cameraStream = stream;
+                    const video = document.getElementById('cameraVideo');
+                    video.srcObject = stream; video.play();
+                    document.getElementById('cameraStatus').textContent = '📷 Clique em "Capturar"';
+                }).catch(err => { document.getElementById('cameraStatus').textContent = 'Câmara indisponível.'; });
             }
             function fecharCamera() {
                 if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
                 if (scanFrameId) { cancelAnimationFrame(scanFrameId); scanFrameId = null; }
-                const video = document.getElementById('cameraVideo'); if (video.srcObject) video.srcObject = null;
+                const video = document.getElementById('cameraVideo'); if (video && video.srcObject) video.srcObject = null;
                 document.getElementById('cameraModal').classList.remove('active');
             }
             function capturarEscanear() {
                 const video = document.getElementById('cameraVideo');
                 if (!video.srcObject || video.paused) { notificar('Câmera não está ativa.', 'error'); return; }
                 const canvas = document.getElementById('cameraCanvas');
-                canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
-                const ctx = canvas.getContext('2d'); ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const imageData = canvas.toDataURL('image/jpeg', 0.9);
                 decodificarImagemComZXing(imageData);
             }
             function decodificarImagemComZXing(imageData) {
-                if (typeof ZXing !== 'undefined') { const reader = new ZXing.BrowserMultiFormatReader(); reader.decodeFromImage(undefined, imageData).then(result => { const code = result.getText().replace(/\s/g, ''); document.getElementById('eanInput').value = code; buscarProduto(code); fecharCamera(); }).catch(err => { decodificarImagem(imageData); }); }
-                else decodificarImagem(imageData);
+                if (typeof ZXing !== 'undefined') {
+                    const reader = new ZXing.BrowserMultiFormatReader();
+                    reader.decodeFromImage(undefined, imageData).then(result => {
+                        const code = result.getText().replace(/\s/g, '');
+                        document.getElementById('eanInput').value = code;
+                        buscarProduto(code);
+                        fecharCamera();
+                    }).catch(err => { decodificarImagem(imageData); });
+                } else decodificarImagem(imageData);
             }
             function decodificarImagem(imageData, tentativas = 0) {
-                const config = { src: imageData, numOfWorkers: 4, inputStream: { size: 800, singleChannel: true }, decoder: { readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"], multiple: false, tryHarder: true }, locate: true, patchSize: "large" };
+                const config = {
+                    src: imageData, numOfWorkers: 4,
+                    inputStream: { size: 800, singleChannel: true },
+                    decoder: { readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"], multiple: false, tryHarder: true },
+                    locate: true, patchSize: "large"
+                };
                 Quagga.decodeSingle(config, function(result) {
-                    if (result && result.codeResult) { const code = result.codeResult.code.replace(/\s/g, ''); document.getElementById('eanInput').value = code; buscarProduto(code); fecharCamera(); return; }
-                    if (tentativas < 3) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); canvas.width = img.height; canvas.height = img.width; ctx.translate(canvas.width / 2, canvas.height / 2); ctx.rotate(Math.PI / 2); ctx.drawImage(img, -img.width / 2, -img.height / 2); const novaImagem = canvas.toDataURL('image/jpeg', 0.9); decodificarImagem(novaImagem, tentativas + 1); }; img.src = imageData; }
-                    else notificar('Não foi possível ler o código.', 'error');
+                    if (result && result.codeResult) {
+                        const code = result.codeResult.code.replace(/\s/g, '');
+                        document.getElementById('eanInput').value = code;
+                        buscarProduto(code);
+                        fecharCamera();
+                        return;
+                    }
+                    if (tentativas < 3) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            canvas.width = img.height; canvas.height = img.width;
+                            ctx.translate(canvas.width / 2, canvas.height / 2);
+                            ctx.rotate(Math.PI / 2);
+                            ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                            const novaImagem = canvas.toDataURL('image/jpeg', 0.9);
+                            decodificarImagem(novaImagem, tentativas + 1);
+                        };
+                        img.src = imageData;
+                    } else {
+                        notificar('Não foi possível ler o código.', 'error');
+                    }
                 });
             }
-            async function processarImagem(file) { if (!file) return; const reader = new FileReader(); reader.onload = async function(e) { const imagemRedimensionada = await redimensionarImagem(e.target.result); decodificarImagemComZXing(imagemRedimensionada); }; reader.readAsDataURL(file); }
+            async function processarImagem(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const imagemRedimensionada = await redimensionarImagem(e.target.result);
+                    decodificarImagemComZXing(imagemRedimensionada);
+                };
+                reader.readAsDataURL(file);
+            }
 
-            async function _obterMapaEanParaId(token, siteId) {
-                if (_eanItemIdCache && Object.keys(_eanItemIdCache).length > 0) return _eanItemIdCache;
-                const mapa = {};
-                let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
-                while (url) { const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } }); if (!resp.ok) throw new Error(`Erro ${resp.status}`); const data = await resp.json(); (data.value || []).forEach(item => { const t = item.fields && item.fields.Title; if (t) mapa[String(t).trim()] = item.id; }); url = data['@odata.nextLink'] || null; }
-                _eanItemIdCache = mapa;
-                return mapa;
-            }
-            async function carregarProdutosDoSharePoint() {
-                try {
-                    const token = await obterToken();
-                    const siteId = await obterSiteId();
-                    let allItems = [];
-                    let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
-                    while (url) {
-                        const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-                        if (!resp.ok) { if (resp.status === 404) return false; if (resp.status === 429 || resp.status === 503) { const wait = parseInt(resp.headers.get('Retry-After') || '10'); await new Promise(r => setTimeout(r, wait * 1000)); continue; } throw new Error(`Erro ${resp.status}`); }
-                        const data = await resp.json();
-                        allItems = allItems.concat(data.value || []);
-                        url = data['@odata.nextLink'] || null;
-                    }
-                    if (allItems.length === 0) return false;
-                    const carregados = [];
-                    for (const item of allItems) {
-                        const p = converterItemParaProduto(item);
-                        if (p) carregados.push(p);
-                    }
-                    if (carregados.length === 0) return false;
-                    produtos = carregados;
-                    _eanItemIdCache = {};
-                    allItems.forEach(it => { const t = it.fields && it.fields.Title; if (t) _eanItemIdCache[String(t).trim()] = it.id; });
-                    guardarLocal();
-                    atualizarBadgeTotal();
-                    renderizarHistorico();
-                    notificar(`✅ ${produtos.length} produtos carregados.`, 'success');
-                    return true;
-                } catch (error) { notificar('⚠️ Erro ao carregar do SharePoint.', 'warning'); return false; }
-            }
-            async function publicarProdutosNoSharePoint() {
-                if (produtos.length === 0) { notificar('Não há produtos.', 'error'); return false; }
-                if (typeof usuarioAtual === 'undefined' || (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) { notificar('Sem permissão.', 'error'); return false; }
-                showLoading();
-                const token = await obterToken(), siteId = await obterSiteId(), listName = LISTA_EAN, total = produtos.length;
-                let mapa = {};
-                try { const checkUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?$top=1`; const checkResp = await fetch(checkUrl, { headers: { 'Authorization': `Bearer ${token}` } }); const checkData = await checkResp.json(); if (!checkData.value || checkData.value.length === 0) { mapa = {}; _eanItemIdCache = {}; } else { mapa = await _obterMapaEanParaId(token, siteId); } }
-                catch (e) { mapa = {}; }
-                const BATCH_SIZE = 20, MAX_RODADAS = 5, inicio = Date.now();
-                let processados = 0, sucessos = 0;
-                let pendentes = [...produtos];
-                for (let rodada = 0; rodada < MAX_RODADAS && pendentes.length > 0; rodada++) {
-                    if (rodada > 0) { const espera = Math.min(120, Math.pow(2, rodada) * 5); notificar(`⏳ Rodada ${rodada + 1}: ${pendentes.length} produtos (${espera}s)...`, 'info'); await new Promise(r => setTimeout(r, espera * 1000)); }
-                    const falhados = [];
-                    const totalRodada = pendentes.length;
-                    for (let i = 0; i < totalRodada; i += BATCH_SIZE) {
-                        const lote = pendentes.slice(i, i + BATCH_SIZE);
-                        const batchRequests = lote.map((produto, idx) => {
-                            const eanKey = String(produto.ean).trim();
-                            const existingId = mapa[eanKey];
-                            const fields = { "Title": eanKey, "Nome": produto.nome || '', "PrecoCusto": Number(produto.preco_custo) || 0, "PrecoKero": Number(produto.preco_kero) || 0, "Iva": Number(produto.iva) || 0, "Fornecedor": produto.fornecedor || '', "VendaMediaMensal": Number(produto.venda_media_mensal) || 0, "Stock": JSON.stringify(produto.stock || {}), "Concorrentes": JSON.stringify(produto.concorrentes || {}) };
-                            const requestId = String(idx + 1);
-                            if (existingId) return { id: requestId, method: 'PATCH', url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`, headers: { 'Content-Type': 'application/json' }, body: fields };
-                            return { id: requestId, method: 'POST', url: `/sites/${siteId}/lists/${listName}/items`, headers: { 'Content-Type': 'application/json' }, body: { fields } };
-                        });
-                        let tentativa = 0, respostas = null;
-                        while (tentativa < 6) {
-                            try {
-                                const resp = await fetch('https://graph.microsoft.com/v1.0/$batch', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ requests: batchRequests }) });
-                                if (resp.status === 429 || resp.status === 503) { const wait = parseInt(resp.headers.get('Retry-After') || String(5 * (tentativa + 1))); await new Promise(r => setTimeout(r, wait * 1000)); tentativa++; continue; }
-                                if (!resp.ok) { respostas = null; break; }
-                                const data = await resp.json();
-                                respostas = data.responses || [];
-                                break;
-                            } catch (e) { await new Promise(r => setTimeout(r, 2000 * (tentativa + 1))); tentativa++; }
-                        }
-                        if (!respostas) { falhados.push(...lote); }
-                        else { respostas.forEach((r, idx) => { const produto = lote[idx]; if (!produto) return; if (r.status >= 200 && r.status < 300) { sucessos++; processados++; if (r.body && r.body.id) mapa[String(produto.ean).trim()] = r.body.id; } else if (r.status === 429 || r.status === 503 || r.status >= 500) { falhados.push(produto); } else { processados++; } }); }
-                        const elapsed = (Date.now() - inicio) / 1000;
-                        const rate = processados > 0 ? processados / elapsed : 0;
-                        const restantes = total - processados;
-                        const etaMin = rate > 0 ? Math.round(restantes / rate / 60) : 0;
-                        const badge = document.getElementById('totalProdutosBadge');
-                        if (badge) badge.textContent = `Rodada ${rodada+1} · ${processados}/${total} · ETA ${etaMin}min`;
-                    }
-                    pendentes = falhados;
-                }
-                _eanItemIdCache = mapa;
-                hideLoading();
-                atualizarBadgeTotal();
-                const duracao = Math.round((Date.now() - inicio) / 1000 / 60);
-                if (pendentes.length === 0) { notificar(`✅ ${sucessos} produtos publicados em ${duracao} min.`, 'success'); return true; }
-                notificar(`⚠️ ${sucessos} publicados, ${pendentes.length} falharam (${duracao} min).`, 'warning');
-                return false;
-            }
+            // ============================================================
+            // IMPORTAÇÃO EXCEL
+            // ============================================================
             function importarExcel(file) {
                 if (!file) return;
                 const reader = new FileReader();
@@ -4502,7 +4838,16 @@
                             Object.entries(MAPA_LOJAS).forEach(([colExcel, chaveInterna]) => { stock[chaveInterna] = parseFloat(row[colExcel]) || 0; });
                             const concorrentes = {};
                             CONCORRENTES.forEach(c => { concorrentes[c] = 0; });
-                            return { ean, nome: String(row['Descrição'] || '').trim(), fornecedor: String(row['Nome Fornecedor'] || '').trim(), preco_custo: parseFloat(row['PMM']) || 0, preco_kero: parseFloat(row['PVP']) || 0, iva: parseFloat(row['IVA %']) || 0, venda_media_mensal: parseFloat(row['VENDA Media Mensal']) || 0, stock, concorrentes };
+                            return {
+                                ean,
+                                nome: String(row['Descrição'] || '').trim(),
+                                fornecedor: String(row['Nome Fornecedor'] || '').trim(),
+                                preco_custo: parseFloat(row['PMM']) || 0,
+                                preco_kero: parseFloat(row['PVP']) || 0,
+                                iva: parseFloat(row['IVA %']) || 0,
+                                venda_media_mensal: parseFloat(row['VENDA Media Mensal']) || 0,
+                                stock, concorrentes
+                            };
                         }).filter(p => p !== null && p.nome !== '');
                         if (produtosImportados.length === 0) { notificar('Nenhum produto válido.', 'error'); return; }
                         produtos = produtosImportados;
@@ -4514,10 +4859,13 @@
                             notificar('⏳ A publicar automaticamente...', 'info');
                             publicarProdutosNoSharePoint().then(sucesso => { if (sucesso) notificar(`🎉 Guardados!`, 'success'); });
                         }
-                    } catch (err) { notificar('Erro ao ler o Excel: ' + err.message, 'error'); }
+                    } catch (err) {
+                        notificar('Erro ao ler o Excel: ' + err.message, 'error');
+                    }
                 };
                 reader.readAsArrayBuffer(file);
             }
+
             function exportarDados() {
                 if (produtos.length === 0) { notificar('Sem produtos.', 'error'); return; }
                 const json = JSON.stringify(produtos, null, 2);
@@ -4528,9 +4876,40 @@
                 URL.revokeObjectURL(url);
             }
             function adicionarProduto() { notificar('Use importação Excel.', 'info'); }
+
+            // ============================================================
+            // DIAGNÓSTICO
+            // ============================================================
+            async function diagnosticar() {
+                console.group('🔍 DIAGNÓSTICO EAN');
+                try {
+                    const est = await detectarEstruturaLista();
+                    console.log('Estrutura detetada:', est);
+                    if (!est) { console.warn('Não foi possível detetar a estrutura.'); console.groupEnd(); return; }
+                    const token = await obterToken();
+                    const siteId = await obterSiteId();
+                    const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=1`;
+                    const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                    console.log('Teste leitura:', r.status);
+                    if (r.ok) { const d = await r.json(); console.log('Primeiro item:', d.value?.[0]); }
+                } catch (e) { console.error(e); }
+                console.groupEnd();
+            }
+
+            // ============================================================
+            // EVENTOS
+            // ============================================================
             function configurarEventos() {
                 const btnBuscar = document.getElementById('btnBuscar'); if (btnBuscar) btnBuscar.addEventListener('click', () => buscarProduto(document.getElementById('eanInput').value));
-                const eanInput = document.getElementById('eanInput'); if (eanInput) eanInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); buscarProduto(e.target.value); } });
+                const eanInput = document.getElementById('eanInput');
+                if (eanInput) {
+                    eanInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); buscarProduto(e.target.value); } });
+                    eanInput.addEventListener('input', (e) => {
+                        const val = e.target.value.trim();
+                        if (val.length >= 2) atualizarSugestoes(val);
+                        else { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); }
+                    });
+                }
                 const btnLimpar = document.getElementById('btnLimpar'); if (btnLimpar) btnLimpar.addEventListener('click', limparPesquisa);
                 const btnListar = document.getElementById('btnListarTodos'); if (btnListar) btnListar.addEventListener('click', renderizarTodosProdutos);
                 const btnGuardarConc = document.getElementById('btnGuardarConcorrentes'); if (btnGuardarConc) btnGuardarConc.addEventListener('click', guardarPrecosConcorrentes);
@@ -4539,48 +4918,81 @@
                 const btnCamera = document.getElementById('btnCamera'); if (btnCamera) btnCamera.addEventListener('click', abrirCamera);
                 const btnCloseCamera = document.getElementById('btnCloseCamera'); if (btnCloseCamera) btnCloseCamera.addEventListener('click', fecharCamera);
                 const btnCapture = document.getElementById('btnCapture'); if (btnCapture) btnCapture.addEventListener('click', capturarEscanear);
-                const btnUploadFromCamera = document.getElementById('btnUploadFromCamera'); if (btnUploadFromCamera) btnUploadFromCamera.addEventListener('click', () => { fecharCamera(); document.getElementById('fileInput').click(); });
+                const btnUploadFromCamera = document.getElementById('btnUploadFromCamera');
+                if (btnUploadFromCamera) btnUploadFromCamera.addEventListener('click', () => { fecharCamera(); document.getElementById('fileInput').click(); });
                 const btnUploadImage = document.getElementById('btnUploadImage'); if (btnUploadImage) btnUploadImage.addEventListener('click', () => document.getElementById('fileInput').click());
-                const fileInput = document.getElementById('fileInput'); if (fileInput) fileInput.addEventListener('change', function(e) { if (this.files.length > 0) processarImagem(this.files[0]); this.value = ''; });
+                const fileInput = document.getElementById('fileInput');
+                if (fileInput) fileInput.addEventListener('change', function(e) { if (this.files.length > 0) processarImagem(this.files[0]); this.value = ''; });
                 const btnImportExcel = document.getElementById('btnImportExcel'); if (btnImportExcel) btnImportExcel.addEventListener('click', () => document.getElementById('fileInputExcel').click());
-                const fileInputExcel = document.getElementById('fileInputExcel'); if (fileInputExcel) fileInputExcel.addEventListener('change', function(e) { if (this.files.length > 0) importarExcel(this.files[0]); this.value = ''; });
-                const btnPublicar = document.getElementById('btnPublicarSharePoint'); if (btnPublicar) btnPublicar.addEventListener('click', async function() { await publicarProdutosNoSharePoint(); });
-                const btnSync = document.getElementById('btnSyncSharePoint'); if (btnSync) btnSync.addEventListener('click', async function() { notificar('A sincronizar...', 'info'); _eanItemIdCache = {}; await carregarProdutosDoSharePoint(); });
-                if (eanInput) eanInput.addEventListener('input', (e) => { const val = e.target.value.trim(); if (val.length >= 2) atualizarSugestoes(val); else { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); } });
-                document.addEventListener('click', (e) => { if (!e.target.closest('.search-area-ean')) { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); } });
+                const fileInputExcel = document.getElementById('fileInputExcel');
+                if (fileInputExcel) fileInputExcel.addEventListener('change', function(e) { if (this.files.length > 0) importarExcel(this.files[0]); this.value = ''; });
+                const btnPublicar = document.getElementById('btnPublicarSharePoint');
+                if (btnPublicar) btnPublicar.addEventListener('click', async function() { await publicarProdutosNoSharePoint(); });
+                const btnSync = document.getElementById('btnSyncSharePoint');
+                if (btnSync) btnSync.addEventListener('click', async function() {
+                    notificar('A sincronizar...', 'info');
+                    _eanItemIdCache = {}; _estruturaLista = null;
+                    await carregarProdutosDoSharePoint();
+                });
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.search-area-ean')) {
+                        const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active');
+                    }
+                });
                 const btnAdd = document.getElementById('btnAddProduct'); if (btnAdd) btnAdd.addEventListener('click', adicionarProduto);
             }
+
+            // ============================================================
+            // INICIALIZAÇÃO
+            // ============================================================
             async function inicializar() {
-                try { configurarEventos(); } catch (e) {}
+                try { configurarEventos(); } catch (e) { console.warn('[EAN] Erro eventos:', e); }
 
-                // 1. Cache local primeiro (rápido)
+                // 1. Cache local instantâneo
                 const temCache = carregarLocal();
-                if (temCache) notificar('📂 Produtos em cache carregados.', 'info');
+                if (temCache) notificar(`📂 ${produtos.length} produtos em cache.`, 'info');
 
-                // 2. Histórico + UI
+                // 2. Histórico
                 const hist = localStorage.getItem('ean_historico');
                 if (hist) { try { historicoPesquisas = JSON.parse(hist); } catch (e) {} }
                 atualizarBadgeTotal();
                 renderizarHistorico();
 
+                // 3. Último produto
                 const lastEan = sessionStorage.getItem('ean_ultimo_produto');
                 if (lastEan) {
                     const prod = produtos.find(p => p.ean === lastEan);
                     if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = lastEan; }
                 }
-                if (!produtoAtual) document.getElementById('emptyStateEAN').style.display = 'block';
-                document.getElementById('eanInput').focus();
+                if (!produtoAtual) {
+                    const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block';
+                }
+                const eanInput = document.getElementById('eanInput'); if (eanInput) eanInput.focus();
 
-                // 3. Esconde botões de escrita para quem não tem permissão
+                // 4. Esconder botões de escrita para não-admins
                 const podeEscrever = usuarioAtual && (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email));
                 const btnImport = document.getElementById('btnImportExcel');
                 const btnPub = document.getElementById('btnPublicarSharePoint');
                 if (btnImport) btnImport.style.display = podeEscrever ? 'inline-block' : 'none';
                 if (btnPub) btnPub.style.display = podeEscrever ? 'inline-block' : 'none';
 
-                // ❌ NÃO chamar carregarProdutosDoSharePoint() aqui — consulta é sob demanda
+                // 5. Sincronização em background (não bloqueia a UI)
+                setTimeout(async () => {
+                    try {
+                        console.log('🔄 [EAN] Sincronização em background...');
+                        await carregarProdutosDoSharePoint();
+                        console.log(`✅ [EAN] Sync concluída: ${produtos.length} produtos`);
+                    } catch (e) { console.warn('[EAN] Sync falhou:', e); }
+                }, 500);
             }
-            return { inicializar, buscarProduto, limparPesquisa, renderizarTodosProdutos, exportarDados, publicarProdutosNoSharePoint, carregarProdutosDoSharePoint, importarExcel, adicionarProduto, guardarPrecosConcorrentes, toggleEdicaoPrecos, guardarPrecosKero, abrirCamera, fecharCamera, capturarEscanear, processarImagem };
+
+            return {
+                inicializar, buscarProduto, limparPesquisa, renderizarTodosProdutos,
+                exportarDados, publicarProdutosNoSharePoint, carregarProdutosDoSharePoint,
+                importarExcel, adicionarProduto, guardarPrecosConcorrentes, toggleEdicaoPrecos,
+                guardarPrecosKero, abrirCamera, fecharCamera, capturarEscanear, processarImagem,
+                diagnosticar, detectarEstruturaLista
+            };
         })();
 
         // ============================================================
