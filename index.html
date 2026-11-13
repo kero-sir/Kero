@@ -1409,7 +1409,7 @@
                     </div>
                     <section class="search-area-ean" role="search">
                         <label for="eanInput"><i class="fas fa-search"></i> Pesquisar:</label>
-                        <input type="text" id="eanInput" placeholder="Digite nome ou EAN..." autofocus aria-label="Pesquisar produto">
+                        <input type="text" id="eanInput" placeholder="Digite nome, EAN ou Artigo..." autofocus aria-label="Pesquisar produto">
                         <button class="btn-ean btn-buscar" id="btnBuscar"><i class="fas fa-arrow-right"></i> Buscar</button>
                         <button class="btn-ean btn-limpar" id="btnLimpar"><i class="fas fa-times"></i> Limpar</button>
                         <button class="btn-ean btn-listar" id="btnListarTodos"><i class="fas fa-list"></i> Todos</button>
@@ -1419,9 +1419,15 @@
                         <button class="btn-ean btn-import" id="btnImportExcel"><i class="fas fa-file-excel"></i> Importar Excel</button>
                         <input type="file" id="fileInputExcel" accept=".xlsx,.xls,.xlsb" style="display:none;">
                         <button class="btn-ean btn-sync" id="btnSyncSharePoint"><i class="fas fa-sync-alt"></i> Sincronizar</button>
-                        <button class="btn-ean" id="btnPublicarSharePoint" style="background:#217346;">
+                        <button class="btn-ean" id="btnPublicarSharePoint" style="background:#217346; display:none;">
                             <i class="fas fa-cloud-upload-alt"></i> Publicar no SharePoint
                         </button>
+                        
+                        <!-- BOTÃO NOVO PRODUTO AQUI -->
+                        <button class="btn-ean btn-add-product" id="btnNovoProdutoEAN" style="display:none; background:#1976D2; padding: 12px 20px; margin-left: auto;">
+                            <i class="fas fa-plus-circle"></i> Novo Produto
+                        </button>
+                        
                         <div class="suggestions-box" id="suggestionsBox"></div>
                     </section>
                     <div class="history-area-ean" id="historyArea" style="display: none;">
@@ -1457,7 +1463,7 @@
                             <div class="pricing-item">
                                 <span class="label">IVA (%)</span>
                                 <div class="value" id="prodIvaDisplay">-- %</div>
-                                <input type="number" step="0.01" id="prodIvaInput" placeholder="0" style="display:none;">
+                                <input type="number" step="0.01" id="prodIvaInput" placeholder="" style="display:none;">
                             </div>
                             <div class="pricing-item">
                                 <span class="label">Fornecedor</span>
@@ -1492,7 +1498,7 @@
                     <section id="emptyStateEAN" class="empty-state-ean">
                         <i class="fas fa-barcode"></i>
                         <h2>Nenhum produto selecionado</h2>
-                        <p>Pesquise por nome ou EAN, clique em "Todos" ou carregue uma imagem do código de barras.</p>
+                        <p>Pesquise por nome, EAN ou Artigo, clique em "Todos" ou carregue uma imagem do código de barras.</p>
                     </section>
                     <div class="camera-modal-ean" id="cameraModal">
                         <div class="status" id="cameraStatus">Aguardando...</div>
@@ -1504,60 +1510,8 @@
                             <button class="close-camera" id="btnCloseCamera"><i class="fas fa-times"></i> Fechar</button>
                         </div>
                     </div>
-                    <section id="addProductArea" class="add-product-area-ean">
-                        <h3><i class="fas fa-plus-circle"></i> Adicionar Novo Produto</h3>
-                        <div class="add-product-form">
-                            <div class="form-group">
-                                <label for="addNome">Nome do Produto</label>
-                                <input type="text" id="addNome" placeholder="Ex: Arroz 5kg">
-                            </div>
-                            <div class="form-group">
-                                <label for="addEan">EAN</label>
-                                <input type="text" id="addEan" placeholder="Código de barras (8 a 13 dígitos)">
-                            </div>
-                            <div class="form-group">
-                                <label for="addCodSap">Cod. Sap / Artigo</label>
-                                <input type="text" id="addCodSap" placeholder="Ex: 12345">
-                            </div>
-                            <div class="form-group">
-                                <label for="addNumFornecedor">Nº Fornecedor</label>
-                                <input type="text" id="addNumFornecedor" placeholder="Ex: 98765">
-                            </div>
-                            <div class="form-group">
-                                <label for="addPrecoCusto">Preço de Custo (Kz)</label>
-                                <input type="number" step="0.01" id="addPrecoCusto" placeholder="0.00">
-                            </div>
-                            <div class="form-group">
-                                <label for="addPrecoKero">Preço Kero (Kz)</label>
-                                <input type="number" step="0.01" id="addPrecoKero" placeholder="0.00">
-                            </div>
-                            <div class="form-group">
-                                <label for="addIva">IVA (%)</label>
-                                <input type="number" step="0.01" id="addIva" placeholder="14">
-                            </div>
-                            <div class="form-group">
-                                <label for="addFornecedor">Fornecedor</label>
-                                <input type="text" id="addFornecedor" placeholder="Ex: Fornecedor X">
-                            </div>
-                            <div class="form-group">
-                                <label for="addVendaMedia">Venda média mensal</label>
-                                <input type="number" step="1" id="addVendaMedia" placeholder="0">
-                            </div>
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label>Stock por Loja (separado por vírgula)</label>
-                                <input type="text" id="addStock" placeholder="Ex: 10,20,15,... (13 lojas)">
-                                <span class="helper-text">Ordem: Talatona, Kilamba, Morro Bento, Nova Vida, Lubango, Huambo, Lobito, Benguela, Viana, Gika, Mártires, Combatentes, Cacuaco</span>
-                            </div>
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label>Preços Concorrentes (Angomart, Maxi, Shoprite) separados por vírgula</label>
-                                <input type="text" id="addConcorrentes" placeholder="Ex: 600,620,650">
-                            </div>
-                            <button class="btn-ean btn-add-product" id="btnAddProduct"><i class="fas fa-save"></i> Adicionar Produto</button>
-                        </div>
-                    </section>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -1744,6 +1698,69 @@
                     <div class="form-group"><label>Justificativa</label><textarea id="mobEditJustificativa" class="form-control" rows="3"></textarea></div>
                     <div class="form-actions"><button type="button" class="btn-small" onclick="fecharModal('modalEditarRequisicaoMob')">Cancelar</button><button type="submit" class="btn-small btn-approve" style="background-color:var(--roxo);">Salvar</button></div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NOVO PRODUTO EAN -->
+    <div class="modal" id="modalNovoProdutoEAN">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 style="color: #1a4a2a;"><i class="fas fa-plus-circle"></i> Adicionar Novo Produto</h2>
+                <span class="close-modal" onclick="fecharModal('modalNovoProdutoEAN')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="add-product-form">
+                    <div class="form-group">
+                        <label for="addNome">Nome do Produto</label>
+                        <input type="text" id="addNome" placeholder="Ex: Arroz 5kg">
+                    </div>
+                    <div class="form-group">
+                        <label for="addEan">EAN</label>
+                        <input type="text" id="addEan" placeholder="Código de barras (8 a 13 dígitos)">
+                    </div>
+                    <div class="form-group">
+                        <label for="addCodSap">Cod. Sap / Artigo</label>
+                        <input type="text" id="addCodSap" placeholder="Ex: 12345">
+                    </div>
+                    <div class="form-group">
+                        <label for="addNumFornecedor">Nº Fornecedor</label>
+                        <input type="text" id="addNumFornecedor" placeholder="Ex: 98765">
+                    </div>
+                    <div class="form-group">
+                        <label for="addPrecoCusto">Preço de Custo (Kz)</label>
+                        <input type="number" step="0.01" id="addPrecoCusto" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="addPrecoKero">Preço Kero (Kz)</label>
+                        <input type="number" step="0.01" id="addPrecoKero" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="addIva">IVA (%)</label>
+                        <input type="number" step="0.01" id="addIva" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label for="addFornecedor">Fornecedor</label>
+                        <input type="text" id="addFornecedor" placeholder="Ex: Fornecedor X">
+                    </div>
+                    <div class="form-group">
+                        <label for="addVendaMedia">Venda média mensal</label>
+                        <input type="number" step="1" id="addVendaMedia" placeholder="0">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Stock por Loja (separado por vírgula)</label>
+                        <input type="text" id="addStock" placeholder="Ex: 10,20,15,... (13 lojas)">
+                        <span class="helper-text">Ordem: Talatona, Kilamba, Morro Bento, Nova Vida, Lubango, Huambo, Lobito, Benguela, Viana, Gika, Mártires, Combatentes, Cacuaco</span>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Preços Concorrentes (Angomart, Maxi, Shoprite) separados por vírgula</label>
+                        <input type="text" id="addConcorrentes" placeholder="Ex: 600,620,650">
+                    </div>
+                </div>
+                <div class="form-actions" style="margin-top: 20px;">
+                    <button type="button" class="btn-ean btn-limpar" onclick="fecharModal('modalNovoProdutoEAN')">Cancelar</button>
+                    <button type="button" class="btn-ean btn-add-product" style="width: auto; padding: 10px 20px; margin: 0;" id="btnGuardarNovoProduto"><i class="fas fa-save"></i> Guardar Produto</button>
+                </div>
             </div>
         </div>
     </div>
@@ -4190,7 +4207,12 @@
                     // 👇 Detecta nome interno OU displayName (essencial para "Nº Fornecedor" que o SharePoint codifica)
                     const detectar = (nomes) => {
                         for (const n of nomes) {
-                            const found = colunasInfo.find(c => c.name === n || c.displayName === n);
+                            const alvo = String(n).toLowerCase();
+                            const found = colunasInfo.find(c => {
+                                const nome = String(c.name || '').toLowerCase();
+                                const display = String(c.displayName || '').toLowerCase();
+                                return nome === alvo || display === alvo;
+                            });
                             if (found) return found.name;
                         }
                         return null;
@@ -4206,10 +4228,11 @@
                         campoVendaMedia: detectar(['VendaMediaMensal', 'VendaMedia', 'Venda_Media_Mensal']),
                         campoStock: detectar(['Stock']),
                         campoConcorrentes: detectar(['Concorrentes']),
-                        // 👇 NOVOS CAMPOS
+                        // 👇 NOVOS CAMPOS (incluindo o typo NForncedor)
                         campoCodSap: detectar(['Artigo', 'CodSap', 'Cod_Sap', 'CodigoSap', 'CodigoSAP', 'Cod_SAP', 'SAP']),
                         campoNumFornecedor: detectar([
-                            'N_x00ba__Fornecedor', 'NFornecedor', 'NumFornecedor', 'NumeroFornecedor',
+                            'NForncedor', 'NFornecedor', 'Nfornecedor', 'NFORNECEDOR', // Variações do utilizador
+                            'N_x00ba__Fornecedor', 'NumFornecedor', 'NumeroFornecedor',
                             'NrFornecedor', 'Num_Fornecedor', 'NoFornecedor', 'N Fornecedor',
                             'NºFornecedor', 'Nº Fornecedor', 'Numero_Fornecedor'
                         ]),
@@ -4298,6 +4321,31 @@
                 const t = String(termo).replace(/'/g, "''");
                 const base = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields`;
 
+                // 👇 NOVO: Pesquisa por Artigo exato
+                if (est.campoCodSap) {
+                    try {
+                        const url = `${base}&$filter=fields/${est.campoCodSap} eq '${t}'&$top=15`;
+                        const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (r.ok) {
+                            const d = await r.json();
+                            const rs = (d.value || []).map(converterItemParaProduto).filter(Boolean);
+                            if (rs.length > 0) return rs;
+                        }
+                    } catch (e) { console.warn('[EAN] Artigo exato falhou:', e); }
+
+                    // 👇 NOVO: Pesquisa por Artigo (startswith)
+                    try {
+                        const url = `${base}&$filter=startswith(fields/${est.campoCodSap},'${t}')&$top=15`;
+                        const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (r.ok) {
+                            const d = await r.json();
+                            const rs = (d.value || []).map(converterItemParaProduto).filter(Boolean);
+                            if (rs.length > 0) return rs;
+                        }
+                    } catch (e) { console.warn('[EAN] Artigo startswith falhou:', e); }
+                }
+
+                // Pesquisa por Nome startswith
                 try {
                     const url = `${base}&$filter=startswith(fields/${est.campoNome},'${t}')&$top=15`;
                     const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -4310,6 +4358,7 @@
                     }
                 } catch (e) { console.warn('[EAN] startswith erro:', e); }
 
+                // Pesquisa por Nome substringof
                 try {
                     const url = `${base}&$filter=substringof('${t}',fields/${est.campoNome})&$top=15`;
                     const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -4618,7 +4667,14 @@
                 lista.slice(0, 8).forEach(p => {
                     const item = document.createElement('div');
                     item.className = 'suggestion-item';
-                    item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">${p.ean}</span>`;
+                    // 👇 Adicionado o Artigo e Nº Fornecedor na sugestão
+                    const extra = [];
+                    if (p.cod_sap) extra.push(`Art: ${p.cod_sap}`);
+                    if (p.num_fornecedor) extra.push(`Nº Forn: ${p.num_fornecedor}`);
+                    const extraStr = extra.length > 0 ? ` | ${extra.join(' | ')}` : '';
+                    
+                    item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">EAN: ${p.ean}${extraStr}</span>`;
+                    
                     item.addEventListener('click', () => {
                         const prod = upsertLocal(p);
                         renderizarProduto(prod);
@@ -4636,38 +4692,43 @@
             // ============================================================
             async function buscarProduto(termo) {
                 const termoLimpo = String(termo || '').trim();
-                if (!termoLimpo) { notificar('Digite um nome ou EAN.', 'error'); return; }
+                if (!termoLimpo) { notificar('Digite um nome, EAN ou Artigo.', 'error'); return; }
                 const semEspacos = termoLimpo.replace(/\s/g, '');
                 showLoading();
                 try {
-                    // EAN exato → consulta direta
+                    // 1. Tentar EAN Exato
                     if (/^\d{8,14}$/.test(semEspacos)) {
                         let prod = produtos.find(p => p.ean === semEspacos);
                         if (!prod) {
                             prod = await buscarEanExatoNoSharePoint(semEspacos);
                             if (prod) upsertLocal(prod);
                         }
-                        if (!prod) { notificar(`EAN ${semEspacos} não existe na lista.`, 'error'); return; }
-                        renderizarProduto(prod);
-                        document.getElementById('eanInput').value = prod.ean;
-                        adicionarHistorico(prod.ean);
-                        return;
-                    }
-                    // Nome → consulta direta
-                    const resultados = await buscarPorNomeNoSharePoint(termoLimpo);
-                    if (resultados.length === 0) {
-                        const locais = produtos.filter(p => (p.nome || '').toLowerCase().includes(termoLimpo.toLowerCase()));
-                        if (locais.length === 0) { notificar('Nenhum produto encontrado.', 'error'); return; }
-                        if (locais.length === 1) {
-                            renderizarProduto(locais[0]);
-                            document.getElementById('eanInput').value = locais[0].ean;
-                            adicionarHistorico(locais[0].ean);
-                        } else {
-                            renderSugestoesLista(locais);
+                        if (prod) {
+                            renderizarProduto(prod);
+                            document.getElementById('eanInput').value = prod.ean;
+                            adicionarHistorico(prod.ean);
+                            hideLoading();
+                            return;
                         }
-                        return;
                     }
+
+                    // 2. Tentar por Artigo/Nome no SharePoint
+                    let resultados = await buscarPorNomeNoSharePoint(termoLimpo);
+                    
+                    // Se o SharePoint não tiver, procura no cache local (Nome, Artigo, Nº Fornecedor ou EAN)
+                    if (resultados.length === 0) {
+                        resultados = produtos.filter(p => 
+                            (p.nome || '').toLowerCase().includes(termoLimpo.toLowerCase()) ||
+                            (p.cod_sap && String(p.cod_sap).toLowerCase().includes(termoLimpo.toLowerCase())) ||
+                            (p.num_fornecedor && String(p.num_fornecedor).toLowerCase().includes(termoLimpo.toLowerCase())) ||
+                            (p.ean && p.ean.includes(termoLimpo))
+                        );
+                    }
+
+                    if (resultados.length === 0) { notificar('Nenhum produto encontrado.', 'error'); return; }
+
                     resultados.forEach(upsertLocal);
+
                     if (resultados.length === 1) {
                         renderizarProduto(resultados[0]);
                         document.getElementById('eanInput').value = resultados[0].ean;
@@ -4677,9 +4738,7 @@
                     }
                 } catch (err) {
                     console.error('[EAN] ❌ Erro:', err);
-                    const prod = produtos.find(p => p.ean === semEspacos);
-                    if (prod) { renderizarProduto(prod); adicionarHistorico(prod.ean); return; }
-                    notificar(`❌ Erro SharePoint: ${err.message || err}`, 'error');
+                    notificar(`❌ Erro ao pesquisar: ${err.message || err}`, 'error');
                 } finally {
                     hideLoading();
                 }
@@ -4919,21 +4978,21 @@
                             CONCORRENTES.forEach(c => { concorrentes[c] = 0; });
                             return {
                                 ean,
-                                nome: String(row['Descrição'] || '').trim(),
+                                nome: String(row['Descrição'] || row['Nome'] || '').trim(),
                                 // 👇 NOVOS CAMPOS (tolerante a variações do cabeçalho)
                                 cod_sap: String(
                                     row['Artigo'] ?? row['Cod. Sap'] ?? row['CodSap'] ??
                                     row['Cod SAP'] ?? row['Cód. SAP'] ?? ''
                                 ).trim(),
                                 num_fornecedor: String(
-                                    row['Nº Fornecedor'] ?? row['Num Fornecedor'] ?? row['NumFornecedor'] ??
-                                    row['NFornecedor'] ?? row['NºFornecedor'] ?? ''
+                                    row['Nº Fornecedor'] ?? row['NForncedor'] ?? row['NFornecedor'] ?? 
+                                    row['Num Fornecedor'] ?? row['NumFornecedor'] ?? row['NºFornecedor'] ?? ''
                                 ).trim(),
-                                fornecedor: String(row['Nome Fornecedor'] || '').trim(),
-                                preco_custo: parseFloat(row['PMM']) || 0,
-                                preco_kero: parseFloat(row['PVP']) || 0,
-                                iva: parseFloat(row['IVA %']) || 0,
-                                venda_media_mensal: parseInt(row['VENDA Media Mensal']) || 0,
+                                fornecedor: String(row['Nome Fornecedor'] || row['Fornecedor'] || '').trim(),
+                                preco_custo: parseFloat(row['PMM'] || row['Preço Custo'] || 0) || 0,
+                                preco_kero: parseFloat(row['PVP'] || row['Preço Kero'] || 0) || 0,
+                                iva: parseFloat(row['IVA %'] || row['IVA'] || 0) || 0,
+                                venda_media_mensal: parseInt(row['VENDA Media Mensal'] || row['Venda Média'] || 0) || 0,
                                 stock, concorrentes
                             };
                         }).filter(p => p !== null && p.nome !== '');
@@ -4964,7 +5023,7 @@
                 URL.revokeObjectURL(url);
             }
 
-            // 👇 ADICIONAR PRODUTO COM OS 2 NOVOS CAMPOS
+            // 👇 ADICIONAR PRODUTO COM OS 2 NOVOS CAMPOS (A PARTIR DO MODAL)
             function adicionarProduto() {
                 const nome = document.getElementById('addNome').value.trim();
                 const ean = document.getElementById('addEan').value.trim();
@@ -5004,6 +5063,7 @@
                 // Limpar campos
                 ['addNome','addEan','addCodSap','addNumFornecedor','addPrecoCusto','addPrecoKero','addIva','addFornecedor','addVendaMedia','addStock','addConcorrentes']
                     .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+                fecharModal('modalNovoProdutoEAN');
             }
 
             // ============================================================
@@ -5068,7 +5128,7 @@
                         const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active');
                     }
                 });
-                const btnAdd = document.getElementById('btnAddProduct'); if (btnAdd) btnAdd.addEventListener('click', adicionarProduto);
+                const btnAdd = document.getElementById('btnGuardarNovoProduto'); if (btnAdd) btnAdd.addEventListener('click', adicionarProduto);
             }
 
             // ============================================================
@@ -5098,12 +5158,28 @@
                 }
                 const eanInput = document.getElementById('eanInput'); if (eanInput) eanInput.focus();
 
-                // 4. Esconder botões de escrita para não-admins
-                const podeEscrever = usuarioAtual && (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email));
+                // 4. CONTROLO DE PERMISSÕES E MODAL NOVO PRODUTO
+                const isAdminOrErik = usuarioAtual && (
+                    usuarioAtual.perfil === 'Administrador' || 
+                    usuarioAtual.email === 'marcio.carlos@accordgrouplda.com' || 
+                    usuarioAtual.email === 'erikson.silva@accordgrouplda.com'
+                );
+                
                 const btnImport = document.getElementById('btnImportExcel');
                 const btnPub = document.getElementById('btnPublicarSharePoint');
-                if (btnImport) btnImport.style.display = podeEscrever ? 'inline-block' : 'none';
-                if (btnPub) btnPub.style.display = podeEscrever ? 'inline-block' : 'none';
+                const btnNovoProd = document.getElementById('btnNovoProdutoEAN');
+                
+                if (btnImport) btnImport.style.display = isAdminOrErik ? 'inline-block' : 'none';
+                if (btnPub) btnPub.style.display = isAdminOrErik ? 'inline-block' : 'none';
+                if (btnNovoProd) btnNovoProd.style.display = isAdminOrErik ? 'inline-block' : 'none';
+
+                if (btnNovoProd) {
+                    btnNovoProd.addEventListener('click', () => {
+                        ['addNome','addEan','addCodSap','addNumFornecedor','addPrecoCusto','addPrecoKero','addIva','addFornecedor','addVendaMedia','addStock','addConcorrentes']
+                            .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+                        abrirModal('modalNovoProdutoEAN');
+                    });
+                }
 
                 // 5. Sincronização em background (não bloqueia a UI)
                 setTimeout(async () => {
@@ -5165,7 +5241,7 @@
             setInterval(() => { localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes)); }, 5000);
         });
 
-        console.log('✅ Kero SIR — Stock em inteiros + novos campos Artigo e Nº Fornecedor no módulo EAN.');
+        console.log('✅ Kero SIR — Stock em inteiros + Artigo e Nº Fornecedor no modal EAN.');
     </script>
 </body>
 </html>
