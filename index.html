@@ -1434,8 +1434,14 @@
                     </div>
                     <section id="resultContainer" class="result-card-ean" aria-live="polite">
                         <div class="product-header-ean" id="productHeader">
-                            <span class="name" id="prodNome">Produto</span>
-                            <span class="ean" id="prodEan">EAN: --</span>
+                            <div style="flex:1;">
+                                <div class="name" id="prodNome">Produto</div>
+                                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                                    <span class="ean" id="prodEan">EAN: --</span>
+                                    <span class="ean" id="prodCodSap" style="background:#fff3e0; color:#E65100; font-weight:600;">Artigo: --</span>
+                                    <span class="ean" id="prodNumFornecedor" style="background:#e3f2fd; color:#1565c0; font-weight:600;">Nº Fornecedor: --</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="product-pricing" id="productPricing">
                             <div class="pricing-item">
@@ -1508,6 +1514,14 @@
                             <div class="form-group">
                                 <label for="addEan">EAN</label>
                                 <input type="text" id="addEan" placeholder="Código de barras (8 a 13 dígitos)">
+                            </div>
+                            <div class="form-group">
+                                <label for="addCodSap">Cod. Sap / Artigo</label>
+                                <input type="text" id="addCodSap" placeholder="Ex: 12345">
+                            </div>
+                            <div class="form-group">
+                                <label for="addNumFornecedor">Nº Fornecedor</label>
+                                <input type="text" id="addNumFornecedor" placeholder="Ex: 98765">
                             </div>
                             <div class="form-group">
                                 <label for="addPrecoCusto">Preço de Custo (Kz)</label>
@@ -3917,7 +3931,7 @@
                 const req = reqs.find(r => r.id === id); if (!req) return;
                 if (usuarioAtual.perfil !== 'Confirmante') return;
                 if (req.status !== 'aprovada') return;
-                const motivo = prompt('Motivo:') || 'Rejeitada'; 
+                const motivo = prompt('Motivo:') || 'Rejeitada';
                 req.status = 'rejeitada';
                 req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'rejeitar_confirmacao', usuario: usuarioAtual.nome, perfil: 'Confirmante', comentario: motivo, data: new Date().toISOString() });
                 salvarLocal(); await salvarNoSharePoint(req);
@@ -4025,10 +4039,7 @@
         function exportarRequisicaoIndividualMob() { mobApp.exportarIndividual(); }
 
         // ============================================================
-        // MÓDULO EAN SCAN - CONSULTAS DIRETAS AO SHAREPOINT
-        // ============================================================
-                // ============================================================
-        // MÓDULO EAN SCAN - DETEÇÃO AUTOMÁTICA + CONSULTAS DIRETAS
+        // MÓDULO EAN SCAN - COM STOCK INTEIRO E NOVOS CAMPOS (ARTIGO + Nº FORNECEDOR)
         // ============================================================
         const eanApp = (function() {
             const LISTA_EAN = 'EANPRODUTOS';
@@ -4046,6 +4057,27 @@
             function atualizarBadgeTotal() { const b = document.getElementById('totalProdutosBadge'); if (b) b.textContent = `${produtos.length} produtos em cache`; }
             async function obterToken() { return await getSharePointToken(); }
             async function obterSiteId() { return await getSiteId(); }
+
+            // 👇 CONVERSÃO DE STOCK PARA INTEIRO — remove separador de milhar (ex: "2.750" → 2750)
+            function parseStockInteiro(val) {
+                if (val === null || val === undefined || val === '') return 0;
+                if (typeof val === 'number') return Math.round(val);
+                let s = String(val).trim();
+                // "2.750" ou "2.750.000" → separador de milhar com ponto
+                if (/^\d{1,3}(\.\d{3})+$/.test(s)) {
+                    s = s.replace(/\./g, '');
+                }
+                // "2,750" ou "2,750,000" → separador de milhar com vírgula (formato EN)
+                else if (/^\d{1,3}(,\d{3})+$/.test(s)) {
+                    s = s.replace(/,/g, '');
+                }
+                // Caso contrário remove decimais com vírgula (ex: "10,5" → "10.5")
+                else {
+                    s = s.replace(',', '.');
+                }
+                const n = parseFloat(s);
+                return isNaN(n) ? 0 : Math.round(n);
+            }
 
             function adicionarHistorico(ean) {
                 historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
@@ -4076,11 +4108,18 @@
                     try {
                         produtos = JSON.parse(saved);
                         produtos = produtos.map(p => {
-                            LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; });
+                            // 👇 Stock sempre INTEIRO
+                            LOJAS_KERO.forEach(l => {
+                                if (!(l in p.stock)) p.stock[l] = 0;
+                                else p.stock[l] = Math.round(Number(p.stock[l]) || 0);
+                            });
                             CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
                             if (p.iva === undefined) p.iva = 0;
                             if (p.fornecedor === undefined) p.fornecedor = '';
                             if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0;
+                            // 👇 Novos campos
+                            if (p.cod_sap === undefined) p.cod_sap = '';
+                            if (p.num_fornecedor === undefined) p.num_fornecedor = '';
                             return p;
                         });
                         return true;
@@ -4101,13 +4140,17 @@
                 try {
                     const token = await obterToken();
                     const siteId = await obterSiteId();
-                    let colunas = [];
+                    let colunas = [], colunasInfo = [];
                     try {
                         const metaResp = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/columns`, { headers: { 'Authorization': `Bearer ${token}` } });
                         if (metaResp.ok) {
                             const metaData = await metaResp.json();
-                            colunas = (metaData.value || []).map(c => c.name);
-                            console.log('📋 [EAN] Colunas:', colunas);
+                            colunasInfo = (metaData.value || []).map(c => ({
+                                name: c.name,
+                                displayName: c.displayName || c.name
+                            }));
+                            colunas = colunasInfo.map(c => c.name);
+                            console.log('📋 [EAN] Colunas:', colunasInfo);
                         }
                     } catch (e) { console.warn('[EAN] Meta falhou:', e); }
 
@@ -4144,7 +4187,14 @@
                     }
                     if (!campoNome) campoNome = candidatosNome.find(c => c !== campoEan && colunas.includes(c)) || 'Nome';
 
-                    const detectar = (nomes) => nomes.find(c => colunas.includes(c)) || nomes[0];
+                    // 👇 Detecta nome interno OU displayName (essencial para "Nº Fornecedor" que o SharePoint codifica)
+                    const detectar = (nomes) => {
+                        for (const n of nomes) {
+                            const found = colunasInfo.find(c => c.name === n || c.displayName === n);
+                            if (found) return found.name;
+                        }
+                        return null;
+                    };
 
                     _estruturaLista = {
                         campoEan,
@@ -4156,6 +4206,13 @@
                         campoVendaMedia: detectar(['VendaMediaMensal', 'VendaMedia', 'Venda_Media_Mensal']),
                         campoStock: detectar(['Stock']),
                         campoConcorrentes: detectar(['Concorrentes']),
+                        // 👇 NOVOS CAMPOS
+                        campoCodSap: detectar(['Artigo', 'CodSap', 'Cod_Sap', 'CodigoSap', 'CodigoSAP', 'Cod_SAP', 'SAP']),
+                        campoNumFornecedor: detectar([
+                            'N_x00ba__Fornecedor', 'NFornecedor', 'NumFornecedor', 'NumeroFornecedor',
+                            'NrFornecedor', 'Num_Fornecedor', 'NoFornecedor', 'N Fornecedor',
+                            'NºFornecedor', 'Nº Fornecedor', 'Numero_Fornecedor'
+                        ]),
                         colunas
                     };
                     console.log('🎯 [EAN] Estrutura detetada:', _estruturaLista);
@@ -4172,18 +4229,25 @@
                     campoEan: 'Title', campoNome: 'Nome',
                     campoPrecoCusto: 'PrecoCusto', campoPrecoKero: 'PrecoKero', campoIva: 'Iva',
                     campoFornecedor: 'Fornecedor', campoVendaMedia: 'VendaMediaMensal',
-                    campoStock: 'Stock', campoConcorrentes: 'Concorrentes'
+                    campoStock: 'Stock', campoConcorrentes: 'Concorrentes',
+                    campoCodSap: null, campoNumFornecedor: null
                 };
                 const ean = String(f[est.campoEan] || '').trim();
                 if (!ean) return null;
                 let stock = {}, concorrentes = {};
                 try { stock = JSON.parse(f[est.campoStock] || '{}'); } catch (e) {}
                 try { concorrentes = JSON.parse(f[est.campoConcorrentes] || '{}'); } catch (e) {}
-                LOJAS_KERO.forEach(l => { if (!(l in stock)) stock[l] = 0; });
+                // 👇 Stock sempre INTEIRO
+                LOJAS_KERO.forEach(l => {
+                    stock[l] = parseStockInteiro(stock[l]);
+                });
                 CONCORRENTES.forEach(c => { if (!(c in concorrentes)) concorrentes[c] = 0; });
                 return {
                     id: item.id, ean,
                     nome: f[est.campoNome] || '',
+                    // 👇 NOVOS CAMPOS
+                    cod_sap: est.campoCodSap ? (f[est.campoCodSap] || '') : '',
+                    num_fornecedor: est.campoNumFornecedor ? (f[est.campoNumFornecedor] || '') : '',
                     preco_custo: Number(f[est.campoPrecoCusto]) || 0,
                     preco_kero: Number(f[est.campoPrecoKero]) || 0,
                     iva: Number(f[est.campoIva]) || 0,
@@ -4358,17 +4422,20 @@
                         const batchRequests = lote.map((produto, idx) => {
                             const eanKey = String(produto.ean).trim();
                             const existingId = mapa[eanKey];
-                            const fields = {
-                                [est.campoEan]: eanKey,
-                                [est.campoNome]: produto.nome || '',
-                                [est.campoPrecoCusto]: Number(produto.preco_custo) || 0,
-                                [est.campoPrecoKero]: Number(produto.preco_kero) || 0,
-                                [est.campoIva]: Number(produto.iva) || 0,
-                                [est.campoFornecedor]: produto.fornecedor || '',
-                                [est.campoVendaMedia]: Number(produto.venda_media_mensal) || 0,
-                                [est.campoStock]: JSON.stringify(produto.stock || {}),
-                                [est.campoConcorrentes]: JSON.stringify(produto.concorrentes || {})
-                            };
+                            // 👇 Construção segura dos fields (evita colunas inexistentes = null)
+                            const fields = {};
+                            if (est.campoEan) fields[est.campoEan] = eanKey;
+                            if (est.campoNome) fields[est.campoNome] = produto.nome || '';
+                            if (est.campoPrecoCusto) fields[est.campoPrecoCusto] = Number(produto.preco_custo) || 0;
+                            if (est.campoPrecoKero) fields[est.campoPrecoKero] = Number(produto.preco_kero) || 0;
+                            if (est.campoIva) fields[est.campoIva] = Number(produto.iva) || 0;
+                            if (est.campoFornecedor) fields[est.campoFornecedor] = produto.fornecedor || '';
+                            if (est.campoVendaMedia) fields[est.campoVendaMedia] = Number(produto.venda_media_mensal) || 0;
+                            if (est.campoStock) fields[est.campoStock] = JSON.stringify(produto.stock || {});
+                            if (est.campoConcorrentes) fields[est.campoConcorrentes] = JSON.stringify(produto.concorrentes || {});
+                            // 👇 NOVOS CAMPOS
+                            if (est.campoCodSap) fields[est.campoCodSap] = produto.cod_sap || '';
+                            if (est.campoNumFornecedor) fields[est.campoNumFornecedor] = produto.num_fornecedor || '';
                             const requestId = String(idx + 1);
                             if (existingId) return { id: requestId, method: 'PATCH', url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`, headers: { 'Content-Type': 'application/json' }, body: fields };
                             return { id: requestId, method: 'POST', url: `/sites/${siteId}/lists/${listName}/items`, headers: { 'Content-Type': 'application/json' }, body: { fields } };
@@ -4444,6 +4511,11 @@
                 const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active');
                 const nomeEl = document.getElementById('prodNome'); if (nomeEl) nomeEl.textContent = prod.nome;
                 const eanEl = document.getElementById('prodEan'); if (eanEl) eanEl.textContent = `EAN: ${prod.ean}`;
+                // 👇 NOVOS CAMPOS
+                const codSapEl = document.getElementById('prodCodSap');
+                if (codSapEl) codSapEl.textContent = `Artigo: ${prod.cod_sap || '--'}`;
+                const numFornEl = document.getElementById('prodNumFornecedor');
+                if (numFornEl) numFornEl.textContent = `Nº Fornecedor: ${prod.num_fornecedor || '--'}`;
                 atualizarPrecos(prod);
                 renderizarConcorrentes(prod);
                 renderizarStockVertical(prod);
@@ -4465,11 +4537,12 @@
                 const i5 = document.getElementById('prodVendaMediaInput'); if (i5) i5.value = prod.venda_media_mensal || 0;
             }
 
+            // 👇 STOCK SEM CASAS DECIMAIS E SEM SEPARADOR DE MILHAR
             function renderizarStockVertical(prod) {
                 const tbody = document.getElementById('stockBody'); if (!tbody) return;
                 let html = '', total = 0;
                 LOJAS_KERO.forEach(loja => {
-                    const q = prod.stock[loja] || 0;
+                    const q = Math.round(Number(prod.stock[loja]) || 0); // 👈 INTEIRO
                     total += q;
                     html += `<tr><td>${loja.replace('Kero Loja ', '')}</td><td>${q}</td></tr>`;
                 });
@@ -4500,8 +4573,11 @@
                 produtos.forEach(prod => {
                     const card = document.createElement('div');
                     card.className = 'product-card';
+                    // 👇 NOVOS CAMPOS nos cards
                     card.innerHTML = `<div class="card-name">${prod.nome}</div>
                                       <div class="card-ean">EAN: ${prod.ean}</div>
+                                      ${prod.cod_sap ? `<div class="card-ean" style="color:#E65100;">Artigo: ${prod.cod_sap}</div>` : ''}
+                                      ${prod.num_fornecedor ? `<div class="card-ean" style="color:#1565c0;">Nº Forn: ${prod.num_fornecedor}</div>` : ''}
                                       <div class="card-price">${(prod.preco_kero || 0).toFixed(2)} Kz</div>`;
                     card.addEventListener('click', () => {
                         const p = upsertLocal(prod);
@@ -4835,17 +4911,29 @@
                             const ean = String(row['EAN'] || '').trim();
                             if (!ean) return null;
                             const stock = {};
-                            Object.entries(MAPA_LOJAS).forEach(([colExcel, chaveInterna]) => { stock[chaveInterna] = parseFloat(row[colExcel]) || 0; });
+                            // 👇 Stock sempre INTEIRO (parseStockInteiro trata "2.750" → 2750)
+                            Object.entries(MAPA_LOJAS).forEach(([colExcel, chaveInterna]) => {
+                                stock[chaveInterna] = parseStockInteiro(row[colExcel]);
+                            });
                             const concorrentes = {};
                             CONCORRENTES.forEach(c => { concorrentes[c] = 0; });
                             return {
                                 ean,
                                 nome: String(row['Descrição'] || '').trim(),
+                                // 👇 NOVOS CAMPOS (tolerante a variações do cabeçalho)
+                                cod_sap: String(
+                                    row['Artigo'] ?? row['Cod. Sap'] ?? row['CodSap'] ??
+                                    row['Cod SAP'] ?? row['Cód. SAP'] ?? ''
+                                ).trim(),
+                                num_fornecedor: String(
+                                    row['Nº Fornecedor'] ?? row['Num Fornecedor'] ?? row['NumFornecedor'] ??
+                                    row['NFornecedor'] ?? row['NºFornecedor'] ?? ''
+                                ).trim(),
                                 fornecedor: String(row['Nome Fornecedor'] || '').trim(),
                                 preco_custo: parseFloat(row['PMM']) || 0,
                                 preco_kero: parseFloat(row['PVP']) || 0,
                                 iva: parseFloat(row['IVA %']) || 0,
-                                venda_media_mensal: parseFloat(row['VENDA Media Mensal']) || 0,
+                                venda_media_mensal: parseInt(row['VENDA Media Mensal']) || 0,
                                 stock, concorrentes
                             };
                         }).filter(p => p !== null && p.nome !== '');
@@ -4875,7 +4963,48 @@
                 a.href = url; a.download = `produtos_${new Date().toISOString().slice(0,10)}.json`; a.click();
                 URL.revokeObjectURL(url);
             }
-            function adicionarProduto() { notificar('Use importação Excel.', 'info'); }
+
+            // 👇 ADICIONAR PRODUTO COM OS 2 NOVOS CAMPOS
+            function adicionarProduto() {
+                const nome = document.getElementById('addNome').value.trim();
+                const ean = document.getElementById('addEan').value.trim();
+                if (!nome || !ean) { notificar('Nome e EAN são obrigatórios.', 'error'); return; }
+                if (produtos.find(p => p.ean === ean)) { notificar('EAN já existe.', 'error'); return; }
+
+                const stock = {};
+                LOJAS_KERO.forEach(l => stock[l] = 0);
+                const stockStr = document.getElementById('addStock').value.trim();
+                if (stockStr) {
+                    // Separa por vírgula E pontos-e-vírgulas
+                    const vals = stockStr.split(/[,;]/).map(v => parseStockInteiro(v));
+                    LOJAS_KERO.forEach((l, i) => stock[l] = vals[i] || 0);
+                }
+
+                const concorrentes = {};
+                CONCORRENTES.forEach(c => concorrentes[c] = 0);
+                const concStr = document.getElementById('addConcorrentes').value.trim();
+                if (concStr) {
+                    const vals = concStr.split(/[,;]/).map(v => parseFloat(v.replace(',', '.')) || 0);
+                    CONCORRENTES.forEach((c, i) => concorrentes[c] = vals[i] || 0);
+                }
+
+                const novo = {
+                    ean, nome,
+                    cod_sap: document.getElementById('addCodSap').value.trim(),
+                    num_fornecedor: document.getElementById('addNumFornecedor').value.trim(),
+                    fornecedor: document.getElementById('addFornecedor').value.trim(),
+                    preco_custo: parseFloat(document.getElementById('addPrecoCusto').value) || 0,
+                    preco_kero: parseFloat(document.getElementById('addPrecoKero').value) || 0,
+                    iva: parseFloat(document.getElementById('addIva').value) || 0,
+                    venda_media_mensal: parseInt(document.getElementById('addVendaMedia').value) || 0,
+                    stock, concorrentes
+                };
+                upsertLocal(novo);
+                notificar(`✅ Produto "${nome}" adicionado ao cache local.`, 'success');
+                // Limpar campos
+                ['addNome','addEan','addCodSap','addNumFornecedor','addPrecoCusto','addPrecoKero','addIva','addFornecedor','addVendaMedia','addStock','addConcorrentes']
+                    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            }
 
             // ============================================================
             // DIAGNÓSTICO
@@ -5036,7 +5165,7 @@
             setInterval(() => { localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes)); }, 5000);
         });
 
-        console.log('✅ Kero SIR — Modo público removido, EAN com consultas diretas ao SharePoint.');
+        console.log('✅ Kero SIR — Stock em inteiros + novos campos Artigo e Nº Fornecedor no módulo EAN.');
     </script>
 </body>
 </html>
