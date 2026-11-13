@@ -1444,7 +1444,7 @@
                                 <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
                                     <span class="ean" id="prodEan">EAN: --</span>
                                     <span class="ean" id="prodCodSap" style="background:#fff3e0; color:#E65100; font-weight:600;">Artigo: --</span>
-                                    <span class="ean" id="prodNumFornecedor" style="background:#e3f2fd; color:#1565c0; font-weight:600;">Nº Fornecedor: --</span>
+                                    <span class="ean" id="prodNumFornecedor" style="background:#e3f2fd; color:#1565c0; font-weight:600;">Cód. Forn: --</span>
                                 </div>
                             </div>
                         </div>
@@ -1723,7 +1723,7 @@
                         <input type="text" id="addCodSap" placeholder="Ex: 12345">
                     </div>
                     <div class="form-group">
-                        <label for="addNumFornecedor">Nº Fornecedor</label>
+                        <label for="addNumFornecedor">Cód. Fornecedor</label>
                         <input type="text" id="addNumFornecedor" placeholder="Ex: 98765">
                     </div>
                     <div class="form-group">
@@ -2457,7 +2457,7 @@
         function editarRequisicao(id) {
             const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
-            if (!podeEditarRequisicao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
+            if (!podeEditarRequisicaao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
             document.getElementById('editRequisicaoId').value = req.id;
             document.getElementById('editFuncao').value = req.funcao;
             document.getElementById('editDirecao').value = req.direcao;
@@ -4090,6 +4090,14 @@
                 return isNaN(n) ? 0 : Math.round(n);
             }
 
+            function parseIva(val) {
+                if (!val) return 0;
+                let num = parseFloat(String(val).replace(',', '.'));
+                if (isNaN(num)) return 0;
+                if (num > 0 && num <= 1) return Math.round(num * 100);
+                return Math.round(num);
+            }
+
             function adicionarHistorico(ean) {
                 historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
                 historicoPesquisas.unshift(ean);
@@ -4200,13 +4208,14 @@
                         campoEan, campoNome,
                         campoPrecoCusto: detectar(['PrecoCusto', 'PreçoCusto', 'Custo', 'PMM', 'PrecoCompra']),
                         campoPrecoKero: detectar(['PrecoKero', 'PreçoKero', 'Preco', 'PVP', 'PrecoVenda']),
-                        campoIva: detectar(['Iva', 'IVA', 'IvaPercent', 'Taxa']),
+                        campoIva: detectar(['Iva', 'IVA', 'IvaPercent', 'Taxa', 'Taxa IVA', 'Iva (%)', 'Percentagem']),
                         campoFornecedor: detectar(['Fornecedor', 'Supplier']),
                         campoVendaMedia: detectar(['VendaMediaMensal', 'VendaMedia', 'Venda_Media_Mensal']),
                         campoStock: detectar(['Stock']),
                         campoConcorrentes: detectar(['Concorrentes']),
                         campoCodSap: detectar(['Artigo', 'CodSap', 'Cod_Sap', 'CodigoSap', 'CodigoSAP', 'Cod_SAP', 'SAP']),
                         campoNumFornecedor: detectar([
+                            'Cod.Forncedor', 'Cod. Fornecedor', 'CodForncedor', 'Cod Fornecedor', 
                             'NForncedor', 'NFornecedor', 'Nfornecedor', 'NFORNECEDOR', 'N_x00ba__Fornecedor', 
                             'NumFornecedor', 'NumeroFornecedor', 'NrFornecedor', 'Num_Fornecedor', 
                             'NoFornecedor', 'N Fornecedor', 'NºFornecedor', 'Nº Fornecedor', 'Numero_Fornecedor'
@@ -4234,9 +4243,9 @@
                     if (key) cod_sap = f[key];
                 }
                 
-                let num_fornecedor = est.campoNumFornecedor ? f[est.campoNumFornecedor] : (f['NForncedor'] || f['NFornecedor'] || f['Nº Fornecedor'] || '');
+                let num_fornecedor = est.campoNumFornecedor ? f[est.campoNumFornecedor] : (f['Cod.Forncedor'] || f['NForncedor'] || f['NFornecedor'] || f['Nº Fornecedor'] || '');
                 if (!num_fornecedor) {
-                    const key = Object.keys(f).find(k => k.toLowerCase().includes('forn') && k.toLowerCase().includes('n'));
+                    const key = Object.keys(f).find(k => k.toLowerCase().includes('forn') && (k.toLowerCase().includes('n') || k.toLowerCase().includes('cod')));
                     if (key) num_fornecedor = f[key];
                 }
 
@@ -4245,7 +4254,7 @@
                     cod_sap: String(cod_sap || ''), num_fornecedor: String(num_fornecedor || ''),
                     preco_custo: Number(f[est.campoPrecoCusto]) || 0,
                     preco_kero: Number(f[est.campoPrecoKero]) || 0,
-                    iva: Number(f[est.campoIva]) || 0,
+                    iva: parseIva(f[est.campoIva]),
                     fornecedor: f[est.campoFornecedor] || '',
                     venda_media_mensal: Number(f[est.campoVendaMedia]) || 0,
                     stock, concorrentes
@@ -4397,7 +4406,7 @@
                             if (est.campoNome) fields[est.campoNome] = produto.nome || '';
                             if (est.campoPrecoCusto) fields[est.campoPrecoCusto] = Number(produto.preco_custo) || 0;
                             if (est.campoPrecoKero) fields[est.campoPrecoKero] = Number(produto.preco_kero) || 0;
-                            if (est.campoIva) fields[est.campoIva] = Number(produto.iva) || 0;
+                            if (est.campoIva) fields[est.campoIva] = parseIva(produto.iva);
                             if (est.campoFornecedor) fields[est.campoFornecedor] = produto.fornecedor || '';
                             if (est.campoVendaMedia) fields[est.campoVendaMedia] = Number(produto.venda_media_mensal) || 0;
                             if (est.campoStock) fields[est.campoStock] = JSON.stringify(produto.stock || {});
@@ -4459,7 +4468,7 @@
                 const nomeEl = document.getElementById('prodNome'); if (nomeEl) nomeEl.textContent = prod.nome;
                 const eanEl = document.getElementById('prodEan'); if (eanEl) eanEl.textContent = `EAN: ${prod.ean}`;
                 const codSapEl = document.getElementById('prodCodSap'); if (codSapEl) codSapEl.textContent = `Artigo: ${prod.cod_sap || '--'}`;
-                const numFornEl = document.getElementById('prodNumFornecedor'); if (numFornEl) numFornEl.textContent = `Nº Fornecedor: ${prod.num_fornecedor || '--'}`;
+                const numFornEl = document.getElementById('prodNumFornecedor'); if (numFornEl) numFornEl.textContent = `Cód. Forn: ${prod.num_fornecedor || '--'}`;
                 
                 atualizarPrecos(prod);
                 renderizarConcorrentes(prod);
@@ -4477,7 +4486,7 @@
                 
                 const i1 = document.getElementById('prodPrecoKeroInput'); if (i1) i1.value = Math.round(prod.preco_kero) || 0;
                 const i2 = document.getElementById('prodPrecoCustoInput'); if (i2) i2.value = Math.round(prod.preco_custo) || 0;
-                const i3 = document.getElementById('prodIvaInput'); if (i3) i3.value = Math.round(prod.iva) || 0;
+                const i3 = document.getElementById('prodIvaInput'); if (i3) i3.value = parseIva(prod.iva) || 0;
                 const i4 = document.getElementById('prodFornecedorInput'); if (i4) i4.value = prod.fornecedor || '';
                 const i5 = document.getElementById('prodVendaMediaInput'); if (i5) i5.value = Math.round(prod.venda_media_mensal) || 0;
             }
@@ -4517,7 +4526,7 @@
                     card.innerHTML = `<div class="card-name">${prod.nome}</div>
                                       <div class="card-ean">EAN: ${prod.ean}</div>
                                       ${prod.cod_sap ? `<div class="card-ean" style="color:#E65100;">Artigo: ${prod.cod_sap}</div>` : ''}
-                                      ${prod.num_fornecedor ? `<div class="card-ean" style="color:#1565c0;">Nº Forn: ${prod.num_fornecedor}</div>` : ''}
+                                      ${prod.num_fornecedor ? `<div class="card-ean" style="color:#1565c0;">Cód. Forn: ${prod.num_fornecedor}</div>` : ''}
                                       <div class="card-price">${formatarNumeroInteiro(prod.preco_kero)} Kz</div>`;
                     card.addEventListener('click', () => {
                         const p = upsertLocal(prod);
@@ -4555,7 +4564,7 @@
                     item.className = 'suggestion-item';
                     const extra = [];
                     if (p.cod_sap) extra.push(`Art: ${p.cod_sap}`);
-                    if (p.num_fornecedor) extra.push(`Nº Forn: ${p.num_fornecedor}`);
+                    if (p.num_fornecedor) extra.push(`Cód. Forn: ${p.num_fornecedor}`);
                     const extraStr = extra.length > 0 ? ` | ${extra.join(' | ')}` : '';
                     item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">EAN: ${p.ean}${extraStr}</span>`;
                     item.addEventListener('click', () => {
@@ -4658,7 +4667,7 @@
                 if (!produtoAtual) return;
                 const precoKero = Math.round(parseFloat(document.getElementById('prodPrecoKeroInput').value));
                 const precoCusto = Math.round(parseFloat(document.getElementById('prodPrecoCustoInput').value));
-                const iva = Math.round(parseFloat(document.getElementById('prodIvaInput').value));
+                const iva = parseIva(document.getElementById('prodIvaInput').value);
                 const fornecedor = document.getElementById('prodFornecedorInput').value.trim();
                 const vendaMedia = Math.round(parseFloat(document.getElementById('prodVendaMediaInput').value));
                 if (isNaN(precoKero) || precoKero < 0 || isNaN(precoCusto) || precoCusto < 0 || isNaN(iva) || iva < 0 || isNaN(vendaMedia) || vendaMedia < 0) {
@@ -4793,11 +4802,11 @@
                                 ean,
                                 nome: String(row['Descrição'] || row['Nome'] || '').trim(),
                                 cod_sap: String(row['Artigo'] ?? row['Cod. Sap'] ?? row['CodSap'] ?? row['Cod SAP'] ?? row['Cód. SAP'] ?? '').trim(),
-                                num_fornecedor: String(row['Nº Fornecedor'] ?? row['NForncedor'] ?? row['NFornecedor'] ?? row['Num Fornecedor'] ?? row['NumFornecedor'] ?? row['NºFornecedor'] ?? '').trim(),
+                                num_fornecedor: String(row['Cod.Forncedor'] ?? row['Cod. Fornecedor'] ?? row['CodForncedor'] ?? row['Nº Fornecedor'] ?? row['NForncedor'] ?? row['NFornecedor'] ?? row['Num Fornecedor'] ?? row['NumFornecedor'] ?? row['NºFornecedor'] ?? '').trim(),
                                 fornecedor: String(row['Nome Fornecedor'] || row['Fornecedor'] || '').trim(),
                                 preco_custo: Math.round(parseFloat(row['PMM'] || row['Preço Custo'] || 0)) || 0,
                                 preco_kero: Math.round(parseFloat(row['PVP'] || row['Preço Kero'] || 0)) || 0,
-                                iva: Math.round(parseFloat(row['IVA %'] || row['IVA'] || 0)) || 0,
+                                iva: parseIva(row['IVA %'] || row['IVA'] || row['Taxa IVA'] || row['Taxa'] || 0),
                                 venda_media_mensal: Math.round(parseFloat(row['VENDA Media Mensal'] || row['Venda Média'] || 0)) || 0,
                                 stock, concorrentes
                             };
@@ -4843,7 +4852,7 @@
                     fornecedor: document.getElementById('addFornecedor').value.trim(),
                     preco_custo: Math.round(parseFloat(document.getElementById('addPrecoCusto').value)) || 0,
                     preco_kero: Math.round(parseFloat(document.getElementById('addPrecoKero').value)) || 0,
-                    iva: Math.round(parseFloat(document.getElementById('addIva').value)) || 0,
+                    iva: parseIva(document.getElementById('addIva').value),
                     venda_media_mensal: Math.round(parseFloat(document.getElementById('addVendaMedia').value)) || 0,
                     stock, concorrentes
                 };
