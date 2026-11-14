@@ -1438,17 +1438,21 @@
                         <div class="product-grid" id="productGrid"></div>
                     </div>
                     <section id="resultContainer" class="result-card-ean" aria-live="polite">
+                        <!-- CABEÇALHO DO PRODUTO -->
                         <div class="product-header-ean" id="productHeader">
                             <div style="flex:1;">
                                 <div class="name" id="prodNome">Produto</div>
                                 <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
                                     <span class="ean" id="prodEan">EAN: --</span>
-                                    <span class="ean" id="prodCodSap" style="background:#fff3e0; color:#E65100; font-weight:600;">Artigo: --</span>
-                                    <span class="ean" id="prodNumFornecedor" style="background:#e3f2fd; color:#1565c0; font-weight:600;">Cód. Forn: --</span>
                                 </div>
                             </div>
                         </div>
+                        <!-- GRELHA DE PREÇOS E CÓDIGOS -->
                         <div class="product-pricing" id="productPricing">
+                            <div class="pricing-item">
+                                <span class="label">Artigo</span>
+                                <div class="value" id="prodCodSap">--</div>
+                            </div>
                             <div class="pricing-item">
                                 <span class="label">Preço Kero</span>
                                 <div class="value" id="prodPrecoKeroDisplay">-- Kz</div>
@@ -1473,6 +1477,10 @@
                                 <span class="label">Venda média mensal</span>
                                 <div class="value" id="prodVendaMediaDisplay">--</div>
                                 <input type="number" step="1" id="prodVendaMediaInput" placeholder="0" style="display:none;">
+                            </div>
+                            <div class="pricing-item">
+                                <span class="label">Cód. Fornecedor</span>
+                                <div class="value" id="prodNumFornecedor">--</div>
                             </div>
                             <div class="pricing-actions">
                                 <button class="btn-ean btn-editar-precos" id="btnEditarPrecos"><i class="fas fa-edit"></i> Editar</button>
@@ -2457,7 +2465,7 @@
         function editarRequisicao(id) {
             const req = requisicoes.find(r => r.id == id);
             if (!req) { mostrarNotificacao('Requisição não encontrada', 'error'); return; }
-            if (!podeEditarRequisicaao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
+            if (!podeEditarRequisicao(req)) { mostrarNotificacao('Sem permissão', 'error'); return; }
             document.getElementById('editRequisicaoId').value = req.id;
             document.getElementById('editFuncao').value = req.funcao;
             document.getElementById('editDirecao').value = req.direcao;
@@ -4215,6 +4223,7 @@
                         campoConcorrentes: detectar(['Concorrentes']),
                         campoCodSap: detectar(['Artigo', 'CodSap', 'Cod_Sap', 'CodigoSap', 'CodigoSAP', 'Cod_SAP', 'SAP']),
                         campoNumFornecedor: detectar([
+                            'Cod_x002e_Forncedor', 'Cod_x002E_Forncedor', 'Cod_x002e_Fornecedor', 'Cod_x002E_Fornecedor',
                             'Cod.Forncedor', 'Cod. Fornecedor', 'CodForncedor', 'Cod Fornecedor', 
                             'NForncedor', 'NFornecedor', 'Nfornecedor', 'NFORNECEDOR', 'N_x00ba__Fornecedor', 
                             'NumFornecedor', 'NumeroFornecedor', 'NrFornecedor', 'Num_Fornecedor', 
@@ -4237,15 +4246,17 @@
                 LOJAS_KERO.forEach(l => { stock[l] = parseStockInteiro(stock[l]); });
                 CONCORRENTES.forEach(c => { if (!(c in concorrentes)) concorrentes[c] = 0; });
                 
+                // Leitura estrita para não misturar o nome da empresa com o código de fornecedor
                 let cod_sap = est.campoCodSap ? f[est.campoCodSap] : (f['Artigo'] || f['CodSap'] || '');
                 if (!cod_sap) {
                     const key = Object.keys(f).find(k => k.toLowerCase().includes('artig') || k.toLowerCase().includes('sap'));
                     if (key) cod_sap = f[key];
                 }
                 
-                let num_fornecedor = est.campoNumFornecedor ? f[est.campoNumFornecedor] : (f['Cod.Forncedor'] || f['NForncedor'] || f['NFornecedor'] || f['Nº Fornecedor'] || '');
+                let num_fornecedor = est.campoNumFornecedor ? f[est.campoNumFornecedor] : '';
                 if (!num_fornecedor) {
-                    const key = Object.keys(f).find(k => k.toLowerCase().includes('forn') && (k.toLowerCase().includes('n') || k.toLowerCase().includes('cod')));
+                    // Procura especificamente por colunas que tenham "cod" e "forn"
+                    const key = Object.keys(f).find(k => k.toLowerCase().includes('forn') && k.toLowerCase().includes('cod'));
                     if (key) num_fornecedor = f[key];
                 }
 
@@ -4411,8 +4422,9 @@
                             if (est.campoVendaMedia) fields[est.campoVendaMedia] = Number(produto.venda_media_mensal) || 0;
                             if (est.campoStock) fields[est.campoStock] = JSON.stringify(produto.stock || {});
                             if (est.campoConcorrentes) fields[est.campoConcorrentes] = JSON.stringify(produto.concorrentes || {});
-                            if (est.campoCodSap) fields[est.campoCodSap] = produto.cod_sap || '';
-                            if (est.campoNumFornecedor) fields[est.campoNumFornecedor] = produto.num_fornecedor || '';
+                            // Força String() para colunas de texto
+                            if (est.campoCodSap) fields[est.campoCodSap] = String(produto.cod_sap || '');
+                            if (est.campoNumFornecedor) fields[est.campoNumFornecedor] = String(produto.num_fornecedor || '');
                             const requestId = String(idx + 1);
                             if (existingId) return { id: requestId, method: 'PATCH', url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`, headers: { 'Content-Type': 'application/json' }, body: fields };
                             return { id: requestId, method: 'POST', url: `/sites/${siteId}/lists/${listName}/items`, headers: { 'Content-Type': 'application/json' }, body: { fields } };
@@ -4467,8 +4479,10 @@
                 
                 const nomeEl = document.getElementById('prodNome'); if (nomeEl) nomeEl.textContent = prod.nome;
                 const eanEl = document.getElementById('prodEan'); if (eanEl) eanEl.textContent = `EAN: ${prod.ean}`;
-                const codSapEl = document.getElementById('prodCodSap'); if (codSapEl) codSapEl.textContent = `Artigo: ${prod.cod_sap || '--'}`;
-                const numFornEl = document.getElementById('prodNumFornecedor'); if (numFornEl) numFornEl.textContent = `Cód. Forn: ${prod.num_fornecedor || '--'}`;
+                
+                // Agora renderiza sem o prefixo "Artigo: " e "Cód. Forn: " porque os rótulos estão na grid
+                const codSapEl = document.getElementById('prodCodSap'); if (codSapEl) codSapEl.textContent = prod.cod_sap || '--';
+                const numFornEl = document.getElementById('prodNumFornecedor'); if (numFornEl) numFornEl.textContent = prod.num_fornecedor || '--';
                 
                 atualizarPrecos(prod);
                 renderizarConcorrentes(prod);
