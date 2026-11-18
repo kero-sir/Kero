@@ -781,14 +781,6 @@
         [data-tooltip] { position: relative; cursor: help; }
         [data-tooltip]:before { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); padding: 5px 10px; background: #333; color: white; font-size: 11px; border-radius: 4px; white-space: nowrap; display: none; z-index: 1000; }
         [data-tooltip]:hover:before { display: block; }
-        .guest-banner { background: #fff3cd; color: #856404; padding: 8px 16px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .guest-banner i { font-size: 20px; }
-        .guest-banner .btn-close-guest { margin-left: auto; background: transparent; border: none; color: #856404; font-weight: 600; cursor: pointer; }
-        .guest-banner .btn-close-guest:hover { text-decoration: underline; }
-        body.dark-mode .guest-banner { background: #4a3a1a; color: #efd08f; }
-        body.dark-mode .guest-banner .btn-close-guest { color: #efd08f; }
-        .guest-only { border: 2px dashed #ffc107; padding: 12px; border-radius: 8px; background: #fff8e1; margin: 10px 0; }
-        body.dark-mode .guest-only { background: #4a3a1a; border-color: #6a5a2a; }
     </style>
 </head>
 <body>
@@ -836,9 +828,9 @@
                     <p>Requisições de manutenção, equipamentos e serviços.</p>
                     <span class="module-badge badge-ativo">Ativo</span>
                 </div>
-                <div class="module-card-large border-roxo" onclick="selecionarModulo('mobilidade')">
+                <div class="module-card-large border-roxo" onclick="selecionarModulo('ilidade')">
                     <div class="module-icon-large icone-roxo"><i class="fas fa-people-arrows"></i></div>
-                    <h2 class="cor-roxo">Mobilidade & Promoções</h2>
+                    <h2 class="cor-roxo">ilidade & Promoções</h2>
                     <p>Gestão de mudanças salariais, áreas e promoções.</p>
                     <span class="module-badge badge-ativo">Ativo</span>
                 </div>
@@ -1337,9 +1329,9 @@
                 </div>
             </div>
 
-            <!-- MOBILIDADE -->
-            <div id="mobilidadeSection" style="display: none;">
-                <div class="nav-menu roxo-nav" id="navMobilidade">
+            <!-- ILIDADE -->
+            <div id="ilidadeSection" style="display: none;">
+                <div class="nav-menu roxo-nav" id="navilidade">
                     <div class="nav-item roxo-active" onclick="mudarAbaMobilidade('dashboard', this)"><i class="fas fa-chart-pie"></i> Dashboard</div>
                     <div class="nav-item" onclick="mudarAbaMobilidade('requisicoes', this)"><i class="fas fa-file-alt"></i> Requisições</div>
                     <div class="nav-item" onclick="mudarAbaMobilidade('aprovacoes', this)"><i class="fas fa-check-circle"></i> Aprovações</div>
@@ -1406,11 +1398,6 @@
 
             <!-- EAN -->
             <div id="eanSection" style="display: none;">
-                <div id="guestBanner" class="guest-banner" style="display: none;">
-                    <i class="fas fa-globe"></i>
-                    <span><strong>Modo Convidado</strong> – Visualização pública de preços e stock. Edições e importações estão desativadas.</span>
-                    <button class="btn-close-guest" onclick="fecharModoPublico()">✕</button>
-                </div>
                 <div class="container-ean">
                     <header class="ean-header">
                         <h1><i class="fas fa-barcode"></i> Kero EAN Scan</h1>
@@ -1422,7 +1409,7 @@
                     </div>
                     <section class="search-area-ean" role="search">
                         <label for="eanInput"><i class="fas fa-search"></i> Pesquisar:</label>
-                        <input type="text" id="eanInput" placeholder="Digite nome ou EAN..." autofocus aria-label="Pesquisar produto">
+                        <input type="text" id="eanInput" placeholder="Digite nome, EAN ou Artigo..." autofocus aria-label="Pesquisar produto">
                         <button class="btn-ean btn-buscar" id="btnBuscar"><i class="fas fa-arrow-right"></i> Buscar</button>
                         <button class="btn-ean btn-limpar" id="btnLimpar"><i class="fas fa-times"></i> Limpar</button>
                         <button class="btn-ean btn-listar" id="btnListarTodos"><i class="fas fa-list"></i> Todos</button>
@@ -1432,9 +1419,14 @@
                         <button class="btn-ean btn-import" id="btnImportExcel"><i class="fas fa-file-excel"></i> Importar Excel</button>
                         <input type="file" id="fileInputExcel" accept=".xlsx,.xls,.xlsb" style="display:none;">
                         <button class="btn-ean btn-sync" id="btnSyncSharePoint"><i class="fas fa-sync-alt"></i> Sincronizar</button>
-                        <button class="btn-ean" id="btnPublicarSharePoint" style="background:#217346;">
+                        <button class="btn-ean" id="btnPublicarSharePoint" style="background:#217346; display:none;">
                             <i class="fas fa-cloud-upload-alt"></i> Publicar no SharePoint
                         </button>
+                        
+                        <button class="btn-ean btn-add-product" id="btnNovoProdutoEAN" style="display:none; background:#1976D2; padding: 12px 20px; margin-left: auto;">
+                            <i class="fas fa-plus-circle"></i> Novo Produto
+                        </button>
+                        
                         <div class="suggestions-box" id="suggestionsBox"></div>
                     </section>
                     <div class="history-area-ean" id="historyArea" style="display: none;">
@@ -1446,25 +1438,35 @@
                         <div class="product-grid" id="productGrid"></div>
                     </div>
                     <section id="resultContainer" class="result-card-ean" aria-live="polite">
+                        <!-- CABEÇALHO DO PRODUTO -->
                         <div class="product-header-ean" id="productHeader">
-                            <span class="name" id="prodNome">Produto</span>
-                            <span class="ean" id="prodEan">EAN: --</span>
+                            <div style="flex:1;">
+                                <div class="name" id="prodNome">Produto</div>
+                                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                                    <span class="ean" id="prodEan">EAN: --</span>
+                                </div>
+                            </div>
                         </div>
+                        <!-- GRELHA DE PREÇOS E CÓDIGOS -->
                         <div class="product-pricing" id="productPricing">
+                            <div class="pricing-item">
+                                <span class="label">Artigo</span>
+                                <div class="value" id="prodCodSap">--</div>
+                            </div>
                             <div class="pricing-item">
                                 <span class="label">Preço Kero</span>
                                 <div class="value" id="prodPrecoKeroDisplay">-- Kz</div>
-                                <input type="number" step="0.01" id="prodPrecoKeroInput" placeholder="0.00" style="display:none;">
+                                <input type="number" step="1" id="prodPrecoKeroInput" placeholder="0" style="display:none;">
                             </div>
                             <div class="pricing-item">
                                 <span class="label">Preço Custo</span>
                                 <div class="value" id="prodPrecoCustoDisplay">-- Kz</div>
-                                <input type="number" step="0.01" id="prodPrecoCustoInput" placeholder="0.00" style="display:none;">
+                                <input type="number" step="1" id="prodPrecoCustoInput" placeholder="0" style="display:none;">
                             </div>
                             <div class="pricing-item">
                                 <span class="label">IVA (%)</span>
                                 <div class="value" id="prodIvaDisplay">-- %</div>
-                                <input type="number" step="0.01" id="prodIvaInput" placeholder="0" style="display:none;">
+                                <input type="number" step="1" id="prodIvaInput" placeholder="" style="display:none;">
                             </div>
                             <div class="pricing-item">
                                 <span class="label">Fornecedor</span>
@@ -1475,6 +1477,10 @@
                                 <span class="label">Venda média mensal</span>
                                 <div class="value" id="prodVendaMediaDisplay">--</div>
                                 <input type="number" step="1" id="prodVendaMediaInput" placeholder="0" style="display:none;">
+                            </div>
+                            <div class="pricing-item">
+                                <span class="label">Cód. Fornecedor</span>
+                                <div class="value" id="prodNumFornecedor">--</div>
                             </div>
                             <div class="pricing-actions">
                                 <button class="btn-ean btn-editar-precos" id="btnEditarPrecos"><i class="fas fa-edit"></i> Editar</button>
@@ -1499,7 +1505,7 @@
                     <section id="emptyStateEAN" class="empty-state-ean">
                         <i class="fas fa-barcode"></i>
                         <h2>Nenhum produto selecionado</h2>
-                        <p>Pesquise por nome ou EAN, clique em "Todos" ou carregue uma imagem do código de barras.</p>
+                        <p>Pesquise por nome, EAN ou Artigo, clique em "Todos" ou carregue uma imagem do código de barras.</p>
                     </section>
                     <div class="camera-modal-ean" id="cameraModal">
                         <div class="status" id="cameraStatus">Aguardando...</div>
@@ -1511,52 +1517,8 @@
                             <button class="close-camera" id="btnCloseCamera"><i class="fas fa-times"></i> Fechar</button>
                         </div>
                     </div>
-                    <section id="addProductArea" class="add-product-area-ean">
-                        <h3><i class="fas fa-plus-circle"></i> Adicionar Novo Produto</h3>
-                        <div class="add-product-form">
-                            <div class="form-group">
-                                <label for="addNome">Nome do Produto</label>
-                                <input type="text" id="addNome" placeholder="Ex: Arroz 5kg">
-                            </div>
-                            <div class="form-group">
-                                <label for="addEan">EAN</label>
-                                <input type="text" id="addEan" placeholder="Código de barras (8 a 13 dígitos)">
-                            </div>
-                            <div class="form-group">
-                                <label for="addPrecoCusto">Preço de Custo (Kz)</label>
-                                <input type="number" step="0.01" id="addPrecoCusto" placeholder="0.00">
-                            </div>
-                            <div class="form-group">
-                                <label for="addPrecoKero">Preço Kero (Kz)</label>
-                                <input type="number" step="0.01" id="addPrecoKero" placeholder="0.00">
-                            </div>
-                            <div class="form-group">
-                                <label for="addIva">IVA (%)</label>
-                                <input type="number" step="0.01" id="addIva" placeholder="14">
-                            </div>
-                            <div class="form-group">
-                                <label for="addFornecedor">Fornecedor</label>
-                                <input type="text" id="addFornecedor" placeholder="Ex: Fornecedor X">
-                            </div>
-                            <div class="form-group">
-                                <label for="addVendaMedia">Venda média mensal</label>
-                                <input type="number" step="1" id="addVendaMedia" placeholder="0">
-                            </div>
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label>Stock por Loja (separado por vírgula)</label>
-                                <input type="text" id="addStock" placeholder="Ex: 10,20,15,... (13 lojas)">
-                                <span class="helper-text">Ordem: Talatona, Kilamba, Morro Bento, Nova Vida, Lubango, Huambo, Lobito, Benguela, Viana, Gika, Mártires, Combatentes, Cacuaco</span>
-                            </div>
-                            <div class="form-group" style="grid-column: span 2;">
-                                <label>Preços Concorrentes (Angomart, Maxi, Shoprite) separados por vírgula</label>
-                                <input type="text" id="addConcorrentes" placeholder="Ex: 600,620,650">
-                            </div>
-                            <button class="btn-ean btn-add-product" id="btnAddProduct"><i class="fas fa-save"></i> Adicionar Produto</button>
-                        </div>
-                    </section>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -1747,6 +1709,69 @@
         </div>
     </div>
 
+    <!-- MODAL NOVO PRODUTO EAN -->
+    <div class="modal" id="modalNovoProdutoEAN">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 style="color: #1a4a2a;"><i class="fas fa-plus-circle"></i> Adicionar Novo Produto</h2>
+                <span class="close-modal" onclick="fecharModal('modalNovoProdutoEAN')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="add-product-form">
+                    <div class="form-group">
+                        <label for="addNome">Nome do Produto</label>
+                        <input type="text" id="addNome" placeholder="Ex: Arroz 5kg">
+                    </div>
+                    <div class="form-group">
+                        <label for="addEan">EAN</label>
+                        <input type="text" id="addEan" placeholder="Código de barras (8 a 13 dígitos)">
+                    </div>
+                    <div class="form-group">
+                        <label for="addCodSap">Cod. Sap / Artigo</label>
+                        <input type="text" id="addCodSap" placeholder="Ex: 12345">
+                    </div>
+                    <div class="form-group">
+                        <label for="addNumFornecedor">Cód. Fornecedor</label>
+                        <input type="text" id="addNumFornecedor" placeholder="Ex: 98765">
+                    </div>
+                    <div class="form-group">
+                        <label for="addPrecoCusto">Preço de Custo (Kz)</label>
+                        <input type="number" step="1" id="addPrecoCusto" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="addPrecoKero">Preço Kero (Kz)</label>
+                        <input type="number" step="1" id="addPrecoKero" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="addIva">IVA (%)</label>
+                        <input type="number" step="1" id="addIva" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label for="addFornecedor">Fornecedor</label>
+                        <input type="text" id="addFornecedor" placeholder="Ex: Fornecedor X">
+                    </div>
+                    <div class="form-group">
+                        <label for="addVendaMedia">Venda média mensal</label>
+                        <input type="number" step="1" id="addVendaMedia" placeholder="0">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Stock por Loja (separado por vírgula)</label>
+                        <input type="text" id="addStock" placeholder="Ex: 10,20,15,... (13 lojas)">
+                        <span class="helper-text">Ordem: Talatona, Kilamba, Morro Bento, Nova Vida, Lubango, Huambo, Lobito, Benguela, Viana, Gika, Mártires, Combatentes, Cacuaco</span>
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Preços Concorrentes (Angomart, Maxi, Shoprite) separados por vírgula</label>
+                        <input type="text" id="addConcorrentes" placeholder="Ex: 600,620,650">
+                    </div>
+                </div>
+                <div class="form-actions" style="margin-top: 20px;">
+                    <button type="button" class="btn-ean btn-limpar" onclick="fecharModal('modalNovoProdutoEAN')">Cancelar</button>
+                    <button type="button" class="btn-ean btn-add-product" style="width: auto; padding: 10px 20px; margin: 0;" id="btnGuardarNovoProduto"><i class="fas fa-save"></i> Guardar Produto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============================================================
         // CONFIGURAÇÕES GLOBAIS
@@ -1770,21 +1795,19 @@
             'mario.arao@accordgrouplda.com': 'RH',
             'paulo.silva@accordgrouplda.com': 'Director Geral',
             'dircg@accordgrouplda.com': 'Controlo de Gestão',
-            'aleixo.francisco@accordgrouplda.com': 'Recrutador',            
+            'aleixo.francisco@accordgrouplda.com': 'Recrutador',
             'luzia.cauica@accordgrouplda.com': 'Recrutador',
         };
 
-        const EMAILS_ACESSO_TOTAL_MOB = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com',
-            'paulo.silva@accordgrouplda.com',
-        ];
-        const EMAILS_IMPORTACAO_EAN = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
+        const EMAILS_ACESSO_TOTAL_MOB = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'dircg@accordgrouplda.com', 'paulo.silva@accordgrouplda.com'];
+        const EMAILS_IMPORTACAO_EAN = ['marcio.carlos@accordgrouplda.com', 'dircg@accordgrouplda.com'];
         const BLOCKED_EMAILS = ['paulo.silva@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'dircg@accordgrouplda.com'];
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador'];
         const PERFIS_QUE_APROVAM = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
         const PERFIS_QUE_PODEM_CRIAR = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador', 'Colaborador'];
 
         const emailsAprovadores = {
-            'RH': 'mario.arao@accordgrouplda.com',
+            'RH': 'mario.arao@accordgrouplda.com', 
             'Controlo de Gestão': 'dircg@accordgrouplda.com',
             'Director Geral': 'paulo.silva@accordgrouplda.com',
             'Administrador': 'marcio.carlos@accordgrouplda.com',
@@ -1794,11 +1817,7 @@
         const todasDirecoes = ["Direção Geral", "Capital Humano", "Direção Comercial", "Direção Financeira", "Direção de Marketing", "Direção de Sistemas de Informação", "Direção de Manutenção", "Direção de Segurança", "Direção de HSA/HST", "Direção de Visual Merchandising", "Direção de Projetos Restauração", "Direção de Operações", "Direção de Controlo de Gestão", "Direção Jurídica", "Vendas Corporativas", "Loja Talatona", "Loja Kilamba", "Loja Morro Bento", "Loja Nova Vida", "Loja Lubango", "Loja Cacuaco", "Loja Huambo", "Loja Lobito", "Loja Mártires", "Loja Combatentes", "Loja Benguela", "Loja Viana", "Loja Saurimo", "Loja Gika", "Armazém ZEE", "Armazém SONIT"];
         const todasCategorias = ["Director Geral", "Director Executivo", "Director", "Gerente de Loja", "Gestor Sénior", "Gestor", "Técnico Sénior", "Técnico", "Chefe de Departamento", "Chefe de Secção", "Coordenador", "Analista", "Administrativo", "Operador"];
 
-        // ============================================================
-        // MAPEAMENTO GESTORES DE LOJA → LOJAS QUE PODEM VER
-        // Fonte de verdade: lista SharePoint "GestoresLoja" (campo Title=email, campo Lojas=lojas separadas por vírgula)
-        // Cache local: localStorage (fallback se SharePoint falhar)
-        // ============================================================
+        // Gestores de loja
         const LISTA_GESTORES_LOJA = 'GestoresLoja';
         const GESTORES_LOJA = {};
 
@@ -1921,7 +1940,6 @@
         let estado = { paginaAtual: 1, itensPorPagina: 10, filtrosAtivos: { pesquisa: null, status: null, direcao: null }, ordenacao: 'newest' };
         let requisicoesFiltradas = [], graficos = [], configuracoes = { emailAdmin: 'marcio.carlos@accordgrouplda.com', emailNotif: true, teamsNotif: true, teamsWebhook: '' };
         let moduloAtual = null, requisicaoVisualizarAtual = null, requisicaoSelecionadaAtual = null;
-        let modoPublico = false;
 
         // ============================================================
         // FUNÇÕES GLOBAIS
@@ -1997,7 +2015,6 @@
             document.getElementById('mainSystem').style.display = 'none';
             document.getElementById('moduleSelectionScreen').style.display = 'flex';
             moduloAtual = null;
-            if (modoPublico) { const url = new URL(window.location); url.searchParams.delete('public'); window.location.href = url.toString(); }
         }
         async function verificarSessao() {
             const sessao = localStorage.getItem('keroSessao');
@@ -2024,7 +2041,6 @@
             localStorage.removeItem('keroSessao');
             usuarioAtual = null;
             moduloAtual = null;
-            if (modoPublico) { const url = new URL(window.location); url.searchParams.delete('public'); window.location.href = url.toString(); return; }
             document.getElementById('mainSystem').style.display = 'none';
             document.getElementById('moduleSelectionScreen').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'flex';
@@ -2032,45 +2048,9 @@
         }
 
         // ============================================================
-        // MODO PÚBLICO (GUEST) - EAN SCAN
-        // ============================================================
-        function iniciarModoPublico() {
-            modoPublico = true;
-            usuarioAtual = { id: 'guest', nome: 'Convidado', email: 'guest@public.com', perfil: 'Convidado' };
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('moduleSelectionScreen').style.display = 'none';
-            document.getElementById('mainSystem').style.display = 'block';
-            document.getElementById('navMenu').style.display = 'none';
-            document.getElementById('currentUserName').textContent = 'Convidado';
-            document.getElementById('currentUserRole').textContent = 'Público';
-            document.getElementById('systemTitle').textContent = 'Kero EAN Scan - Público';
-            document.getElementById('systemSubtitle').textContent = 'Visualização de Preços e Stock';
-            document.querySelector('.user-info .btn-logout').style.display = 'none';
-            document.querySelector('.user-info .btn-modules').style.display = 'none';
-            document.getElementById('guestBanner').style.display = 'flex';
-            document.getElementById('recrutamentoSection').style.display = 'none';
-            document.getElementById('avaliacaoSection').style.display = 'none';
-            document.getElementById('manutencaoSection').style.display = 'none';
-            document.getElementById('mobilidadeSection').style.display = 'none';
-            document.getElementById('eanSection').style.display = 'block';
-            document.getElementById('addProductArea').style.display = 'none';
-            document.getElementById('btnImportExcel').style.display = 'none';
-            document.getElementById('btnEditarPrecos').style.display = 'none';
-            document.getElementById('btnGuardarPrecos').style.display = 'none';
-            document.getElementById('btnGuardarConcorrentes').style.display = 'none';
-            document.getElementById('btnSyncSharePoint').style.display = 'none';
-            eanApp.inicializar();
-            document.querySelectorAll('.pricing-item input').forEach(inp => inp.disabled = true);
-            document.querySelectorAll('.concorrente-item input').forEach(inp => inp.disabled = true);
-            mostrarNotificacao('🔓 Modo Público ativado. Visualização de preços e stock.', 'info');
-        }
-        function fecharModoPublico() { const url = new URL(window.location); url.searchParams.delete('public'); window.location.href = url.toString(); }
-
-        // ============================================================
         // SELEÇÃO DE MÓDULO
         // ============================================================
         async function selecionarModulo(mod) {
-            if (modoPublico && mod !== 'ean') { mostrarNotificacao('Modo público apenas permite visualização do EAN Scan.', 'warning'); return; }
             moduloAtual = mod;
             document.getElementById('moduleSelectionScreen').style.display = 'none';
             document.getElementById('mainSystem').style.display = 'block';
@@ -2864,9 +2844,6 @@
         function podeFinalizarRecrutamento(req) { if (!usuarioAtual) return false; if (req.status !== 'em_recrutamento') return false; return (usuarioAtual.perfil === 'Recrutador' || usuarioAtual.perfil === 'Administrador'); }
         function podeConfirmarAtendimento(req) { if (!usuarioAtual) return false; if (req.status !== 'aguardando_confirmacao_solicitante') return false; return (usuarioAtual.email === req.criadoPorEmail || usuarioAtual.perfil === 'Administrador'); }
 
-        // ============================================================
-        // VISIBILIDADE — GESTORES DE LOJA VÊEM APENAS AS LOJAS QUE GEREM AGORA
-        // ============================================================
         function podeVerRequisicao(req) {
             if (!usuarioAtual) return false;
             if (PERFIS_QUE_VEEM_TUDO.includes(usuarioAtual.perfil)) return true;
@@ -3978,7 +3955,7 @@
                 const req = reqs.find(r => r.id === id); if (!req) return;
                 if (usuarioAtual.perfil !== 'Confirmante') return;
                 if (req.status !== 'aprovada') return;
-                const motivo = prompt('Motivo:') || 'Rejeitada'; 
+                const motivo = prompt('Motivo:') || 'Rejeitada';
                 req.status = 'rejeitada';
                 req.historicoComentarios.unshift({ id: Date.now().toString(), acao: 'rejeitar_confirmacao', usuario: usuarioAtual.nome, perfil: 'Confirmante', comentario: motivo, data: new Date().toISOString() });
                 salvarLocal(); await salvarNoSharePoint(req);
@@ -4094,81 +4071,560 @@
             const MAPA_LOJAS = { "TALATONA": "Kero Loja Talatona", "KILAMBA": "Kero Loja Kilamba", "MORRO BENTO": "Kero Loja Morro Bento", "NOVA VIDA": "Kero Loja Nova Vida", "LUBANGO": "Kero Loja Lubango", "HUAMBO": "Kero Loja Huambo", "LOBITO": "Kero Loja Lobito", "BENGUELA": "Kero Loja Benguela", "VIANA": "Kero Loja Viana", "GIKA": "Kero Loja Gika", "MARTIRES": "Kero Loja Mártires", "COMB.": "Kero Loja Combatentes", "CACUACO": "Kero Loja Cacuaco", "CD ZEE": "Armazém ZEE", "SONIT": "Armazém SONIT" };
             const LOJAS_KERO = Object.values(MAPA_LOJAS);
             const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
-            let produtos = [], produtoAtual = null, historicoPesquisas = [], editandoPrecos = false, cameraStream = null, scanFrameId = null, _eanItemIdCache = null;
+
+            let produtos = [], produtoAtual = null, historicoPesquisas = [], editandoPrecos = false;
+            let cameraStream = null, scanFrameId = null, _eanItemIdCache = {}, _estruturaLista = null;
+
             function notificar(msg, tipo = 'success') { if (typeof mostrarNotificacao === 'function') mostrarNotificacao(msg, tipo); else alert(msg); }
             function showLoading() { const o = document.getElementById('loadingOverlay'); if (o) o.classList.add('show'); }
             function hideLoading() { const o = document.getElementById('loadingOverlay'); if (o) o.classList.remove('show'); }
-            function atualizarBadgeTotal() { const b = document.getElementById('totalProdutosBadge'); if (b) b.textContent = `${produtos.length} produtos`; }
-            function adicionarHistorico(ean) { historicoPesquisas = historicoPesquisas.filter(e => e !== ean); historicoPesquisas.unshift(ean); if (historicoPesquisas.length > 5) historicoPesquisas.pop(); localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas)); renderizarHistorico(); }
+            function atualizarBadgeTotal() { const b = document.getElementById('totalProdutosBadge'); if (b) b.textContent = `${produtos.length} produtos em cache`; }
+            async function obterToken() { return await getSharePointToken(); }
+            async function obterSiteId() { return await getSiteId(); }
+
+            function formatarNumeroInteiro(val) {
+                const num = Math.round(Number(val) || 0);
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            }
+            
+            function parseStockInteiro(val) {
+                if (val === null || val === undefined || val === '') return 0;
+                if (typeof val === 'number') return Math.round(val);
+                let s = String(val).trim();
+                if (/^\d{1,3}(\.\d{3})+$/.test(s)) { s = s.replace(/\./g, ''); }
+                else if (/^\d{1,3}(,\d{3})+$/.test(s)) { s = s.replace(/,/g, ''); }
+                else { s = s.replace(',', '.'); }
+                const n = parseFloat(s);
+                return isNaN(n) ? 0 : Math.round(n);
+            }
+
+            function parseIva(val) {
+                if (!val) return 0;
+                let num = parseFloat(String(val).replace(',', '.'));
+                if (isNaN(num)) return 0;
+                if (num > 0 && num <= 1) return Math.round(num * 100);
+                return Math.round(num);
+            }
+
+            function adicionarHistorico(ean) {
+                historicoPesquisas = historicoPesquisas.filter(e => e !== ean);
+                historicoPesquisas.unshift(ean);
+                if (historicoPesquisas.length > 5) historicoPesquisas.pop();
+                localStorage.setItem('ean_historico', JSON.stringify(historicoPesquisas));
+                renderizarHistorico();
+            }
             function renderizarHistorico() {
                 const area = document.getElementById('historyArea'), container = document.getElementById('historyButtons');
                 if (!area || !container) return;
                 container.innerHTML = '';
                 if (historicoPesquisas.length === 0) { area.style.display = 'none'; return; }
                 area.style.display = 'flex';
-                historicoPesquisas.forEach(ean => { const prod = produtos.find(p => p.ean === ean); const label = prod ? `${prod.nome} (${ean})` : ean; const btn = document.createElement('button'); btn.className = 'history-btn'; btn.textContent = label; btn.addEventListener('click', () => { document.getElementById('eanInput').value = ean; buscarProduto(ean); }); container.appendChild(btn); });
+                historicoPesquisas.forEach(ean => {
+                    const prod = produtos.find(p => p.ean === ean);
+                    const label = prod ? `${prod.nome} (${ean})` : ean;
+                    const btn = document.createElement('button');
+                    btn.className = 'history-btn';
+                    btn.textContent = label;
+                    btn.addEventListener('click', () => { document.getElementById('eanInput').value = ean; buscarProduto(ean); });
+                    container.appendChild(btn);
+                });
             }
-            function carregarLocal() { const saved = localStorage.getItem('ean_produtos'); if (saved) { try { produtos = JSON.parse(saved); produtos = produtos.map(p => { LOJAS_KERO.forEach(l => { if (!(l in p.stock)) p.stock[l] = 0; }); CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; }); if (p.iva === undefined) p.iva = 0; if (p.fornecedor === undefined) p.fornecedor = ''; if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0; return p; }); return true; } catch (e) {} } return false; }
-            function guardarLocal() { try { localStorage.setItem('ean_produtos', JSON.stringify(produtos)); } catch (e) { notificar('⚠️ Não foi possível guardar todos os dados localmente.', 'warning'); } }
+            function carregarLocal() {
+                const saved = localStorage.getItem('ean_produtos');
+                if (saved) {
+                    try {
+                        produtos = JSON.parse(saved);
+                        produtos = produtos.map(p => {
+                            LOJAS_KERO.forEach(l => {
+                                if (!(l in p.stock)) p.stock[l] = 0;
+                                else p.stock[l] = Math.round(Number(p.stock[l]) || 0);
+                            });
+                            CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
+                            if (p.iva === undefined) p.iva = 0;
+                            if (p.fornecedor === undefined) p.fornecedor = '';
+                            if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0;
+                            if (p.cod_sap === undefined) p.cod_sap = '';
+                            if (p.num_fornecedor === undefined) p.num_fornecedor = '';
+                            return p;
+                        });
+                        return true;
+                    } catch (e) {}
+                }
+                return false;
+            }
+            function guardarLocal() {
+                try { localStorage.setItem('ean_produtos', JSON.stringify(produtos)); }
+                catch (e) { notificar('⚠️ Cache local cheio.', 'warning'); }
+            }
+
+            async function detectarEstruturaLista() {
+                if (_estruturaLista) return _estruturaLista;
+                try {
+                    const token = await obterToken();
+                    const siteId = await obterSiteId();
+                    let colunas = [], colunasInfo = [];
+                    try {
+                        const metaResp = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/columns`, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (metaResp.ok) {
+                            const metaData = await metaResp.json();
+                            colunasInfo = (metaData.value || []).map(c => ({ name: c.name, displayName: c.displayName || c.name }));
+                            colunas = colunasInfo.map(c => c.name);
+                        }
+                    } catch (e) { console.warn('[EAN] Meta falhou:', e); }
+
+                    let amostra = null;
+                    try {
+                        const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=1`, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (r.ok) { const d = await r.json(); amostra = (d.value || [])[0]?.fields; }
+                    } catch (e) { console.warn('[EAN] Amostra falhou:', e); }
+
+                    const candidatosEan = ['EAN', 'Ean', 'ean', 'Codigo', 'CodigoEAN', 'Codigo_Barras', 'Barcode', 'EANCode', 'Title'];
+                    let campoEan = 'Title';
+                    if (amostra) {
+                        for (const c of candidatosEan) {
+                            if (c in amostra) {
+                                const v = String(amostra[c] || '').trim();
+                                if (/^\d{8,14}$/.test(v)) { campoEan = c; break; }
+                            }
+                        }
+                    }
+                    if (campoEan === 'Title' && !colunas.includes('Title')) { campoEan = candidatosEan.find(c => colunas.includes(c)) || 'Title'; }
+
+                    const candidatosNome = ['Nome', 'Name', 'Descricao', 'Descrição', 'DescricaoProduto', 'ProductName', 'Produto', 'Designacao', 'Title'];
+                    let campoNome = null;
+                    if (amostra) {
+                        for (const c of candidatosNome) {
+                            if (c !== campoEan && c in amostra && amostra[c]) { campoNome = c; break; }
+                        }
+                    }
+                    if (!campoNome) campoNome = candidatosNome.find(c => c !== campoEan && colunas.includes(c)) || 'Nome';
+
+                    const detectar = (nomes) => {
+                        for (const n of nomes) {
+                            const alvo = String(n).toLowerCase();
+                            const found = colunasInfo.find(c => {
+                                const nome = String(c.name || '').toLowerCase();
+                                const display = String(c.displayName || '').toLowerCase();
+                                return nome === alvo || display === alvo;
+                            });
+                            if (found) return found.name;
+                        }
+                        return null;
+                    };
+
+                    _estruturaLista = {
+                        campoEan, campoNome,
+                        campoPrecoCusto: detectar(['PrecoCusto', 'PreçoCusto', 'Custo', 'PMM', 'PrecoCompra']),
+                        campoPrecoKero: detectar(['PrecoKero', 'PreçoKero', 'Preco', 'PVP', 'PrecoVenda']),
+                        campoIva: detectar(['Iva', 'IVA', 'IvaPercent', 'Taxa', 'Taxa IVA', 'Iva (%)', 'Percentagem']),
+                        campoFornecedor: detectar(['Fornecedor', 'Supplier']),
+                        campoVendaMedia: detectar(['VendaMediaMensal', 'VendaMedia', 'Venda_Media_Mensal']),
+                        campoStock: detectar(['Stock']),
+                        campoConcorrentes: detectar(['Concorrentes']),
+                        campoCodSap: detectar(['Artigo', 'CodSap', 'Cod_Sap', 'CodigoSap', 'CodigoSAP', 'Cod_SAP', 'SAP']),
+                        campoNumFornecedor: detectar([
+                            'Cod_x002e_Forncedor', 'Cod_x002E_Forncedor', 'Cod_x002e_Fornecedor', 'Cod_x002E_Fornecedor',
+                            'Cod.Forncedor', 'Cod. Fornecedor', 'CodForncedor', 'Cod Fornecedor', 
+                            'NForncedor', 'NFornecedor', 'Nfornecedor', 'NFORNECEDOR', 'N_x00ba__Fornecedor', 
+                            'NumFornecedor', 'NumeroFornecedor', 'NrFornecedor', 'Num_Fornecedor', 
+                            'NoFornecedor', 'N Fornecedor', 'NºFornecedor', 'Nº Fornecedor', 'Numero_Fornecedor'
+                        ]),
+                        colunas
+                    };
+                    return _estruturaLista;
+                } catch (e) { return null; }
+            }
+
+            function converterItemParaProduto(item) {
+                const f = item.fields || {};
+                const est = _estruturaLista || { campoEan: 'Title', campoNome: 'Nome', campoPrecoCusto: 'PrecoCusto', campoPrecoKero: 'PrecoKero', campoIva: 'Iva', campoFornecedor: 'Fornecedor', campoVendaMedia: 'VendaMediaMensal', campoStock: 'Stock', campoConcorrentes: 'Concorrentes', campoCodSap: null, campoNumFornecedor: null };
+                const ean = String(f[est.campoEan] || '').trim();
+                if (!ean) return null;
+                let stock = {}, concorrentes = {};
+                try { stock = JSON.parse(f[est.campoStock] || '{}'); } catch (e) {}
+                try { concorrentes = JSON.parse(f[est.campoConcorrentes] || '{}'); } catch (e) {}
+                LOJAS_KERO.forEach(l => { stock[l] = parseStockInteiro(stock[l]); });
+                CONCORRENTES.forEach(c => { if (!(c in concorrentes)) concorrentes[c] = 0; });
+                
+                // Leitura estrita para não misturar o nome da empresa com o código de fornecedor
+                let cod_sap = est.campoCodSap ? f[est.campoCodSap] : (f['Artigo'] || f['CodSap'] || '');
+                if (!cod_sap) {
+                    const key = Object.keys(f).find(k => k.toLowerCase().includes('artig') || k.toLowerCase().includes('sap'));
+                    if (key) cod_sap = f[key];
+                }
+                
+                let num_fornecedor = est.campoNumFornecedor ? f[est.campoNumFornecedor] : '';
+                if (!num_fornecedor) {
+                    // Procura especificamente por colunas que tenham "cod" e "forn"
+                    const key = Object.keys(f).find(k => k.toLowerCase().includes('forn') && k.toLowerCase().includes('cod'));
+                    if (key) num_fornecedor = f[key];
+                }
+
+                return {
+                    id: item.id, ean, nome: f[est.campoNome] || '',
+                    cod_sap: String(cod_sap || ''), num_fornecedor: String(num_fornecedor || ''),
+                    preco_custo: Number(f[est.campoPrecoCusto]) || 0,
+                    preco_kero: Number(f[est.campoPrecoKero]) || 0,
+                    iva: parseIva(f[est.campoIva]),
+                    fornecedor: f[est.campoFornecedor] || '',
+                    venda_media_mensal: Number(f[est.campoVendaMedia]) || 0,
+                    stock, concorrentes
+                };
+            }
+
+            function upsertLocal(prod) {
+                if (!prod || !prod.ean) return prod;
+                const idx = produtos.findIndex(p => p.ean === prod.ean);
+                if (idx >= 0) produtos[idx] = { ...produtos[idx], ...prod };
+                else produtos.push(prod);
+                if (prod.id) _eanItemIdCache[String(prod.ean).trim()] = prod.id;
+                try { guardarLocal(); } catch (e) {}
+                atualizarBadgeTotal();
+                return prod;
+            }
+
+            async function buscarEanExatoNoSharePoint(ean) {
+                const est = await detectarEstruturaLista();
+                if (!est) throw new Error('Não consegui detetar a estrutura da lista.');
+                const token = await obterToken(), siteId = await obterSiteId();
+                const eanEsc = String(ean).replace(/'/g, "''");
+                const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$filter=fields/${est.campoEan} eq '${eanEsc}'&$top=1`;
+                const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!resp.ok) throw new Error(`SharePoint ${resp.status}`);
+                const data = await resp.json();
+                const item = (data.value || [])[0];
+                return item ? converterItemParaProduto(item) : null;
+            }
+
+            async function buscarPorNomeNoSharePoint(termo) {
+                const est = await detectarEstruturaLista();
+                if (!est) return [];
+                const token = await obterToken(), siteId = await obterSiteId();
+                const t = String(termo).replace(/'/g, "''");
+                const base = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields`;
+
+                if (est.campoCodSap) {
+                    try {
+                        const url = `${base}&$filter=fields/${est.campoCodSap} eq '${t}'&$top=15`;
+                        const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (r.ok) { const d = await r.json(); const rs = (d.value || []).map(converterItemParaProduto).filter(Boolean); if (rs.length > 0) return rs; }
+                    } catch (e) {}
+                    try {
+                        const url = `${base}&$filter=startswith(fields/${est.campoCodSap},'${t}')&$top=15`;
+                        const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (r.ok) { const d = await r.json(); const rs = (d.value || []).map(converterItemParaProduto).filter(Boolean); if (rs.length > 0) return rs; }
+                    } catch (e) {}
+                }
+
+                try {
+                    const url = `${base}&$filter=startswith(fields/${est.campoNome},'${t}')&$top=15`;
+                    const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (r.ok) { const d = await r.json(); const rs = (d.value || []).map(converterItemParaProduto).filter(Boolean); if (rs.length > 0) return rs; }
+                } catch (e) {}
+
+                try {
+                    const url = `${base}&$filter=substringof('${t}',fields/${est.campoNome})&$top=15`;
+                    const r = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (r.ok) { const d = await r.json(); return (d.value || []).map(converterItemParaProduto).filter(Boolean); }
+                } catch (e) {}
+                return [];
+            }
+
+            async function _obterMapaEanParaId(token, siteId) {
+                if (_eanItemIdCache && Object.keys(_eanItemIdCache).length > 0) return _eanItemIdCache;
+                const est = await detectarEstruturaLista();
+                const campoEan = est ? est.campoEan : 'Title';
+                const mapa = {};
+                let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
+                while (url) {
+                    const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (!resp.ok) throw new Error(`Erro ${resp.status}`);
+                    const data = await resp.json();
+                    (data.value || []).forEach(item => { const t = item.fields && item.fields[campoEan]; if (t) mapa[String(t).trim()] = item.id; });
+                    url = data['@odata.nextLink'] || null;
+                }
+                _eanItemIdCache = mapa;
+                return mapa;
+            }
+
+            async function carregarProdutosDoSharePoint() {
+                try {
+                    await detectarEstruturaLista();
+                    const token = await obterToken(), siteId = await obterSiteId();
+                    let allItems = [];
+                    let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
+                    while (url) {
+                        const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (!resp.ok) {
+                            if (resp.status === 404) return false;
+                            if (resp.status === 429 || resp.status === 503) { const wait = parseInt(resp.headers.get('Retry-After') || '10'); await new Promise(r => setTimeout(r, wait * 1000)); continue; }
+                            throw new Error(`Erro ${resp.status}`);
+                        }
+                        const data = await resp.json();
+                        allItems = allItems.concat(data.value || []);
+                        const badge = document.getElementById('totalProdutosBadge'); if (badge) badge.textContent = `A carregar… ${allItems.length}`;
+                        url = data['@odata.nextLink'] || null;
+                    }
+                    if (allItems.length === 0) return false;
+                    const carregados = [];
+                    _eanItemIdCache = {};
+                    for (const item of allItems) { const p = converterItemParaProduto(item); if (p) { carregados.push(p); _eanItemIdCache[String(p.ean).trim()] = item.id; } }
+                    if (carregados.length === 0) return false;
+                    produtos = carregados;
+                    guardarLocal(); atualizarBadgeTotal(); renderizarHistorico();
+                    notificar(`✅ ${produtos.length} produtos carregados.`, 'success');
+                    return true;
+                } catch (error) {
+                    console.error('[EAN] Erro load:', error);
+                    notificar(`⚠️ Erro: ${error.message}`, 'warning');
+                    return false;
+                }
+            }
+
+            async function publicarProdutosNoSharePoint() {
+                if (produtos.length === 0) { notificar('Não há produtos.', 'error'); return false; }
+                if (typeof usuarioAtual === 'undefined' || (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) { notificar('Sem permissão.', 'error'); return false; }
+                await detectarEstruturaLista();
+                showLoading();
+                const token = await obterToken(), siteId = await obterSiteId(), listName = LISTA_EAN, total = produtos.length;
+                const est = _estruturaLista;
+                let mapa = {};
+                try {
+                    const checkUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?$top=1`;
+                    const checkResp = await fetch(checkUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                    const checkData = await checkResp.json();
+                    if (!checkData.value || checkData.value.length === 0) { mapa = {}; _eanItemIdCache = {}; }
+                    else { mapa = await _obterMapaEanParaId(token, siteId); }
+                } catch (e) { mapa = {}; }
+
+                const BATCH_SIZE = 20, MAX_RODADAS = 5, inicio = Date.now();
+                let processados = 0, sucessos = 0, pendentes = [...produtos];
+
+                for (let rodada = 0; rodada < MAX_RODADAS && pendentes.length > 0; rodada++) {
+                    if (rodada > 0) {
+                        const espera = Math.min(120, Math.pow(2, rodada) * 5);
+                        notificar(`⏳ Rodada ${rodada + 1}: ${pendentes.length} produtos (${espera}s)...`, 'info');
+                        await new Promise(r => setTimeout(r, espera * 1000));
+                    }
+                    const falhados = [], totalRodada = pendentes.length;
+                    for (let i = 0; i < totalRodada; i += BATCH_SIZE) {
+                        const lote = pendentes.slice(i, i + BATCH_SIZE);
+                        const batchRequests = lote.map((produto, idx) => {
+                            const eanKey = String(produto.ean).trim();
+                            const existingId = mapa[eanKey];
+                            const fields = {};
+                            if (est.campoEan) fields[est.campoEan] = eanKey;
+                            if (est.campoNome) fields[est.campoNome] = produto.nome || '';
+                            if (est.campoPrecoCusto) fields[est.campoPrecoCusto] = Number(produto.preco_custo) || 0;
+                            if (est.campoPrecoKero) fields[est.campoPrecoKero] = Number(produto.preco_kero) || 0;
+                            if (est.campoIva) fields[est.campoIva] = parseIva(produto.iva);
+                            if (est.campoFornecedor) fields[est.campoFornecedor] = produto.fornecedor || '';
+                            if (est.campoVendaMedia) fields[est.campoVendaMedia] = Number(produto.venda_media_mensal) || 0;
+                            if (est.campoStock) fields[est.campoStock] = JSON.stringify(produto.stock || {});
+                            if (est.campoConcorrentes) fields[est.campoConcorrentes] = JSON.stringify(produto.concorrentes || {});
+                            // Força String() para colunas de texto
+                            if (est.campoCodSap) fields[est.campoCodSap] = String(produto.cod_sap || '');
+                            if (est.campoNumFornecedor) fields[est.campoNumFornecedor] = String(produto.num_fornecedor || '');
+                            const requestId = String(idx + 1);
+                            if (existingId) return { id: requestId, method: 'PATCH', url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`, headers: { 'Content-Type': 'application/json' }, body: fields };
+                            return { id: requestId, method: 'POST', url: `/sites/${siteId}/lists/${listName}/items`, headers: { 'Content-Type': 'application/json' }, body: { fields } };
+                        });
+                        let tentativa = 0, respostas = null;
+                        while (tentativa < 6) {
+                            try {
+                                const resp = await fetch('https://graph.microsoft.com/v1.0/$batch', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ requests: batchRequests }) });
+                                if (resp.status === 429 || resp.status === 503) { const wait = parseInt(resp.headers.get('Retry-After') || String(5 * (tentativa + 1))); await new Promise(r => setTimeout(r, wait * 1000)); tentativa++; continue; }
+                                if (!resp.ok) { respostas = null; break; }
+                                const data = await resp.json(); respostas = data.responses || []; break;
+                            } catch (e) { await new Promise(r => setTimeout(r, 2000 * (tentativa + 1))); tentativa++; }
+                        }
+                        if (!respostas) { falhados.push(...lote); }
+                        else {
+                            respostas.forEach((r, idx) => {
+                                const produto = lote[idx];
+                                if (!produto) return;
+                                if (r.status >= 200 && r.status < 300) { sucessos++; processados++; if (r.body && r.body.id) mapa[String(produto.ean).trim()] = r.body.id; }
+                                else if (r.status === 429 || r.status === 503 || r.status >= 500) { falhados.push(produto); }
+                                else { processados++; }
+                            });
+                        }
+                        const elapsed = (Date.now() - inicio) / 1000, rate = processados > 0 ? processados / elapsed : 0;
+                        const restantes = total - processados, etaMin = rate > 0 ? Math.round(restantes / rate / 60) : 0;
+                        const badge = document.getElementById('totalProdutosBadge'); if (badge) badge.textContent = `Rodada ${rodada+1} · ${processados}/${total} · ETA ${etaMin}min`;
+                    }
+                    pendentes = falhados;
+                }
+                _eanItemIdCache = mapa;
+                hideLoading(); atualizarBadgeTotal();
+                const duracao = Math.round((Date.now() - inicio) / 1000 / 60);
+                if (pendentes.length === 0) { notificar(`✅ ${sucessos} produtos publicados em ${duracao} min.`, 'success'); return true; }
+                notificar(`⚠️ ${sucessos} publicados, ${pendentes.length} falharam (${duracao} min).`, 'warning');
+                return false;
+            }
+
             function renderizarProduto(prod) {
-                if (!prod) { const result = document.getElementById('resultContainer'); if (result) result.classList.remove('active'); const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block'; produtoAtual = null; const btnConc = document.getElementById('btnGuardarConcorrentes'); if (btnConc) btnConc.disabled = true; const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active'); return; }
+                if (!prod) {
+                    const result = document.getElementById('resultContainer'); if (result) result.classList.remove('active');
+                    const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block';
+                    produtoAtual = null;
+                    const btnConc = document.getElementById('btnGuardarConcorrentes'); if (btnConc) btnConc.disabled = true;
+                    const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active');
+                    return;
+                }
                 produtoAtual = prod;
                 const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'none';
                 const result = document.getElementById('resultContainer'); if (result) result.classList.add('active');
                 const btnConc = document.getElementById('btnGuardarConcorrentes'); if (btnConc) btnConc.disabled = false;
                 const allProd = document.getElementById('allProducts'); if (allProd) allProd.classList.remove('active');
-                const nomeEl = document.getElementById('prodNome'); const eanEl = document.getElementById('prodEan');
-                if (nomeEl) nomeEl.textContent = prod.nome;
-                if (eanEl) eanEl.textContent = `EAN: ${prod.ean}`;
-                atualizarPrecos(prod); renderizarConcorrentes(prod); renderizarStockVertical(prod);
+                
+                const nomeEl = document.getElementById('prodNome'); if (nomeEl) nomeEl.textContent = prod.nome;
+                const eanEl = document.getElementById('prodEan'); if (eanEl) eanEl.textContent = `EAN: ${prod.ean}`;
+                
+                // Agora renderiza sem o prefixo "Artigo: " e "Cód. Forn: " porque os rótulos estão na grid
+                const codSapEl = document.getElementById('prodCodSap'); if (codSapEl) codSapEl.textContent = prod.cod_sap || '--';
+                const numFornEl = document.getElementById('prodNumFornecedor'); if (numFornEl) numFornEl.textContent = prod.num_fornecedor || '--';
+                
+                atualizarPrecos(prod);
+                renderizarConcorrentes(prod);
+                renderizarStockVertical(prod);
                 sessionStorage.setItem('ean_ultimo_produto', prod.ean);
                 const info = document.getElementById('lastSearchInfo'); if (info) info.textContent = `Última pesquisa: ${prod.nome} (${prod.ean})`;
             }
+
             function atualizarPrecos(prod) {
-                const displayMap = { prodPrecoKeroDisplay: prod.preco_kero || 0, prodPrecoCustoDisplay: prod.preco_custo || 0, prodIvaDisplay: prod.iva || 0, prodFornecedorDisplay: prod.fornecedor || '', prodVendaMediaDisplay: prod.venda_media_mensal || 0 };
-                Object.keys(displayMap).forEach(id => { const el = document.getElementById(id); if (!el) return; const val = displayMap[id]; if (id.includes('Preco') || id === 'prodIvaDisplay') el.textContent = (typeof val === 'number' ? val.toFixed(2) : val) + (id === 'prodIvaDisplay' ? ' %' : ' Kz'); else el.textContent = val || ''; });
-                const inputMap = { prodPrecoKeroInput: prod.preco_kero || 0, prodPrecoCustoInput: prod.preco_custo || 0, prodIvaInput: prod.iva || 0, prodFornecedorInput: prod.fornecedor || '', prodVendaMediaInput: prod.venda_media_mensal || 0 };
-                Object.keys(inputMap).forEach(id => { const el = document.getElementById(id); if (!el) return; const val = inputMap[id]; if (id === 'prodFornecedorInput') el.value = val; else el.value = (typeof val === 'number' ? val.toFixed(2) : val); });
+                const el1 = document.getElementById('prodPrecoKeroDisplay'); if (el1) el1.textContent = `${formatarNumeroInteiro(prod.preco_kero)} Kz`;
+                const el2 = document.getElementById('prodPrecoCustoDisplay'); if (el2) el2.textContent = `${formatarNumeroInteiro(prod.preco_custo)} Kz`;
+                const el3 = document.getElementById('prodIvaDisplay'); if (el3) el3.textContent = `${formatarNumeroInteiro(prod.iva)} %`;
+                const el4 = document.getElementById('prodFornecedorDisplay'); if (el4) el4.textContent = prod.fornecedor || '-';
+                const el5 = document.getElementById('prodVendaMediaDisplay'); if (el5) el5.textContent = formatarNumeroInteiro(prod.venda_media_mensal);
+                
+                const i1 = document.getElementById('prodPrecoKeroInput'); if (i1) i1.value = Math.round(prod.preco_kero) || 0;
+                const i2 = document.getElementById('prodPrecoCustoInput'); if (i2) i2.value = Math.round(prod.preco_custo) || 0;
+                const i3 = document.getElementById('prodIvaInput'); if (i3) i3.value = parseIva(prod.iva) || 0;
+                const i4 = document.getElementById('prodFornecedorInput'); if (i4) i4.value = prod.fornecedor || '';
+                const i5 = document.getElementById('prodVendaMediaInput'); if (i5) i5.value = Math.round(prod.venda_media_mensal) || 0;
             }
+
             function renderizarStockVertical(prod) {
                 const tbody = document.getElementById('stockBody'); if (!tbody) return;
-                let html = ''; let totalGeral = 0;
-                LOJAS_KERO.forEach(loja => { const qtd = prod.stock[loja] || 0; totalGeral += qtd; const nomeCurto = loja.replace('Kero Loja ', ''); html += `<tr><td>${nomeCurto}</td><td>${qtd}</td></tr>`; });
-                html += `<tr class="total-row"><td><strong>Total</strong></td><td><strong>${totalGeral}</strong></td></tr>`;
+                let html = '', total = 0;
+                LOJAS_KERO.forEach(loja => {
+                    const q = Math.round(Number(prod.stock[loja]) || 0);
+                    total += q;
+                    html += `<tr><td>${loja.replace('Kero Loja ', '')}</td><td>${formatarNumeroInteiro(q)}</td></tr>`;
+                });
+                html += `<tr class="total-row"><td><strong>Total</strong></td><td><strong>${formatarNumeroInteiro(total)}</strong></td></tr>`;
                 tbody.innerHTML = html;
             }
+
             function renderizarConcorrentes(prod) {
                 const grid = document.getElementById('concorrentesGrid'); if (!grid) return;
-                let html = '';
-                CONCORRENTES.forEach(nome => { const valor = prod.concorrentes[nome] || 0; html += `<div class="concorrente-item"><span class="label">${nome}</span><input type="number" step="0.01" class="concorrente-input" data-concorrente="${nome}" value="${valor}" placeholder="0.00"></div>`; });
-                grid.innerHTML = html;
+                grid.innerHTML = CONCORRENTES.map(nome =>
+                    `<div class="concorrente-item"><span class="label">${nome}</span><input type="number" step="1" class="concorrente-input" data-concorrente="${nome}" value="${prod.concorrentes[nome] || 0}"></div>`
+                ).join('');
             }
-            function renderizarTodosProdutos() {
-                const container = document.getElementById('productGrid');
-                if (!container) return;
+
+            async function renderizarTodosProdutos() {
+                const container = document.getElementById('productGrid'); if (!container) return;
+                if (produtos.length === 0) {
+                    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#666;">A carregar todos os produtos…</div>';
+                    document.getElementById('allProducts').classList.add('active');
+                    showLoading();
+                    try { await carregarProdutosDoSharePoint(); } finally { hideLoading(); }
+                }
                 container.innerHTML = '';
-                if (produtos.length === 0) { container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#999;">Nenhum produto disponível.</div>'; document.getElementById('allProducts').classList.add('active'); return; }
-                produtos.forEach(prod => { const card = document.createElement('div'); card.className = 'product-card'; card.innerHTML = `<div class="card-name">${prod.nome}</div><div class="card-ean">EAN: ${prod.ean}</div><div class="card-price">${(prod.preco_kero || 0).toFixed(2)} Kz</div>`; card.addEventListener('click', () => { renderizarProduto(prod); document.getElementById('eanInput').value = prod.ean; document.getElementById('allProducts').classList.remove('active'); }); container.appendChild(card); });
+                if (produtos.length === 0) { container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:#999;">Nenhum produto.</div>'; return; }
+                produtos.forEach(prod => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `<div class="card-name">${prod.nome}</div>
+                                      <div class="card-ean">EAN: ${prod.ean}</div>
+                                      ${prod.cod_sap ? `<div class="card-ean" style="color:#E65100;">Artigo: ${prod.cod_sap}</div>` : ''}
+                                      ${prod.num_fornecedor ? `<div class="card-ean" style="color:#1565c0;">Cód. Forn: ${prod.num_fornecedor}</div>` : ''}
+                                      <div class="card-price">${formatarNumeroInteiro(prod.preco_kero)} Kz</div>`;
+                    card.addEventListener('click', () => {
+                        const p = upsertLocal(prod);
+                        renderizarProduto(p);
+                        document.getElementById('eanInput').value = p.ean;
+                        document.getElementById('allProducts').classList.remove('active');
+                    });
+                    container.appendChild(card);
+                });
                 document.getElementById('allProducts').classList.add('active');
             }
+
+            let _sugestaoTimer = null, _sugestaoSeq = 0;
             function atualizarSugestoes(termo) {
                 const box = document.getElementById('suggestionsBox'); if (!box) return;
-                if (termo.length < 1) { box.classList.remove('active'); return; }
-                const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase()) || p.ean.includes(termo));
-                if (filtrados.length === 0) { box.classList.remove('active'); return; }
-                box.innerHTML = '';
-                filtrados.slice(0, 8).forEach(p => { const item = document.createElement('div'); item.className = 'suggestion-item'; item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">${p.ean}</span>`; item.addEventListener('click', () => { renderizarProduto(p); document.getElementById('eanInput').value = p.ean; box.classList.remove('active'); adicionarHistorico(p.ean); }); box.appendChild(item); });
+                if (!termo || termo.length < 2) { box.classList.remove('active'); return; }
+                clearTimeout(_sugestaoTimer);
+                _sugestaoTimer = setTimeout(async () => {
+                    const seq = ++_sugestaoSeq;
+                    box.innerHTML = '<div style="padding:12px;color:#888;">A procurar…</div>';
+                    box.classList.add('active');
+                    try {
+                        const lista = await buscarPorNomeNoSharePoint(termo);
+                        if (seq !== _sugestaoSeq) return;
+                        if (lista.length === 0) { box.classList.remove('active'); return; }
+                        lista.forEach(upsertLocal);
+                        renderSugestoesLista(lista);
+                    } catch (e) { if (seq === _sugestaoSeq) box.classList.remove('active'); }
+                }, 350);
+            }
+            function renderSugestoesLista(lista) {
+                const box = document.getElementById('suggestionsBox'); box.innerHTML = '';
+                lista.slice(0, 8).forEach(p => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    const extra = [];
+                    if (p.cod_sap) extra.push(`Art: ${p.cod_sap}`);
+                    if (p.num_fornecedor) extra.push(`Cód. Forn: ${p.num_fornecedor}`);
+                    const extraStr = extra.length > 0 ? ` | ${extra.join(' | ')}` : '';
+                    item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">EAN: ${p.ean}${extraStr}</span>`;
+                    item.addEventListener('click', () => {
+                        const prod = upsertLocal(p);
+                        renderizarProduto(prod);
+                        document.getElementById('eanInput').value = prod.ean;
+                        box.classList.remove('active');
+                        adicionarHistorico(prod.ean);
+                    });
+                    box.appendChild(item);
+                });
                 box.classList.add('active');
             }
-            function buscarProduto(termo) {
-                const termoNormalizado = termo.replace(/\s/g, '');
-                if (!termoNormalizado) { notificar('Digite um nome ou EAN.', 'error'); return; }
-                let prod = produtos.find(p => p.ean === termoNormalizado);
-                if (!prod) { const matches = produtos.filter(p => p.nome.toLowerCase().includes(termo.toLowerCase().trim())); if (matches.length === 1) prod = matches[0]; else if (matches.length > 1) { notificar(`Encontrados ${matches.length} produtos.`, 'info'); atualizarSugestoes(termo); return; } else { notificar(`Nenhum produto encontrado.`, 'error'); return; } }
-                if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = prod.ean; adicionarHistorico(prod.ean); }
+
+            async function buscarProduto(termo) {
+                const termoLimpo = String(termo || '').trim();
+                if (!termoLimpo) { notificar('Digite um nome, EAN ou Artigo.', 'error'); return; }
+                const semEspacos = termoLimpo.replace(/\s/g, '');
+                showLoading();
+                try {
+                    if (/^\d{8,14}$/.test(semEspacos)) {
+                        let prod = produtos.find(p => p.ean === semEspacos);
+                        if (!prod) { prod = await buscarEanExatoNoSharePoint(semEspacos); if (prod) upsertLocal(prod); }
+                        if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = prod.ean; adicionarHistorico(prod.ean); hideLoading(); return; }
+                    }
+                    let resultados = await buscarPorNomeNoSharePoint(termoLimpo);
+                    if (resultados.length === 0) {
+                        resultados = produtos.filter(p => 
+                            (p.nome || '').toLowerCase().includes(termoLimpo.toLowerCase()) ||
+                            (p.cod_sap && String(p.cod_sap).toLowerCase().includes(termoLimpo.toLowerCase())) ||
+                            (p.num_fornecedor && String(p.num_fornecedor).toLowerCase().includes(termoLimpo.toLowerCase())) ||
+                            (p.ean && p.ean.includes(termoLimpo))
+                        );
+                    }
+                    if (resultados.length === 0) { notificar('Nenhum produto encontrado.', 'error'); return; }
+                    resultados.forEach(upsertLocal);
+                    if (resultados.length === 1) { renderizarProduto(resultados[0]); document.getElementById('eanInput').value = resultados[0].ean; adicionarHistorico(resultados[0].ean); }
+                    else { renderSugestoesLista(resultados); }
+                } catch (err) {
+                    console.error('[EAN] ❌ Erro:', err);
+                    notificar(`❌ Erro ao pesquisar: ${err.message || err}`, 'error');
+                } finally { hideLoading(); }
             }
+
             function limparPesquisa() {
-                document.getElementById('eanInput').value = '';
+                const eanInput = document.getElementById('eanInput'); if (eanInput) eanInput.value = '';
                 const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active');
                 const result = document.getElementById('resultContainer'); if (result) result.classList.remove('active');
                 const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block';
@@ -4180,41 +4636,81 @@
                 const btnEditar = document.getElementById('btnEditarPrecos'); if (btnEditar) btnEditar.textContent = 'Editar';
                 const btnGuardar = document.getElementById('btnGuardarPrecos'); if (btnGuardar) btnGuardar.style.display = 'none';
                 editandoPrecos = false;
-                document.getElementById('eanInput').focus();
+                if (eanInput) eanInput.focus();
             }
+
             function guardarPrecosConcorrentes() {
                 if (!produtoAtual) { notificar('Nenhum produto selecionado.', 'error'); return; }
                 const inputs = document.querySelectorAll('.concorrente-input');
                 let valido = true;
-                inputs.forEach(input => { const concorrente = input.dataset.concorrente; const valor = parseFloat(input.value); if (isNaN(valor) || valor < 0) { notificar(`Valor inválido para ${concorrente}.`, 'error'); valido = false; return; } produtoAtual.concorrentes[concorrente] = valor; });
+                inputs.forEach(input => {
+                    const c = input.dataset.concorrente;
+                    const v = parseFloat(input.value);
+                    if (isNaN(v) || v < 0) { notificar(`Valor inválido para ${c}.`, 'error'); valido = false; return; }
+                    produtoAtual.concorrentes[c] = v;
+                });
                 if (!valido) return;
                 guardarLocal();
                 notificar('✅ Guardado!', 'success');
             }
+
             function toggleEdicaoPrecos() {
                 if (!produtoAtual) return;
                 editandoPrecos = !editandoPrecos;
-                const campos = [{ display: 'prodPrecoKeroDisplay', input: 'prodPrecoKeroInput' }, { display: 'prodPrecoCustoDisplay', input: 'prodPrecoCustoInput' }, { display: 'prodIvaDisplay', input: 'prodIvaInput' }, { display: 'prodFornecedorDisplay', input: 'prodFornecedorInput' }, { display: 'prodVendaMediaDisplay', input: 'prodVendaMediaInput' }];
+                const campos = [
+                    { display: 'prodPrecoKeroDisplay', input: 'prodPrecoKeroInput' },
+                    { display: 'prodPrecoCustoDisplay', input: 'prodPrecoCustoInput' },
+                    { display: 'prodIvaDisplay', input: 'prodIvaInput' },
+                    { display: 'prodFornecedorDisplay', input: 'prodFornecedorInput' },
+                    { display: 'prodVendaMediaDisplay', input: 'prodVendaMediaInput' }
+                ];
                 const btnEditar = document.getElementById('btnEditarPrecos'), btnGuardar = document.getElementById('btnGuardarPrecos');
-                if (editandoPrecos) { campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'none'; if (i) i.style.display = 'block'; }); if (btnEditar) btnEditar.textContent = 'Cancelar'; if (btnGuardar) btnGuardar.style.display = 'inline-block'; }
-                else { campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'block'; if (i) i.style.display = 'none'; }); if (btnEditar) btnEditar.textContent = 'Editar'; if (btnGuardar) btnGuardar.style.display = 'none'; atualizarPrecos(produtoAtual); }
+                if (editandoPrecos) {
+                    campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'none'; if (i) i.style.display = 'block'; });
+                    if (btnEditar) btnEditar.textContent = 'Cancelar';
+                    if (btnGuardar) btnGuardar.style.display = 'inline-block';
+                } else {
+                    campos.forEach(c => { const d = document.getElementById(c.display); const i = document.getElementById(c.input); if (d) d.style.display = 'block'; if (i) i.style.display = 'none'; });
+                    if (btnEditar) btnEditar.textContent = 'Editar';
+                    if (btnGuardar) btnGuardar.style.display = 'none';
+                    atualizarPrecos(produtoAtual);
+                }
             }
+
             function guardarPrecosKero() {
                 if (!produtoAtual) return;
-                const precoKero = parseFloat(document.getElementById('prodPrecoKeroInput').value);
-                const precoCusto = parseFloat(document.getElementById('prodPrecoCustoInput').value);
-                const iva = parseFloat(document.getElementById('prodIvaInput').value);
+                const precoKero = Math.round(parseFloat(document.getElementById('prodPrecoKeroInput').value));
+                const precoCusto = Math.round(parseFloat(document.getElementById('prodPrecoCustoInput').value));
+                const iva = parseIva(document.getElementById('prodIvaInput').value);
                 const fornecedor = document.getElementById('prodFornecedorInput').value.trim();
-                const vendaMedia = parseFloat(document.getElementById('prodVendaMediaInput').value);
-                if (isNaN(precoKero) || precoKero < 0 || isNaN(precoCusto) || precoCusto < 0 || isNaN(iva) || iva < 0 || isNaN(vendaMedia) || vendaMedia < 0) { notificar('Valores inválidos.', 'error'); return; }
-                produtoAtual.preco_kero = precoKero; produtoAtual.preco_custo = precoCusto; produtoAtual.iva = iva; produtoAtual.fornecedor = fornecedor; produtoAtual.venda_media_mensal = vendaMedia;
+                const vendaMedia = Math.round(parseFloat(document.getElementById('prodVendaMediaInput').value));
+                if (isNaN(precoKero) || precoKero < 0 || isNaN(precoCusto) || precoCusto < 0 || isNaN(iva) || iva < 0 || isNaN(vendaMedia) || vendaMedia < 0) {
+                    notificar('Valores inválidos.', 'error'); return;
+                }
+                produtoAtual.preco_kero = precoKero;
+                produtoAtual.preco_custo = precoCusto;
+                produtoAtual.iva = iva;
+                produtoAtual.fornecedor = fornecedor;
+                produtoAtual.venda_media_mensal = vendaMedia;
                 guardarLocal();
                 notificar('✅ Atualizado!', 'success');
                 atualizarPrecos(produtoAtual);
                 toggleEdicaoPrecos();
             }
+
             function redimensionarImagem(imageData, maxLargura = 1000) {
-                return new Promise((resolve) => { const img = new Image(); img.onload = function() { let { width, height } = img; if (width > maxLargura) { height = Math.round(height * (maxLargura / width)); width = maxLargura; } const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; canvas.getContext('2d').drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.9)); }; img.onerror = function() { resolve(imageData); }; img.src = imageData; });
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = function() {
+                        let { width, height } = img;
+                        if (width > maxLargura) { height = Math.round(height * (maxLargura / width)); width = maxLargura; }
+                        const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.9));
+                    };
+                    img.onerror = function() { resolve(imageData); };
+                    img.src = imageData;
+                });
             }
             function abrirCamera() {
                 const modal = document.getElementById('cameraModal'); if (!modal) return;
@@ -4229,22 +4725,34 @@
             function iniciarCameraComBarcodeDetector() {
                 navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } } }).then(stream => {
                     cameraStream = stream;
-                    const video = document.getElementById('cameraVideo'); video.srcObject = stream; video.play();
+                    const video = document.getElementById('cameraVideo');
+                    video.srcObject = stream; video.play();
                     document.getElementById('cameraStatus').textContent = '📷 Aponte para o código';
                     const barcodeDetector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39'] });
                     let scanning = true;
-                    function scanFrame() { if (!scanning || !video.srcObject) return; barcodeDetector.detect(video).then(barcodes => { if (barcodes.length > 0) { const code = barcodes[0].rawValue.replace(/\s/g, ''); fecharCamera(); document.getElementById('eanInput').value = code; buscarProduto(code); return; } }).catch(err => {}); scanFrameId = requestAnimationFrame(scanFrame); }
+                    function scanFrame() {
+                        if (!scanning || !video.srcObject) return;
+                        barcodeDetector.detect(video).then(barcodes => {
+                            if (barcodes.length > 0) { const code = barcodes[0].rawValue.replace(/\s/g, ''); fecharCamera(); document.getElementById('eanInput').value = code; buscarProduto(code); return; }
+                        }).catch(err => {});
+                        scanFrameId = requestAnimationFrame(scanFrame);
+                    }
                     scanFrame();
                     setTimeout(() => { scanning = false; if (scanFrameId) cancelAnimationFrame(scanFrameId); }, 30000);
                 }).catch(err => { iniciarCameraFallback(); });
             }
             function iniciarCameraFallback() {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } } }).then(stream => { cameraStream = stream; const video = document.getElementById('cameraVideo'); video.srcObject = stream; video.play(); document.getElementById('cameraStatus').textContent = '📷 Clique em "Capturar"'; }).catch(err => { document.getElementById('cameraStatus').textContent = 'Câmara indisponível.'; });
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment", width: { ideal: 640 }, height: { ideal: 480 } } }).then(stream => {
+                    cameraStream = stream;
+                    const video = document.getElementById('cameraVideo');
+                    video.srcObject = stream; video.play();
+                    document.getElementById('cameraStatus').textContent = '📷 Clique em "Capturar"';
+                }).catch(err => { document.getElementById('cameraStatus').textContent = 'Câmara indisponível.'; });
             }
             function fecharCamera() {
                 if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
                 if (scanFrameId) { cancelAnimationFrame(scanFrameId); scanFrameId = null; }
-                const video = document.getElementById('cameraVideo'); if (video.srcObject) video.srcObject = null;
+                const video = document.getElementById('cameraVideo'); if (video && video.srcObject) video.srcObject = null;
                 document.getElementById('cameraModal').classList.remove('active');
             }
             function capturarEscanear() {
@@ -4257,120 +4765,38 @@
                 decodificarImagemComZXing(imageData);
             }
             function decodificarImagemComZXing(imageData) {
-                if (typeof ZXing !== 'undefined') { const reader = new ZXing.BrowserMultiFormatReader(); reader.decodeFromImage(undefined, imageData).then(result => { const code = result.getText().replace(/\s/g, ''); document.getElementById('eanInput').value = code; buscarProduto(code); fecharCamera(); }).catch(err => { decodificarImagem(imageData); }); }
-                else decodificarImagem(imageData);
+                if (typeof ZXing !== 'undefined') {
+                    const reader = new ZXing.BrowserMultiFormatReader();
+                    reader.decodeFromImage(undefined, imageData).then(result => {
+                        const code = result.getText().replace(/\s/g, '');
+                        document.getElementById('eanInput').value = code; buscarProduto(code); fecharCamera();
+                    }).catch(err => { decodificarImagem(imageData); });
+                } else decodificarImagem(imageData);
             }
             function decodificarImagem(imageData, tentativas = 0) {
                 const config = { src: imageData, numOfWorkers: 4, inputStream: { size: 800, singleChannel: true }, decoder: { readers: ["ean_reader", "ean_8_reader", "upc_reader", "code_128_reader"], multiple: false, tryHarder: true }, locate: true, patchSize: "large" };
                 Quagga.decodeSingle(config, function(result) {
                     if (result && result.codeResult) { const code = result.codeResult.code.replace(/\s/g, ''); document.getElementById('eanInput').value = code; buscarProduto(code); fecharCamera(); return; }
-                    if (tentativas < 3) { const img = new Image(); img.onload = function() { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); canvas.width = img.height; canvas.height = img.width; ctx.translate(canvas.width / 2, canvas.height / 2); ctx.rotate(Math.PI / 2); ctx.drawImage(img, -img.width / 2, -img.height / 2); const novaImagem = canvas.toDataURL('image/jpeg', 0.9); decodificarImagem(novaImagem, tentativas + 1); }; img.src = imageData; }
-                    else notificar('Não foi possível ler o código.', 'error');
+                    if (tentativas < 3) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
+                            canvas.width = img.height; canvas.height = img.width;
+                            ctx.translate(canvas.width / 2, canvas.height / 2); ctx.rotate(Math.PI / 2);
+                            ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                            decodificarImagem(canvas.toDataURL('image/jpeg', 0.9), tentativas + 1);
+                        };
+                        img.src = imageData;
+                    } else { notificar('Não foi possível ler o código.', 'error'); }
                 });
             }
-            async function processarImagem(file) { if (!file) return; const reader = new FileReader(); reader.onload = async function(e) { const imagemRedimensionada = await redimensionarImagem(e.target.result); decodificarImagemComZXing(imagemRedimensionada); }; reader.readAsDataURL(file); }
-            async function obterToken() { return await getSharePointToken(); }
-            async function obterSiteId() { return await getSiteId(); }
-            async function _obterMapaEanParaId(token, siteId) {
-                if (_eanItemIdCache) return _eanItemIdCache;
-                const mapa = {};
-                let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
-                while (url) { const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } }); if (!resp.ok) throw new Error(`Erro ${resp.status}`); const data = await resp.json(); (data.value || []).forEach(item => { const t = item.fields && item.fields.Title; if (t) mapa[String(t).trim()] = item.id; }); url = data['@odata.nextLink'] || null; }
-                _eanItemIdCache = mapa;
-                return mapa;
+            async function processarImagem(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = async function(e) { const imagemRedimensionada = await redimensionarImagem(e.target.result); decodificarImagemComZXing(imagemRedimensionada); };
+                reader.readAsDataURL(file);
             }
-            async function carregarProdutosDoSharePoint() {
-                try {
-                    const token = await obterToken();
-                    const siteId = await obterSiteId();
-                    let allItems = [];
-                    let url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=999`;
-                    while (url) {
-                        const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' } });
-                        if (!resp.ok) { if (resp.status === 404) return false; if (resp.status === 429 || resp.status === 503) { const wait = parseInt(resp.headers.get('Retry-After') || '10'); await new Promise(r => setTimeout(r, wait * 1000)); continue; } throw new Error(`Erro ${resp.status}`); }
-                        const data = await resp.json();
-                        allItems = allItems.concat(data.value || []);
-                        url = data['@odata.nextLink'] || null;
-                    }
-                    if (allItems.length === 0) return false;
-                    const carregados = [];
-                    for (const item of allItems) {
-                        const f = item.fields || {};
-                        const ean = String(f.Title || '').trim();
-                        if (!ean) continue;
-                        let stock = {}, concorrentes = {};
-                        try { stock = JSON.parse(f.Stock || '{}'); } catch (e) {}
-                        try { concorrentes = JSON.parse(f.Concorrentes || '{}'); } catch (e) {}
-                        LOJAS_KERO.forEach(l => { if (!(l in stock)) stock[l] = 0; });
-                        CONCORRENTES.forEach(c => { if (!(c in concorrentes)) concorrentes[c] = 0; });
-                        carregados.push({ ean, nome: f.Nome || '', preco_custo: Number(f.PrecoCusto) || 0, preco_kero: Number(f.PrecoKero) || 0, iva: Number(f.Iva) || 0, fornecedor: f.Fornecedor || '', venda_media_mensal: Number(f.VendaMediaMensal) || 0, stock, concorrentes });
-                    }
-                    if (carregados.length === 0) return false;
-                    produtos = carregados;
-                    _eanItemIdCache = {};
-                    allItems.forEach(it => { const t = it.fields && it.fields.Title; if (t) _eanItemIdCache[String(t).trim()] = it.id; });
-                    guardarLocal();
-                    atualizarBadgeTotal();
-                    renderizarHistorico();
-                    notificar(`✅ ${produtos.length} produtos carregados.`, 'success');
-                    return true;
-                } catch (error) { notificar('⚠️ Erro ao carregar do SharePoint.', 'warning'); return false; }
-            }
-            async function publicarProdutosNoSharePoint() {
-                if (produtos.length === 0) { notificar('Não há produtos.', 'error'); return false; }
-                if (typeof usuarioAtual === 'undefined' || (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) { notificar('Sem permissão.', 'error'); return false; }
-                showLoading();
-                const token = await obterToken(), siteId = await obterSiteId(), listName = LISTA_EAN, total = produtos.length;
-                let mapa = {};
-                try { const checkUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?$top=1`; const checkResp = await fetch(checkUrl, { headers: { 'Authorization': `Bearer ${token}` } }); const checkData = await checkResp.json(); if (!checkData.value || checkData.value.length === 0) { mapa = {}; _eanItemIdCache = {}; } else { mapa = await _obterMapaEanParaId(token, siteId); } }
-                catch (e) { mapa = {}; }
-                const BATCH_SIZE = 20, MAX_RODADAS = 5, inicio = Date.now();
-                let processados = 0, sucessos = 0;
-                let pendentes = [...produtos];
-                for (let rodada = 0; rodada < MAX_RODADAS && pendentes.length > 0; rodada++) {
-                    if (rodada > 0) { const espera = Math.min(120, Math.pow(2, rodada) * 5); notificar(`⏳ Rodada ${rodada + 1}: ${pendentes.length} produtos (${espera}s)...`, 'info'); await new Promise(r => setTimeout(r, espera * 1000)); }
-                    const falhados = [];
-                    const totalRodada = pendentes.length;
-                    for (let i = 0; i < totalRodada; i += BATCH_SIZE) {
-                        const lote = pendentes.slice(i, i + BATCH_SIZE);
-                        const batchRequests = lote.map((produto, idx) => {
-                            const eanKey = String(produto.ean).trim();
-                            const existingId = mapa[eanKey];
-                            const fields = { "Title": eanKey, "Nome": produto.nome || '', "PrecoCusto": Number(produto.preco_custo) || 0, "PrecoKero": Number(produto.preco_kero) || 0, "Iva": Number(produto.iva) || 0, "Fornecedor": produto.fornecedor || '', "VendaMediaMensal": Number(produto.venda_media_mensal) || 0, "Stock": JSON.stringify(produto.stock || {}), "Concorrentes": JSON.stringify(produto.concorrentes || {}) };
-                            const requestId = String(idx + 1);
-                            if (existingId) return { id: requestId, method: 'PATCH', url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`, headers: { 'Content-Type': 'application/json' }, body: fields };
-                            return { id: requestId, method: 'POST', url: `/sites/${siteId}/lists/${listName}/items`, headers: { 'Content-Type': 'application/json' }, body: { fields } };
-                        });
-                        let tentativa = 0, respostas = null;
-                        while (tentativa < 6) {
-                            try {
-                                const resp = await fetch('https://graph.microsoft.com/v1.0/$batch', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ requests: batchRequests }) });
-                                if (resp.status === 429 || resp.status === 503) { const wait = parseInt(resp.headers.get('Retry-After') || String(5 * (tentativa + 1))); await new Promise(r => setTimeout(r, wait * 1000)); tentativa++; continue; }
-                                if (!resp.ok) { respostas = null; break; }
-                                const data = await resp.json();
-                                respostas = data.responses || [];
-                                break;
-                            } catch (e) { await new Promise(r => setTimeout(r, 2000 * (tentativa + 1))); tentativa++; }
-                        }
-                        if (!respostas) { falhados.push(...lote); }
-                        else { respostas.forEach((r, idx) => { const produto = lote[idx]; if (!produto) return; if (r.status >= 200 && r.status < 300) { sucessos++; processados++; if (r.body && r.body.id) mapa[String(produto.ean).trim()] = r.body.id; } else if (r.status === 429 || r.status === 503 || r.status >= 500) { falhados.push(produto); } else { processados++; } }); }
-                        const elapsed = (Date.now() - inicio) / 1000;
-                        const rate = processados > 0 ? processados / elapsed : 0;
-                        const restantes = total - processados;
-                        const etaMin = rate > 0 ? Math.round(restantes / rate / 60) : 0;
-                        const badge = document.getElementById('totalProdutosBadge');
-                        if (badge) badge.textContent = `Rodada ${rodada+1} · ${processados}/${total} · ETA ${etaMin}min`;
-                    }
-                    pendentes = falhados;
-                }
-                _eanItemIdCache = mapa;
-                hideLoading();
-                atualizarBadgeTotal();
-                const duracao = Math.round((Date.now() - inicio) / 1000 / 60);
-                if (pendentes.length === 0) { notificar(`✅ ${sucessos} produtos publicados em ${duracao} min.`, 'success'); return true; }
-                notificar(`⚠️ ${sucessos} publicados, ${pendentes.length} falharam (${duracao} min).`, 'warning');
-                return false;
-            }
+
             function importarExcel(file) {
                 if (!file) return;
                 const reader = new FileReader();
@@ -4382,19 +4808,26 @@
                         const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
                         if (!rows || rows.length === 0) { notificar('Excel vazio.', 'error'); return; }
                         const produtosImportados = rows.map(row => {
-                            const ean = String(row['EAN'] || '').trim();
-                            if (!ean) return null;
+                            const ean = String(row['EAN'] || '').trim(); if (!ean) return null;
                             const stock = {};
-                            Object.entries(MAPA_LOJAS).forEach(([colExcel, chaveInterna]) => { stock[chaveInterna] = parseFloat(row[colExcel]) || 0; });
-                            const concorrentes = {};
-                            CONCORRENTES.forEach(c => { concorrentes[c] = 0; });
-                            return { ean, nome: String(row['Descrição'] || '').trim(), fornecedor: String(row['Nome Fornecedor'] || '').trim(), preco_custo: parseFloat(row['PMM']) || 0, preco_kero: parseFloat(row['PVP']) || 0, iva: parseFloat(row['IVA %']) || 0, venda_media_mensal: parseFloat(row['VENDA Media Mensal']) || 0, stock, concorrentes };
+                            Object.entries(MAPA_LOJAS).forEach(([colExcel, chaveInterna]) => { stock[chaveInterna] = parseStockInteiro(row[colExcel]); });
+                            const concorrentes = {}; CONCORRENTES.forEach(c => { concorrentes[c] = 0; });
+                            return {
+                                ean,
+                                nome: String(row['Descrição'] || row['Nome'] || '').trim(),
+                                cod_sap: String(row['Artigo'] ?? row['Cod. Sap'] ?? row['CodSap'] ?? row['Cod SAP'] ?? row['Cód. SAP'] ?? '').trim(),
+                                num_fornecedor: String(row['Cod.Forncedor'] ?? row['Cod. Fornecedor'] ?? row['CodForncedor'] ?? row['Nº Fornecedor'] ?? row['NForncedor'] ?? row['NFornecedor'] ?? row['Num Fornecedor'] ?? row['NumFornecedor'] ?? row['NºFornecedor'] ?? '').trim(),
+                                fornecedor: String(row['Nome Fornecedor'] || row['Fornecedor'] || '').trim(),
+                                preco_custo: Math.round(parseFloat(row['PMM'] || row['Preço Custo'] || 0)) || 0,
+                                preco_kero: Math.round(parseFloat(row['PVP'] || row['Preço Kero'] || 0)) || 0,
+                                iva: parseIva(row['IVA %'] || row['IVA'] || row['Taxa IVA'] || row['Taxa'] || 0),
+                                venda_media_mensal: Math.round(parseFloat(row['VENDA Media Mensal'] || row['Venda Média'] || 0)) || 0,
+                                stock, concorrentes
+                            };
                         }).filter(p => p !== null && p.nome !== '');
                         if (produtosImportados.length === 0) { notificar('Nenhum produto válido.', 'error'); return; }
                         produtos = produtosImportados;
-                        guardarLocal();
-                        atualizarBadgeTotal();
-                        renderizarHistorico();
+                        guardarLocal(); atualizarBadgeTotal(); renderizarHistorico();
                         notificar(`✅ ${produtos.length} produtos importados!`, 'success');
                         if (typeof usuarioAtual !== 'undefined' && (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
                             notificar('⏳ A publicar automaticamente...', 'info');
@@ -4404,19 +4837,65 @@
                 };
                 reader.readAsArrayBuffer(file);
             }
+
             function exportarDados() {
                 if (produtos.length === 0) { notificar('Sem produtos.', 'error'); return; }
-                const json = JSON.stringify(produtos, null, 2);
-                const blob = new Blob([json], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = `produtos_${new Date().toISOString().slice(0,10)}.json`; a.click();
-                URL.revokeObjectURL(url);
+                const blob = new Blob([JSON.stringify(produtos, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `produtos_${new Date().toISOString().slice(0,10)}.json`; a.click();
+                URL.revokeObjectURL(a.href);
             }
-            function adicionarProduto() { notificar('Use importação Excel.', 'info'); }
+
+            function adicionarProduto() {
+                const nome = document.getElementById('addNome').value.trim();
+                const ean = document.getElementById('addEan').value.trim();
+                if (!nome || !ean) { notificar('Nome e EAN são obrigatórios.', 'error'); return; }
+                if (produtos.find(p => p.ean === ean)) { notificar('EAN já existe.', 'error'); return; }
+
+                const stock = {}; LOJAS_KERO.forEach(l => stock[l] = 0);
+                const stockStr = document.getElementById('addStock').value.trim();
+                if (stockStr) { const vals = stockStr.split(/[,;]/).map(v => parseStockInteiro(v)); LOJAS_KERO.forEach((l, i) => stock[l] = vals[i] || 0); }
+
+                const concorrentes = {}; CONCORRENTES.forEach(c => concorrentes[c] = 0);
+                const concStr = document.getElementById('addConcorrentes').value.trim();
+                if (concStr) { const vals = concStr.split(/[,;]/).map(v => Math.round(parseFloat(v.replace(',', '.'))) || 0); CONCORRENTES.forEach((c, i) => concorrentes[c] = vals[i] || 0); }
+
+                const novo = {
+                    ean, nome,
+                    cod_sap: document.getElementById('addCodSap').value.trim(),
+                    num_fornecedor: document.getElementById('addNumFornecedor').value.trim(),
+                    fornecedor: document.getElementById('addFornecedor').value.trim(),
+                    preco_custo: Math.round(parseFloat(document.getElementById('addPrecoCusto').value)) || 0,
+                    preco_kero: Math.round(parseFloat(document.getElementById('addPrecoKero').value)) || 0,
+                    iva: parseIva(document.getElementById('addIva').value),
+                    venda_media_mensal: Math.round(parseFloat(document.getElementById('addVendaMedia').value)) || 0,
+                    stock, concorrentes
+                };
+                upsertLocal(novo);
+                notificar(`✅ Produto "${nome}" adicionado ao cache local.`, 'success');
+                ['addNome','addEan','addCodSap','addNumFornecedor','addPrecoCusto','addPrecoKero','addIva','addFornecedor','addVendaMedia','addStock','addConcorrentes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+                fecharModal('modalNovoProdutoEAN');
+            }
+
+            async function diagnosticar() {
+                console.group('🔍 DIAGNÓSTICO EAN');
+                try {
+                    const est = await detectarEstruturaLista(); console.log('Estrutura detetada:', est);
+                    if (!est) { console.warn('Não foi possível detetar a estrutura.'); console.groupEnd(); return; }
+                    const token = await obterToken(), siteId = await obterSiteId();
+                    const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=1`, { headers: { 'Authorization': `Bearer ${token}` } });
+                    console.log('Teste leitura:', r.status);
+                    if (r.ok) { const d = await r.json(); console.log('Primeiro item:', d.value?.[0]); }
+                } catch (e) { console.error(e); }
+                console.groupEnd();
+            }
+
             function configurarEventos() {
                 const btnBuscar = document.getElementById('btnBuscar'); if (btnBuscar) btnBuscar.addEventListener('click', () => buscarProduto(document.getElementById('eanInput').value));
-                const eanInput = document.getElementById('eanInput'); if (eanInput) eanInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); buscarProduto(e.target.value); } });
+                const eanInput = document.getElementById('eanInput');
+                if (eanInput) {
+                    eanInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); buscarProduto(e.target.value); } });
+                    eanInput.addEventListener('input', (e) => { const val = e.target.value.trim(); if (val.length >= 2) atualizarSugestoes(val); else { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); } });
+                }
                 const btnLimpar = document.getElementById('btnLimpar'); if (btnLimpar) btnLimpar.addEventListener('click', limparPesquisa);
                 const btnListar = document.getElementById('btnListarTodos'); if (btnListar) btnListar.addEventListener('click', renderizarTodosProdutos);
                 const btnGuardarConc = document.getElementById('btnGuardarConcorrentes'); if (btnGuardarConc) btnGuardarConc.addEventListener('click', guardarPrecosConcorrentes);
@@ -4431,26 +4910,40 @@
                 const btnImportExcel = document.getElementById('btnImportExcel'); if (btnImportExcel) btnImportExcel.addEventListener('click', () => document.getElementById('fileInputExcel').click());
                 const fileInputExcel = document.getElementById('fileInputExcel'); if (fileInputExcel) fileInputExcel.addEventListener('change', function(e) { if (this.files.length > 0) importarExcel(this.files[0]); this.value = ''; });
                 const btnPublicar = document.getElementById('btnPublicarSharePoint'); if (btnPublicar) btnPublicar.addEventListener('click', async function() { await publicarProdutosNoSharePoint(); });
-                const btnSync = document.getElementById('btnSyncSharePoint'); if (btnSync) btnSync.addEventListener('click', async function() { notificar('A sincronizar...', 'info'); _eanItemIdCache = null; await carregarProdutosDoSharePoint(); });
-                if (eanInput) eanInput.addEventListener('input', (e) => { const val = e.target.value.trim(); if (val.length >= 2) atualizarSugestoes(val); else { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); } });
+                const btnSync = document.getElementById('btnSyncSharePoint'); if (btnSync) btnSync.addEventListener('click', async function() { notificar('A sincronizar...', 'info'); _eanItemIdCache = {}; _estruturaLista = null; await carregarProdutosDoSharePoint(); });
                 document.addEventListener('click', (e) => { if (!e.target.closest('.search-area-ean')) { const box = document.getElementById('suggestionsBox'); if (box) box.classList.remove('active'); } });
-                const btnAdd = document.getElementById('btnAddProduct'); if (btnAdd) btnAdd.addEventListener('click', adicionarProduto);
+                const btnAdd = document.getElementById('btnGuardarNovoProduto'); if (btnAdd) btnAdd.addEventListener('click', adicionarProduto);
             }
+
             async function inicializar() {
-                try { configurarEventos(); } catch (e) {}
-                try {
-                    const carregou = await carregarProdutosDoSharePoint();
-                    if (!carregou) { if (carregarLocal()) notificar('⚠️ Cache local.', 'warning'); else { produtos = [{ ean: "5601234567890", nome: "Arroz Carolino 1kg", preco_custo: 450, preco_kero: 650, iva: 14, fornecedor: "Arrozal SA", venda_media_mensal: 120, stock: LOJAS_KERO.reduce((a,l)=>{a[l]=Math.floor(Math.random()*100);return a;},{}), concorrentes: CONCORRENTES.reduce((a,c)=>{a[c]=500+Math.floor(Math.random()*200);return a;},{}) }]; guardarLocal(); notificar('📦 Exemplo carregado.', 'info'); } }
-                    const hist = localStorage.getItem('ean_historico'); if (hist) { try { historicoPesquisas = JSON.parse(hist); } catch (e) {} }
-                    atualizarBadgeTotal();
-                    renderizarHistorico();
-                    const lastEan = sessionStorage.getItem('ean_ultimo_produto');
-                    if (lastEan) { const prod = produtos.find(p => p.ean === lastEan); if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = lastEan; } }
-                    document.getElementById('eanInput').focus();
-                    if (!produtoAtual) document.getElementById('emptyStateEAN').style.display = 'block';
-                } catch (error) { notificar('❌ Erro na inicialização.', 'error'); }
+                try { configurarEventos(); } catch (e) { console.warn('[EAN] Erro eventos:', e); }
+                const temCache = carregarLocal(); if (temCache) notificar(`📂 ${produtos.length} produtos em cache.`, 'info');
+                const hist = localStorage.getItem('ean_historico'); if (hist) { try { historicoPesquisas = JSON.parse(hist); } catch (e) {} }
+                atualizarBadgeTotal(); renderizarHistorico();
+                const lastEan = sessionStorage.getItem('ean_ultimo_produto');
+                if (lastEan) { const prod = produtos.find(p => p.ean === lastEan); if (prod) { renderizarProduto(prod); document.getElementById('eanInput').value = lastEan; } }
+                if (!produtoAtual) { const empty = document.getElementById('emptyStateEAN'); if (empty) empty.style.display = 'block'; }
+                const eanInput = document.getElementById('eanInput'); if (eanInput) eanInput.focus();
+
+                const isAdminOrErik = usuarioAtual && (usuarioAtual.perfil === 'Administrador' || usuarioAtual.email === 'marcio.carlos@accordgrouplda.com' || usuarioAtual.email === 'erikson.silva@accordgrouplda.com');
+                const btnImport = document.getElementById('btnImportExcel'), btnPub = document.getElementById('btnPublicarSharePoint'), btnNovoProd = document.getElementById('btnNovoProdutoEAN');
+                if (btnImport) btnImport.style.display = isAdminOrErik ? 'inline-block' : 'none';
+                if (btnPub) btnPub.style.display = isAdminOrErik ? 'inline-block' : 'none';
+                if (btnNovoProd) btnNovoProd.style.display = isAdminOrErik ? 'inline-block' : 'none';
+
+                if (btnNovoProd) {
+                    btnNovoProd.addEventListener('click', () => {
+                        ['addNome','addEan','addCodSap','addNumFornecedor','addPrecoCusto','addPrecoKero','addIva','addFornecedor','addVendaMedia','addStock','addConcorrentes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+                        abrirModal('modalNovoProdutoEAN');
+                    });
+                }
+
+                setTimeout(async () => {
+                    try { await carregarProdutosDoSharePoint(); } catch (e) { console.warn('[EAN] Sync falhou:', e); }
+                }, 500);
             }
-            return { inicializar, buscarProduto, limparPesquisa, renderizarTodosProdutos, exportarDados, publicarProdutosNoSharePoint, carregarProdutosDoSharePoint, importarExcel, adicionarProduto, guardarPrecosConcorrentes, toggleEdicaoPrecos, guardarPrecosKero, abrirCamera, fecharCamera, capturarEscanear, processarImagem };
+
+            return { inicializar, buscarProduto, limparPesquisa, renderizarTodosProdutos, exportarDados, publicarProdutosNoSharePoint, carregarProdutosDoSharePoint, importarExcel, adicionarProduto, guardarPrecosConcorrentes, toggleEdicaoPrecos, guardarPrecosKero, abrirCamera, fecharCamera, capturarEscanear, processarImagem, diagnosticar, detectarEstruturaLista };
         })();
 
         // ============================================================
@@ -4463,9 +4956,6 @@
             if (savedNotificacoes) { try { notificacoes = JSON.parse(savedNotificacoes); } catch (e) {} atualizarPainelNotificacoes(); }
             carregarDarkMode();
             carregarGestoresLojasCacheLocal();
-
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('public')) { await initializeMicrosoft(); iniciarModoPublico(); return; }
 
             await initializeMicrosoft();
             await verificarSessao();
@@ -4496,8 +4986,6 @@
 
             setInterval(() => { localStorage.setItem('keroNotificacoes', JSON.stringify(notificacoes)); }, 5000);
         });
-
-        console.log('✅ Kero SIR - Sistema Integrado com gestores de loja via SharePoint carregado!');
     </script>
 </body>
 </html>
