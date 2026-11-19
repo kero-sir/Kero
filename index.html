@@ -828,9 +828,9 @@
                     <p>Requisições de manutenção, equipamentos e serviços.</p>
                     <span class="module-badge badge-ativo">Ativo</span>
                 </div>
-                <div class="module-card-large border-roxo" onclick="selecionarModulo('ilidade')">
+                <div class="module-card-large border-roxo" onclick="selecionarModulo('mobilidade')">
                     <div class="module-icon-large icone-roxo"><i class="fas fa-people-arrows"></i></div>
-                    <h2 class="cor-roxo">ilidade & Promoções</h2>
+                    <h2 class="cor-roxo">Mobilidade & Promoções</h2>
                     <p>Gestão de mudanças salariais, áreas e promoções.</p>
                     <span class="module-badge badge-ativo">Ativo</span>
                 </div>
@@ -1330,8 +1330,8 @@
             </div>
 
             <!-- ILIDADE -->
-            <div id="ilidadeSection" style="display: none;">
-                <div class="nav-menu roxo-nav" id="navilidade">
+            <div id="mobilidadeSection" style="display: none;">
+                <div class="nav-menu roxo-nav" id="navMobilidade">
                     <div class="nav-item roxo-active" onclick="mudarAbaMobilidade('dashboard', this)"><i class="fas fa-chart-pie"></i> Dashboard</div>
                     <div class="nav-item" onclick="mudarAbaMobilidade('requisicoes', this)"><i class="fas fa-file-alt"></i> Requisições</div>
                     <div class="nav-item" onclick="mudarAbaMobilidade('aprovacoes', this)"><i class="fas fa-check-circle"></i> Aprovações</div>
@@ -1368,14 +1368,14 @@
                         <div class="content-area">
                             <div class="card roxo-card">
                                 <div class="card-header"><div class="card-title roxo-title">Requisições de Mobilidade/Promoção</div><div><select id="mobSortRequisicoes" class="form-control" style="width:150px;"><option value="newest">Mais Recentes</option><option value="oldest">Mais Antigas</option></select></div></div>
-                                <div class="table-container"><table id="mobTabelaRequisicoes"><thead class="roxo-th"><tr><th>Código</th><th>Colaborador</th><th>Tipo</th><th>Status</th><th>Data Criação</th><th>Ações</th></tr></thead><tbody id="mobCorpoTabela"></tbody></table></div>
+                                <div class="table-container"><table id="mobTabelaRequisicoes"><thead class="roxo-th"><tr><th>Código</th><th>Colaborador</th><th>Direção</th><th>Tipo</th><th>Status</th><th>Data Criação</th><th>Ações</th></tr></thead><tbody id="mobCorpoTabela"></tbody></table></div>
                                 <div class="paginacao"><button id="mobPaginaAnterior" class="pagina-btn" disabled>Anterior</button><span id="mobInfoPagina">Página 1</span><button id="mobPaginaProxima" class="pagina-btn" disabled>Próxima</button></div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div id="mobAprovacoesSection" style="display:none;">
-                    <div class="card roxo-card"><div class="card-header"><div class="card-title roxo-title">Pendências para Aprovação / Confirmação</div></div><div class="table-container"><table id="mobTabelaAprovacoes"><thead class="roxo-th"><tr><th>Código</th><th>Colaborador</th><th>Tipo</th><th>Status</th><th>Data Criação</th><th>Ações</th></tr></thead><tbody id="mobCorpoAprovacoes"></tbody></table></div></div>
+                    <div class="card roxo-card"><div class="card-header"><div class="card-title roxo-title">Pendências para Aprovação / Confirmação</div></div><div class="table-container"><table id="mobTabelaAprovacoes"><thead class="roxo-th"><tr><th>Código</th><th>Colaborador</th><th>Direção</th><th>Tipo</th><th>Status</th><th>Data Criação</th><th>Ações</th></tr></thead><tbody id="mobCorpoAprovacoes"></tbody></table></div></div>
                 </div>
                 <div id="mobRelatoriosSection" style="display:none;">
                     <div class="card roxo-card"><div class="card-header"><div class="card-title roxo-title">Relatórios</div></div>
@@ -1449,39 +1449,15 @@
                         </div>
                         <!-- GRELHA DE PREÇOS E CÓDIGOS -->
                         <div class="product-pricing" id="productPricing">
-                            <div class="pricing-item">
-                                <span class="label">Artigo</span>
-                                <div class="value" id="prodCodSap">--</div>
-                            </div>
-                            <div class="pricing-item">
-                                <span class="label">Preço Kero</span>
-                                <div class="value" id="prodPrecoKeroDisplay">-- Kz</div>
-                                <input type="number" step="1" id="prodPrecoKeroInput" placeholder="0" style="display:none;">
-                            </div>
-                            <div class="pricing-item">
-                                <span class="label">Preço Custo</span>
-                                <div class="value" id="prodPrecoCustoDisplay">-- Kz</div>
-                                <input type="number" step="1" id="prodPrecoCustoInput" placeholder="0" style="display:none;">
-                            </div>
-                            <div class="pricing-item">
-                                <span class="label">IVA (%)</span>
-                                <div class="value" id="prodIvaDisplay">-- %</div>
-                                <input type="number" step="1" id="prodIvaInput" placeholder="" style="display:none;">
-                            </div>
-                            <div class="pricing-item">
-                                <span class="label">Fornecedor</span>
-                                <div class="value" id="prodFornecedorDisplay">--</div>
-                                <input type="text" id="prodFornecedorInput" placeholder="Fornecedor" style="display:none;">
-                            </div>
-                            <div class="pricing-item">
-                                <span class="label">Venda média mensal</span>
-                                <div class="value" id="prodVendaMediaDisplay">--</div>
-                                <input type="number" step="1" id="prodVendaMediaInput" placeholder="0" style="display:none;">
-                            </div>
-                            <div class="pricing-item">
-                                <span class="label">Cód. Fornecedor</span>
-                                <div class="value" id="prodNumFornecedor">--</div>
-                            </div>
+                            <div class="pricing-item"><span class="label">Cod. Artigo</span><div class="value" id="prodCodSap">--</div></div>
+                            <div class="pricing-item"><span class="label">PVP Kero</span><div class="value" id="prodPrecoKeroDisplay">-- Kz</div><input type="number" step="1" id="prodPrecoKeroInput" placeholder="0" style="display:none;"></div>
+                            <div class="pricing-item"><span class="label">Preço Custo</span><div class="value" id="prodPrecoCustoDisplay">-- Kz</div><input type="number" step="1" id="prodPrecoCustoInput" placeholder="0" style="display:none;"></div>
+                            <div class="pricing-item"><span class="label">IVA (%)</span><div class="value" id="prodIvaDisplay">-- %</div><input type="number" step="0.01" id="prodIvaInput" placeholder="" style="display:none;"></div>
+                            <div class="pricing-item"><span class="label">Margem (Mg%)</span><div class="value" id="prodMargemDisplay">-- %</div></div>
+                            <div class="pricing-item"><span class="label">Fornecedor</span><div class="value" id="prodFornecedorDisplay">--</div><input type="text" id="prodFornecedorInput" placeholder="Fornecedor" style="display:none;"></div>
+                            <div class="pricing-item"><span class="label">Cod. Fornecedor</span><div class="value" id="prodNumFornecedor">--</div></div>
+                            <div class="pricing-item"><span class="label">Venda Média Mensal</span><div class="value" id="prodVendaMediaDisplay">--</div><input type="number" step="1" id="prodVendaMediaInput" placeholder="0" style="display:none;"></div>
+                            <div class="pricing-item"><span class="label">Quantidade Total</span><div class="value" id="prodQtdTotalDisplay">--</div></div>
                             <div class="pricing-actions">
                                 <button class="btn-ean btn-editar-precos" id="btnEditarPrecos"><i class="fas fa-edit"></i> Editar</button>
                                 <button class="btn-ean btn-guardar-precos" id="btnGuardarPrecos" style="display:none;"><i class="fas fa-save"></i> Guardar</button>
@@ -1659,9 +1635,9 @@
             <div class="modal-body">
                 <form id="formNovaRequisicaoMob">
                     <div class="form-group"><label>Tipo *</label><select id="mobTipoRequisicao" class="form-control" required><option value="">Selecione</option><option value="mudanca_area">Mudança de Área</option><option value="mudanca_salarial">Mudança Salarial</option><option value="promocao">Promoção</option></select></div>
-                    <div class="form-group"><label>Colaborador *</label><input type="text" id="mobColaborador" class="form-control" required placeholder="Nome do colaborador"></div>
+                    <div class="form-group"><label>Colaborador *</label><input type="text" id="mobColaborador" class="form-control" required placeholder="Nome do colaborador"></div><div class="form-group"><label>Direção *</label><select id="mobDirecao" class="form-control" required><option value="">Selecione</option></select></div>
                     <div class="form-row"><div class="form-group"><label>Função Atual</label><input type="text" id="mobFuncaoAtual" class="form-control" placeholder="Função atual"></div><div class="form-group"><label>Nova Função (se aplicável)</label><input type="text" id="mobNovaFuncao" class="form-control" placeholder="Nova função"></div></div>
-                    <div class="form-row"><div class="form-group"><label>Área Atual</label><input type="text" id="mobAreaAtual" class="form-control" placeholder="Área atual"></div><div class="form-group"><label>Nova Área (se aplicável)</label><input type="text" id="mobNovaArea" class="form-control" placeholder="Nova área"></div></div>
+                    <div class="form-row"><div class="form-group"><label>Área Atual *</label><input type="text" id="mobAreaAtual" class="form-control" placeholder="Área atual" required></div><div class="form-group"><label>Nova Área *</label><input type="text" id="mobNovaArea" class="form-control" placeholder="Nova área" required></div></div>
                     <div class="form-row"><div class="form-group"><label>Salário Atual (Kz)</label><input type="number" id="mobSalarioAtual" class="form-control" placeholder="0"></div><div class="form-group"><label>Novo Salário (Kz)</label><input type="number" id="mobNovoSalario" class="form-control" placeholder="0"></div></div>
                     <div class="form-group"><label>Justificativa *</label><textarea id="mobJustificativa" class="form-control" rows="3" required placeholder="Descreva a justificativa para a mudança"></textarea></div>
                     <div class="form-actions"><button type="button" class="btn-small" onclick="fecharModal('modalNovaRequisicaoMob')">Cancelar</button><button type="submit" class="btn-small btn-approve" style="background-color:var(--roxo);">Enviar</button></div>
@@ -1698,9 +1674,9 @@
                 <form id="formEditarRequisicaoMob">
                     <input type="hidden" id="mobEditRequisicaoId">
                     <div class="form-group"><label>Tipo</label><select id="mobEditTipo" class="form-control"><option value="mudanca_area">Mudança de Área</option><option value="mudanca_salarial">Mudança Salarial</option><option value="promocao">Promoção</option></select></div>
-                    <div class="form-group"><label>Colaborador</label><input type="text" id="mobEditColaborador" class="form-control"></div>
+                    <div class="form-group"><label>Colaborador</label><input type="text" id="mobEditColaborador" class="form-control"></div><div class="form-group"><label>Direção *</label><select id="mobEditDirecao" class="form-control" required><option value="">Selecione</option></select></div>
                     <div class="form-row"><div class="form-group"><label>Função Atual</label><input type="text" id="mobEditFuncaoAtual" class="form-control"></div><div class="form-group"><label>Nova Função</label><input type="text" id="mobEditNovaFuncao" class="form-control"></div></div>
-                    <div class="form-row"><div class="form-group"><label>Área Atual</label><input type="text" id="mobEditAreaAtual" class="form-control"></div><div class="form-group"><label>Nova Área</label><input type="text" id="mobEditNovaArea" class="form-control"></div></div>
+                    <div class="form-row"><div class="form-group"><label>Área Atual *</label><input type="text" id="mobEditAreaAtual" class="form-control" required></div><div class="form-group"><label>Nova Área *</label><input type="text" id="mobEditNovaArea" class="form-control" required></div></div>
                     <div class="form-row"><div class="form-group"><label>Salário Atual (Kz)</label><input type="number" id="mobEditSalarioAtual" class="form-control"></div><div class="form-group"><label>Novo Salário (Kz)</label><input type="number" id="mobEditNovoSalario" class="form-control"></div></div>
                     <div class="form-group"><label>Justificativa</label><textarea id="mobEditJustificativa" class="form-control" rows="3"></textarea></div>
                     <div class="form-actions"><button type="button" class="btn-small" onclick="fecharModal('modalEditarRequisicaoMob')">Cancelar</button><button type="submit" class="btn-small btn-approve" style="background-color:var(--roxo);">Salvar</button></div>
@@ -1727,7 +1703,7 @@
                         <input type="text" id="addEan" placeholder="Código de barras (8 a 13 dígitos)">
                     </div>
                     <div class="form-group">
-                        <label for="addCodSap">Cod. Sap / Artigo</label>
+                        <label for="addCodSap">Cod. Artigo</label>
                         <input type="text" id="addCodSap" placeholder="Ex: 12345">
                     </div>
                     <div class="form-group">
@@ -1739,12 +1715,12 @@
                         <input type="number" step="1" id="addPrecoCusto" placeholder="0">
                     </div>
                     <div class="form-group">
-                        <label for="addPrecoKero">Preço Kero (Kz)</label>
+                        <label for="addPrecoKero">PVP Kero (Kz)</label>
                         <input type="number" step="1" id="addPrecoKero" placeholder="0">
                     </div>
                     <div class="form-group">
                         <label for="addIva">IVA (%)</label>
-                        <input type="number" step="1" id="addIva" placeholder="">
+                        <input type="number" step="0.01" id="addIva" placeholder="">
                     </div>
                     <div class="form-group">
                         <label for="addFornecedor">Fornecedor</label>
@@ -3730,7 +3706,7 @@
             async function salvarNoSharePoint(req) {
                 try {
                     const token = await getSharePointToken(), siteId = await getSiteId();
-                    const fields = { "Title": req.codigo, "Codigo": req.codigo, "Colaborador": req.colaborador, "Typo": req.tipo, "FuncaoAtual": req.funcaoAtual || "", "NovaFuncao": req.novaFuncao || "", "AreaAtual": req.areaAtual || "", "NovaArea": req.novaArea || "", "SalarioAtual": req.salarioAtual || 0, "NovoSalario": req.novoSalario || 0, "Justificativa": req.justificativa || "", "Status": req.status, "DataCriacao": req.dataCriacao || new Date().toISOString(), "CriadoPor": req.criadoPor || "", "CriadoPorEmail": req.criadoPorEmail || "", "Historico": JSON.stringify(req.historicoComentarios || []) };
+                    const fields = { "Title": req.codigo, "Codigo": req.codigo, "Colaborador": req.colaborador, "Typo": req.tipo, "FuncaoAtual": req.funcaoAtual || "", "NovaFuncao": req.novaFuncao || "", "AreaAtual": req.areaAtual || "", "NovaArea": req.novaArea || "", "SalarioAtual": req.salarioAtual || 0, "NovoSalario": req.novoSalario || 0, "Justificativa": req.justificativa || "", "Status": req.status, "DataCriacao": req.dataCriacao || new Date().toISOString(), "CriadoPor": req.criadoPor || "", "CriadoPorEmail": req.criadoPorEmail || "", "Direcao": req.direcao || "", "Historico": JSON.stringify(req.historicoComentarios || []) };
                     const filterUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${SHAREPOINT_LIST}/items?expand=fields&$filter=fields/Title eq '${req.codigo}'`;
                     const check = await fetch(filterUrl, { headers: { 'Authorization': `Bearer ${token}` } });
                     let existing = null;
@@ -3747,7 +3723,7 @@
                     if (resp.ok) {
                         const data = await resp.json();
                         if (data.value && data.value.length > 0) {
-                            const spReqs = data.value.map(item => { const f = item.fields; let hist = []; try { hist = JSON.parse(f.Historico || '[]'); } catch (e) {} return { id: item.id, codigo: f.Title || f.Codigo || '', tipo: f.Typo || '', colaborador: f.Colaborador || '', funcaoAtual: f.FuncaoAtual || '', novaFuncao: f.NovaFuncao || '', areaAtual: f.AreaAtual || '', novaArea: f.NovaArea || '', salarioAtual: f.SalarioAtual || 0, novoSalario: f.NovoSalario || 0, justificativa: f.Justificativa || '', status: f.Status || 'em_validacao_rh', dataCriacao: f.DataCriacao || new Date().toISOString(), criadoPor: f.CriadoPor || '', criadoPorEmail: f.CriadoPorEmail || '', historicoComentarios: hist }; });
+                            const spReqs = data.value.map(item => { const f = item.fields; let hist = []; try { hist = JSON.parse(f.Historico || '[]'); } catch (e) {} return { id: item.id, codigo: f.Title || f.Codigo || '', tipo: f.Typo || '', colaborador: f.Colaborador || '', funcaoAtual: f.FuncaoAtual || '', novaFuncao: f.NovaFuncao || '', areaAtual: f.AreaAtual || '', novaArea: f.NovaArea || '', salarioAtual: f.SalarioAtual || 0, novoSalario: f.NovoSalario || 0, justificativa: f.Justificativa || '', status: f.Status || 'em_validacao_rh', dataCriacao: f.DataCriacao || new Date().toISOString(), criadoPor: f.CriadoPor || '', criadoPorEmail: f.CriadoPorEmail || '', direcao: f.Direcao || '', historicoComentarios: hist }; });
                             for (const sp of spReqs) { const idx = reqs.findIndex(r => r.id === sp.id); if (idx >= 0) reqs[idx] = { ...reqs[idx], ...sp }; else reqs.push(sp); }
                             salvarLocal();
                             mostrarNotificacao(`✅ ${spReqs.length} requisições de mobilidade carregadas.`, 'success');
@@ -3769,9 +3745,9 @@
             function renderizarRequisicoes() {
                 const lista = filtrarRequisicoes();
                 const tbody = document.getElementById('mobCorpoTabela'); if (!tbody) return;
-                if (lista.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">Nenhuma requisição encontrada</td></tr>'; return; }
+                if (lista.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:#999;">Nenhuma requisição encontrada</td></tr>'; return; }
                 const inicio = (pagina - 1) * 10, itens = lista.slice(inicio, inicio + 10);
-                tbody.innerHTML = itens.map(r => `<tr onclick="mobApp.visualizar('${r.id}')"><td><strong>${r.codigo}</strong></td><td>${r.colaborador}</td><td><span class="type-badge roxo-badge">${getTipoText(r.tipo)}</span></td><td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td><td>${formatarData(r.dataCriacao)}</td><td>${getBotoesAcao(r)}</td></tr>`).join('');
+                tbody.innerHTML = itens.map(r => `<tr onclick="mobApp.visualizar('${r.id}')"><td><strong>${r.codigo}</strong></td><td>${r.colaborador}</td><td>${r.direcao || '-'}</td><td><span class="type-badge roxo-badge">${getTipoText(r.tipo)}</span></td><td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td><td>${formatarData(r.dataCriacao)}</td><td>${getBotoesAcao(r)}</td></tr>`).join('');
                 const totalPag = Math.ceil(lista.length / 10);
                 document.getElementById('mobInfoPagina').textContent = `Página ${pagina} de ${totalPag || 1}`;
                 document.getElementById('mobPaginaAnterior').disabled = pagina === 1;
@@ -3798,8 +3774,8 @@
                 if (podeVerTodas()) { pendentes = reqs.filter(r => ['em_validacao_rh', 'em_validacao_financas', 'em_validacao_director', 'aprovada', 'aguardando_confirmacao'].includes(r.status)); }
                 else { if (usuarioAtual.perfil === 'RH') pendentes = reqs.filter(r => r.status === 'em_validacao_rh' && r.criadoPorEmail !== usuarioAtual.email); else if (usuarioAtual.perfil === 'Controlo de Gestão') pendentes = reqs.filter(r => r.status === 'em_validacao_financas' && r.criadoPorEmail !== usuarioAtual.email); else if (usuarioAtual.perfil === 'Director Geral') pendentes = reqs.filter(r => r.status === 'em_validacao_director' && r.criadoPorEmail !== usuarioAtual.email); else if (usuarioAtual.perfil === 'Confirmante') pendentes = reqs.filter(r => r.status === 'aprovada' && r.criadoPorEmail !== usuarioAtual.email); else pendentes = []; }
                 const tbody = document.getElementById('mobCorpoAprovacoes'); if (!tbody) return;
-                if (pendentes.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;color:#999;">Nenhuma pendência</td></tr>'; return; }
-                tbody.innerHTML = pendentes.map(r => `<tr onclick="mobApp.visualizar('${r.id}')"><td><strong>${r.codigo}</strong></td><td>${r.colaborador}</td><td><span class="type-badge roxo-badge">${getTipoText(r.tipo)}</span></td><td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td><td>${formatarData(r.dataCriacao)}</td><td>${getBotoesAcao(r)}</td></tr>`).join('');
+                if (pendentes.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:#999;">Nenhuma pendência</td></tr>'; return; }
+                tbody.innerHTML = pendentes.map(r => `<tr onclick="mobApp.visualizar('${r.id}')"><td><strong>${r.codigo}</strong></td><td>${r.colaborador}</td><td>${r.direcao || '-'}</td><td><span class="type-badge roxo-badge">${getTipoText(r.tipo)}</span></td><td><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></td><td>${formatarData(r.dataCriacao)}</td><td>${getBotoesAcao(r)}</td></tr>`).join('');
             }
             function atualizarKPIs() {
                 const lista = filtrarRequisicoes();
@@ -3843,8 +3819,11 @@
                 const tipo = document.getElementById('mobTipoRequisicao').value;
                 const colaborador = document.getElementById('mobColaborador').value.trim();
                 const justificativa = document.getElementById('mobJustificativa').value.trim();
-                if (!tipo || !colaborador || !justificativa) { mostrarNotificacao('Preencha todos os campos obrigatórios!', 'error'); return; }
-                const nova = { id: Date.now().toString(), codigo: gerarCodigo(), tipo, colaborador, funcaoAtual: document.getElementById('mobFuncaoAtual').value.trim(), novaFuncao: document.getElementById('mobNovaFuncao').value.trim(), areaAtual: document.getElementById('mobAreaAtual').value.trim(), novaArea: document.getElementById('mobNovaArea').value.trim(), salarioAtual: parseFloat(document.getElementById('mobSalarioAtual').value) || 0, novoSalario: parseFloat(document.getElementById('mobNovoSalario').value) || 0, justificativa, status: 'em_validacao_rh', dataCriacao: new Date().toISOString(), criadoPor: usuarioAtual.nome, criadoPorEmail: usuarioAtual.email, historicoComentarios: [{ id: Date.now().toString(), acao: 'criacao', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: 'Requisição criada.', data: new Date().toISOString() }] };
+                const direcao = document.getElementById('mobDirecao').value;
+                const areaAtual = document.getElementById('mobAreaAtual').value.trim();
+                const novaArea = document.getElementById('mobNovaArea').value.trim();
+                if (!tipo || !colaborador || !direcao || !areaAtual || !novaArea || !justificativa) { mostrarNotificacao('Preencha todos os campos obrigatórios (Direção, Área Atual e Nova Área incluídas)!', 'error'); return; }
+                const nova = { id: Date.now().toString(), codigo: gerarCodigo(), tipo, colaborador, funcaoAtual: document.getElementById('mobFuncaoAtual').value.trim(), novaFuncao: document.getElementById('mobNovaFuncao').value.trim(), direcao, areaAtual, novaArea, salarioAtual: parseFloat(document.getElementById('mobSalarioAtual').value) || 0, novoSalario: parseFloat(document.getElementById('mobNovoSalario').value) || 0, justificativa, status: 'em_validacao_rh', dataCriacao: new Date().toISOString(), criadoPor: usuarioAtual.nome, criadoPorEmail: usuarioAtual.email, historicoComentarios: [{ id: Date.now().toString(), acao: 'criacao', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: 'Requisição criada.', data: new Date().toISOString() }] };
                 reqs.unshift(nova);
                 salvarLocal();
                 await salvarNoSharePoint(nova);
@@ -3858,7 +3837,7 @@
                 if (!req) return;
                 if (!podeVerTodas() && req.criadoPorEmail !== usuarioAtual.email) { mostrarNotificacao('Sem permissão.', 'error'); return; }
                 window.mobRequisicaoVisualizarAtual = req;
-                const html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;"><div><span style="font-size:12px;color:#888;">Código</span><div style="font-weight:600;">${req.codigo}</div></div><div><span style="font-size:12px;color:#888;">Status</span><div><span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></div></div><div><span style="font-size:12px;color:#888;">Tipo</span><div>${getTipoText(req.tipo)}</div></div><div><span style="font-size:12px;color:#888;">Colaborador</span><div><strong>${req.colaborador}</strong></div></div><div><span style="font-size:12px;color:#888;">Justificativa</span><div style="background:#f5f5f5;padding:10px;border-radius:6px;grid-column:1/-1;">${req.justificativa}</div></div></div><div style="margin-top:20px;border-top:1px solid #e0e0e0;padding-top:15px;"><h4 style="color:var(--roxo);">Histórico</h4>${(req.historicoComentarios || []).slice().reverse().map(h => `<div class="historico-item"><div class="historico-header"><div><strong>${h.acao.toUpperCase()}</strong> - ${h.usuario} (${h.perfil})</div><div>${formatarDataHora(h.data)}</div></div><div class="historico-comentario">${h.comentario}</div></div>`).join('')}</div><div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;">${getBotoesAcao(req)}</div>`;
+                const html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;"><div><span style="font-size:12px;color:#888;">Código</span><div style="font-weight:600;">${req.codigo}</div></div><div><span style="font-size:12px;color:#888;">Status</span><div><span class="status-badge status-${req.status}">${getStatusText(req.status)}</span></div></div><div><span style="font-size:12px;color:#888;">Tipo</span><div>${getTipoText(req.tipo)}</div></div><div><span style="font-size:12px;color:#888;">Colaborador</span><div><strong>${req.colaborador}</strong></div></div><div><span style="font-size:12px;color:#888;">Direção</span><div>${req.direcao || '-'}</div></div><div><span style="font-size:12px;color:#888;">Área Atual → Nova Área</span><div>${req.areaAtual || '-'} → ${req.novaArea || '-'}</div></div><div><span style="font-size:12px;color:#888;">Justificativa</span><div style="background:#f5f5f5;padding:10px;border-radius:6px;grid-column:1/-1;">${req.justificativa}</div></div></div><div style="margin-top:20px;border-top:1px solid #e0e0e0;padding-top:15px;"><h4 style="color:var(--roxo);">Histórico</h4>${(req.historicoComentarios || []).slice().reverse().map(h => `<div class="historico-item"><div class="historico-header"><div><strong>${h.acao.toUpperCase()}</strong> - ${h.usuario} (${h.perfil})</div><div>${formatarDataHora(h.data)}</div></div><div class="historico-comentario">${h.comentario}</div></div>`).join('')}</div><div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap;">${getBotoesAcao(req)}</div>`;
                 document.getElementById('mobConteudoModal').innerHTML = html;
                 abrirModal('modalVisualizarMob');
             }
@@ -3868,6 +3847,7 @@
                 document.getElementById('mobEditRequisicaoId').value = req.id;
                 document.getElementById('mobEditTipo').value = req.tipo;
                 document.getElementById('mobEditColaborador').value = req.colaborador;
+                document.getElementById('mobEditDirecao').value = req.direcao || '';
                 document.getElementById('mobEditFuncaoAtual').value = req.funcaoAtual || '';
                 document.getElementById('mobEditNovaFuncao').value = req.novaFuncao || '';
                 document.getElementById('mobEditAreaAtual').value = req.areaAtual || '';
@@ -3882,6 +3862,9 @@
                 const id = document.getElementById('mobEditRequisicaoId').value;
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
+                const _dir = document.getElementById('mobEditDirecao').value, _aa = document.getElementById('mobEditAreaAtual').value.trim(), _na = document.getElementById('mobEditNovaArea').value.trim();
+                if (!_dir || !_aa || !_na) { mostrarNotificacao('Direção, Área Atual e Nova Área são obrigatórias!', 'error'); return; }
+                req.direcao = _dir;
                 req.tipo = document.getElementById('mobEditTipo').value;
                 req.colaborador = document.getElementById('mobEditColaborador').value.trim();
                 req.funcaoAtual = document.getElementById('mobEditFuncaoAtual').value.trim();
@@ -3987,15 +3970,15 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 doc.setFontSize(18); doc.setTextColor(106, 27, 154); doc.text('Kero SIR - Mobilidade & Promoções', 14, 20);
-                const body = dados.map(r => [r.codigo, r.colaborador, getTipoText(r.tipo), getStatusText(r.status), formatarData(r.dataCriacao)]);
-                doc.autoTable({ startY: 30, head: [['Código', 'Colaborador', 'Tipo', 'Status', 'Data']], body, headStyles: { fillColor: [106, 27, 154] } });
+                const body = dados.map(r => [r.codigo, r.colaborador, r.direcao || '', getTipoText(r.tipo), getStatusText(r.status), formatarData(r.dataCriacao)]);
+                doc.autoTable({ startY: 30, head: [['Código', 'Colaborador', 'Direção', 'Tipo', 'Status', 'Data']], body, headStyles: { fillColor: [106, 27, 154] } });
                 doc.save(`mobilidade_${new Date().toISOString().slice(0,10)}.pdf`);
                 mostrarNotificacao('PDF gerado!', 'success');
             }
             function exportarExcel() {
                 const dados = obterDadosRelatorioMob();
-                const wsData = [['Código', 'Colaborador', 'Tipo', 'Status', 'Data']];
-                dados.forEach(r => wsData.push([r.codigo, r.colaborador, getTipoText(r.tipo), getStatusText(r.status), formatarData(r.dataCriacao)]));
+                const wsData = [['Código', 'Colaborador', 'Direção', 'Tipo', 'Status', 'Data']];
+                dados.forEach(r => wsData.push([r.codigo, r.colaborador, r.direcao || '', getTipoText(r.tipo), getStatusText(r.status), formatarData(r.dataCriacao)]));
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsData), 'Mobilidade');
                 XLSX.writeFile(wb, `mobilidade_${new Date().toISOString().slice(0,10)}.xlsx`);
@@ -4003,8 +3986,8 @@
             }
             function exportarCSV() {
                 const dados = obterDadosRelatorioMob();
-                let csv = 'Código;Colaborador;Tipo;Status;Data\n';
-                dados.forEach(r => csv += `"${r.codigo}";"${r.colaborador}";"${getTipoText(r.tipo)}";"${getStatusText(r.status)}";"${formatarData(r.dataCriacao)}"\n`);
+                let csv = 'Código;Colaborador;Direção;Tipo;Status;Data\n';
+                dados.forEach(r => csv += `"${r.codigo}";"${r.colaborador}";"${r.direcao || ''}";"${getTipoText(r.tipo)}";"${getStatusText(r.status)}";"${formatarData(r.dataCriacao)}"\n`);
                 const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
@@ -4025,6 +4008,7 @@
             async function inicializar() {
                 carregarLocal();
                 await carregarDoSharePoint();
+                ['mobDirecao', 'mobEditDirecao'].forEach(id => { const s = document.getElementById(id); if (s) { s.innerHTML = '<option value="">Selecione</option>'; todasDirecoes.forEach(d => s.appendChild(new Option(d, d))); } });
                 document.getElementById('formNovaRequisicaoMob').addEventListener('submit', criarRequisicao);
                 document.getElementById('formEditarRequisicaoMob').addEventListener('submit', salvarEdicao);
                 document.getElementById('formComentarioMob').addEventListener('submit', processarComentario);
@@ -4099,11 +4083,24 @@
             }
 
             function parseIva(val) {
-                if (!val) return 0;
-                let num = parseFloat(String(val).replace(',', '.'));
-                if (isNaN(num)) return 0;
-                if (num > 0 && num <= 1) return Math.round(num * 100);
-                return Math.round(num);
+                if (val === null || val === undefined || val === '') return 0;
+                let num = parseFloat(String(val).replace('%', '').replace(',', '.').trim());
+                if (isNaN(num) || num <= 0) return 0;
+                if (num < 1) num = num * 100;
+                return Math.round(num * 100) / 100;
+            }
+            function formatarPercentagem(val) {
+                if (val === null || val === undefined || isNaN(val)) return '--';
+                return Number(val).toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + ' %';
+            }
+            function calcularMargem(prod) {
+                const pvp = Number(prod.preco_kero) || 0, custo = Number(prod.preco_custo) || 0;
+                const iva = (parseIva(prod.iva) || 0) / 100;
+                if (pvp <= 0) return null;
+                return ((pvp - custo * (1 + iva)) / pvp) * 100;
+            }
+            function calcularQtdTotal(prod) {
+                return LOJAS_KERO.reduce((s, l) => s + Math.round(Number((prod.stock || {})[l]) || 0), 0);
             }
 
             function adicionarHistorico(ean) {
@@ -4140,7 +4137,7 @@
                                 else p.stock[l] = Math.round(Number(p.stock[l]) || 0);
                             });
                             CONCORRENTES.forEach(c => { if (!(c in p.concorrentes)) p.concorrentes[c] = 0; });
-                            if (p.iva === undefined) p.iva = 0;
+                            p.iva = parseIva(p.iva);
                             if (p.fornecedor === undefined) p.fornecedor = '';
                             if (p.venda_media_mensal === undefined) p.venda_media_mensal = 0;
                             if (p.cod_sap === undefined) p.cod_sap = '';
@@ -4492,17 +4489,21 @@
             }
 
             function atualizarPrecos(prod) {
-                const el1 = document.getElementById('prodPrecoKeroDisplay'); if (el1) el1.textContent = `${formatarNumeroInteiro(prod.preco_kero)} Kz`;
-                const el2 = document.getElementById('prodPrecoCustoDisplay'); if (el2) el2.textContent = `${formatarNumeroInteiro(prod.preco_custo)} Kz`;
-                const el3 = document.getElementById('prodIvaDisplay'); if (el3) el3.textContent = `${formatarNumeroInteiro(prod.iva)} %`;
-                const el4 = document.getElementById('prodFornecedorDisplay'); if (el4) el4.textContent = prod.fornecedor || '-';
-                const el5 = document.getElementById('prodVendaMediaDisplay'); if (el5) el5.textContent = formatarNumeroInteiro(prod.venda_media_mensal);
-                
-                const i1 = document.getElementById('prodPrecoKeroInput'); if (i1) i1.value = Math.round(prod.preco_kero) || 0;
-                const i2 = document.getElementById('prodPrecoCustoInput'); if (i2) i2.value = Math.round(prod.preco_custo) || 0;
-                const i3 = document.getElementById('prodIvaInput'); if (i3) i3.value = parseIva(prod.iva) || 0;
-                const i4 = document.getElementById('prodFornecedorInput'); if (i4) i4.value = prod.fornecedor || '';
-                const i5 = document.getElementById('prodVendaMediaInput'); if (i5) i5.value = Math.round(prod.venda_media_mensal) || 0;
+                const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+                const setV = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+                const mg = calcularMargem(prod);
+                set('prodPrecoKeroDisplay', `${formatarNumeroInteiro(prod.preco_kero)} Kz`);
+                set('prodPrecoCustoDisplay', `${formatarNumeroInteiro(prod.preco_custo)} Kz`);
+                set('prodIvaDisplay', formatarPercentagem(parseIva(prod.iva)));
+                set('prodMargemDisplay', mg === null ? '--' : formatarPercentagem(mg));
+                set('prodFornecedorDisplay', prod.fornecedor || '-');
+                set('prodVendaMediaDisplay', formatarNumeroInteiro(prod.venda_media_mensal));
+                set('prodQtdTotalDisplay', formatarNumeroInteiro(calcularQtdTotal(prod)));
+                setV('prodPrecoKeroInput', Math.round(prod.preco_kero) || 0);
+                setV('prodPrecoCustoInput', Math.round(prod.preco_custo) || 0);
+                setV('prodIvaInput', parseIva(prod.iva) || 0);
+                setV('prodFornecedorInput', prod.fornecedor || '');
+                setV('prodVendaMediaInput', Math.round(prod.venda_media_mensal) || 0);
             }
 
             function renderizarStockVertical(prod) {
@@ -4539,7 +4540,7 @@
                     card.className = 'product-card';
                     card.innerHTML = `<div class="card-name">${prod.nome}</div>
                                       <div class="card-ean">EAN: ${prod.ean}</div>
-                                      ${prod.cod_sap ? `<div class="card-ean" style="color:#E65100;">Artigo: ${prod.cod_sap}</div>` : ''}
+                                      ${prod.cod_sap ? `<div class="card-ean" style="color:#E65100;">Cod. Artigo: ${prod.cod_sap}</div>` : ''}
                                       ${prod.num_fornecedor ? `<div class="card-ean" style="color:#1565c0;">Cód. Forn: ${prod.num_fornecedor}</div>` : ''}
                                       <div class="card-price">${formatarNumeroInteiro(prod.preco_kero)} Kz</div>`;
                     card.addEventListener('click', () => {
@@ -4577,7 +4578,7 @@
                     const item = document.createElement('div');
                     item.className = 'suggestion-item';
                     const extra = [];
-                    if (p.cod_sap) extra.push(`Art: ${p.cod_sap}`);
+                    if (p.cod_sap) extra.push(`Cod. Artigo: ${p.cod_sap}`);
                     if (p.num_fornecedor) extra.push(`Cód. Forn: ${p.num_fornecedor}`);
                     const extraStr = extra.length > 0 ? ` | ${extra.join(' | ')}` : '';
                     item.innerHTML = `<span class="suggestion-name">${p.nome}</span><span class="suggestion-ean">EAN: ${p.ean}${extraStr}</span>`;
