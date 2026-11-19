@@ -1359,9 +1359,9 @@
                             <button class="btn-primary roxo-bg" id="btnNovaRequisicaoMob"><i class="fas fa-plus-circle"></i> Nova Requisição</button>
                             <div class="filter-section">
                                 <h3 style="color:var(--roxo);">Filtros</h3>
-                                <div class="filter-group"><label>Pesquisar</label><input type="text" id="mobFilterPesquisa" placeholder="Código, colaborador..."></div>
+                                <div class="filter-group"><label>Pesquisar</label><input type="text" id="mobFilterPesquisa" placeholder="Código, colaborador, direção..."></div>
                                 <div class="filter-group"><label>Status</label><select id="mobFilterStatus"><option value="all">Todos</option><option value="em_validacao_rh">RH</option><option value="em_validacao_financas">CG</option><option value="em_validacao_director">Director</option><option value="aprovada">Aprovada</option><option value="aguardando_confirmacao">Confirmação</option><option value="concluida">Concluída</option><option value="rejeitada">Rejeitada</option></select></div>
-                                <div class="filter-group"><label>Tipo</label><select id="mobFilterTipo"><option value="all">Todos</option><option value="mudanca_area">Mudança de Área</option><option value="mudanca_salarial">Mudança Salarial</option><option value="promocao">Promoção</option></select></div>
+                                <div class="filter-group"><label>Direção</label><select id="mobFilterDirecao"><option value="all">Todas</option></select></div><div class="filter-group"><label>Tipo</label><select id="mobFilterTipo"><option value="all">Todos</option><option value="mudanca_area">Mudança de Área</option><option value="mudanca_salarial">Mudança Salarial</option><option value="promocao">Promoção</option></select></div>
                                 <div><button class="btn-filter btn-filter-clear" onclick="limparFiltrosMob()">Limpar</button><button class="btn-filter btn-filter-apply roxo-filter" onclick="filtrarRequisicoesMob()">Aplicar</button></div>
                             </div>
                         </div>
@@ -3695,7 +3695,7 @@
         // MÓDULO MOBILIDADE
         // ============================================================
         const mobApp = (function() {
-            let reqs = [], pagina = 1, filtroStatus = 'all', filtroSearch = '', filtroTipo = 'all';
+            let reqs = [], pagina = 1, filtroStatus = 'all', filtroSearch = '', filtroTipo = 'all', filtroDirecao = 'all';
             const SHAREPOINT_LIST = SHAREPOINT_CONFIG.listaMobilidade;
             function getStatusText(s) { const map = { 'em_validacao_rh': 'Em Validação RH', 'em_validacao_financas': 'Em Validação CG', 'em_validacao_director': 'Em Validação Director', 'aprovada': 'Aprovada', 'aguardando_confirmacao': 'Aguardando Confirmação', 'concluida': 'Concluída', 'rejeitada': 'Rejeitada', 'devolvida_solicitante': 'Devolvida para Edição' }; return map[s] || s; }
             function getTipoText(t) { const map = { 'mudanca_area': 'Mudança de Área', 'mudanca_salarial': 'Mudança Salarial', 'promocao': 'Promoção' }; return map[t] || t; }
@@ -3736,9 +3736,10 @@
             function filtrarRequisicoes() {
                 let lista = [...reqs];
                 if (!podeVerTodas()) lista = lista.filter(r => r.criadoPorEmail === usuarioAtual.email);
-                if (filtroSearch) { const s = filtroSearch.toLowerCase(); lista = lista.filter(r => r.codigo.toLowerCase().includes(s) || r.colaborador.toLowerCase().includes(s)); }
+                if (filtroSearch) { const s = filtroSearch.toLowerCase(); lista = lista.filter(r => r.codigo.toLowerCase().includes(s) || r.colaborador.toLowerCase().includes(s) || (r.direcao || '').toLowerCase().includes(s)); }
                 if (filtroStatus !== 'all') lista = lista.filter(r => r.status === filtroStatus);
                 if (filtroTipo !== 'all') lista = lista.filter(r => r.tipo === filtroTipo);
+                if (filtroDirecao !== 'all') lista = lista.filter(r => (r.direcao || '') === filtroDirecao);
                 lista.sort((a, b) => new Date(b.dataCriacao) - new Date(a.dataCriacao));
                 return lista;
             }
@@ -4016,6 +4017,9 @@
                 document.getElementById('mobFilterPesquisa').addEventListener('input', function() { filtroSearch = this.value; pagina = 1; renderizarRequisicoes(); });
                 document.getElementById('mobFilterStatus').addEventListener('change', function() { filtroStatus = this.value; pagina = 1; renderizarRequisicoes(); });
                 document.getElementById('mobFilterTipo').addEventListener('change', function() { filtroTipo = this.value; pagina = 1; renderizarRequisicoes(); });
+                const fd = document.getElementById('mobFilterDirecao');
+                todasDirecoes.forEach(d => fd.appendChild(new Option(d, d)));
+                fd.addEventListener('change', function() { filtroDirecao = this.value; pagina = 1; renderizarRequisicoes(); });
                 document.getElementById('mobPaginaAnterior').addEventListener('click', () => { if (pagina > 1) { pagina--; renderizarRequisicoes(); } });
                 document.getElementById('mobPaginaProxima').addEventListener('click', () => { pagina++; renderizarRequisicoes(); });
                 mudarAbaMobilidade('dashboard', document.querySelector('#navMobilidade .nav-item.roxo-active'));
@@ -4023,11 +4027,12 @@
             }
             return { inicializar, visualizar, abrirEditar, abrirComentario, confirmar, rejeitarConfirmacao, concluir, exportarPDF, exportarExcel, exportarCSV, exportarIndividual,
                 filtrarPorStatus: function(status) { filtroStatus = status; document.getElementById('mobFilterStatus').value = status; pagina = 1; renderizarRequisicoes(); mudarAbaMobilidade('requisicoes', document.querySelector('#navMobilidade .nav-item:nth-child(2)')); },
-                limparFiltros: function() { filtroSearch = ''; filtroStatus = 'all'; filtroTipo = 'all'; document.getElementById('mobFilterPesquisa').value = ''; document.getElementById('mobFilterStatus').value = 'all'; document.getElementById('mobFilterTipo').value = 'all'; pagina = 1; renderizarRequisicoes(); },
-                renderizarAprovacoes
+                limparFiltros: function() { filtroSearch = ''; filtroStatus = 'all'; filtroTipo = 'all'; filtroDirecao = 'all'; document.getElementById('mobFilterPesquisa').value = ''; document.getElementById('mobFilterStatus').value = 'all'; document.getElementById('mobFilterTipo').value = 'all'; document.getElementById('mobFilterDirecao').value = 'all'; pagina = 1; renderizarRequisicoes(); },
+                renderizarAprovacoes, renderizar: renderizarRequisicoes
             };
         })();
 
+        function filtrarRequisicoesMob() { mobApp.renderizar(); }
         function mudarAbaMobilidade(aba, elem) {
             const secs = ['mobDashboardSection', 'mobRequisicoesSection', 'mobAprovacoesSection', 'mobRelatoriosSection'];
             secs.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
