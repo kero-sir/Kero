@@ -4244,17 +4244,18 @@
                 CONCORRENTES.forEach(c => { if (!(c in concorrentes)) concorrentes[c] = 0; });
                 
                 // Leitura estrita para não misturar o nome da empresa com o código de fornecedor
-                let cod_sap = est.campoCodSap ? f[est.campoCodSap] : (f['Artigo'] || f['CodSap'] || '');
-                if (!cod_sap) {
-                    const key = Object.keys(f).find(k => k.toLowerCase().includes('artig') || k.toLowerCase().includes('sap'));
-                    if (key) cod_sap = f[key];
+                const _norm = k => String(k).replace(/_x002e_/gi, '.').replace(/_x0020_/gi, ' ').toLowerCase().replace(/[^a-z0-9]/g, '');
+                const _vazio = v => v === undefined || v === null || v === '';
+                const _keys = Object.keys(f).filter(k => !k.startsWith('@') && !_vazio(f[k]));
+                let cod_sap = est.campoCodSap ? f[est.campoCodSap] : '';
+                if (_vazio(cod_sap)) {
+                    const k = _keys.find(k => { const n = _norm(k); return n.includes('artigo') || n.includes('codsap') || n === 'sap'; });
+                    if (k) cod_sap = f[k];
                 }
-                
                 let num_fornecedor = est.campoNumFornecedor ? f[est.campoNumFornecedor] : '';
-                if (!num_fornecedor) {
-                    // Procura especificamente por colunas que tenham "cod" e "forn"
-                    const key = Object.keys(f).find(k => k.toLowerCase().includes('forn') && k.toLowerCase().includes('cod'));
-                    if (key) num_fornecedor = f[key];
+                if (_vazio(num_fornecedor)) {
+                    const k = _keys.find(k => { const n = _norm(k); return n.includes('forn') && !n.includes('nome') && n !== 'fornecedor' && n !== 'supplier'; });
+                    if (k) num_fornecedor = f[k];
                 }
 
                 return {
@@ -4798,6 +4799,12 @@
                 reader.readAsDataURL(file);
             }
 
+            function pickCol(row, tipo) {
+                const norm = k => String(k).toLowerCase().replace(/[^a-z0-9]/g, '');
+                const k = Object.keys(row).find(k => { const n = norm(k); if (row[k] === '' || row[k] === null || row[k] === undefined) return false;
+                    return tipo === 'artigo' ? (n.includes('artigo') || n.includes('codsap') || n === 'sap') : (n.includes('forn') && !n.includes('nome') && n !== 'fornecedor'); });
+                return k ? row[k] : '';
+            }
             function importarExcel(file) {
                 if (!file) return;
                 const reader = new FileReader();
@@ -4816,8 +4823,8 @@
                             return {
                                 ean,
                                 nome: String(row['Descrição'] || row['Nome'] || '').trim(),
-                                cod_sap: String(row['Artigo'] ?? row['Cod. Sap'] ?? row['CodSap'] ?? row['Cod SAP'] ?? row['Cód. SAP'] ?? '').trim(),
-                                num_fornecedor: String(row['Cod.Forncedor'] ?? row['Cod. Fornecedor'] ?? row['CodForncedor'] ?? row['Nº Fornecedor'] ?? row['NForncedor'] ?? row['NFornecedor'] ?? row['Num Fornecedor'] ?? row['NumFornecedor'] ?? row['NºFornecedor'] ?? '').trim(),
+                                cod_sap: String(pickCol(row, 'artigo')).trim(),
+                                num_fornecedor: String(pickCol(row, 'forn')).trim(),
                                 fornecedor: String(row['Nome Fornecedor'] || row['Fornecedor'] || '').trim(),
                                 preco_custo: Math.round(parseFloat(row['PMM'] || row['Preço Custo'] || 0)) || 0,
                                 preco_kero: Math.round(parseFloat(row['PVP'] || row['Preço Kero'] || 0)) || 0,
@@ -4885,7 +4892,7 @@
                     const token = await obterToken(), siteId = await obterSiteId();
                     const r = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_EAN}/items?expand=fields&$top=1`, { headers: { 'Authorization': `Bearer ${token}` } });
                     console.log('Teste leitura:', r.status);
-                    if (r.ok) { const d = await r.json(); console.log('Primeiro item:', d.value?.[0]); }
+                    if (r.ok) { const d = await r.json(); console.log('Primeiro item:', d.value?.[0]); console.log('Campos:', Object.keys(d.value?.[0]?.fields || {})); }
                 } catch (e) { console.error(e); }
                 console.groupEnd();
             }
