@@ -1708,14 +1708,16 @@ body.dark-mode .acesso-row{background:#38385a}
         <nav class="pag-nav-menu" id="pagSubnav">
             <div class="pag-nav-item active" data-tab="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</div>
             <div class="pag-nav-item" data-tab="pedidos"><i class="fas fa-list"></i> Pedidos <span class="pag-nav-count" id="pagCountPedidos">0</span></div>
-            <div class="pag-nav-item" data-tab="financeiro" id="pagTabFinanceiro"><i class="fas fa-university"></i> Fila Financeira <span class="pag-nav-count" id="pagCountFila">0</span></div>
+            <div class="pag-nav-item" data-tab="ap" id="pagTabAP"><i class="fas fa-file-invoice"></i> Contas a Pagar <span class="pag-nav-count" id="pagCountAP">0</span></div>
+            <div class="pag-nav-item" data-tab="tes" id="pagTabTes"><i class="fas fa-university"></i> Tesouraria <span class="pag-nav-count" id="pagCountTes">0</span></div>
             <div class="pag-nav-item" data-tab="fornecedores"><i class="fas fa-truck"></i> Fornecedores</div>
             <div class="pag-nav-item" data-tab="config"><i class="fas fa-cog"></i> Configurações</div>
         </nav>
 
         <div id="pagViewDashboard" class="pag-view"></div>
         <div id="pagViewPedidos" class="pag-view" style="display:none"></div>
-        <div id="pagViewFinanceiro" class="pag-view" style="display:none"></div>
+        <div id="pagViewAP" class="pag-view" style="display:none"></div>
+        <div id="pagViewTes" class="pag-view" style="display:none"></div>
         <div id="pagViewFornecedores" class="pag-view" style="display:none"></div>
         <div id="pagViewConfig" class="pag-view" style="display:none"></div>
     </div>
@@ -1728,9 +1730,20 @@ body.dark-mode .acesso-row{background:#38385a}
 <div id="gestaoAcessosSection" style="display:none">
   <div class="card">
     <div class="card-header"><div class="card-title"><i class="fas fa-user-shield"></i> Gestão de Acessos aos Módulos</div></div>
-    <p style="font-size:13px;color:#666;margin-bottom:14px">Quem estiver nesta lista só vê os módulos marcados. Quem <strong>não</strong> estiver na lista mantém o acesso aos módulos habituais (exceto Pagamentos). O perfil Administrador vê sempre tudo.</p>
-    <div id="acessosLista" style="margin-bottom:18px"></div>
-    <h4 style="color:var(--primary-dark);margin-bottom:10px">Adicionar / atualizar utilizador</h4>
+    <p style="font-size:13px;color:#666;margin-bottom:14px">Escolhes quem tem acesso a quê, por email. Cada pessoa só vê no menu os módulos que lhe atribuíres. O perfil Administrador vê sempre tudo.</p>
+    <div style="background:#fff8e1;border-left:4px solid #ffc107;padding:12px 14px;border-radius:8px;margin-bottom:18px">
+      <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:13px"><input type="checkbox" id="acessoRestrito" onchange="alternarRestrito(this)" style="margin-top:3px">
+      <span><strong>Bloquear quem não está nesta lista.</strong> Desligado: quem não está na lista continua a ver os módulos habituais (menos Pagamentos). Ligado: só vê módulos quem estiver na lista — antes de ligar, regista todas as pessoas que usam o SIR.</span></label>
+    </div>
+    <div id="acessosLista" style="margin-bottom:22px"></div>
+
+    <h4 style="color:var(--primary-dark);margin-bottom:10px"><i class="fas fa-users"></i> Atribuir a várias pessoas de uma vez</h4>
+    <div class="form-group"><label>Perfil</label><select id="perfilRapido" class="form-control"></select></div>
+    <div class="form-group"><label>Emails (um por linha)</label><textarea id="acessoLote" class="form-control" rows="5" placeholder="vanda...@accordgrouplda.com&#10;marco...@accordgrouplda.com"></textarea></div>
+    <button class="btn-primary" style="width:auto;padding:10px 24px" onclick="aplicarPerfilLote()"><i class="fas fa-users-cog"></i> Aplicar a todos</button>
+
+    <hr style="margin:22px 0">
+    <h4 style="color:var(--primary-dark);margin-bottom:10px">Ou configurar uma pessoa à medida</h4>
     <div class="form-group"><label>Email *</label><input type="email" id="acessoEmail" class="form-control" placeholder="nome@accordgrouplda.com"></div>
     <div class="form-group"><label>Módulos permitidos *</label><div id="acessoChecks" class="acesso-checks"></div></div>
     <div class="form-group"><label>Papel no módulo Pagamentos</label><select id="acessoPapel" class="form-control"></select></div>
@@ -1797,7 +1810,7 @@ body.dark-mode .acesso-row{background:#38385a}
                             <div class="pricing-item"><span class="label">Margem (Mg%)</span><div class="value" id="prodMargemDisplay">-- %</div></div>
                             <div class="pricing-item"><span class="label">Fornecedor</span><div class="value" id="prodFornecedorDisplay">--</div><input type="text" id="prodFornecedorInput" placeholder="Fornecedor" style="display:none;"></div>
                             <div class="pricing-item"><span class="label">Cod. Fornecedor</span><div class="value" id="prodNumFornecedor">--</div></div>
-                            <div class="pricing-item"><span class="label">Venda Média Mensal</span><div class="value" id="prodVendaMediaDisplay">--</div><input type="number" step="1" id="prodVendaMediaInput" placeholder="0" style="display:none;"></div>
+                            <div class="pricing-item"><span class="label">Venda Média Mensal (QTD)</span><div class="value" id="prodVendaMediaDisplay">--</div><input type="number" step="1" id="prodVendaMediaInput" placeholder="0" style="display:none;"></div>
                             <div class="pricing-item"><span class="label">Quantidade Total</span><div class="value" id="prodQtdTotalDisplay">--</div></div>
                             <div class="pricing-actions">
                                 <button class="btn-ean btn-editar-precos" id="btnEditarPrecos"><i class="fas fa-edit"></i> Editar</button>
@@ -2068,7 +2081,7 @@ body.dark-mode .acesso-row{background:#38385a}
                         <input type="text" id="addFornecedor" placeholder="Ex: Fornecedor X">
                     </div>
                     <div class="form-group">
-                        <label for="addVendaMedia">Venda média mensal</label>
+                        <label for="addVendaMedia">Venda média mensal (QTD)</label>
                         <input type="number" step="1" id="addVendaMedia" placeholder="0">
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
@@ -4410,7 +4423,16 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
             const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
 
             let produtos = [], produtoAtual = null, historicoPesquisas = [], editandoPrecos = false;
-            let cameraStream = null, scanFrameId = null, _eanItemIdCache = {}, _estruturaLista = null;
+            let cameraStream = null, scanFrameId = null, _eanItemIdCache = {}, _estruturaLista = null, _hashSP = {};
+            function hashProduto(p) {
+                return JSON.stringify([String(p.ean).trim(), p.nome || '', p.cod_sap || '', p.num_fornecedor || '', Math.round(Number(p.preco_custo) || 0), Math.round(Number(p.preco_kero) || 0), parseIva(p.iva), p.fornecedor || '', Math.round(Number(p.venda_media_mensal) || 0), LOJAS_KERO.map(l => Math.round(Number((p.stock || {})[l]) || 0)), CONCORRENTES.map(c => Number((p.concorrentes || {})[c]) || 0)]);
+            }
+            function colPorNome(info, tipo) {
+                const norm = s => String(s || '').replace(/_x002e_/gi, '.').replace(/_x0020_/gi, ' ').toLowerCase().replace(/[^a-z0-9]/g, '');
+                const ok = c => [norm(c.name), norm(c.displayName)].some(n => tipo === 'artigo' ? (n.includes('artigo') || n.includes('codsap') || n === 'sap') : (n.includes('forn') && !n.includes('nome') && n !== 'fornecedor' && n !== 'supplier'));
+                const f = info.find(ok);
+                return f ? f.name : null;
+            }
 
             function notificar(msg, tipo = 'success') { if (typeof mostrarNotificacao === 'function') mostrarNotificacao(msg, tipo); else alert(msg); }
             function showLoading() { const o = document.getElementById('loadingOverlay'); if (o) o.classList.add('show'); }
@@ -4571,16 +4593,12 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                         campoVendaMedia: detectar(['VendaMediaMensal', 'VendaMedia', 'Venda_Media_Mensal']),
                         campoStock: detectar(['Stock']),
                         campoConcorrentes: detectar(['Concorrentes']),
-                        campoCodSap: detectar(['Artigo', 'CodSap', 'Cod_Sap', 'CodigoSap', 'CodigoSAP', 'Cod_SAP', 'SAP']),
-                        campoNumFornecedor: detectar([
-                            'Cod_x002e_Forncedor', 'Cod_x002E_Forncedor', 'Cod_x002e_Fornecedor', 'Cod_x002E_Fornecedor',
-                            'Cod.Forncedor', 'Cod. Fornecedor', 'CodForncedor', 'Cod Fornecedor', 
-                            'NForncedor', 'NFornecedor', 'Nfornecedor', 'NFORNECEDOR', 'N_x00ba__Fornecedor', 
-                            'NumFornecedor', 'NumeroFornecedor', 'NrFornecedor', 'Num_Fornecedor', 
-                            'NoFornecedor', 'N Fornecedor', 'NºFornecedor', 'Nº Fornecedor', 'Numero_Fornecedor'
-                        ]),
+                        campoCodSap: colPorNome(colunasInfo, 'artigo'),
+                        campoNumFornecedor: colPorNome(colunasInfo, 'forn'),
                         colunas
                     };
+                    if (!_estruturaLista.campoCodSap) notificar('⚠️ A lista ProdutosEAN não tem coluna para o Cod. Artigo. Cria uma coluna de texto chamada Artigo.', 'warning');
+                    if (!_estruturaLista.campoNumFornecedor) notificar('⚠️ A lista ProdutosEAN não tem coluna para o Cod. Fornecedor. Cria uma coluna de texto chamada CodFornecedor.', 'warning');
                     return _estruturaLista;
                 } catch (e) { return null; }
             }
@@ -4719,7 +4737,8 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                     if (allItems.length === 0) return false;
                     const carregados = [];
                     _eanItemIdCache = {};
-                    for (const item of allItems) { const p = converterItemParaProduto(item); if (p) { carregados.push(p); _eanItemIdCache[String(p.ean).trim()] = item.id; } }
+                    _hashSP = {};
+                    for (const item of allItems) { const p = converterItemParaProduto(item); if (p) { carregados.push(p); _eanItemIdCache[String(p.ean).trim()] = item.id; _hashSP[String(p.ean).trim()] = hashProduto(p); } }
                     if (carregados.length === 0) return false;
                     produtos = carregados;
                     guardarLocal(); atualizarBadgeTotal(); renderizarHistorico();
@@ -4737,80 +4756,73 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                 if (typeof usuarioAtual === 'undefined' || (usuarioAtual.perfil !== 'Administrador' && !PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) { notificar('Sem permissão.', 'error'); return false; }
                 await detectarEstruturaLista();
                 showLoading();
-                const token = await obterToken(), siteId = await obterSiteId(), listName = LISTA_EAN, total = produtos.length;
-                const est = _estruturaLista;
-                let mapa = {};
+                const sleep = ms => new Promise(r => setTimeout(r, ms));
                 try {
-                    const checkUrl = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listName}/items?$top=1`;
-                    const checkResp = await fetch(checkUrl, { headers: { 'Authorization': `Bearer ${token}` } });
-                    const checkData = await checkResp.json();
-                    if (!checkData.value || checkData.value.length === 0) { mapa = {}; _eanItemIdCache = {}; }
-                    else { mapa = await _obterMapaEanParaId(token, siteId); }
-                } catch (e) { mapa = {}; }
-
-                const BATCH_SIZE = 20, MAX_RODADAS = 5, inicio = Date.now();
-                let processados = 0, sucessos = 0, pendentes = [...produtos];
-
-                for (let rodada = 0; rodada < MAX_RODADAS && pendentes.length > 0; rodada++) {
-                    if (rodada > 0) {
-                        const espera = Math.min(120, Math.pow(2, rodada) * 5);
-                        notificar(`⏳ Rodada ${rodada + 1}: ${pendentes.length} produtos (${espera}s)...`, 'info');
-                        await new Promise(r => setTimeout(r, espera * 1000));
-                    }
-                    const falhados = [], totalRodada = pendentes.length;
-                    for (let i = 0; i < totalRodada; i += BATCH_SIZE) {
-                        const lote = pendentes.slice(i, i + BATCH_SIZE);
-                        const batchRequests = lote.map((produto, idx) => {
-                            const eanKey = String(produto.ean).trim();
-                            const existingId = mapa[eanKey];
-                            const fields = {};
-                            if (est.campoEan) fields[est.campoEan] = eanKey;
-                            if (est.campoNome) fields[est.campoNome] = produto.nome || '';
-                            if (est.campoPrecoCusto) fields[est.campoPrecoCusto] = Number(produto.preco_custo) || 0;
-                            if (est.campoPrecoKero) fields[est.campoPrecoKero] = Number(produto.preco_kero) || 0;
-                            if (est.campoIva) fields[est.campoIva] = parseIva(produto.iva);
-                            if (est.campoFornecedor) fields[est.campoFornecedor] = produto.fornecedor || '';
-                            if (est.campoVendaMedia) fields[est.campoVendaMedia] = Number(produto.venda_media_mensal) || 0;
-                            if (est.campoStock) fields[est.campoStock] = JSON.stringify(produto.stock || {});
-                            if (est.campoConcorrentes) fields[est.campoConcorrentes] = JSON.stringify(produto.concorrentes || {});
-                            // Força String() para colunas de texto
-                            if (est.campoCodSap) fields[est.campoCodSap] = String(produto.cod_sap || '');
-                            if (est.campoNumFornecedor) fields[est.campoNumFornecedor] = String(produto.num_fornecedor || '');
-                            const requestId = String(idx + 1);
-                            if (existingId) return { id: requestId, method: 'PATCH', url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`, headers: { 'Content-Type': 'application/json' }, body: fields };
-                            return { id: requestId, method: 'POST', url: `/sites/${siteId}/lists/${listName}/items`, headers: { 'Content-Type': 'application/json' }, body: { fields } };
-                        });
-                        let tentativa = 0, respostas = null;
-                        while (tentativa < 6) {
-                            try {
-                                const resp = await fetch('https://graph.microsoft.com/v1.0/$batch', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ requests: batchRequests }) });
-                                if (resp.status === 429 || resp.status === 503) { const wait = parseInt(resp.headers.get('Retry-After') || String(5 * (tentativa + 1))); await new Promise(r => setTimeout(r, wait * 1000)); tentativa++; continue; }
-                                if (!resp.ok) { respostas = null; break; }
-                                const data = await resp.json(); respostas = data.responses || []; break;
-                            } catch (e) { await new Promise(r => setTimeout(r, 2000 * (tentativa + 1))); tentativa++; }
-                        }
-                        if (!respostas) { falhados.push(...lote); }
-                        else {
-                            respostas.forEach((r, idx) => {
-                                const produto = lote[idx];
-                                if (!produto) return;
-                                if (r.status >= 200 && r.status < 300) { sucessos++; processados++; if (r.body && r.body.id) mapa[String(produto.ean).trim()] = r.body.id; }
-                                else if (r.status === 429 || r.status === 503 || r.status >= 500) { falhados.push(produto); }
-                                else { processados++; }
+                    const token = await obterToken(), siteId = await obterSiteId(), listName = LISTA_EAN, est = _estruturaLista;
+                    let mapa = {};
+                    try { mapa = await _obterMapaEanParaId(token, siteId); } catch (e) { mapa = {}; }
+                    const alterados = produtos.filter(p => { const k = String(p.ean).trim(); return !mapa[k] || _hashSP[k] !== hashProduto(p); });
+                    const total = alterados.length;
+                    if (total === 0) { notificar('✅ Nada a publicar: o SharePoint já está atualizado.', 'success'); return true; }
+                    const lotes = [];
+                    for (let i = 0; i < total; i += 20) lotes.push(alterados.slice(i, i + 20));
+                    const badge = document.getElementById('totalProdutosBadge');
+                    const inicio = Date.now();
+                    let feitos = 0, sucessos = 0, falhados = [], proximo = 0;
+                    const construir = (produto, idx) => {
+                        const eanKey = String(produto.ean).trim();
+                        const existingId = mapa[eanKey];
+                        const fields = {};
+                        if (est.campoEan) fields[est.campoEan] = eanKey;
+                        if (est.campoNome) fields[est.campoNome] = produto.nome || '';
+                        if (est.campoPrecoCusto) fields[est.campoPrecoCusto] = Number(produto.preco_custo) || 0;
+                        if (est.campoPrecoKero) fields[est.campoPrecoKero] = Number(produto.preco_kero) || 0;
+                        if (est.campoIva) fields[est.campoIva] = parseIva(produto.iva);
+                        if (est.campoFornecedor) fields[est.campoFornecedor] = produto.fornecedor || '';
+                        if (est.campoVendaMedia) fields[est.campoVendaMedia] = Number(produto.venda_media_mensal) || 0;
+                        if (est.campoStock) fields[est.campoStock] = JSON.stringify(produto.stock || {});
+                        if (est.campoConcorrentes) fields[est.campoConcorrentes] = JSON.stringify(produto.concorrentes || {});
+                        if (est.campoCodSap) fields[est.campoCodSap] = String(produto.cod_sap || '');
+                        if (est.campoNumFornecedor) fields[est.campoNumFornecedor] = String(produto.num_fornecedor || '');
+                        const requestId = String(idx + 1);
+                        if (existingId) return { id: requestId, method: 'PATCH', url: `/sites/${siteId}/lists/${listName}/items/${existingId}/fields`, headers: { 'Content-Type': 'application/json' }, body: fields };
+                        return { id: requestId, method: 'POST', url: `/sites/${siteId}/lists/${listName}/items`, headers: { 'Content-Type': 'application/json' }, body: { fields } };
+                    };
+                    const processar = async (lote, tentativa = 0) => {
+                        const reqs = lote.map((p, i) => construir(p, i));
+                        try {
+                            const resp = await fetch('https://graph.microsoft.com/v1.0/$batch', { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ requests: reqs }) });
+                            if (resp.status === 429 || resp.status === 503) { if (tentativa < 5) { await sleep((parseInt(resp.headers.get('Retry-After') || '3') || 3) * 1000); return processar(lote, tentativa + 1); } throw new Error('throttling'); }
+                            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                            const data = await resp.json();
+                            (data.responses || []).forEach(r => {
+                                const p = lote[parseInt(r.id) - 1]; if (!p) return;
+                                const k = String(p.ean).trim();
+                                if (r.status >= 200 && r.status < 300) { sucessos++; if (r.body && r.body.id) mapa[k] = r.body.id; _hashSP[k] = hashProduto(p); }
+                                else if (r.status === 429 || r.status >= 500) falhados.push(p);
+                                else console.warn('[EAN] rejeitado', k, r.status, r.body);
                             });
+                        } catch (e) {
+                            if (tentativa < 3) { await sleep(1500 * (tentativa + 1)); return processar(lote, tentativa + 1); }
+                            falhados.push(...lote);
                         }
-                        const elapsed = (Date.now() - inicio) / 1000, rate = processados > 0 ? processados / elapsed : 0;
-                        const restantes = total - processados, etaMin = rate > 0 ? Math.round(restantes / rate / 60) : 0;
-                        const badge = document.getElementById('totalProdutosBadge'); if (badge) badge.textContent = `Rodada ${rodada+1} · ${processados}/${total} · ETA ${etaMin}min`;
+                        feitos += lote.length;
+                        if (badge) badge.textContent = `A publicar ${feitos}/${total}`;
+                    };
+                    const worker = async () => { while (proximo < lotes.length) { const l = lotes[proximo++]; await processar(l); } };
+                    await Promise.all(Array.from({ length: Math.min(5, lotes.length) }, worker));
+                    if (falhados.length > 0) {
+                        await sleep(4000);
+                        const rep = falhados; falhados = [];
+                        for (let i = 0; i < rep.length; i += 20) await processar(rep.slice(i, i + 20), 2);
                     }
-                    pendentes = falhados;
-                }
-                _eanItemIdCache = mapa;
-                hideLoading(); atualizarBadgeTotal();
-                const duracao = Math.round((Date.now() - inicio) / 1000 / 60);
-                if (pendentes.length === 0) { notificar(`✅ ${sucessos} produtos publicados em ${duracao} min.`, 'success'); return true; }
-                notificar(`⚠️ ${sucessos} publicados, ${pendentes.length} falharam (${duracao} min).`, 'warning');
-                return false;
+                    _eanItemIdCache = mapa;
+                    atualizarBadgeTotal();
+                    const seg = Math.round((Date.now() - inicio) / 1000);
+                    if (falhados.length === 0) { notificar(`✅ ${sucessos} produtos novos/alterados publicados em ${seg}s.`, 'success'); return true; }
+                    notificar(`⚠️ ${sucessos} publicados, ${falhados.length} falharam (${seg}s). Publica de novo para repetir só esses.`, 'warning');
+                    return false;
+                } finally { hideLoading(); }
             }
 
             function renderizarProduto(prod) {
@@ -5154,8 +5166,10 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
 
             function pickCol(row, tipo) {
                 const norm = k => String(k).toLowerCase().replace(/[^a-z0-9]/g, '');
-                const k = Object.keys(row).find(k => { const n = norm(k); if (row[k] === '' || row[k] === null || row[k] === undefined) return false;
-                    return tipo === 'artigo' ? (n.includes('artigo') || n.includes('codsap') || n === 'sap') : (n.includes('forn') && !n.includes('nome') && n !== 'fornecedor'); });
+                const keys = Object.keys(row).filter(k => row[k] !== '' && row[k] !== null && row[k] !== undefined);
+                const exact = tipo === 'artigo' ? ['artigo', 'codartigo', 'codigoartigo', 'codsap', 'sap'] : ['codfornecedor', 'codforncedor', 'nfornecedor', 'nforncedor', 'numfornecedor', 'nrfornecedor', 'codigofornecedor', 'nofornecedor'];
+                let k = keys.find(x => exact.includes(norm(x)));
+                if (!k) k = keys.find(x => { const n = norm(x); return tipo === 'artigo' ? (n.includes('artigo') && !n.includes('desc') && !n.includes('nome')) : (n.includes('forn') && !n.includes('nome') && !n.includes('desc') && n !== 'fornecedor'); });
                 return k ? row[k] : '';
             }
             function importarExcel(file) {
@@ -5172,7 +5186,7 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                             const ean = String(row['EAN'] || '').trim(); if (!ean) return null;
                             const stock = {};
                             Object.entries(MAPA_LOJAS).forEach(([colExcel, chaveInterna]) => { stock[chaveInterna] = parseStockInteiro(row[colExcel]); });
-                            const concorrentes = {}; CONCORRENTES.forEach(c => { concorrentes[c] = 0; });
+                            const existente = produtos.find(p => p.ean === ean); const concorrentes = {}; CONCORRENTES.forEach(c => { concorrentes[c] = (existente && existente.concorrentes && Number(existente.concorrentes[c])) || 0; });
                             return {
                                 ean,
                                 nome: String(row['Descrição'] || row['Nome'] || '').trim(),
@@ -5370,14 +5384,14 @@ const app = (function () {
         { id:'comercial2', nome:'Comercial 2 (DC)', email:'comercial2@kero.ao', perfil:'Comercial', roles:['dc'] }
     ];
     const STATUS = {
-        pendente:{label:'Pendente',cls:'pendente'},
-        processamento:{label:'Em Processamento',cls:'processamento'},
-        processado:{label:'Processado',cls:'processado'},
-        executado:{label:'Executado',cls:'executado'},
+        pendente:{label:'Contas a Pagar',cls:'pendente'},
+        processamento:{label:'Tesouraria',cls:'processamento'},
+        processado:{label:'Enviado ao Banco',cls:'processado'},
+        executado:{label:'Finalizado',cls:'executado'},
         devolvido:{label:'Devolvido',cls:'devolvido'},
         cancelado:{label:'Cancelado',cls:'cancelado'}
     };
-    const DC_SUGESTOES = ['DC Alimentar','DC Não Alimentar','DC Frescos','DC Bebidas','DC Central','DC Perishables'];
+    const DC_SUGESTOES = ['DC Não Alimentar','PGC','PF'];
     const POR_PAGINA = 12;
 
     let state=null, usuarioAtual=null, subTabAtiva='dashboard';
@@ -5421,7 +5435,7 @@ const app = (function () {
     function fileToBase64(file){
         return new Promise((resolve)=>{
             if(!file)return resolve(null);
-            if(file.size>2.5*1024*1024){toast('Ficheiro demasiado grande (máx. 2.5 MB).','error');return resolve(null);}
+            if(file.size>4*1024*1024){toast('Ficheiro demasiado grande (máx. 4 MB).','error');return resolve(null);}
             const r=new FileReader();
             r.onload=()=>resolve({nome:file.name,size:file.size,tipo:file.type||'',dataUrl:r.result});
             r.onerror=()=>resolve(null);
@@ -5443,9 +5457,11 @@ const app = (function () {
     const myEmail=()=>String(usuarioAtual?.email||'').toLowerCase();
     const has=(r)=>usuarioAtual.roles.includes(r);
     const isAdmin=()=>has('admin');
-    const isFinance=()=>has('finance')||has('admin');
-    const podeCriar=()=>has('dc')||has('admin')||has('finance');
-    const podeVerTudo=()=>isAdmin()||has('finance')||has('viewer');
+    const isAP=()=>has('ap');
+    const isTes=()=>has('tes');
+    const isFinance=()=>has('ap')||has('tes');
+    const podeCriar=()=>has('dc')||has('admin')||has('ap')||has('tes');
+    const podeVerTudo=()=>isAdmin()||has('ap')||has('tes')||has('viewer');
 
     function podeVerPedido(p){if(podeVerTudo())return true;return p.solicitadoPorEmail===myEmail();}
     function podeEditarProprio(p){if(isAdmin())return true;return p.solicitadoPorEmail===myEmail();}
@@ -5468,8 +5484,8 @@ const app = (function () {
         return defaultState();
     }
     function save(){
-        try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
-        catch(e){console.error(e);toast('Armazenamento cheio — anexos grandes.','warn');}
+        try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){console.error(e);}
+        agendarSync();
     }
 
     function addHistorico(p,acao,nota){
@@ -5539,9 +5555,11 @@ const app = (function () {
         if(!state)return;
         const vis=pedidosVisiveis();
         const elP=$('#pagCountPedidos'); if(elP)elP.textContent=vis.length;
-        const fila=vis.filter(p=>['pendente','processamento'].includes(p.status)).length;
-        const elF=$('#pagCountFila'); if(elF)elF.textContent=fila;
-        const tabFin=$('#pagTabFinanceiro'); if(tabFin)tabFin.style.display=isFinance()?'':'none';
+        const nAP=vis.filter(p=>p.status==='pendente').length, nTes=vis.filter(p=>['processamento','processado'].includes(p.status)).length;
+        const cAP=$('#pagCountAP'); if(cAP)cAP.textContent=nAP;
+        const cTes=$('#pagCountTes'); if(cTes)cTes.textContent=nTes;
+        const tAP=$('#pagTabAP'); if(tAP)tAP.style.display=isAP()?'':'none';
+        const tTes=$('#pagTabTes'); if(tTes)tTes.style.display=isTes()?'':'none';
         const btn=$('#pagBtnNovo'); if(btn)btn.style.display=podeCriar()?'':'none';
     }
 
@@ -5555,7 +5573,7 @@ const app = (function () {
         subTabAtiva=tab;
         $$('#pagSubnav .pag-nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
         $$('.pag-view').forEach(v=>v.style.display='none');
-        const map={dashboard:'pagViewDashboard',pedidos:'pagViewPedidos',financeiro:'pagViewFinanceiro',fornecedores:'pagViewFornecedores',config:'pagViewConfig'};
+        const map={dashboard:'pagViewDashboard',pedidos:'pagViewPedidos',ap:'pagViewAP',tes:'pagViewTes',fornecedores:'pagViewFornecedores',config:'pagViewConfig'};
         const el=document.getElementById(map[tab]);
         if(el){el.style.display='block';renderView(tab);}
     }
@@ -5563,7 +5581,8 @@ const app = (function () {
     function renderView(tab){
         if(tab==='dashboard')$('#pagViewDashboard').innerHTML=htmlDashboard();
         if(tab==='pedidos'){$('#pagViewPedidos').innerHTML=htmlPedidos();renderTbodyPedidos();}
-        if(tab==='financeiro')$('#pagViewFinanceiro').innerHTML=htmlFila();
+        if(tab==='ap')$('#pagViewAP').innerHTML=htmlFilaAP();
+        if(tab==='tes')$('#pagViewTes').innerHTML=htmlFilaTes();
         if(tab==='fornecedores'){$('#pagViewFornecedores').innerHTML=htmlFornecedores();bindFornecedores();}
         if(tab==='config')$('#pagViewConfig').innerHTML=htmlConfig();
     }
@@ -5633,11 +5652,11 @@ const app = (function () {
                     <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
                 </div>
                 <div class="pag-kpi-card">
-                    <div class="info"><h4>Tempo → Banco</h4><span>${avgBanco===null?'—':avgBanco.toFixed(1)}${avgBanco!==null?'d':''}</span><div class="foot">solicitação → processado</div></div>
+                    <div class="info"><h4>Tempo → Banco</h4><span>${avgBanco===null?'—':avgBanco.toFixed(1)}${avgBanco!==null?'d':''}</span><div class="foot">solicitação → enviado ao banco</div></div>
                     <div class="icon"><i class="fas fa-university"></i></div>
                 </div>
                 <div class="pag-kpi-card ok">
-                    <div class="info"><h4>Tempo → Execução</h4><span>${avgExec===null?'—':avgExec.toFixed(1)}${avgExec!==null?'d':''}</span><div class="foot">solicitação → executado</div></div>
+                    <div class="info"><h4>Tempo → Finalização</h4><span>${avgExec===null?'—':avgExec.toFixed(1)}${avgExec!==null?'d':''}</span><div class="foot">solicitação → finalizado</div></div>
                     <div class="icon"><i class="fas fa-check-double"></i></div>
                 </div>
             </div>
@@ -5725,12 +5744,15 @@ const app = (function () {
 
                 const btns=[];
                 btns.push(`<button class="pag-btn-tbl view" onclick="event.stopPropagation();app.detalhes('${p.id}')" title="Detalhes"><i class="fas fa-eye"></i></button>`);
-                if(isFinance()&&['pendente','processamento'].includes(p.status)){
-                    btns.push(`<button class="pag-btn-tbl process" onclick="event.stopPropagation();app.abrirProcessar('${p.id}')" title="Processar"><i class="fas fa-university"></i></button>`);
+                if(isAP()&&p.status==='pendente'){
+                    btns.push(`<button class="pag-btn-tbl process" onclick="event.stopPropagation();app.abrirValidarAP('${p.id}')" title="Validar"><i class="fas fa-check"></i></button>`);
                     btns.push(`<button class="pag-btn-tbl return" onclick="event.stopPropagation();app.abrirDevolver('${p.id}')" title="Devolver"><i class="fas fa-undo-alt"></i></button>`);
                 }
-                if(isFinance()&&p.status==='processado'){
-                    btns.push(`<button class="pag-btn-tbl execute" onclick="event.stopPropagation();app.abrirExecutar('${p.id}')" title="Executar"><i class="fas fa-check-double"></i></button>`);
+                if(isTes()&&p.status==='processamento'){
+                    btns.push(`<button class="pag-btn-tbl process" onclick="event.stopPropagation();app.abrirProcessar('${p.id}')" title="Enviar ao banco"><i class="fas fa-paper-plane"></i></button>`);
+                }
+                if(isTes()&&p.status==='processado'){
+                    btns.push(`<button class="pag-btn-tbl execute" onclick="event.stopPropagation();app.abrirExecutar('${p.id}')" title="Finalizar com comprovativo"><i class="fas fa-paperclip"></i></button>`);
                 }
                 if(podeEditarProprio(p)&&['pendente','devolvido'].includes(p.status)){
                     btns.push(`<button class="pag-btn-tbl cancel" onclick="event.stopPropagation();app.abrirCancelar('${p.id}')" title="Cancelar"><i class="fas fa-times"></i></button>`);
@@ -5772,44 +5794,47 @@ const app = (function () {
         if(st&&!st._bound){st._bound=true;st.addEventListener('change',e=>{filtros.status=e.target.value;pagina=1;renderTbodyPedidos();});}
     }
 
-    function htmlFila(){
-        const fila=pedidosVisiveis()
-            .filter(p=>['pendente','processamento'].includes(p.status))
-            .sort((a,b)=>(a.dataSolicitacao||'').localeCompare(b.dataSolicitacao||''));
-
-        if(!fila.length){
-            return `<div class="pag-card"><div class="pag-empty"><i class="fas fa-check-circle" style="color:#4CAF50;"></i><h4>Fila limpa 🎉</h4><p>Nenhum pedido pendente de processamento.</p></div></div>`;
-        }
-
+    function htmlFilaAP(){
+        if(!isAP())return `<div class="pag-card"><div class="pag-empty"><i class="fas fa-lock"></i><h4>Sem acesso</h4><p>Esta área é só para Contas a Pagar.</p></div></div>`;
+        const fila=pedidosVisiveis().filter(p=>p.status==='pendente').sort((a,b)=>(a.dataSolicitacao||'').localeCompare(b.dataSolicitacao||''));
+        if(!fila.length)return `<div class="pag-card"><div class="pag-empty"><i class="fas fa-check-circle" style="color:#4CAF50;"></i><h4>Nada por validar</h4><p>Não há pedidos à espera de Contas a Pagar.</p></div></div>`;
         return `<div class="pag-card">
-            <div class="pag-card-header"><div class="pag-card-title"><i class="fas fa-university"></i> Pedidos por Processar (${fila.length})</div></div>
+            <div class="pag-card-header"><div class="pag-card-title"><i class="fas fa-file-invoice"></i> Contas a Pagar — por validar (${fila.length})</div></div>
             <div class="pag-table-wrap"><table class="pag-table">
-                <thead><tr>
-                    <th>ID</th><th>Fornecedor</th><th class="num">Valor</th>
-                    <th>DC</th><th>Solicitado por</th><th>Data</th>
-                    <th>Aging</th><th>Estado</th><th>Ações</th>
-                </tr></thead>
-                <tbody>
-                    ${fila.map(p=>{
-                        const age=agingDays(p),late=estaForaSLA(p);
-                        return `<tr>
-                            <td><strong>${esc(p.codigo)}</strong></td>
-                            <td><div style="font-weight:600;">${esc(p.fornecedorNome)}</div><div style="font-size:11px;color:#888;">${esc(p.codigoSAP)}</div></td>
-                            <td class="num">${money(p.valorPedido)}</td>
-                            <td>${esc(p.dc)}</td>
-                            <td>${esc(p.solicitadoPor)}</td>
-                            <td class="nowrap">${fmtDate(p.dataSolicitacao)}</td>
-                            <td><span class="pag-sla ${late?'late':'wait'}"><i class="fas fa-hourglass-half"></i> ${age??0}d</span></td>
-                            <td><span class="pag-badge ${STATUS[p.status].cls}">${STATUS[p.status].label}</span></td>
-                            <td><div style="display:flex;gap:4px;flex-wrap:wrap;">
-                                <button class="pag-btn-tbl process" onclick="app.abrirProcessar('${p.id}')" title="Processar"><i class="fas fa-university"></i></button>
-                                <button class="pag-btn-tbl return" onclick="app.abrirDevolver('${p.id}')" title="Devolver"><i class="fas fa-undo-alt"></i></button>
-                            </div></td>
-                        </tr>`;
-                    }).join('')}
-                </tbody>
-            </table></div>
+                <thead><tr><th>ID</th><th>Fornecedor</th><th class="num">Valor</th><th>Área</th><th>Solicitado por</th><th>Data</th><th>Aging</th><th>Ações</th></tr></thead>
+                <tbody>${fila.map(p=>{const age=agingDays(p),late=estaForaSLA(p);return `<tr onclick="app.detalhes('${p.id}')">
+                    <td><strong>${esc(p.codigo)}</strong></td>
+                    <td><div style="font-weight:600;">${esc(p.fornecedorNome)}</div><div style="font-size:11px;color:#888;">${esc(p.codigoSAP)}</div></td>
+                    <td class="num">${money(p.valorPedido)}</td><td>${esc(p.dc)}</td><td>${esc(p.solicitadoPor)}</td>
+                    <td class="nowrap">${fmtDate(p.dataSolicitacao)}</td>
+                    <td><span class="pag-sla ${late?'late':'wait'}"><i class="fas fa-hourglass-half"></i> ${age??0}d</span></td>
+                    <td><div style="display:flex;gap:4px;flex-wrap:wrap;">
+                        <button class="pag-btn-tbl process" onclick="event.stopPropagation();app.abrirValidarAP('${p.id}')" title="Validar e enviar à Tesouraria"><i class="fas fa-check"></i></button>
+                        <button class="pag-btn-tbl return" onclick="event.stopPropagation();app.abrirDevolver('${p.id}')" title="Devolver ao Comercial"><i class="fas fa-undo-alt"></i></button>
+                    </div></td></tr>`;}).join('')}</tbody>
+            </table></div></div>`;
+    }
+    function htmlFilaTes(){
+        if(!isTes())return `<div class="pag-card"><div class="pag-empty"><i class="fas fa-lock"></i><h4>Sem acesso</h4><p>Esta área é só para a Tesouraria.</p></div></div>`;
+        const vis=pedidosVisiveis();
+        const porEnviar=vis.filter(p=>p.status==='processamento').sort((a,b)=>(a.dataValidacaoAP||'').localeCompare(b.dataValidacaoAP||''));
+        const noBanco=vis.filter(p=>p.status==='processado').sort((a,b)=>(a.dataProcessamento||'').localeCompare(b.dataProcessamento||''));
+        const linha=(p,btn)=>`<tr onclick="app.detalhes('${p.id}')">
+            <td><strong>${esc(p.codigo)}</strong></td>
+            <td><div style="font-weight:600;">${esc(p.fornecedorNome)}</div><div style="font-size:11px;color:#888;">${esc(p.codigoSAP)}</div></td>
+            <td class="num">${money(p.valorPedido)}</td><td>${esc(p.dc)}</td>
+            <td class="nowrap">${fmtDate(p.dataSolicitacao)}</td>
+            <td class="nowrap">${p.dataValidacaoAP?fmtDate(p.dataValidacaoAP):'—'}</td>
+            <td class="nowrap">${p.dataProcessamento?fmtDate(p.dataProcessamento):'—'}</td>
+            <td>${btn}</td></tr>`;
+        const tabela=(titulo,icone,lista,vazio,btnFn)=>`<div class="pag-card">
+            <div class="pag-card-header"><div class="pag-card-title"><i class="fas ${icone}"></i> ${titulo} (${lista.length})</div></div>
+            ${lista.length?`<div class="pag-table-wrap"><table class="pag-table">
+                <thead><tr><th>ID</th><th>Fornecedor</th><th class="num">Valor</th><th>Área</th><th>Solicitação</th><th>Validado AP</th><th>Envio ao banco</th><th>Ações</th></tr></thead>
+                <tbody>${lista.map(p=>linha(p,btnFn(p))).join('')}</tbody></table></div>`:`<div class="pag-empty"><i class="fas fa-check-circle" style="color:#4CAF50;"></i><h4>${vazio}</h4></div>`}
         </div>`;
+        return tabela('Por enviar ao banco','fa-university',porEnviar,'Nada por enviar ao banco',p=>`<button class="pag-btn-tbl process" onclick="event.stopPropagation();app.abrirProcessar('${p.id}')" title="Enviar ao banco"><i class="fas fa-paper-plane"></i></button>`)
+             + tabela('Enviados — a aguardar comprovativo do banco','fa-hourglass-half',noBanco,'Nenhum pedido a aguardar comprovativo',p=>`<button class="pag-btn-tbl execute" onclick="event.stopPropagation();app.abrirExecutar('${p.id}')" title="Finalizar com comprovativo"><i class="fas fa-paperclip"></i></button>`);
     }
 
     function htmlFornecedores(){
@@ -5872,27 +5897,14 @@ const app = (function () {
                 </div>
                 <button class="pag-btn pag-btn-primary" onclick="app.guardarSLA()"><i class="fas fa-save"></i> Guardar SLA</button>
             </div>
-            <div class="pag-card" style="margin-bottom:16px;">
-                <div class="pag-card-header"><div class="pag-card-title"><i class="fas fa-users"></i> Permissões do Protótipo</div></div>
-                <div class="pag-table-wrap"><table class="pag-table">
-                    <thead><tr><th>Utilizador</th><th>Perfil</th><th>Permissões</th><th>Financeiro</th></tr></thead>
-                    <tbody>
-                        ${USERS.map(u=>`<tr>
-                            <td><strong>${esc(u.nome)}</strong></td>
-                            <td>${esc(u.perfil)}</td>
-                            <td>${u.roles.map(r=>`<span class="pag-badge" style="background:#eef;color:#456;">${esc(r)}</span>`).join(' ')}</td>
-                            <td>${u.roles.includes('finance')?'✅':'—'}</td>
-                        </tr>`).join('')}
-                    </tbody>
-                </table></div>
-            </div>
+            
             <div class="pag-card">
                 <div class="pag-card-header"><div class="pag-card-title"><i class="fas fa-database"></i> Dados</div></div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
                     <button class="pag-btn pag-btn-outline" onclick="app.exportarJSON()"><i class="fas fa-download"></i> Backup JSON</button>
                     <button class="pag-btn pag-btn-outline" onclick="app.importarJSON()"><i class="fas fa-upload"></i> Restaurar JSON</button>
-                    <button class="pag-btn pag-btn-outline" onclick="app.carregarDemo()"><i class="fas fa-magic"></i> Carregar demo</button>
-                    <button class="pag-btn pag-btn-danger" onclick="app.apagarTudo()"><i class="fas fa-trash"></i> Apagar tudo</button>
+                    
+                    
                 </div>
             </div>`;
     }
@@ -5904,9 +5916,8 @@ const app = (function () {
 
         modal('Novo Pedido de Pagamento',`
             <div class="pag-form-group">
-                <label>DC *</label>
-                <input type="text" id="pagNovoDC" list="pagDCDatalist" placeholder="Ex.: DC Alimentar" class="pag-form-control">
-                <datalist id="pagDCDatalist">${DC_SUGESTOES.map(d=>`<option value="${d}">`).join('')}</datalist>
+                <label>Área *</label>
+                <select id="pagNovoDC" class="pag-form-control"><option value="">Selecione</option>${DC_SUGESTOES.map(d=>`<option value="${d}">${d}</option>`).join('')}</select>
             </div>
             <div class="pag-form-row">
                 <div class="pag-form-group">
@@ -5960,7 +5971,7 @@ const app = (function () {
         const valor=parseFloat($('#pagNovoValor').value);
         const obs=$('#pagNovoObs').value.trim();
 
-        if(!dc)return toast('Indica o DC.','error');
+        if(!dc)return toast('Escolhe a área.','error');
         if(!sap)return toast('Indica o código SAP.','error');
         if(!nome){const f=state.fornecedores.find(x=>x.codigo===sap);if(f)nome=f.nome;}
         if(!nome)return toast('Indica o nome do fornecedor.','error');
@@ -5993,104 +6004,126 @@ const app = (function () {
         atualizarContadores();
     }
 
-    function abrirProcessar(id){
+    function abrirValidarAP(id){
         const p=state.pedidos.find(x=>x.id===id); if(!p)return;
-        if(!isFinance())return toast('Sem permissão.','error');
-        modal(`Processar ${p.codigo}`,`
+        if(!isAP())return toast('Só Contas a Pagar pode validar.','error');
+        modal(`Validar — ${p.codigo}`,`
             <p style="font-size:13px;color:#555;margin-bottom:14px;padding:10px;background:var(--primary-light);border-radius:var(--border-radius-sm);">
                 <strong>${esc(p.codigoSAP)} — ${esc(p.fornecedorNome)}</strong><br>
-                Pedido: ${money(p.valorPedido)} · Solicitado por ${esc(p.solicitadoPor)} em ${fmtDate(p.dataSolicitacao)}
+                ${money(p.valorPedido)} · ${esc(p.dc)} · Solicitado por ${esc(p.solicitadoPor)} em ${fmtDate(p.dataSolicitacao)}
+            </p>
+            <div class="pag-form-group"><label>Observações</label><input type="text" id="pagValObs" class="pag-form-control"></div>
+        `,`
+            <button class="pag-btn pag-btn-outline" onclick="app.fecharModal()">Cancelar</button>
+            <button class="pag-btn pag-btn-primary" onclick="app.confirmarValidarAP('${id}')"><i class="fas fa-check"></i> Validar e enviar à Tesouraria</button>
+        `);
+    }
+    function confirmarValidarAP(id){
+        const p=state.pedidos.find(x=>x.id===id); if(!p)return;
+        if(!isAP())return toast('Só Contas a Pagar pode validar.','error');
+        if(p.status!=='pendente')return toast('Este pedido já não está em Contas a Pagar.','warn');
+        const obs=$('#pagValObs').value.trim();
+        p.status='processamento';
+        p.dataValidacaoAP=todayISO(); p.validadoAPPor=usuarioAtual.nome; p.validadoAPEmail=myEmail();
+        addHistorico(p,'Validado em Contas a Pagar → Tesouraria',obs);
+        save();
+        toast(`✅ ${p.codigo} validado e enviado à Tesouraria.`,'success');
+        fecharModal(); renderAtual(); atualizarContadores();
+    }
+
+    function abrirProcessar(id){
+        const p=state.pedidos.find(x=>x.id===id); if(!p)return;
+        if(!isTes())return toast('Só a Tesouraria pode enviar ao banco.','error');
+        modal(`Enviar ao Banco — ${p.codigo}`,`
+            <p style="font-size:13px;color:#555;margin-bottom:14px;padding:10px;background:var(--primary-light);border-radius:var(--border-radius-sm);">
+                <strong>${esc(p.codigoSAP)} — ${esc(p.fornecedorNome)}</strong><br>
+                Pedido: ${money(p.valorPedido)} · Validado em Contas a Pagar: ${fmtDate(p.dataValidacaoAP)}
             </p>
             <div class="pag-form-row">
                 <div class="pag-form-group">
-                    <label>Data de Processamento *</label>
+                    <label>Data de envio ao banco *</label>
                     <input type="date" id="pagProcData" value="${todayISO()}" min="${p.dataSolicitacao}" max="${todayISO()}" class="pag-form-control">
                 </div>
                 <div class="pag-form-group">
-                    <label>Valor Processado (Kz) *</label>
+                    <label>Valor enviado (Kz) *</label>
                     <input type="number" step="0.01" min="0" id="pagProcValor" value="${p.valorPedido}" class="pag-form-control">
                 </div>
             </div>
-            <div class="pag-form-group">
-                <label>Comprovativo de envio ao banco *</label>
-                <input type="file" id="pagProcFile" accept=".pdf,.png,.jpg,.jpeg,.xlsx,.csv,.txt" class="pag-form-control">
-            </div>
-            <div class="pag-form-group">
-                <label>Observações</label>
-                <input type="text" id="pagProcObs" placeholder="Ex.: nº de lote" class="pag-form-control">
-            </div>
+            <div class="pag-form-group"><label>Observações</label><input type="text" id="pagProcObs" placeholder="Ex.: nº de lote" class="pag-form-control"></div>
+            <p style="font-size:12px;color:#7a8a82;">O comprovativo do banco é anexado depois, ao finalizar.</p>
         `,`
             <button class="pag-btn pag-btn-outline" onclick="app.fecharModal()">Cancelar</button>
-            <button class="pag-btn pag-btn-primary" onclick="app.confirmarProcessar('${id}')"><i class="fas fa-check"></i> Marcar Processado</button>
+            <button class="pag-btn pag-btn-primary" onclick="app.confirmarProcessar('${id}')"><i class="fas fa-paper-plane"></i> Enviar ao banco</button>
         `);
     }
-
-    async function confirmarProcessar(id){
+    function confirmarProcessar(id){
         const p=state.pedidos.find(x=>x.id===id); if(!p)return;
+        if(!isTes())return toast('Só a Tesouraria pode enviar ao banco.','error');
+        if(p.status!=='processamento')return toast('Este pedido não está na Tesouraria.','warn');
         const data=$('#pagProcData').value;
         const valor=parseFloat($('#pagProcValor').value);
         const obs=$('#pagProcObs').value.trim();
-        const file=$('#pagProcFile').files[0];
-
         if(!data)return toast('Indica a data.','error');
         if(data<p.dataSolicitacao)return toast('Data anterior à solicitação.','error');
         if(!(valor>0))return toast('Valor inválido.','error');
-        if(!file)return toast('Anexa o comprovativo.','error');
-
-        const anexo=await fileToBase64(file); if(!anexo)return;
-
         p.status='processado';
         p.dataProcessamento=data;
         p.valorProcessado=valor;
         p.processadoPor=usuarioAtual.nome;
         p.processadoPorEmail=myEmail();
-        p.anexo=anexo;
-        if(obs)p.observacoes=(p.observacoes?p.observacoes+'\n':'')+`[Proc.] ${obs}`;
-        addHistorico(p,'Processado / enviado ao banco',anexo.nome);
+        if(obs)p.observacoes=(p.observacoes?p.observacoes+'\n':'')+`[Banco] ${obs}`;
+        addHistorico(p,'Enviado ao banco',obs);
         save();
-        toast(`✅ ${p.codigo} Processado.`,'success');
+        toast(`✅ ${p.codigo} enviado ao banco.`,'success');
         fecharModal(); renderAtual(); atualizarContadores();
     }
 
     function abrirExecutar(id){
         const p=state.pedidos.find(x=>x.id===id); if(!p)return;
-        if(!isFinance())return toast('Sem permissão.','error');
-        modal(`Registar Execução — ${p.codigo}`,`
+        if(!isTes())return toast('Só a Tesouraria pode finalizar.','error');
+        modal(`Finalizar — ${p.codigo}`,`
             <p style="font-size:13px;color:#555;margin-bottom:14px;padding:10px;background:var(--primary-light);border-radius:var(--border-radius-sm);">
-                Processado em ${fmtDate(p.dataProcessamento)} por ${esc(p.processadoPor||'—')} · ${money(p.valorProcessado)}
+                Enviado ao banco em ${fmtDate(p.dataProcessamento)} por ${esc(p.processadoPor||'—')} · ${money(p.valorProcessado)}
             </p>
             <div class="pag-form-group">
-                <label>Data de Execução *</label>
+                <label>Data do comprovativo do banco *</label>
                 <input type="date" id="pagExecData" value="${todayISO()}" min="${p.dataProcessamento}" max="${todayISO()}" class="pag-form-control">
             </div>
             <div class="pag-form-group">
-                <label>Observações</label>
-                <input type="text" id="pagExecObs" class="pag-form-control">
+                <label>Comprovativo do banco *</label>
+                <input type="file" id="pagExecFile" accept=".pdf,.png,.jpg,.jpeg,.xlsx,.csv,.txt" class="pag-form-control">
             </div>
+            <div class="pag-form-group"><label>Observações</label><input type="text" id="pagExecObs" class="pag-form-control"></div>
         `,`
             <button class="pag-btn pag-btn-outline" onclick="app.fecharModal()">Cancelar</button>
-            <button class="pag-btn pag-btn-violet" onclick="app.confirmarExecutar('${id}')"><i class="fas fa-check-double"></i> Marcar Executado</button>
+            <button class="pag-btn pag-btn-violet" onclick="app.confirmarExecutar('${id}')"><i class="fas fa-check-double"></i> Finalizar</button>
         `);
     }
-
-    function confirmarExecutar(id){
+    async function confirmarExecutar(id){
         const p=state.pedidos.find(x=>x.id===id); if(!p)return;
+        if(!isTes())return toast('Só a Tesouraria pode finalizar.','error');
+        if(p.status!=='processado')return toast('Este pedido ainda não foi enviado ao banco.','warn');
         const data=$('#pagExecData').value;
         const obs=$('#pagExecObs').value.trim();
+        const file=$('#pagExecFile').files[0];
         if(!data)return toast('Indica a data.','error');
-        if(p.dataProcessamento&&data<p.dataProcessamento)return toast('Data anterior ao processamento.','error');
+        if(p.dataProcessamento&&data<p.dataProcessamento)return toast('Data anterior ao envio ao banco.','error');
+        if(!file)return toast('Anexa o comprovativo do banco.','error');
+        const anexo=await fileToBase64(file); if(!anexo)return;
         p.status='executado';
         p.dataExecucao=data;
-        if(obs)p.observacoes=(p.observacoes?p.observacoes+'\n':'')+`[Exec.] ${obs}`;
-        addHistorico(p,'Executado pelo banco',obs);
+        p.anexo=anexo;
+        if(obs)p.observacoes=(p.observacoes?p.observacoes+'\n':'')+`[Final.] ${obs}`;
+        addHistorico(p,'Finalizado com comprovativo do banco',anexo.nome);
         save();
-        toast(`✅ ${p.codigo} Executado!`,'success');
+        toast(`✅ ${p.codigo} finalizado.`,'success');
         fecharModal(); renderAtual(); atualizarContadores();
     }
 
+
     function abrirDevolver(id){
         const p=state.pedidos.find(x=>x.id===id); if(!p)return;
-        if(!isFinance())return toast('Sem permissão.','error');
+        if(!isAP())return toast('Só Contas a Pagar pode devolver.','error');
         modal(`Devolver ${p.codigo}`,`
             <div class="pag-form-group">
                 <label>Motivo da Devolução *</label>
@@ -6146,8 +6179,8 @@ const app = (function () {
                 <strong>Motivo da devolução:</strong> ${esc(p.motivoDevolucao)}
             </p>
             <div class="pag-form-group">
-                <label>DC</label>
-                <input type="text" id="pagReeDC" value="${esc(p.dc)}" class="pag-form-control">
+                <label>Área</label>
+                <select id="pagReeDC" class="pag-form-control">${DC_SUGESTOES.map(d=>`<option value="${d}" ${d===p.dc?'selected':''}>${d}</option>`).join('')}</select>
             </div>
             <div class="pag-form-row">
                 <div class="pag-form-group">
@@ -6211,19 +6244,20 @@ const app = (function () {
         modal(`Pedido ${p.codigo}`,`
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;font-size:13px;">
                 <div><strong>Semana:</strong> ${esc(p.semana)}</div>
-                <div><strong>DC:</strong> ${esc(p.dc)}</div>
+                <div><strong>Área:</strong> ${esc(p.dc)}</div>
                 <div><strong>Solicitado por:</strong> ${esc(p.solicitadoPor)}</div>
                 <div><strong>Data solicitação:</strong> ${fmtDate(p.dataSolicitacao)}</div>
                 <div style="grid-column:1/-1;"><strong>Fornecedor:</strong> ${esc(p.codigoSAP)} — ${esc(p.fornecedorNome)}</div>
                 <div><strong>Estado:</strong> <span class="pag-badge ${STATUS[p.status].cls}">${STATUS[p.status].label}</span></div>
                 <div><strong>Valor pedido:</strong> ${money(p.valorPedido)}</div>
                 <div><strong>Valor processado:</strong> ${p.valorProcessado?money(p.valorProcessado):'—'}</div>
-                <div><strong>Data processamento:</strong> ${fmtDate(p.dataProcessamento)}</div>
-                <div><strong>Processado por:</strong> ${esc(p.processadoPor||'—')}</div>
-                <div><strong>Data execução:</strong> ${fmtDate(p.dataExecucao)}</div>
-                <div style="grid-column:1/-1;"><strong>Comprovativo:</strong> ${p.anexo?`<a class="pag-file-link" href="${p.anexo.dataUrl}" download="${esc(p.anexo.nome)}" target="_blank">📎 ${esc(p.anexo.nome)}</a>`:'—'}</div>
+                <div><strong>Validado (Contas a Pagar):</strong> ${p.dataValidacaoAP?fmtDate(p.dataValidacaoAP)+' · '+esc(p.validadoAPPor||''):'—'}</div>
+                <div><strong>Data envio ao banco:</strong> ${fmtDate(p.dataProcessamento)}</div>
+                <div><strong>Enviado ao banco por:</strong> ${esc(p.processadoPor||'—')}</div>
+                <div><strong>Data finalização:</strong> ${fmtDate(p.dataExecucao)}</div>
+                <div style="grid-column:1/-1;"><strong>Comprovativo:</strong> ${p.anexo?`<a class="pag-file-link" href="${p.anexo.webUrl||p.anexo.dataUrl}" download="${esc(p.anexo.nome)}" target="_blank">📎 ${esc(p.anexo.nome)}</a>`:'—'}</div>
                 <div><strong>Tempo → banco:</strong> ${dBank!==null?dBank+' dias úteis':'—'}</div>
-                <div><strong>Tempo → execução:</strong> ${dExec!==null?dExec+' dias úteis':'—'}</div>
+                <div><strong>Tempo → finalização:</strong> ${dExec!==null?dExec+' dias úteis':'—'}</div>
             </div>
             ${p.observacoes?`<div style="margin-top:14px;font-size:13px;"><strong>Observações:</strong><br>${esc(p.observacoes).replace(/\n/g,'<br>')}</div>`:''}
             ${p.motivoDevolucao?`<div style="margin-top:10px;background:#ffe1cc;padding:10px;border-radius:var(--border-radius-sm);font-size:13px;"><strong>Motivo devolução:</strong> ${esc(p.motivoDevolucao)}</div>`:''}
@@ -6456,9 +6490,10 @@ const app = (function () {
         }
     }
 
-    function sincronizar(){
-        renderAtual(); atualizarContadores();
-        toast('Sincronizado.','success');
+    async function sincronizar(){
+        toast('A sincronizar…','info');
+        const ok=await carregarSP();
+        if(ok){renderAtual();atualizarContadores();toast('Sincronizado com o SharePoint.','success');}
     }
 
     function iniciarApp(){
@@ -6472,12 +6507,83 @@ const app = (function () {
     }
 
     
+/* ===== Persistência partilhada no SharePoint ===== */
+const LP='PagamentosPedidos', LF='PagamentosFornecedores';
+let pedSP={}, fornSP={}, syncTimer=null, syncBusy=false, spOk=false;
+async function gbase(){const token=await getSharePointToken();const siteId=await getSiteId();
+    return {token,siteId,H:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},u:`https://graph.microsoft.com/v1.0/sites/${siteId}`};}
+async function lerLista(g,lista){
+    let url=`${g.u}/lists/${lista}/items?expand=fields&$top=999`;const out=[];
+    while(url){const r=await fetch(url,{headers:g.H});if(!r.ok)throw new Error(lista+' '+r.status);const d=await r.json();out.push(...(d.value||[]));url=d['@odata.nextLink']||null;}
+    return out;
+}
+async function carregarSP(){
+    try{
+        const g=await gbase();
+        const [ip,ifo]=await Promise.all([lerLista(g,LP),lerLista(g,LF)]);
+        const peds=[];pedSP={};
+        ip.forEach(it=>{const f=it.fields||{};
+            if(f.Title==='__config__'){try{state.config=Object.assign(defaultState().config,JSON.parse(f.Dados));}catch(e){}pedSP.__config__={itemId:it.id,hash:f.Dados};return;}
+            try{const p=JSON.parse(f.Dados);peds.push(p);pedSP[p.id]={itemId:it.id,hash:f.Dados};}catch(e){}});
+        state.pedidos=peds;
+        fornSP={};
+        state.fornecedores=ifo.map(it=>{const f=it.fields||{};fornSP[String(f.Title)]=it.id;return {codigo:String(f.Title),nome:f.Nome||'',ativo:String(f.Ativo||'sim')!=='nao'};});
+        const mx=peds.reduce((m,p)=>Math.max(m,parseInt(String(p.codigo).split('-').pop())||0),0);
+        state.counters.pedido=Math.max(state.counters.pedido||1,mx+1);
+        spOk=true;
+        try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}
+        return true;
+    }catch(e){console.warn('[Pagamentos] SharePoint indisponível:',e);spOk=false;toast('SharePoint indisponível — a usar dados deste posto. Verifica as listas PagamentosPedidos e PagamentosFornecedores.','warn');return false;}
+}
+function agendarSync(){clearTimeout(syncTimer);syncTimer=setTimeout(sincronizarSP,600);}
+async function ficheiroParaSP(g,p){
+    const a=p.anexo;if(!a||!a.dataUrl)return;
+    const drive=await getDriveId();
+    const bin=await (await fetch(a.dataUrl)).arrayBuffer();
+    const nome=Date.now()+'_'+a.nome.replace(/[^a-zA-Z0-9.]/g,'_');
+    const r=await fetch(`${g.u}/drives/${drive}/root:/Pagamentos_Comprovativos/${p.codigo}/${nome}:/content`,{method:'PUT',headers:{Authorization:`Bearer ${g.token}`,'Content-Type':a.tipo||'application/octet-stream'},body:bin});
+    if(!r.ok)throw new Error('upload do comprovativo '+r.status);
+    const d=await r.json();p.anexo={nome:a.nome,size:a.size,tipo:a.tipo,webUrl:d.webUrl};
+}
+async function gravarItem(g,key,dados,estado){
+    const cur=pedSP[key];
+    if(cur&&cur.hash===dados)return;
+    if(cur){const r=await fetch(`${g.u}/lists/${LP}/items/${cur.itemId}/fields`,{method:'PATCH',headers:g.H,body:JSON.stringify({Dados:dados,Estado:estado})});if(!r.ok)throw new Error('gravar '+r.status);}
+    else{const r=await fetch(`${g.u}/lists/${LP}/items`,{method:'POST',headers:g.H,body:JSON.stringify({fields:{Title:key,Dados:dados,Estado:estado}})});if(!r.ok)throw new Error('criar '+r.status);const it=await r.json();pedSP[key]={itemId:it.id};}
+    pedSP[key].hash=dados;
+}
+async function sincronizarSP(){
+    if(syncBusy){agendarSync();return;}
+    syncBusy=true;
+    try{
+        const g=await gbase();
+        for(const p of state.pedidos){if(p.anexo&&p.anexo.dataUrl)await ficheiroParaSP(g,p);await gravarItem(g,p.id,JSON.stringify(p),p.status);}
+        await gravarItem(g,'__config__',JSON.stringify(state.config),'config');
+        const novos=state.fornecedores.filter(f=>!fornSP[f.codigo]);
+        for(let i=0;i<novos.length;i+=20){
+            const lote=novos.slice(i,i+20);
+            const reqs=lote.map((f,k)=>({id:String(k+1),method:'POST',url:`/sites/${g.siteId}/lists/${LF}/items`,headers:{'Content-Type':'application/json'},body:{fields:{Title:f.codigo,Nome:f.nome,Ativo:f.ativo?'sim':'nao'}}}));
+            const r=await fetch('https://graph.microsoft.com/v1.0/$batch',{method:'POST',headers:g.H,body:JSON.stringify({requests:reqs})});
+            if(!r.ok)throw new Error('fornecedores '+r.status);
+            const d=await r.json();(d.responses||[]).forEach(x=>{if(x.status>=200&&x.status<300)fornSP[lote[parseInt(x.id)-1].codigo]=x.body.id;});
+        }
+        const cods=new Set(state.fornecedores.map(f=>f.codigo));
+        for(const [cod,id] of Object.entries(fornSP)){if(!cods.has(cod)){await fetch(`${g.u}/lists/${LF}/items/${id}`,{method:'DELETE',headers:g.H});delete fornSP[cod];}}
+        try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}
+    }catch(e){console.error(e);toast('Não foi possível gravar no SharePoint ('+e.message+'). Os dados ficam só neste posto.','error');}
+    finally{syncBusy=false;}
+}
 function initSIR(u){
-    state=loadState();
+    state=defaultState();
     usuarioAtual={id:'sir',nome:u.nome,email:String(u.email||'').toLowerCase(),perfil:u.perfil,roles:u.roles};
-    const lg=$('#pagLogin'); if(lg)lg.style.display='none';
+    const lg=$('#pagLogin');if(lg)lg.style.display='none';
     $('#pagApp').style.display='block';
     iniciarApp();
+    carregarSP().then(ok=>{if(!ok)state=loadState();renderAtual();atualizarContadores();});
+    if(!window._pagPoll)window._pagPoll=setInterval(async()=>{
+        if(!usuarioAtual||!spOk||syncBusy||syncTimer||$('#pagModalRoot').innerHTML)return;
+        if(await carregarSP()){renderAtual();atualizarContadores();}
+    },60000);
 }
 
     function init(){
@@ -6504,7 +6610,7 @@ function initSIR(u){
 
     return { initSIR, init, entrar, sair, toggleDark, fecharModal, sincronizar,
         criarPedido,
-        abrirProcessar, confirmarProcessar,
+        abrirValidarAP, confirmarValidarAP, abrirProcessar, confirmarProcessar,
         abrirExecutar, confirmarExecutar,
         abrirDevolver, confirmarDevolver,
         abrirCancelar, confirmarCancelar,
@@ -6592,7 +6698,7 @@ window.addEventListener('DOMContentLoaded',function(){
 
 /* ===== GESTÃO DE ACESSOS + abertura dos novos módulos ===== */
 const MODULOS_ACESSO=[['recrutamento','Recrutamento'],['avaliacao','Avaliação'],['manutencao','Manutenção'],['mobilidade','Mobilidade & Promoções'],['ean','EAN SCAN'],['ticket','Ticket IT'],['pagamentos','Pagamentos a Fornecedores']];
-const PAPEIS_PAG={viewer:'Visualizador (consulta)',dc:'Comercial (cria pedidos)',finance:'Financeiro (processa pagamentos)',admin:'Administrador do módulo'};
+const PAPEIS_PAG={viewer:'Visualizador (consulta)',dc:'Comercial (cria pedidos)',ap:'Contas a Pagar (valida)',tes:'Tesouraria (envia ao banco e finaliza)',aptes:'Contas a Pagar + Tesouraria',admin:'Administrador do módulo (vê tudo)'};
 const LISTA_ACESSOS='AcessosModulos';
 const ACESSOS={};
 (function(){try{const s=localStorage.getItem('keroAcessos');if(s)Object.assign(ACESSOS,JSON.parse(s));}catch(e){}})();
@@ -6636,6 +6742,7 @@ function podeAcederModulo(mod){
     if(usuarioAtual.perfil==='Administrador')return true;
     const a=ACESSOS[String(usuarioAtual.email).toLowerCase()];
     if(a)return a.modulos.includes(mod);
+    if(ACESSOS['*restrito*'])return false;
     return mod!=='pagamentos'&&mod!=='acessos';
 }
 
@@ -6668,20 +6775,21 @@ function abrirPagamentos(){
     prepararTelaModulo('Kero Pagamentos','Pedidos de Pagamento a Fornecedores','pagamentosSection');
     const a=ACESSOS[String(usuarioAtual.email).toLowerCase()];
     const papel=usuarioAtual.perfil==='Administrador'?'admin':((a&&a.papel)||'viewer');
-    app.initSIR({nome:usuarioAtual.nome,email:usuarioAtual.email,perfil:usuarioAtual.perfil,roles:[papel]});
+    app.initSIR({nome:usuarioAtual.nome,email:usuarioAtual.email,perfil:usuarioAtual.perfil,roles:(papel==='aptes'?['ap','tes']:[papel])});
 }
 
 function abrirGestaoAcessos(){
     prepararTelaModulo('Gestão de Acessos','Quem acede a cada módulo','gestaoAcessosSection');
     document.getElementById('acessoChecks').innerHTML=MODULOS_ACESSO.map(([k,n])=>`<label><input type="checkbox" value="${k}"> ${n}</label>`).join('');
     document.getElementById('acessoPapel').innerHTML=Object.entries(PAPEIS_PAG).map(([k,n])=>`<option value="${k}">${n}</option>`).join('');
+    document.getElementById('perfilRapido').innerHTML=Object.entries(PERFIS_RAPIDOS).map(([k,v])=>`<option value="${k}">${v.nome}</option>`).join('');
     renderAcessos();
-    carregarAcessosModulos().then(renderAcessos);
+    carregarAcessosModulos().then(()=>{renderAcessos();const c=document.getElementById('acessoRestrito');if(c)c.checked=!!ACESSOS['*restrito*'];});
 }
 
 function renderAcessos(){
     const c=document.getElementById('acessosLista');if(!c)return;
-    const ent=Object.entries(ACESSOS);
+    const ent=Object.entries(ACESSOS).filter(([k])=>k!=='*restrito*');
     if(!ent.length){c.innerHTML='<div style="padding:12px;color:#999;text-align:center;background:#f5f5f5;border-radius:8px">Nenhum acesso configurado.</div>';return;}
     const nome=k=>(MODULOS_ACESSO.find(m=>m[0]===k)||[k,k])[1];
     c.innerHTML=ent.map(([e,a])=>`<div class="acesso-row"><div><strong>${e}</strong><div style="font-size:12px;color:#666;margin-top:3px">${a.modulos.map(nome).join(' · ')||'(sem módulos)'}${a.modulos.includes('pagamentos')?' — papel: '+(PAPEIS_PAG[a.papel]||a.papel):''}</div></div>
@@ -6711,6 +6819,34 @@ async function guardarAcessoForm(){
     mostrarNotificacao(ok?'✅ Acesso guardado no SharePoint.':'⚠️ Guardado só neste posto (falhou o SharePoint — verifica a lista AcessosModulos).',ok?'success':'warning');
 }
 
+const PERFIS_RAPIDOS={
+    tudo:{nome:'Ver tudo — todos os módulos (administra Pagamentos)',modulos:MODULOS_ACESSO.map(m=>m[0]),papel:'admin'},
+    contas:{nome:'Contas a Pagar — só Pagamentos (valida)',modulos:['pagamentos'],papel:'ap'},
+    tesouraria:{nome:'Tesouraria — só Pagamentos (envia ao banco e finaliza)',modulos:['pagamentos'],papel:'tes'},
+    contas_tes:{nome:'Contas a Pagar + Tesouraria — só Pagamentos',modulos:['pagamentos'],papel:'aptes'},
+    comercial:{nome:'Comercial — só Pagamentos (cria pedidos)',modulos:['pagamentos'],papel:'dc'},
+    diretor:{nome:'Direção — só Pagamentos (consulta tudo)',modulos:['pagamentos'],papel:'viewer'}
+};
+async function aplicarPerfilLote(){
+    if(usuarioAtual?.perfil!=='Administrador'){mostrarNotificacao('Apenas o Administrador pode gerir acessos.','error');return;}
+    const p=PERFIS_RAPIDOS[document.getElementById('perfilRapido').value];
+    const emails=[...new Set(document.getElementById('acessoLote').value.split(/[\s,;]+/).map(s=>s.trim().toLowerCase()).filter(s=>s.includes('@')))];
+    if(!emails.length){mostrarNotificacao('Cola pelo menos um email.','error');return;}
+    showLoading();let falhas=0;
+    for(const e of emails){const ok=await gravarAcessoSP(e,p.modulos,p.papel,false);if(!ok)falhas++;ACESSOS[e]={modulos:[...p.modulos],papel:p.papel};}
+    guardarCacheAcessos();renderAcessos();hideLoading();
+    document.getElementById('acessoLote').value='';
+    mostrarNotificacao(falhas?`⚠️ ${emails.length} aplicados, ${falhas} só neste posto (verifica a lista AcessosModulos).`:`✅ Perfil aplicado a ${emails.length} pessoa(s).`,falhas?'warning':'success');
+}
+async function alternarRestrito(chk){
+    if(usuarioAtual?.perfil!=='Administrador'){chk.checked=!chk.checked;return;}
+    if(chk.checked&&!confirm('Ligar o bloqueio? Quem NÃO estiver na lista deixa de ver qualquer módulo (incluindo Recrutamento). Confirma que já registaste todos os utilizadores.')){chk.checked=false;return;}
+    showLoading();let ok;
+    if(chk.checked){ok=await gravarAcessoSP('*restrito*',['1'],'viewer',false);ACESSOS['*restrito*']={modulos:['1'],papel:'viewer'};}
+    else{ok=await gravarAcessoSP('*restrito*',[],'viewer',true);delete ACESSOS['*restrito*'];}
+    guardarCacheAcessos();hideLoading();
+    mostrarNotificacao(ok?'Definição guardada.':'Guardado só neste posto (erro no SharePoint).',ok?'success':'warning');
+}
 async function removerAcesso(email){
     if(usuarioAtual?.perfil!=='Administrador')return;
     if(!confirm(`Remover as restrições de ${email}? Passa a ter o acesso habitual.`))return;
