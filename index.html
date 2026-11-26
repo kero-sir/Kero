@@ -1772,6 +1772,8 @@ body.dark-mode .acesso-row{background:#38385a}
                         <input type="file" id="fileInput" accept="image/*" style="display:none;">
                         <button class="btn-ean btn-import" id="btnImportExcel"><i class="fas fa-file-excel"></i> Importar Excel</button>
                         <input type="file" id="fileInputExcel" accept=".xlsx,.xls,.xlsb" style="display:none;">
+                        <button class="btn-ean" id="btnImportConcorrentes" style="background:#E65100;display:none;"><i class="fas fa-store-alt"></i> Importar Concorrentes</button>
+                        <input type="file" id="fileInputConcorrentes" accept=".xlsx,.xls,.xlsb,.csv" style="display:none;">
                         <button class="btn-ean btn-sync" id="btnSyncSharePoint"><i class="fas fa-sync-alt"></i> Sincronizar</button>
                         <button class="btn-ean" id="btnPublicarSharePoint" style="background:#217346; display:none;">
                             <i class="fas fa-cloud-upload-alt"></i> Publicar no SharePoint
@@ -1990,7 +1992,7 @@ body.dark-mode .acesso-row{background:#38385a}
                 <form id="formNovaRequisicaoMob">
                     <div class="form-group"><label>Tipo *</label><select id="mobTipoRequisicao" class="form-control" required><option value="">Selecione</option><option value="mudanca_area">Mudança de Área</option><option value="mudanca_salarial">Mudança Salarial</option><option value="promocao">Promoção</option></select></div>
                     <div class="form-group"><label>Colaborador *</label><input type="text" id="mobColaborador" class="form-control" required placeholder="Nome do colaborador"></div><div class="form-group"><label>Direção *</label><select id="mobDirecao" class="form-control" required><option value="">Selecione</option></select></div>
-                    <div class="form-row"><div class="form-group"><label>Função Atual</label><input type="text" id="mobFuncaoAtual" class="form-control" placeholder="Função atual"></div><div class="form-group"><label>Nova Função (se aplicável)</label><input type="text" id="mobNovaFuncao" class="form-control" placeholder="Nova função"></div></div>
+                    <div class="form-row"><div class="form-group"><label>Função Atual *</label><input type="text" id="mobFuncaoAtual" class="form-control" placeholder="Função atual" required></div><div class="form-group"><label>Nova Função *</label><input type="text" id="mobNovaFuncao" class="form-control" placeholder="Nova função" required></div></div>
                     <div class="form-row"><div class="form-group"><label>Área Atual *</label><input type="text" id="mobAreaAtual" class="form-control" placeholder="Área atual" required></div><div class="form-group"><label>Nova Área *</label><input type="text" id="mobNovaArea" class="form-control" placeholder="Nova área" required></div></div>
                     <div class="form-row"><div class="form-group"><label>Salário Atual (Kz)</label><input type="number" id="mobSalarioAtual" class="form-control" placeholder="0"></div><div class="form-group"><label>Novo Salário (Kz)</label><input type="number" id="mobNovoSalario" class="form-control" placeholder="0"></div></div>
                     <div class="form-group"><label>Justificativa *</label><textarea id="mobJustificativa" class="form-control" rows="3" required placeholder="Descreva a justificativa para a mudança"></textarea></div>
@@ -2029,7 +2031,7 @@ body.dark-mode .acesso-row{background:#38385a}
                     <input type="hidden" id="mobEditRequisicaoId">
                     <div class="form-group"><label>Tipo</label><select id="mobEditTipo" class="form-control"><option value="mudanca_area">Mudança de Área</option><option value="mudanca_salarial">Mudança Salarial</option><option value="promocao">Promoção</option></select></div>
                     <div class="form-group"><label>Colaborador</label><input type="text" id="mobEditColaborador" class="form-control"></div><div class="form-group"><label>Direção *</label><select id="mobEditDirecao" class="form-control" required><option value="">Selecione</option></select></div>
-                    <div class="form-row"><div class="form-group"><label>Função Atual</label><input type="text" id="mobEditFuncaoAtual" class="form-control"></div><div class="form-group"><label>Nova Função</label><input type="text" id="mobEditNovaFuncao" class="form-control"></div></div>
+                    <div class="form-row"><div class="form-group"><label>Função Atual *</label><input type="text" id="mobEditFuncaoAtual" class="form-control" required></div><div class="form-group"><label>Nova Função *</label><input type="text" id="mobEditNovaFuncao" class="form-control" required></div></div>
                     <div class="form-row"><div class="form-group"><label>Área Atual *</label><input type="text" id="mobEditAreaAtual" class="form-control" required></div><div class="form-group"><label>Nova Área *</label><input type="text" id="mobEditNovaArea" class="form-control" required></div></div>
                     <div class="form-row"><div class="form-group"><label>Salário Atual (Kz)</label><input type="number" id="mobEditSalarioAtual" class="form-control"></div><div class="form-group"><label>Novo Salário (Kz)</label><input type="number" id="mobEditNovoSalario" class="form-control"></div></div>
                     <div class="form-group"><label>Justificativa</label><textarea id="mobEditJustificativa" class="form-control" rows="3"></textarea></div>
@@ -2090,7 +2092,7 @@ body.dark-mode .acesso-row{background:#38385a}
                         <span class="helper-text">Ordem: Talatona, Kilamba, Morro Bento, Nova Vida, Lubango, Huambo, Lobito, Benguela, Viana, Gika, Mártires, Combatentes, Cacuaco</span>
                     </div>
                     <div class="form-group" style="grid-column: span 2;">
-                        <label>Preços Concorrentes (Angomart, Maxi, Shoprite) separados por vírgula</label>
+                        <label>Preços Concorrentes (Maxi, Candando, Shoprite, Angomart) separados por vírgula</label>
                         <input type="text" id="addConcorrentes" placeholder="Ex: 600,620,650">
                     </div>
                 </div>
@@ -2336,7 +2338,7 @@ body.dark-mode .acesso-row{background:#38385a}
             } catch (error) { document.getElementById('loginErrorMessage').textContent = error.message; document.getElementById('loginError').style.display = 'block'; } finally { hideLoading(); }
         }
         function mostrarTelaSelecaoModulos() {
-    aplicarAcessosCards(); carregarAcessosModulos().then(aplicarAcessosCards);
+    esconderCardsModulos(); carregarAcessosModulos().then(aplicarAcessosCards, aplicarAcessosCards);
             document.getElementById('moduleUserName').textContent = usuarioAtual.nome;
             atualizarAvatar({ displayName: usuarioAtual.nome }, 'moduleUserAvatar');
             document.getElementById('moduleSelectionScreen').style.display = 'flex';
@@ -4184,7 +4186,7 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                 const direcao = document.getElementById('mobDirecao').value;
                 const areaAtual = document.getElementById('mobAreaAtual').value.trim();
                 const novaArea = document.getElementById('mobNovaArea').value.trim();
-                if (!tipo || !colaborador || !direcao || !areaAtual || !novaArea || !justificativa) { mostrarNotificacao('Preencha todos os campos obrigatórios (Direção, Área Atual e Nova Área incluídas)!', 'error'); return; }
+                if (!tipo || !colaborador || !direcao || !areaAtual || !novaArea || !justificativa || !document.getElementById('mobFuncaoAtual').value.trim() || !document.getElementById('mobNovaFuncao').value.trim()) { mostrarNotificacao('Preencha todos os campos obrigatórios (Direção, Funções e Áreas incluídas)!', 'error'); return; }
                 const nova = { id: Date.now().toString(), codigo: gerarCodigo(), tipo, colaborador, funcaoAtual: document.getElementById('mobFuncaoAtual').value.trim(), novaFuncao: document.getElementById('mobNovaFuncao').value.trim(), direcao, areaAtual, novaArea, salarioAtual: parseFloat(document.getElementById('mobSalarioAtual').value) || 0, novoSalario: parseFloat(document.getElementById('mobNovoSalario').value) || 0, justificativa, status: 'em_validacao_rh', dataCriacao: new Date().toISOString(), criadoPor: usuarioAtual.nome, criadoPorEmail: usuarioAtual.email, historicoComentarios: [{ id: Date.now().toString(), acao: 'criacao', usuario: usuarioAtual.nome, perfil: usuarioAtual.perfil, comentario: 'Requisição criada.', data: new Date().toISOString() }] };
                 reqs.unshift(nova);
                 salvarLocal();
@@ -4225,7 +4227,7 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                 const req = reqs.find(r => r.id === id);
                 if (!req) return;
                 const _dir = document.getElementById('mobEditDirecao').value, _aa = document.getElementById('mobEditAreaAtual').value.trim(), _na = document.getElementById('mobEditNovaArea').value.trim();
-                if (!_dir || !_aa || !_na) { mostrarNotificacao('Direção, Área Atual e Nova Área são obrigatórias!', 'error'); return; }
+                if (!_dir || !_aa || !_na || !document.getElementById('mobEditFuncaoAtual').value.trim() || !document.getElementById('mobEditNovaFuncao').value.trim()) { mostrarNotificacao('Direção, Funções e Áreas são obrigatórias!', 'error'); return; }
                 req.direcao = _dir;
                 req.tipo = document.getElementById('mobEditTipo').value;
                 req.colaborador = document.getElementById('mobEditColaborador').value.trim();
@@ -4420,7 +4422,7 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
             const PERMISSAO_PUBLICAR = ['marcio.carlos@accordgrouplda.com', 'erikson.silva@accordgrouplda.com'];
             const MAPA_LOJAS = { "TALATONA": "Kero Loja Talatona", "KILAMBA": "Kero Loja Kilamba", "MORRO BENTO": "Kero Loja Morro Bento", "NOVA VIDA": "Kero Loja Nova Vida", "LUBANGO": "Kero Loja Lubango", "HUAMBO": "Kero Loja Huambo", "LOBITO": "Kero Loja Lobito", "BENGUELA": "Kero Loja Benguela", "VIANA": "Kero Loja Viana", "GIKA": "Kero Loja Gika", "MARTIRES": "Kero Loja Mártires", "COMB.": "Kero Loja Combatentes", "CACUACO": "Kero Loja Cacuaco", "CD ZEE": "Armazém ZEE", "SONIT": "Armazém SONIT" };
             const LOJAS_KERO = Object.values(MAPA_LOJAS);
-            const CONCORRENTES = ["Angomart", "Maxi", "Shoprite"];
+            const CONCORRENTES = ["Maxi", "Candando", "Shoprite", "Angomart"];
 
             let produtos = [], produtoAtual = null, historicoPesquisas = [], editandoPrecos = false;
             let cameraStream = null, scanFrameId = null, _eanItemIdCache = {}, _estruturaLista = null, _hashSP = {};
@@ -4716,7 +4718,7 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                 return mapa;
             }
 
-            async function carregarProdutosDoSharePoint() {
+            async function carregarProdutosDaListaAntiga() {
                 try {
                     await detectarEstruturaLista();
                     const token = await obterToken(), siteId = await obterSiteId();
@@ -5018,7 +5020,7 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                 });
                 if (!valido) return;
                 guardarLocal();
-                notificar('✅ Guardado!', 'success');
+                registarConcorrentes(produtoAtual); guardarLocal(); notificar('✅ Guardado! Clica em "Publicar no SharePoint" para partilhar.', 'success');
             }
 
             function toggleEdicaoPrecos() {
@@ -5203,7 +5205,7 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                         if (produtosImportados.length === 0) { notificar('Nenhum produto válido.', 'error'); return; }
                         produtos = produtosImportados;
                         guardarLocal(); atualizarBadgeTotal(); renderizarHistorico();
-                        notificar(`✅ ${produtos.length} produtos importados!`, 'success');
+                        aplicarConcorrentes(); guardarLocal(); notificar(`✅ ${produtos.length} produtos importados!`, 'success');
                         if (typeof usuarioAtual !== 'undefined' && (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email))) {
                             notificar('⏳ A publicar automaticamente...', 'info');
                             publicarProdutosNoSharePoint().then(sucesso => { if (sucesso) notificar(`🎉 Guardados!`, 'success'); });
@@ -5245,7 +5247,7 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                     venda_media_mensal: Math.round(parseFloat(document.getElementById('addVendaMedia').value)) || 0,
                     stock, concorrentes
                 };
-                upsertLocal(novo);
+                upsertLocal(novo); registarConcorrentes(novo);
                 notificar(`✅ Produto "${nome}" adicionado ao cache local.`, 'success');
                 ['addNome','addEan','addCodSap','addNumFornecedor','addPrecoCusto','addPrecoKero','addIva','addFornecedor','addVendaMedia','addStock','addConcorrentes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
                 fecharModal('modalNovoProdutoEAN');
@@ -5291,7 +5293,7 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
             }
 
             async function inicializar() {
-                try { configurarEventos(); } catch (e) { console.warn('[EAN] Erro eventos:', e); }
+                try { if (!_eventosOk) { _eventosOk = true; configurarEventos(); } configurarEventosExtra(); } catch (e) { console.warn('[EAN] Erro eventos:', e); }
                 const temCache = carregarLocal(); if (temCache) notificar(`📂 ${produtos.length} produtos em cache.`, 'info');
                 const hist = localStorage.getItem('ean_historico'); if (hist) { try { historicoPesquisas = JSON.parse(hist); } catch (e) {} }
                 atualizarBadgeTotal(); renderizarHistorico();
@@ -5316,6 +5318,197 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
                 setTimeout(async () => {
                     try { await carregarProdutosDoSharePoint(); } catch (e) { console.warn('[EAN] Sync falhou:', e); }
                 }, 500);
+            }
+
+            /* ===== EAN RÁPIDO: dados em ficheiros JSON no SharePoint (1 pedido em vez de milhares) ===== */
+            const P_PROD = 'EAN/produtos.json', P_CONC = 'EAN/concorrentes.json', CK = 'ean_cache_v2';
+            const CONC_ALIAS = { Maxi: 'maxi', Candando: 'cand', Shoprite: 'shop', Angomart: 'ango' };
+            let _concDados = { cols: CONCORRENTES.slice(), d: {} }, _driveIdEAN = null, _versoes = { p: '', c: '' }, _concSujo = false, _eventosOk = false;
+            const normTxt = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+            const eanKey = v => String(v == null ? '' : v).replace(/\D/g, '').replace(/^0+/, '');
+            function podeGerirEAN() { return typeof usuarioAtual !== 'undefined' && usuarioAtual && (usuarioAtual.perfil === 'Administrador' || PERMISSAO_PUBLICAR.includes(usuarioAtual.email)); }
+
+            function compactarProduto(p) {
+                return { e: p.ean, n: p.nome || '', a: p.cod_sap || '', c: p.num_fornecedor || '', f: p.fornecedor || '', pc: Math.round(Number(p.preco_custo) || 0), pk: Math.round(Number(p.preco_kero) || 0), i: Number(p.iva) || 0, v: Math.round(Number(p.venda_media_mensal) || 0), s: LOJAS_KERO.map(l => Math.round(Number((p.stock || {})[l]) || 0)) };
+            }
+            function expandirProduto(r) {
+                const stock = {}, conc = {};
+                LOJAS_KERO.forEach((l, i) => { stock[l] = Math.round(Number((r.s || [])[i]) || 0); });
+                CONCORRENTES.forEach(c => { conc[c] = 0; });
+                return { ean: String(r.e), nome: r.n || '', cod_sap: String(r.a || ''), num_fornecedor: String(r.c || ''), fornecedor: r.f || '', preco_custo: Number(r.pc) || 0, preco_kero: Number(r.pk) || 0, iva: Number(r.i) || 0, venda_media_mensal: Number(r.v) || 0, stock, concorrentes: conc };
+            }
+            function aplicarConcorrentes() {
+                const d = _concDados.d || {}, cols = _concDados.cols || CONCORRENTES;
+                produtos.forEach(p => {
+                    const arr = d[eanKey(p.ean)] || (p.cod_sap ? d['c' + p.cod_sap] : null);
+                    if (!p.concorrentes) p.concorrentes = {};
+                    CONCORRENTES.forEach(c => { const i = cols.indexOf(c); p.concorrentes[c] = (arr && i >= 0) ? (Number(arr[i]) || 0) : (Number(p.concorrentes[c]) || 0); });
+                });
+            }
+            function registarConcorrentes(p) {
+                const k = eanKey(p.ean) || (p.cod_sap ? 'c' + p.cod_sap : '');
+                if (!k) return;
+                _concDados.cols = CONCORRENTES.slice();
+                _concDados.d[k] = CONCORRENTES.map(c => Math.round(Number((p.concorrentes || {})[c]) || 0));
+                _concSujo = true;
+            }
+            function guardarLocal() {
+                try { localStorage.removeItem('ean_produtos'); localStorage.setItem(CK, JSON.stringify({ p: produtos.map(compactarProduto), c: _concDados, v: _versoes })); }
+                catch (e) { notificar('⚠️ Cache local cheio.', 'warning'); }
+            }
+            function carregarLocal() {
+                try {
+                    const r = JSON.parse(localStorage.getItem(CK) || 'null');
+                    if (!r || !r.p) return false;
+                    produtos = r.p.map(expandirProduto); _concDados = r.c || _concDados; _versoes = r.v || _versoes;
+                    aplicarConcorrentes(); return true;
+                } catch (e) { return false; }
+            }
+
+            async function driveEAN() { return _driveIdEAN || (_driveIdEAN = await getDriveId()); }
+            async function metaSP(caminho) {
+                const t = await obterToken(), d = await driveEAN();
+                const r = await fetch(`https://graph.microsoft.com/v1.0/drives/${d}/root:/${caminho}`, { headers: { Authorization: `Bearer ${t}` } });
+                if (r.status === 404) return null;
+                if (!r.ok) throw new Error(`${caminho}: ${r.status}`);
+                const m = await r.json();
+                return { url: m['@microsoft.graph.downloadUrl'], versao: m.eTag || m.lastModifiedDateTime || '', caminho };
+            }
+            async function baixarSP(m) {
+                try { const r = await fetch(m.url); if (r.ok) return await r.json(); } catch (e) {}
+                const t = await obterToken(), d = await driveEAN();
+                const r = await fetch(`https://graph.microsoft.com/v1.0/drives/${d}/root:/${m.caminho}:/content`, { headers: { Authorization: `Bearer ${t}` } });
+                if (!r.ok) throw new Error('download ' + r.status);
+                return await r.json();
+            }
+            async function uploadJsonSP(caminho, obj) {
+                const t = await obterToken(), d = await driveEAN();
+                const corpo = JSON.stringify(obj);
+                const base = `https://graph.microsoft.com/v1.0/drives/${d}/root:/${caminho}`;
+                let r;
+                if (corpo.length < 3500000) {
+                    r = await fetch(`${base}:/content`, { method: 'PUT', headers: { Authorization: `Bearer ${t}`, 'Content-Type': 'application/json' }, body: corpo });
+                } else {
+                    const s = await fetch(`${base}:/createUploadSession`, { method: 'POST', headers: { Authorization: `Bearer ${t}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ item: { '@microsoft.graph.conflictBehavior': 'replace' } }) });
+                    if (!s.ok) throw new Error('sessão de upload ' + s.status);
+                    const { uploadUrl } = await s.json();
+                    const bytes = new TextEncoder().encode(corpo);
+                    r = await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Range': `bytes 0-${bytes.length - 1}/${bytes.length}` }, body: bytes });
+                }
+                if (!r.ok) throw new Error('upload ' + r.status + ' ' + (await r.text()).slice(0, 150));
+                const it = await r.json();
+                return it.eTag || '';
+            }
+
+            async function carregarProdutosDoSharePoint() {
+                try {
+                    const [mp, mc] = await Promise.all([metaSP(P_PROD), metaSP(P_CONC)]);
+                    if (!mp) {
+                        notificar('ℹ️ O ficheiro rápido ainda não existe: a ler a lista antiga. Importa o Excel mestre para o criar.', 'info');
+                        const ok = await carregarProdutosDaListaAntiga();
+                        if (mc) { _concDados = await baixarSP(mc); _versoes.c = mc.versao; }
+                        aplicarConcorrentes(); guardarLocal();
+                        return ok;
+                    }
+                    let cache = null;
+                    try { cache = JSON.parse(localStorage.getItem(CK) || 'null'); } catch (e) {}
+                    let linhas;
+                    if (cache && cache.p && cache.v && cache.v.p === mp.versao) linhas = cache.p;
+                    else { const j = await baixarSP(mp); linhas = j.p || []; }
+                    produtos = linhas.map(expandirProduto);
+                    if (mc) { if (cache && cache.c && cache.v && cache.v.c === mc.versao) _concDados = cache.c; else _concDados = await baixarSP(mc); }
+                    _versoes = { p: mp.versao, c: mc ? mc.versao : '' };
+                    aplicarConcorrentes(); guardarLocal(); atualizarBadgeTotal(); renderizarHistorico();
+                    if (produtoAtual) { const p = produtos.find(x => x.ean === produtoAtual.ean); if (p) renderizarProduto(p); }
+                    return true;
+                } catch (e) { console.error('[EAN]', e); notificar('⚠️ Erro ao carregar: ' + e.message, 'warning'); return false; }
+            }
+            async function garantirProdutos() { if (produtos.length === 0) await carregarProdutosDoSharePoint(); }
+
+            async function buscarEanExatoNoSharePoint(ean) {
+                await garantirProdutos();
+                const k = eanKey(ean);
+                return produtos.find(p => eanKey(p.ean) === k) || null;
+            }
+            async function buscarPorNomeNoSharePoint(termo) {
+                await garantirProdutos();
+                const bruto = String(termo).trim(), ws = normTxt(bruto).split(/\s+/).filter(Boolean), dig = eanKey(bruto), out = [];
+                for (const p of produtos) {
+                    const nome = normTxt(p.nome);
+                    if (String(p.cod_sap) === bruto || String(p.num_fornecedor) === bruto || (dig.length >= 4 && eanKey(p.ean).startsWith(dig)) || (ws.length && ws.every(w => nome.includes(w)))) { out.push(p); if (out.length >= 15) break; }
+                }
+                return out;
+            }
+
+            async function publicarProdutosNoSharePoint() {
+                if (produtos.length === 0) { notificar('Não há produtos.', 'error'); return false; }
+                if (!podeGerirEAN()) { notificar('Sem permissão.', 'error'); return false; }
+                showLoading();
+                const t0 = Date.now();
+                try {
+                    _versoes.p = await uploadJsonSP(P_PROD, { atualizado: new Date().toISOString(), por: usuarioAtual.email, lojas: LOJAS_KERO, p: produtos.map(compactarProduto) });
+                    guardarLocal();
+                    notificar(`✅ ${produtos.length} produtos publicados em ${((Date.now() - t0) / 1000).toFixed(1)}s.`, 'success');
+                    if (_concSujo) await publicarConcorrentes();
+                    return true;
+                } catch (e) { console.error(e); notificar('❌ Falhou a publicação: ' + e.message, 'error'); return false; }
+                finally { hideLoading(); }
+            }
+            async function publicarConcorrentes() {
+                showLoading();
+                try {
+                    _concDados.cols = CONCORRENTES.slice(); _concDados.atualizado = new Date().toISOString(); _concDados.por = usuarioAtual.email;
+                    _versoes.c = await uploadJsonSP(P_CONC, _concDados);
+                    _concSujo = false; guardarLocal();
+                    notificar('✅ Preços da concorrência publicados.', 'success');
+                    return true;
+                } catch (e) { console.error(e); notificar('❌ Falhou a publicação dos concorrentes: ' + e.message, 'error'); return false; }
+                finally { hideLoading(); }
+            }
+
+            function importarConcorrentes(file) {
+                if (!file) return;
+                if (!podeGerirEAN()) { notificar('Sem permissão.', 'error'); return; }
+                const rd = new FileReader();
+                rd.onload = async function (e) {
+                    try {
+                        const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+                        if (!rows.length) { notificar('Ficheiro vazio.', 'error'); return; }
+                        await garantirProdutos();
+                        const ks = Object.keys(rows[0]).map(k => ({ k, n: normTxt(k).replace(/[^a-z0-9]/g, '') }));
+                        const kEan = (ks.find(x => x.n === 'ean') || {}).k;
+                        const kCod = (ks.find(x => x.n === 'cod' || x.n === 'codigo' || x.n === 'codartigo') || {}).k;
+                        const kConc = {};
+                        CONCORRENTES.forEach(c => { const f = ks.find(x => x.n.includes(CONC_ALIAS[c])); if (f) kConc[c] = f.k; });
+                        if (!Object.keys(kConc).length) { notificar('Não encontrei as colunas PVP- Maxi / Candando / Shoprite / Angomart.', 'error'); return; }
+                        const porEan = {}, porCod = {};
+                        produtos.forEach(p => { const k = eanKey(p.ean); if (k) porEan[k] = p; if (p.cod_sap) porCod[String(p.cod_sap).trim()] = p; });
+                        const pr = v => { const n = parseFloat(String(v).replace(/\s/g, '').replace(',', '.')); return isNaN(n) ? 0 : Math.round(n); };
+                        let lidas = 0, assoc = 0;
+                        rows.forEach(r => {
+                            const ek = eanKey(kEan ? r[kEan] : ''), cod = String(kCod ? r[kCod] : '').trim();
+                            const key = ek || (cod ? 'c' + cod : '');
+                            if (!key) return;
+                            lidas++;
+                            const prod = (ek && porEan[ek]) || (cod && porCod[cod]) || null;
+                            if (prod) assoc++;
+                            const kdb = prod ? (eanKey(prod.ean) || 'c' + prod.cod_sap) : key;
+                            _concDados.d[kdb] = CONCORRENTES.map(c => kConc[c] ? pr(r[kConc[c]]) : 0);
+                        });
+                        _concDados.cols = CONCORRENTES.slice();
+                        aplicarConcorrentes(); guardarLocal();
+                        if (produtoAtual) renderizarProduto(produtoAtual);
+                        notificar(`📥 ${lidas} linhas lidas, ${assoc} associadas a produtos. A publicar...`, 'info');
+                        await publicarConcorrentes();
+                    } catch (err) { console.error(err); notificar('Erro ao ler o ficheiro de concorrentes: ' + err.message, 'error'); }
+                };
+                rd.readAsArrayBuffer(file);
+            }
+            function configurarEventosExtra() {
+                const b = document.getElementById('btnImportConcorrentes'), f = document.getElementById('fileInputConcorrentes');
+                if (b) { b.style.display = podeGerirEAN() ? 'inline-block' : 'none'; b.onclick = () => f.click(); }
+                if (f) f.onchange = function () { if (this.files.length) importarConcorrentes(this.files[0]); this.value = ''; };
             }
 
             return { inicializar, buscarProduto, limparPesquisa, renderizarTodosProdutos, exportarDados, publicarProdutosNoSharePoint, carregarProdutosDoSharePoint, importarExcel, adicionarProduto, guardarPrecosConcorrentes, toggleEdicaoPrecos, guardarPrecosKero, abrirCamera, fecharCamera, capturarEscanear, processarImagem, diagnosticar, detectarEstruturaLista };
@@ -5579,7 +5772,7 @@ const app = (function () {
     }
     function renderAtual(){if(usuarioAtual)renderView(subTabAtiva);}
     function renderView(tab){
-        if(tab==='dashboard')$('#pagViewDashboard').innerHTML=htmlDashboard();
+        if(tab==='dashboard')$('#pagViewDashboard').innerHTML=htmlIndicadores(pedidosVisiveis())+htmlDashboard();
         if(tab==='pedidos'){$('#pagViewPedidos').innerHTML=htmlPedidos();renderTbodyPedidos();}
         if(tab==='ap')$('#pagViewAP').innerHTML=htmlFilaAP();
         if(tab==='tes')$('#pagViewTes').innerHTML=htmlFilaTes();
@@ -5691,6 +5884,34 @@ const app = (function () {
             </div>`;
     }
 
+    function htmlIndicadores(vis){
+        const soma=a=>a.reduce((s,p)=>s+(p.valorPedido||0),0);
+        const media=(a,f)=>{const v=a.map(f).filter(x=>x!==null&&x!==undefined&&!isNaN(x));return v.length?(v.reduce((x,y)=>x+y,0)/v.length).toFixed(1)+'d':'—';};
+        const mes=todayISO().slice(0,7);
+        const ap=vis.filter(p=>p.status==='pendente'), porEnviar=vis.filter(p=>p.status==='processamento'), noBanco=vis.filter(p=>p.status==='processado'), devolv=vis.filter(p=>p.status==='devolvido');
+        const validMes=vis.filter(p=>(p.dataValidacaoAP||'').slice(0,7)===mes);
+        const bancoMes=vis.filter(p=>(p.dataProcessamento||'').slice(0,7)===mes);
+        const finMes=vis.filter(p=>p.status==='executado'&&(p.dataExecucao||'').slice(0,7)===mes);
+        const card=(t,v,f,c,i)=>`<div class="pag-kpi-card ${c}"><div class="info"><h4>${t}</h4><span>${v}</span><div class="foot">${f}</div></div><div class="icon"><i class="fas ${i}"></i></div></div>`;
+        const bloco=(tit,ic,cards)=>`<div class="pag-card" style="margin-bottom:16px"><div class="pag-card-header"><div class="pag-card-title"><i class="fas ${ic}"></i> ${tit}</div></div><div class="pag-kpi-grid" style="margin-bottom:0">${cards.join('')}</div></div>`;
+        const foraAP=ap.filter(estaForaSLA).length;
+        return bloco('Indicadores — Contas a Pagar','fa-file-invoice',[
+            card('Por validar',ap.length,money(soma(ap)),'warn','fa-inbox'),
+            card('Fora de SLA',foraAP,'SLA: '+state.config.sla.processamento+' dias úteis',foraAP?'danger':'ok','fa-exclamation-triangle'),
+            card('Idade média da fila',media(ap,agingDays),'dias úteis desde a solicitação','info','fa-hourglass-half'),
+            card('Validados este mês',validMes.length,money(soma(validMes)),'ok','fa-check'),
+            card('Tempo médio de validação',media(vis.filter(p=>p.dataValidacaoAP),p=>businessDays(p.dataSolicitacao,p.dataValidacaoAP)),'solicitação → validação','info','fa-stopwatch'),
+            card('Devolvidos',devolv.length,money(soma(devolv)),devolv.length?'danger':'ok','fa-undo-alt')
+        ])+bloco('Indicadores — Tesouraria','fa-university',[
+            card('Por enviar ao banco',porEnviar.length,money(soma(porEnviar)),'warn','fa-paper-plane'),
+            card('A aguardar comprovativo',noBanco.length,money(soma(noBanco)),'info','fa-hourglass-half'),
+            card('Enviados ao banco no mês',bancoMes.length,money(soma(bancoMes)),'ok','fa-university'),
+            card('Pagos no mês',finMes.length,money(finMes.reduce((s,p)=>s+(p.valorProcessado||p.valorPedido||0),0)),'ok','fa-check-double'),
+            card('Tempo médio na Tesouraria',media(vis.filter(p=>p.dataValidacaoAP&&p.dataProcessamento),p=>businessDays(p.dataValidacaoAP,p.dataProcessamento)),'validação → banco','info','fa-stopwatch'),
+            card('Tempo médio do banco',media(vis.filter(p=>p.dataProcessamento&&p.dataExecucao),p=>businessDays(p.dataProcessamento,p.dataExecucao)),'envio → comprovativo','info','fa-clock')
+        ]);
+    }
+
     function htmlPedidos(){
         return `<div class="pag-card">
             <div class="pag-card-header">
@@ -5754,7 +5975,8 @@ const app = (function () {
                 if(isTes()&&p.status==='processado'){
                     btns.push(`<button class="pag-btn-tbl execute" onclick="event.stopPropagation();app.abrirExecutar('${p.id}')" title="Finalizar com comprovativo"><i class="fas fa-paperclip"></i></button>`);
                 }
-                if(podeEditarProprio(p)&&['pendente','devolvido'].includes(p.status)){
+                if(isAdmin()&&!['cancelado','devolvido'].includes(p.status)){btns.push(`<button class="pag-btn-tbl process" onclick="event.stopPropagation();app.abrirReenviar('${p.id}')" title="Editar"><i class="fas fa-edit"></i></button>`);}
+                if(podeEditarProprio(p)&&(['pendente','devolvido'].includes(p.status)||(isAdmin()&&!['cancelado','executado'].includes(p.status)))){
                     btns.push(`<button class="pag-btn-tbl cancel" onclick="event.stopPropagation();app.abrirCancelar('${p.id}')" title="Cancelar"><i class="fas fa-times"></i></button>`);
                 }
                 if(p.status==='devolvido'&&p.solicitadoPorEmail===myEmail()){
@@ -6225,8 +6447,8 @@ const app = (function () {
         p.dc=dc; p.codigoSAP=sap; p.fornecedorNome=nome;
         p.dataSolicitacao=data; p.semana=isoWeek(data);
         p.valorPedido=valor; p.observacoes=obs;
-        p.status='pendente'; p.motivoDevolucao='';
-        addHistorico(p,'Reenviado para a Financeira','');
+        const eraDev=p.status==='devolvido'; if(eraDev){p.status='pendente'; p.motivoDevolucao='';}
+        addHistorico(p,eraDev?'Reenviado para a Financeira':'Editado pelo administrador','');
         save();
         toast(`✅ ${p.codigo} reenviado.`,'success');
         fecharModal(); renderAtual(); atualizarContadores();
@@ -6856,6 +7078,98 @@ async function removerAcesso(email){
     mostrarNotificacao(ok?'Removido.':'Removido só neste posto (erro no SharePoint).',ok?'success':'warning');
 }
 
+</script>
+<script>
+/*KERO-PATCH-V2*/
+const PAG_ACESSO_TOTAL=['marcio.carlos@accordgrouplda.com','dircg@accordgrouplda.com'];
+let ACESSOS_ESTADO='';
+
+function esconderCardsModulos(){const g=document.querySelector('.module-grid');if(g)g.style.visibility='hidden';}
+
+async function carregarAcessosModulos(){
+    try{
+        const token=await getSharePointToken(),siteId=await getSiteId();
+        let url=`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${LISTA_ACESSOS}/items?expand=fields&$top=500`;
+        const novo={};
+        const nk=k=>k.replace(/_x([0-9a-f]{4})_/gi,(m,h)=>String.fromCharCode(parseInt(h,16))).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,'');
+        while(url){
+            const r=await fetch(url,{headers:{Authorization:`Bearer ${token}`}});
+            if(r.status===404){ACESSOS_ESTADO='sem_lista';return false;}
+            if(!r.ok)throw new Error('HTTP '+r.status);
+            const d=await r.json();
+            (d.value||[]).forEach(i=>{
+                const f=i.fields||{};
+                const e=String(f.Title||'').toLowerCase().trim();
+                if(!e)return;
+                const keys=Object.keys(f);
+                const kM=keys.find(k=>nk(k).startsWith('modulo')),kP=keys.find(k=>nk(k).startsWith('papel'));
+                const mods=[].concat(kM?f[kM]:[]).join(',').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+                novo[e]={modulos:mods,papel:(kP&&f[kP])||'viewer'};
+            });
+            url=d['@odata.nextLink']||null;
+        }
+        Object.keys(ACESSOS).forEach(k=>delete ACESSOS[k]);Object.assign(ACESSOS,novo);guardarCacheAcessos();
+        ACESSOS_ESTADO='ok';
+        return true;
+    }catch(e){console.warn('[Acessos] erro:',e);ACESSOS_ESTADO='erro';return false;}
+}
+
+function podeAcederModulo(mod){
+    if(!usuarioAtual)return false;
+    if(usuarioAtual.perfil==='Administrador')return true;
+    const em=String(usuarioAtual.email).toLowerCase().trim();
+    if(mod==='pagamentos'&&PAG_ACESSO_TOTAL.includes(em))return true;
+    const a=ACESSOS[em];
+    if(a)return a.modulos.includes(mod);
+    if(ACESSOS['*restrito*'])return false;
+    if(ACESSOS_ESTADO==='erro')return false;
+    return mod!=='pagamentos'&&mod!=='acessos';
+}
+
+function aplicarAcessosCards(){
+    document.querySelectorAll('.module-card-large').forEach(c=>{
+        const oc=c.getAttribute('onclick')||'';
+        let k=(oc.match(/selecionarModulo\('(\w+)'\)/)||[])[1];
+        if(!k)k=oc.includes('kerodesk')?'ticket':(oc.includes('Ocorr')?'ocorrencia':null);
+        if(!k)return;
+        c.style.display=podeAcederModulo(k)?'':'none';
+    });
+    const g=document.querySelector('.module-grid');if(g)g.style.visibility='visible';
+    if(ACESSOS_ESTADO==='erro'&&usuarioAtual&&usuarioAtual.perfil!=='Administrador')mostrarNotificacao('Não foi possível verificar as suas permissões no SharePoint. Tente novamente ou contacte o administrador.','error');
+}
+
+function abrirPagamentos(){
+    prepararTelaModulo('Kero Pagamentos','Pedidos de Pagamento a Fornecedores','pagamentosSection');
+    const em=String(usuarioAtual.email).toLowerCase().trim(),a=ACESSOS[em];
+    const papel=(a&&a.papel)||'viewer';
+    let roles;
+    if(usuarioAtual.perfil==='Administrador'||PAG_ACESSO_TOTAL.includes(em)||papel==='admin')roles=['admin','ap','tes','dc'];
+    else if(papel==='aptes')roles=['ap','tes'];
+    else roles=[papel];
+    app.initSIR({nome:usuarioAtual.nome,email:usuarioAtual.email,perfil:usuarioAtual.perfil,roles});
+}
+
+function mostrarEstadoAcessos(){
+    const sec=document.getElementById('gestaoAcessosSection');if(!sec)return;
+    const card=sec.querySelector('.card');if(!card)return;
+    let b=document.getElementById('acessoEstado');
+    if(!b){b=document.createElement('div');b.id='acessoEstado';b.style.cssText='padding:12px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;font-weight:600';card.insertBefore(b,card.querySelector('.card-header').nextSibling);}
+    const m={
+        ok:['#e8f5e9','#2E7D32','✅ Ligado ao SharePoint (lista AcessosModulos). As regras valem para todos os postos.'],
+        sem_lista:['#ffebee','#c62828','❌ A lista AcessosModulos NÃO existe no SharePoint. Sem ela as regras ficam só neste computador e os outros utilizadores continuam a ver todos os módulos. Cria a lista com as colunas Title, Modulos e Papel.'],
+        erro:['#fff3e0','#E65100','⚠️ Não foi possível ler a lista AcessosModulos. Verifica as permissões e os nomes das colunas (Modulos e Papel).']
+    }[ACESSOS_ESTADO]||['#f5f5f5','#666','A verificar a ligação ao SharePoint…'];
+    b.style.background=m[0];b.style.color=m[1];b.textContent=m[2];
+}
+
+function abrirGestaoAcessos(){
+    prepararTelaModulo('Gestão de Acessos','Quem acede a cada módulo','gestaoAcessosSection');
+    document.getElementById('acessoChecks').innerHTML=MODULOS_ACESSO.map(([k,n])=>`<label><input type="checkbox" value="${k}"> ${n}</label>`).join('');
+    document.getElementById('acessoPapel').innerHTML=Object.entries(PAPEIS_PAG).map(([k,n])=>`<option value="${k}">${n}</option>`).join('');
+    document.getElementById('perfilRapido').innerHTML=Object.entries(PERFIS_RAPIDOS).map(([k,v])=>`<option value="${k}">${v.nome}</option>`).join('');
+    renderAcessos();mostrarEstadoAcessos();
+    carregarAcessosModulos().then(()=>{renderAcessos();const c=document.getElementById('acessoRestrito');if(c)c.checked=!!ACESSOS['*restrito*'];mostrarEstadoAcessos();});
+}
 </script>
 </body>
 </html>
