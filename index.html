@@ -2126,21 +2126,21 @@ body.dark-mode .acesso-row{background:#38385a}
             'marcio.carlos@accordgrouplda.com': 'Administrador',
             'mario.arao@accordgrouplda.com': 'RH',
             'paulo.silva@accordgrouplda.com': 'Director Geral',
-            'dircg@accordgrouplda.com': 'Controlo de Gestão',
+            'erikson.madureira@accordgrouplda.com': 'Controlo de Gestão',
             'aleixo.francisco@accordgrouplda.com': 'Recrutador',
             'luzia.cauica@accordgrouplda.com': 'Recrutador',
         };
 
-        const EMAILS_ACESSO_TOTAL_MOB = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'dircg@accordgrouplda.com', 'paulo.silva@accordgrouplda.com'];
-        const EMAILS_IMPORTACAO_EAN = ['marcio.carlos@accordgrouplda.com', 'dircg@accordgrouplda.com'];
-        const BLOCKED_EMAILS = ['paulo.silva@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'dircg@accordgrouplda.com'];
+        const EMAILS_ACESSO_TOTAL_MOB = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'erikson.madureira@accordgrouplda.com', 'paulo.silva@accordgrouplda.com'];
+        const EMAILS_IMPORTACAO_EAN = ['marcio.carlos@accordgrouplda.com', 'erikson.madureira@accordgrouplda.com'];
+        const BLOCKED_EMAILS = ['paulo.silva@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'erikson.madureira@accordgrouplda.com'];
         const PERFIS_QUE_VEEM_TUDO = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador'];
         const PERFIS_QUE_APROVAM = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
         const PERFIS_QUE_PODEM_CRIAR = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral', 'Recrutador', 'Colaborador'];
 
         const emailsAprovadores = {
             'RH': 'mario.arao@accordgrouplda.com', 
-            'Controlo de Gestão': 'dircg@accordgrouplda.com',
+            'Controlo de Gestão': 'erikson.madureira@accordgrouplda.com',
             'Director Geral': 'paulo.silva@accordgrouplda.com',
             'Administrador': 'marcio.carlos@accordgrouplda.com',
             'Recrutador': 'aleixo.francisco@accordgrouplda.com'
@@ -2757,7 +2757,7 @@ if(mod==='acessos'){abrirGestaoAcessos();return;}
         }
         function podeVerBotaoSharePoint() {
             if (!usuarioAtual) return false;
-            const emailsPermitidos = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'dircg@accordgrouplda.com', 'paulo.silva@accordgrouplda.com', 'aleixo.francisco@accordgrouplda.com'];
+            const emailsPermitidos = ['marcio.carlos@accordgrouplda.com', 'mario.arao@accordgrouplda.com', 'erikson.madureira@accordgrouplda.com', 'paulo.silva@accordgrouplda.com', 'aleixo.francisco@accordgrouplda.com'];
             const perfisPermitidos = ['Administrador', 'RH', 'Controlo de Gestão', 'Director Geral'];
             return (perfisPermitidos.includes(usuarioAtual.perfil) || emailsPermitidos.includes(usuarioAtual.email));
         }
@@ -7081,7 +7081,7 @@ async function removerAcesso(email){
 </script>
 <script>
 /*KERO-PATCH-V2*/
-const PAG_ACESSO_TOTAL=['marcio.carlos@accordgrouplda.com','dircg@accordgrouplda.com'];
+const PAG_ACESSO_TOTAL=['marcio.carlos@accordgrouplda.com','erikson.madureira@accordgrouplda.com'];
 let ACESSOS_ESTADO='';
 
 function esconderCardsModulos(){const g=document.querySelector('.module-grid');if(g)g.style.visibility='hidden';}
